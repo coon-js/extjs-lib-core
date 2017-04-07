@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <!-- Siesta CSS -->
+    <link rel="stylesheet" type="text/css" href="../../../../vendor/siesta/resources/css/siesta-all.css">
+
+    <!-- Siesta application -->
+    <script type="text/javascript" src="../../../../vendor/siesta/siesta-all.js"></script>
+
+    <!-- The test harness -->
+    <script type="text/javascript" src="tests.config.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+</body>
+</html>

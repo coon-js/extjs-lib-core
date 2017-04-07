@@ -1,0 +1,14 @@
+var conjoon = conjoon || {};
+conjoon.tests = conjoon.tests || {};
+conjoon.tests.config = conjoon.tests.config || {};
+
+
+conjoon.tests.config.paths = {
+    extjs : {
+        js : {
+            url : "../../../../ext/build/ext-all-debug.js"
+        }
+    }
+}
+
+
