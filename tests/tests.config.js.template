@@ -6,7 +6,7 @@ conjoon.tests.config = conjoon.tests.config || {};
 conjoon.tests.config.paths = {
     extjs : {
         js : {
-            url : "../../../../ext/build/ext-all-debug.js"
+            url : "[PATH_TO_EXT_ALL.JS]" /*Your path to your ExtJS distribution (e.g. ext-all-debug.js) */
         }
     }
 }
