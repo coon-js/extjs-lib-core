@@ -103,5 +103,7 @@
 
     "framework": "ext",
 
-    "requires": []
+    "requires": [
+        "sencha-core"
+    ]
 }
