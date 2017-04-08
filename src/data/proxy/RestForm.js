@@ -43,7 +43,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
         'conjoon.cn_core.data.AjaxForm',
         'conjoon.cn_core.data.FormDataRequest',
         'conjoon.cn_core.data.operation.Upload',
-        'conjoon.cn_core.data.writer.FormData',
+        'conjoon.cn_core.data.writer.FormData'
     ],
 
     alias : 'proxy.cn_core-dataproxyrestform',
