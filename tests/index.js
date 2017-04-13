@@ -4,6 +4,9 @@ harness.configure({
     title          : 'My Tests',
     disableCaching : true,
     loaderPath     : {
+
+        'conjoon.cn_core.overrides.cn_core' : '../overrides',
+
         'conjoon.cn_core' : '../src/',
         'conjoon.test'    : './src'
     },
@@ -13,6 +16,14 @@ harness.configure({
 });
 
 harness.start({
+    group : 'overrides',
+    items : [{
+        group : 'app',
+        items : [
+            'overrides/app/PackageControllerTest.js'
+        ]
+    }]
+}, {
     group : '.',
     items : [
         'src/UtilTest.js'
