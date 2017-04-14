@@ -11,6 +11,9 @@ language: node_js
 env:
   - CN_PACKAGE="lib-cn_core" CN_SENCHA_EXT_VERSION="6.2.0" CN_SENCHA_CMD_VERSION="6.2.2.36" CN_WORKSPACE="/tmp/conjoon"
 
+install:
+  - gem install jsduck
+
 before_script:
   - "wget http://cdn.sencha.com/ext/gpl/ext-$CN_SENCHA_EXT_VERSION-gpl.zip"
   - "unzip -q ext-$CN_SENCHA_EXT_VERSION-gpl.zip"
