@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2017 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,13 @@ Ext.define('conjoon.cn_core.app.Application', {
     requires : [
         'conjoon.cn_core.app.PackageController'
     ],
+
+    /**
+     * Stack for routes which were added using the method #addRouteActionToStackAndStop
+     * @type {Array} routeActionStack
+     * @private
+     */
+    routeActionStack : null,
 
     /**
      * @type {String} applicationViewClassName (required)
@@ -152,15 +159,71 @@ Ext.define('conjoon.cn_core.app.Application', {
      *
      */
     launch : function() {
-
         var me = this;
 
         if (me.preLaunchHookProcess() !== false) {
             me.setMainView(me.applicationViewClassName);
             me.postLaunchHookProcess();
+            me.releaseLastRouteAction(me.routeActionStack);
+        }
+    },
+
+
+    /**
+     * Checks whether there is any action intercepted and available on
+     * the passed routeActionStack.
+     * The last available action added to the stack will be popped and resumed,
+     * and the routeActionStack will be reset to an empty array.
+     *
+     * @return {Boolean} true if there was an action that was resumed, otherwise
+     * false if there was no action to process
+     *
+     * @private
+     */
+    releaseLastRouteAction : function(routeActionStack) {
+
+        if (!routeActionStack || !routeActionStack.length) {
+            return false;
         }
 
+        routeActionStack.pop().resume();
+        routeActionStack = [];
+        return true;
     },
+
+    /**
+     * Adds the specified action to the #routeActionStack and calls "stop()" on it,
+     * preventing it from being processed further..
+     *
+     * @param action
+     */
+    interceptAction : function(action) {
+        var me = this;
+
+        if (!me.routeActionStack) {
+            me.routeActionStack = [];
+        }
+
+        me.routeActionStack.push(action);
+        action.stop();
+    },
+
+
+    /**
+     * Returns true if the specified packageController can safely route
+     * the action, otherwise false.
+     *
+     * @param {conjoon.cn_core.app.PackageController} packageController
+     * @param {Object} action
+     *
+     * @return  {Boolean}
+     *
+     * @see {conjoon.cn_core.app.PackageController#isActionRoutable}
+     */
+    shouldPackageRoute : function(packageController, action) {
+        return packageController.isActionRoutable(action);
+    },
+
 
     /**
      * Hook for the launch-process, after the {@link #mainView} was initialized.

@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2016 conjoon.org
+ * (c) 2007-2017 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * The PackageControllerMock used in this tests returns falsy when
+ * its prelaunchHook() is called for the first time, after this it returns
+ * always truthy.
+ * This is needed since an Application tries to call launch() the first time
+ * it is executed - checking the preLaunchHook of each controller if it returns
+ * true, the initiates the main view if that is the case.
+ * In most of the test cases we rely on the fact that there is no main view
+ * created until we call launch() by hand.
+ */
 describe('conjoon.cn_core.app.ApplicationTest', function(t) {
-
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
@@ -180,6 +189,74 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
 
         t.expect(exc).not.toBeNull();
         t.expect(exc).toBeDefined();
+    });
+
+    /**
+     * @see https://github.com/conjoon/lib-cn_core/issues/1
+     */
+    t.it('Test changes regarding lib-cn_core/issues/1', function(t) {
+
+        var app = Ext.create('conjoon.cn_core.app.Application', {
+                name     : 'test',
+                mainView : 'Ext.Panel',
+                controllers : [
+                    'conjoon.test.app.mock.PackageControllerMock'
+                ]
+            }),
+            stack,
+            resumed,
+            stopped,
+            ctrlMock;
+        // +---------------------------------------------
+        // | releaseLastRouteAction() / null
+        // +---------------------------------------------
+        t.expect(app.releaseLastRouteAction()).toBe(false);
+        // +---------------------------------------------
+        // | releaseLastRouteAction() / []
+        // +---------------------------------------------
+        t.expect(app.releaseLastRouteAction([])).toBe(false);
+
+        // +---------------------------------------------
+        // | releaseLastRouteAction() / [{}]
+        // +---------------------------------------------
+        resumed = 0;
+        stack   = [{resume : function(){resumed++;}}];
+        t.expect(app.releaseLastRouteAction(stack)).toBe(true);
+        t.expect(stack).toEqual([]);
+        t.expect(resumed).toBe(1);
+
+        // +---------------------------------------------
+        // | interceptAction()
+        // +---------------------------------------------
+        // with array
+        stopped = 0;
+        app.routeActionStack = ['a'];
+        app.interceptAction({stop : function(){stopped++;}});
+        t.expect(app.routeActionStack).toEqual(['a', {stop : function(){stopped++;}}]);
+        t.expect(stopped).toBe(1);
+        // with null
+        app.routeActionStack = null;
+        stopped = 0;
+        app.interceptAction({stop : function(){stopped++;}});
+        t.expect(app.routeActionStack).toEqual([{stop : function(){stopped++;}}]);
+        t.expect(stopped).toBe(1);
+
+        // +---------------------------------------------
+        // | shouldPackageRoute()
+        // +---------------------------------------------
+        ctrlMock = {isActionRoutable : function(){return 'A';}};
+        t.expect(app.shouldPackageRoute(ctrlMock, {})).toBe('A')
+
+        // +---------------------------------------------
+        // | shouldPackageRoute()
+        // +---------------------------------------------
+        resumed = 0;
+        app.routeActionStack = [{resume : function(){resumed++;}}];
+        app.launch();
+        t.expect(app.routeActionStack).toEqual([]);
+        t.expect(resumed).toBe(1);
+
+
     });
 
 
