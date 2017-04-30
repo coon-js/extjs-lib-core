@@ -64,27 +64,52 @@ describe('conjoon.cn_core.app.PackageControllerTest', function(t) {
         // | updateRoutes
         // +---------------------------------------------
         nRoutes = {};
-        routes  = {
-            'myurl' : {
-                value    : 'someAction',
-                expected : {
+        routes  = [{
+            routes : {
+                'myurl' : 'someAction'
+            },
+            expected : {
+                myurl : {
                     action : 'someAction',
                     before : 'onBeforePackageRoute'
                 }
-            },
-            'myconfiguredurl' : {
-                value    : {action : 'someAction'},
-                expected : {
+            }
+        }, {
+            routes : {
+                myconfiguredurl : {
                     action : 'someAction'
                 }
+            },
+            expected : {
+                myconfiguredurl : {
+                    action : 'someAction',
+                    before : undefined
+                }
             }
-        };
-        for (var i in routes) {
-            nRoutes[i] = Ext.apply({}, routes[i]['expected'])
-        }
-        controller.updateRoutes(nRoutes);
-        for (var i in nRoutes) {
-            t.expect(nRoutes[i]).toEqual(routes[i]['expected']);
+        }, {
+            routes : {
+                myconfiguredurl : {
+                    action : 'someAction'
+                },
+                myurl : 'someAction'
+            },
+            expected : {
+                myconfiguredurl : {
+                    action : 'someAction',
+                    before : undefined
+                },
+                myurl : {
+                    action : 'someAction',
+                    before : 'onBeforePackageRoute'
+                }
+            }
+        }];
+
+        for (var i = 0, len = routes.length; i < len; i++) {
+            nRoutes = Ext.apply({}, routes[i]['routes']);
+            controller.updateRoutes(nRoutes);
+            t.expect(nRoutes).toEqual(routes[i]['expected']);
+
         }
 
         //_____________________________________________________

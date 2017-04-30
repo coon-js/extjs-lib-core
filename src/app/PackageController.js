@@ -122,19 +122,18 @@ Ext.define('conjoon.cn_core.app.PackageController', {
     updateRoutes : function(routes) {
 
         var me     = this,
-            nRoutes = {},
             url;
 
-        for (var url in routes) {
+        for (url in routes) {
             if (!Ext.isObject(routes[url])) {
-                nRoutes[url] = {
+                routes[url] = {
                     action : routes[url],
                     before : 'onBeforePackageRoute'
                 };
             }
         }
 
-        return me.callParent([nRoutes]);
+        return me.callParent([routes]);
     },
 
 
@@ -182,6 +181,7 @@ Ext.define('conjoon.cn_core.app.PackageController', {
          *
          * @see {conjoon.cn_core.app.Application#shouldPackageRoute}
          * @see {conjoon.cn_core.app.Application#interceptAction}
+         *
          *
          * @throws if the controller is not being used in an application context
          * and #getApplication is falsy
