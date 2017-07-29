@@ -54,7 +54,7 @@ Ext.define('conjoon.cn_core.data.session.SplitBatchVisitor', {
                 proxy;
             for (var a = 0, lena = recs.length; a < lena; a++) {
                 proxy     = recs[a].getProxy();
-                operation = proxy.createOperation('create', {
+                operation = proxy.createOperation(ops[i].getAction(), {
                     records : [recs[a]]
                 });
                 operation.entityType = Ext.getClass(recs[a]);
