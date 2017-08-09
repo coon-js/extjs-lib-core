@@ -46,6 +46,7 @@ harness.start({
             group : 'field',
             items : [
                 'src/data/field/BlobTest.js',
+                'src/data/field/EmailAddressTest.js',
                 'src/data/field/EmailAddressCollectionTest.js',
                 'src/data/field/FileSizeTest.js'
             ]
@@ -80,7 +81,8 @@ harness.start({
         }, {
             group : 'validator',
             items : [
-                'src/data/validator/EmailAddressCollectionTest.js'
+                'src/data/validator/EmailAddressCollectionTest.js',
+                'src/data/validator/EmailAddressTest.js'
             ]
         }, {
             group : 'writer',
