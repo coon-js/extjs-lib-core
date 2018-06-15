@@ -7,6 +7,16 @@ harness.configure({
 
         'conjoon.cn_core.overrides.cn_core' : '../overrides',
 
+        /**
+         * ux
+         */
+        'Ext.ux' : "../../../../ext/packages/ux/src/",////bryntum.com/examples/extjs-6.0.1/build/ext-all.js"
+
+        /**
+         * fixtures
+         */
+        'conjoon.cn_core.fixtures' : './fixtures',
+
         'conjoon.cn_core' : '../src/',
         'conjoon.test'    : './src'
     },
@@ -55,6 +65,14 @@ harness.start({
             group : 'operation',
             items : [
                 'src/data/operation/UploadTest.js'
+            ]
+        },
+        {
+            group : 'pageMap',
+            items : [
+                'src/data/pageMap/PageMapUtilTest.js',
+                'src/data/pageMap/PageRangeTest.js',
+                'src/data/pageMap/RecordPositionTest.js'
             ]
         },
         {

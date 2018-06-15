@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2016 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,16 @@ describe('conjoon.cn_core.UtilTest', function(t) {
 
             t.expect(conjoon.cn_core.Util.unchain('1.2.3.4.5')).toBeUndefined();
 
+        });
+
+        t.it('Test listNeighbours()', function(t) {
+
+            t.expect(conjoon.cn_core.Util.listNeighbours(['4', 5, '1', '3', 6, '8'], 5)).toEqual([3, 4, 5, 6]);
+            t.expect(conjoon.cn_core.Util.listNeighbours([1, 2, 3], 2)).toEqual([1, 2, 3]);
+
+            t.expect(conjoon.cn_core.Util.listNeighbours([3, 2, 1], 1)).toEqual([1, 2, 3]);
+
+            t.expect(conjoon.cn_core.Util.listNeighbours(['4', 0, -1, 23, 1, 18, 5, '1', '3', 6, '8', '17'], 17)).toEqual([17, 18]);
         });
 
 

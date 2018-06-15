@@ -63,6 +63,64 @@ Ext.define('conjoon.cn_core.Util', {
         }
 
         return obj;
+    },
+
+
+    /**
+     * Expects a numeric array and returns an array where the entries are subsequent
+     * neighbours of target, sorted from lowest to highest, unique values.
+     * The method will try to parse the values to numeric integer values
+     *
+     *      @example
+     *      var list   = ['4', 5, '1', '3', 6, '8'];
+     *      var target = 5;
+     *
+     *      conjoon.cn_core.Util.listNeighbours(list, target); // [3, 4, 5, 6]
+     *
+     * @param {Array} list The list of values to return the neighbours from
+     * @param {Number} target The initial value to look up its neighbours for
+     *
+     * @return {Array} The ordered, unique list of neighbours for target
+     */
+    listNeighbours : function(list, target) {
+
+        var pages = [],
+            range = [],
+            pind, i, len;
+
+        // parse, filter, sort
+        pages = list.map(function(v){return parseInt(v, 10)});
+        pages.filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        });
+        pages.sort(function(a, b){return a-b});
+
+
+
+        pind = pages.indexOf(parseInt(target, 10));
+
+        // fill left
+        for (i = pind - 1; i >= 0; i--) {
+            if (pages[i] === pages[i + 1] - 1) {
+                range.unshift(pages[i]);
+            } else {
+                break;
+            }
+        }
+
+        // fill center
+        range.push(pages[pind]);
+
+        // fill right
+        for (i = pind + 1, len = pages.length; i < len; i++) {
+            if (pages[i] === pages[i - 1] + 1) {
+                range.push(pages[i]);
+            } else {
+                break;
+            }
+        }
+        return range;
+
     }
 
 });
