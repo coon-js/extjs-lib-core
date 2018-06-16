@@ -60,7 +60,60 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
     t.requireOk('conjoon.cn_core.data.pageMap.PageMapUtil', function() {
 
 
-        
+        t.it('positionToStoreIndex()', function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap = Ext.create('Ext.data.PageMap', {
+                    pageSize : 25
+                }),
+                invalid  = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 4,
+                    index : 25
+                }),
+                expected = [{
+                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                        page  : 4,
+                        index : 5
+                    }),
+                    result : 80
+                }, {
+                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                        page  : 1,
+                        index : 0
+                    }),
+                    result : 0
+                }, {
+                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                        page  : 1,
+                        index : 24
+                    }),
+                    result : 24
+                }];
+
+            try {PageMapUtil.positionToStoreIndex(null, pageMap);} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('position');
+
+            try {PageMapUtil.positionToStoreIndex(expected[0].pos, null);} catch (e) {exc = e;}
+            console.log(exc);
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('pagemap');
+
+            try {PageMapUtil.positionToStoreIndex(invalid, pageMap);} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('exceeds');
+            t.expect(exc.msg.toLowerCase()).toContain('index');
+
+            for (var i = 0, len = expected.length; i < len; i++) {
+                t.expect(PageMapUtil.positionToStoreIndex(expected[i].pos, pageMap)).toBe(expected[i].result);
+            }
+
+
+        });
+
 
         t.it('getPageRangeForRecord() - exception Record', function(t) {
 

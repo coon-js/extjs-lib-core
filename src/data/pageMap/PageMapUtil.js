@@ -36,6 +36,50 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
 
     /**
+     * Computes the expected store index of the record represented by position.
+     * The index is not guaranteed to hold a record.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return {Number}
+     *
+     * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * or if pageMap is not an instance of {Ext.data.PageMap}, or if the index in
+     * exceeds the pageSize - 1
+     */
+    positionToStoreIndex : function(position, pageMap) {
+
+        var me = this;
+
+        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+            Ext.raise({
+                msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                position : position
+            });
+        }
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        if (position.getIndex() >= pageMap.getPageSize()) {
+            Ext.raise({
+                msg      : '\'index\' of position exceeds the configured pageSize of the pageMap',
+                pageSize : pageMap.getPageSize(),
+                position : position
+            });
+        }
+
+        return ((position.getPage() - 1) * pageMap.getPageSize()) +
+                position.getIndex();
+    },
+
+
+    /**
      * Moves the record from the specified from-position to the specified to-
      * position. The positions must be within the same PageRange.
      * This method will maintain indexes so that indexOf-of the PageMap
