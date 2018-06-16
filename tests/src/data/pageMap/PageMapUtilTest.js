@@ -49,6 +49,32 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
     },
     getExpectedTestProp = function(pos, pageMap) {
         return ((pos.getPage() - 1) * pageMap.getPageSize()) + pos.getIndex();
+    },
+    checkMaintainedIndex = function(targetPosition, sourceRecord, pageMap, t) {
+        var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.expect(
+            pageMap.getStore().getAt(PageMapUtil.positionToStoreIndex(targetPosition, pageMap)).getId()
+        ).toBe(sourceRecord.getId())
+
+        t.expect(
+            pageMap.indexOf(sourceRecord)
+        ).toBe(PageMapUtil.positionToStoreIndex(targetPosition, pageMap));
+    },
+    checkRecords = function(pageMap, t) {
+        t.diag("checking record positions")
+        var ind = 0;
+        for (var i in pageMap.map) {
+            var page = pageMap.map[i], rec;
+            for (var a = 0, lena = page.value.length; a < lena; a++) {
+                rec = page.value[a];
+
+                t.expect(pageMap.indexOf(rec)).toBe(ind);
+
+                ind++;
+            }
+
+        }
     };
 
 
@@ -97,7 +123,6 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             t.expect(exc.msg.toLowerCase()).toContain('position');
 
             try {PageMapUtil.positionToStoreIndex(expected[0].pos, null);} catch (e) {exc = e;}
-            console.log(exc);
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
             t.expect(exc.msg.toLowerCase()).toContain('pagemap');
@@ -122,7 +147,6 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             try {
                 conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForRecord(null, new Ext.data.PageMap);
             } catch (e) {
-                console.log(e);
                 exc = e;
             }
 
@@ -207,7 +231,6 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             try {
                 PageMapUtil.getRecordAt(null, pageMap);
             } catch (e) {
-                console.log(e);
                 exc = e;
             }
             t.expect(exc).toBeDefined();
@@ -265,13 +288,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
                 t.expect(exc.msg.toLowerCase()).toContain('pagemap');
 
-                t.expect(PageMapUtil.moveRecord(sourcePosition, noPosition, pageMap)).toBe(false);
+                try {PageMapUtil.moveRecord(sourcePosition, noPosition, pageMap);} catch (e) {exc = e;}
+                t.expect(exc.msg.toLowerCase()).toContain('could not determine the ranges of the records being moved');
+
 
                 pageMap.removeAtKey(2);
 
                 t.expect(pageMap[2]).toBeUndefined();
 
-                t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(false);
+                try {PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap);} catch (e) {exc = e;}
+                t.expect(exc.msg.toLowerCase()).toContain('are not in the same page range');
 
 
             });
@@ -296,11 +322,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     page  : targetPage,
                     index : targetIndex
                 }),
-                sourceRecord;// = map[12].value[4];
+                sourceRecord, compareId;// = map[12].value[4];
 
             // wait for storeload
             t.waitForMs(250, function() {
                 sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
+                compareId    = sourceRecord.get('id');
 
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
 
@@ -308,6 +335,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
                 }
 
+                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+                checkRecords(pageMap, t);
             })
         });
 
@@ -387,8 +416,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     }
                 }
 
-                t.diag('next move')
+                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+                checkRecords(pageMap, t);
+
+
+                t.diag('1 15 -> 1 18')
+                sourceRecord = PageMapUtil.getRecordAt(sourcePosition2, pageMap);
                 t.expect(PageMapUtil.moveRecord(sourcePosition2, targetPosition2, pageMap)).toBe(true);
+                checkMaintainedIndex(targetPosition2, sourceRecord, pageMap, t);
+
+
 
                 // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
                 // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
@@ -407,14 +444,19 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     } else if (i <= 16) {
                         t.expect(pageMap.map[1].value[i].getId()).toBe((i + 2) + '');
                     } else if (i == 17) {
+                        t.expect(pageMap.map[1].value[i].getId()).toBe('19');
+                    } else if (i == 18) {
                         t.expect(pageMap.map[1].value[i].getId()).toBe('16');
                     } else {
                         t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
                     }
                 }
+                checkRecords(pageMap, t);
 
-                t.diag('next move')
+                t.diag('next move');
+                sourceRecord = PageMapUtil.getRecordAt(sourcePosition3, pageMap);
                 t.expect(PageMapUtil.moveRecord(sourcePosition3, targetPosition3, pageMap)).toBe(true);
+                checkMaintainedIndex(targetPosition3, sourceRecord, pageMap, t);
                 // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
                 // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 17 18 16 19 20 21 22 23 24 25
 
@@ -436,13 +478,15 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     } else if (i <= 17) {
                         t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
                     } else if (i == 18) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((16) + '');
-                    } else if (i == 19) {
                         t.expect(pageMap.map[1].value[i].getId()).toBe((19) + '');
+                    } else if (i == 19) {
+                        t.expect(pageMap.map[1].value[i].getId()).toBe((16) + '');
                     } else {
                         t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
                     }
                 }
+
+                checkRecords(pageMap, t);
             })
 
 
@@ -465,7 +509,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
-                });
+                }), sourceRecord;
 
             // wait for storeload
             t.waitForMs(250, function() {
@@ -479,6 +523,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 );
 
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
+                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+
 
                 var storeIndex = 0;
                 for (var a in map) {
@@ -501,6 +547,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                         storeIndex++;
                     }
                 }
+
+                checkRecords(pageMap, t);
             })
         });
 
@@ -521,7 +569,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
-                });
+                }),
+                sourceRecord;
 
             // wait for storeload
             t.waitForMs(250, function() {
@@ -534,9 +583,11 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     getExpectedTestProp(sourcePosition, pageMap)
                 );
 
+
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
+                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+
                 // 4 23 - 8 19
-                console.log(pageMap.map);
                 var storeIndex = 0;
                 for (var a in map) {
                     var page = map[a].value;
@@ -544,9 +595,9 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
                     for (var i = 0, len = page.length; i < len; i++) {
                         var rec = page[i];
-                        if (a == 8 && i != 18) {
+                        if (a == 8 && i != 19) {
                             t.expect(rec.getId()).toBe((storeIndex + 2) + '');
-                        } else if (a == 8 && i == 18) {
+                        } else if (a == 8 && i == 19) {
                             storeIndex--;
                             t.expect(rec.getId()).toBe(getExpectedId(sourcePosition, pageMap));
                         } else if (a == 4 && (i >= 23 && i < 25)) {
@@ -560,6 +611,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                         storeIndex++;
                     }
                 }
+                checkRecords(pageMap, t);
             })
         });
 

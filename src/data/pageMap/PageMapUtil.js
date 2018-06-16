@@ -107,7 +107,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @throws if from or to are no instance of {conjoon.cn_core.data.pageMap.RecordPosition},
      * if pageMap is not an instance of {Ext.data.PageMap} or if from and to
-     * are not within the same PageRange.
+     * are not within the same PageRange or any of the source or target records could not
+     * be found
      */
     moveRecord : function(from, to, pageMap) {
 
@@ -117,7 +118,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             fromRange,
             toRange,
             map,
-            toPage, fromPage;
+            toPage, fromPage, maintainIndex;
 
         if (!(from instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
@@ -151,49 +152,70 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         toRange    = toRecord   ? me.getPageRangeForRecord(toRecord, pageMap) : null;
 
         if (!fromRange || !toRange) {
-            return false;
+            Ext.raise({
+                msg       : 'could not determine the ranges of the records being moved',
+                fromRange : fromRange,
+                toRange   : toRange
+            });
         }
 
         if (!toRange.equalTo(fromRange)) {
-            return false;
+            Ext.raise({
+                msg       : 'source- and target-positions are not in the same page range',
+                fromRange : fromRange,
+                toRange   : toRange
+            });
         }
 
         map      = pageMap.map;
         toPage   = to.getPage();
         fromPage = from.getPage();
 
+        /**
+         * iterate through indexMap to make sure indexOf works properly after
+         * moving records.
+         */
+        maintainIndex = function() {
+
+            var pageSize   = pageMap.getPageSize(),
+                storeIndex = (Math.min(toPage, fromPage) - 1) * pageSize,
+                start      = Math.min(toPage, fromPage),
+                len        = Math.max(toPage, fromPage),
+                page;
+
+           for (var i = start; i <= len; i++) {
+                page = pageMap.map[i];
+                for (var a = 0, lena = pageSize; a < lena; a++) {
+                    pageMap.indexMap[page.value[a].internalId] = storeIndex++;
+                }
+            }
+        };
 
         map[fromPage].value.splice(from.getIndex(), 1);
-
-        if (toPage === fromPage) {
-            // same page
-            map[toPage].value.splice(
-                from.getIndex() > to.getIndex()
-                ? to.getIndex()
-                : to.getIndex() - 1,
-                0, fromRecord
-            );
-            return true;
+        if (toPage <= fromPage) {
+            // we are shifitng records later on when toPage is greater than
+            // frontPage
+            map[toPage].value.splice(to.getIndex(), 0, fromRecord);
         }
 
-        map[toPage].value.splice(to.getIndex(), 0, fromRecord);
-
+        // if toPage is less or greater than fromPage, we have to unsiht/push
+        // records to neighbour pages
         if (toPage < fromPage) {
             for (var i = toPage; i < fromPage; i++) {
                 map[i + 1].value.unshift(map[i].value.pop());
             }
-
-            return true;
-        } else { // toPage > fromPage
+        } else if (toPage > fromPage){ // toPage > fromPage
+            map[toPage].value.splice(to.getIndex() + 1, 0, fromRecord);
             for (var i = toPage; i > fromPage; i--) {
                 map[i - 1].value.push(map[i].value.shift());
             }
-            return true;
         }
 
-
+        maintainIndex();
+        return true;
     },
 
+    
     /**
      * Returns the record found at the specified position in the specified
      * pageMap. Returns null if not found.
@@ -285,50 +307,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
             pages : conjoon.cn_core.Util.listNeighbours(pages, page)
         })
-    },
-
-
-    findInsertIndexInPageRangeForRecord : function(record, pageRange) {
-        return this.getPageMapSorter().findInsertIndexInPageRangeForRecord(record, pageRange, me.getPageMap());
-    },
-
-
-    moveRecordInPageRange : function() {
-
-        var me         = this,
-            store      = me.grid.getStore(),
-            data       = me.getPageMap(),
-            orgIndex   = data.indexOf(record) % data.getPageSize(),
-            index      = me.findInsertIndexInPageRangeForRecord(record, startPage, endPage),
-            storeIndex = 0,
-            page, pos, values, tmp;
-
-
-        if (index === null) {
-            return null;
-        }
-
-        page   = index[0];
-        pos    = index[1];
-        values = data.map[page].value;
-
-        // swap
-        tmp = values.splice(orgIndex, 1);
-        values.splice(pos, 0, tmp[0]);
-
-
-        for (var startIdx in data.map) {
-            // Maintain the indexMap so that we can implement indexOf(record)
-            for (var i = 0, len = data.map[startIdx].value.length; i < len; i++) {
-                data.indexMap[data.map[startIdx].value[i].internalId] = storeIndex++;
-            }
-        }
-
-        console.log(data.map);
-        console.log(data.indexMap);
-
-        return record;
     }
-
 
 });
