@@ -23,7 +23,7 @@
 
 /**
  * This class provides various methods for convenient access to {Ext.data.PageMap}s
- * of {Ext.data.BufferedStore}s suche as moving records or determining the
+ * of {Ext.data.BufferedStore}s such as moving records or determining the
  * (buffered/available) page ranges a record sits in.
  * Note:
  * Implementations are not view related and do not trigger a re-rendering of any
