@@ -22,6 +22,12 @@
  */
 
 /**
+ * This class provides various methods for convenient access to {Ext.data.PageMap}s
+ * of {Ext.data.BufferedStore}s suche as moving records or determining the
+ * (buffered/available) page ranges a record sits in.
+ * Note:
+ * Implementations are not view related and do not trigger a re-rendering of any
+ * attached view.
  *
  */
 Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
@@ -84,7 +90,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * position. The positions must be within the same PageRange.
      * This method will maintain indexes so that indexOf-of the PageMap
      * continues to work.
-     * Data will be shifted down across the pages in the range.
      *
      *       @example
      *       // map:  1 : ['a', 'b' , 'c', 'd']
@@ -96,6 +101,29 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *       // map:  1 : ['K', 'a', 'b' , 'c']
      *       //       2 : ['d', 'e', 'f' , 'g']
      *       //       3 : [ 'h', 'i', 'j', 'l']
+     *
+     * Note:
+     * This implmentation will shift records across pages, so that the targetPsoition
+     * for the record being moved migth not represent the position of the record
+     * in the PageMap "after" the move operation finished!
+     *
+     * @example
+     *       // note how the record D is missing at its source position when being
+     *       // moved, thus following data is being shifted down. The resulting
+     *       // position of D is not [3, 1], but [3, 0]
+     *       // !However, THE INDEX IS NOT IMPORTANT, neighbour-data is important
+     *       // since this implementation is a utility function for re-ordering!
+     *       data.
+     *       // map:  1 : ['a', 'b' , 'c', 'D']
+     *       //       2 : ['e', 'f' , 'g', 'h']
+     *       //       3 : ['i', 'j' , 'k', 'l']
+     *
+     *       // move([1, 3], [3, 1], map);
+     *
+     *       // map:  1 : ['a', 'b', 'c' , 'e']
+     *       //       2 : ['f', 'g', 'h' , 'i']
+     *       //       3 : [ 'D', 'j', 'k', 'l']
+     *
      *
      *
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
@@ -191,21 +219,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             }
         };
 
-        map[fromPage].value.splice(from.getIndex(), 1);
-        if (toPage <= fromPage) {
-            // we are shifitng records later on when toPage is greater than
-            // frontPage
-            map[toPage].value.splice(to.getIndex(), 0, fromRecord);
+        map[toPage].value.splice(to.getIndex(), 0, fromRecord);
+
+        if (toPage === fromPage && from.getIndex() > to.getIndex()) {
+            map[fromPage].value.splice(from.getIndex() + 1, 1);
+        } else {
+            map[fromPage].value.splice(from.getIndex(), 1);
         }
 
-        // if toPage is less or greater than fromPage, we have to unsiht/push
+        // if toPage is less or greater than fromPage, we have to unshift/push
         // records to neighbour pages
         if (toPage < fromPage) {
             for (var i = toPage; i < fromPage; i++) {
                 map[i + 1].value.unshift(map[i].value.pop());
             }
         } else if (toPage > fromPage){ // toPage > fromPage
-            map[toPage].value.splice(to.getIndex() + 1, 0, fromRecord);
             for (var i = toPage; i > fromPage; i--) {
                 map[i - 1].value.push(map[i].value.shift());
             }
@@ -215,7 +243,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         return true;
     },
 
-    
+
     /**
      * Returns the record found at the specified position in the specified
      * pageMap. Returns null if not found.

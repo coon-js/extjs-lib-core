@@ -50,16 +50,32 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
     getExpectedTestProp = function(pos, pageMap) {
         return ((pos.getPage() - 1) * pageMap.getPageSize()) + pos.getIndex();
     },
-    checkMaintainedIndex = function(targetPosition, sourceRecord, pageMap, t) {
-        var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+    checkMaintainedIndex = function(sourcePosition, targetPosition, sourceRecord, pageMap, t) {
+
+        var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            tp = targetPosition;
+
+        if (sourcePosition.getPage() < targetPosition.getPage()) {
+            // records being shifted down
+            tp = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                page  : targetPosition.getPage(),
+                index : targetPosition.getIndex() - 1
+            })
+        } else if (sourcePosition.getPage() === targetPosition.getPage() &&
+            sourcePosition.getIndex() < targetPosition.getIndex()) {
+            tp = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                page  : targetPosition.getPage(),
+                index : targetPosition.getIndex() - 1
+            })
+        }
 
         t.expect(
-            pageMap.getStore().getAt(PageMapUtil.positionToStoreIndex(targetPosition, pageMap)).getId()
+            pageMap.getStore().getAt(PageMapUtil.positionToStoreIndex(tp, pageMap)).getId()
         ).toBe(sourceRecord.getId())
 
         t.expect(
             pageMap.indexOf(sourceRecord)
-        ).toBe(PageMapUtil.positionToStoreIndex(targetPosition, pageMap));
+        ).toBe(PageMapUtil.positionToStoreIndex(tp, pageMap));
     },
     checkRecords = function(pageMap, t) {
         t.diag("checking record positions")
@@ -75,6 +91,21 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             }
 
         }
+    },
+    checkOrder = function(left, center, right, pageMap, t) {
+        t.expect(pageMap.indexOf(left)).toBe(
+            pageMap.indexOf(center) -1
+        );
+        t.expect(pageMap.indexOf(right)).toBe(
+            pageMap.indexOf(center) + 1
+        );
+
+    },
+    createPos = function(page, index) {
+        return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            page  : page,
+            index : index
+        })
     };
 
 
@@ -335,45 +366,22 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
                 }
 
-                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
                 checkRecords(pageMap, t);
             })
         });
 
 
-        t.it('moveRecord() - same page', function(t) {
+        t.it('moveRecord() - same page t < s', function(t) {
 
-            var pageMap        = createPageMap(),
-                map            = pageMap.map,
-                sourcePage     = 1,
-                sourceIndex    = 4,
-                targetPage     = 1,
-                targetIndex    = 0,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : sourcePage,
-                    index : sourceIndex
-                }),
-                targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : targetPage,
-                    index : targetIndex
-                }),
-                sourcePosition2 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : 1,
-                    index : 15
-                }),
-                targetPosition2 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : 1,
-                    index : 18
-                }),
-                sourcePosition3 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : 1,
-                    index : 19
-                }),
-                targetPosition3 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : 1,
-                    index : 12
-                }),
+            var pageMap         = createPageMap(),
+                sourcePage      = 1,
+                sourceIndex     = 4,
+                targetPage      = 1,
+                targetIndex     = 0,
+                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                sourcePosition  = createPos(sourcePage, sourceIndex),
+                targetPosition  = createPos(targetPage, targetIndex),
                 sourceRecord;// = map[12].value[4];
 
             // wait for storeload
@@ -387,107 +395,140 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     getExpectedTestProp(sourcePosition, pageMap)
                 );
 
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-
-                // 0 1 2 3 [4] 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 1 2 3 4 [5] 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-
-                // 4 0 1 2 3 4 5 6 7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
 
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+                var values = pageMap.map[1].value;
 
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-                for (var i = 0; i < 25; i++) {
-                    if (i == 0) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('5')
-                    } else if (i <= 4) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i) + '')
-                    } else {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    }
-                }
+                t.expect(values[0].getId()).toBe('5'); // 0
+                t.expect(values[1].getId()).toBe('1'); // 1
+                t.expect(values[2].getId()).toBe('2'); // 2
+                t.expect(values[3].getId()).toBe('3'); // 3
+                t.expect(values[4].getId()).toBe('4'); // 4
+                t.expect(values[5].getId()).toBe('6'); // 5
+                t.expect(values[6].getId()).toBe('7'); // 6
+                t.expect(values[7].getId()).toBe('8'); // 7
+                t.expect(values[8].getId()).toBe('9'); // 8
+                t.expect(values[9].getId()).toBe('10'); // 9
+                t.expect(values[10].getId()).toBe('11'); // 10
+                t.expect(values[11].getId()).toBe('12'); // 11
+                t.expect(values[12].getId()).toBe('13'); // 12
+                t.expect(values[13].getId()).toBe('14'); // 13
+                t.expect(values[14].getId()).toBe('15'); // 14
+                t.expect(values[15].getId()).toBe('16'); // 15
+                t.expect(values[16].getId()).toBe('17'); // 16
+                t.expect(values[17].getId()).toBe('18'); // 17
+                t.expect(values[18].getId()).toBe('19'); // 18
+                t.expect(values[19].getId()).toBe('20'); // 19
+                t.expect(values[20].getId()).toBe('21'); // 20
+                t.expect(values[21].getId()).toBe('22'); // 21
+                t.expect(values[22].getId()).toBe('23'); // 22
+                t.expect(values[23].getId()).toBe('24'); // 23
+                t.expect(values[24].getId()).toBe('25'); // 24
 
-                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
+                checkRecords(pageMap, t);
+            });
+        });
+
+        t.it('moveRecord() - same page, t > s', function(t) {
+
+            var pageMap         = createPageMap(),
+                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                sourcePosition  = createPos(1, 15),
+                targetPosition  = createPos(1, 18),
+                sourceRecord, left, right;
+
+            t.waitForMs(250, function() {
+                sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
+                left  = PageMapUtil.getRecordAt(createPos(targetPosition.getPage(), targetPosition.getIndex() - 1), pageMap);
+                right = PageMapUtil.getRecordAt(targetPosition, pageMap);
+
+                t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
+                checkOrder(left, sourceRecord, right, pageMap, t);
+
+                var values = pageMap.map[1].value;
+
+                t.expect(values[0].getId()).toBe('1'); // 0
+                t.expect(values[1].getId()).toBe('2'); // 1
+                t.expect(values[2].getId()).toBe('3'); // 2
+                t.expect(values[3].getId()).toBe('4'); // 3
+                t.expect(values[4].getId()).toBe('5'); // 4
+                t.expect(values[5].getId()).toBe('6'); // 5
+                t.expect(values[6].getId()).toBe('7'); // 6
+                t.expect(values[7].getId()).toBe('8'); // 7
+                t.expect(values[8].getId()).toBe('9'); // 8
+                t.expect(values[9].getId()).toBe('10'); // 9
+                t.expect(values[10].getId()).toBe('11'); // 10
+                t.expect(values[11].getId()).toBe('12'); // 11
+                t.expect(values[12].getId()).toBe('13'); // 12
+                t.expect(values[13].getId()).toBe('14'); // 13
+                t.expect(values[14].getId()).toBe('15'); // 14
+                t.expect(values[15].getId()).toBe('17'); // 15 -- *
+                t.expect(values[16].getId()).toBe('18'); // 16
+                t.expect(values[17].getId()).toBe('16'); // 17
+                t.expect(values[18].getId()).toBe('19'); // 18  -- 16
+                t.expect(values[19].getId()).toBe('20'); // 19  -- 19
+                t.expect(values[20].getId()).toBe('21'); // 20  -- 20
+                t.expect(values[21].getId()).toBe('22'); // 21  -- 21
+                t.expect(values[22].getId()).toBe('23'); // 22  -- 22
+                t.expect(values[23].getId()).toBe('24'); // 23  -- 23
+                t.expect(values[24].getId()).toBe('25'); // 24  -- 24
+                //     -- 25
+
                 checkRecords(pageMap, t);
 
-
-                t.diag('1 15 -> 1 18')
-                sourceRecord = PageMapUtil.getRecordAt(sourcePosition2, pageMap);
-                t.expect(PageMapUtil.moveRecord(sourcePosition2, targetPosition2, pageMap)).toBe(true);
-                checkMaintainedIndex(targetPosition2, sourceRecord, pageMap, t);
+            });
+        });
 
 
+        t.it('moveRecord() - same page, t < s ', function(t) {
+            var pageMap         = createPageMap(),
+                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                sourcePosition  = createPos(1, 19),
+                targetPosition  = createPos(1, 12),
+                sourceRecord, left, right;
 
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+            t.waitForMs(250, function() {
+                left  = PageMapUtil.getRecordAt(createPos(targetPosition.getPage(), targetPosition.getIndex() - 1), pageMap);
+                right = PageMapUtil.getRecordAt(targetPosition, pageMap);
 
-                //                                           15
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 17 18 16 19 20 21 22 23 24 25
+                sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
+                t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
 
-                for (var i = 0; i < 25; i++) {
-                    if (i == 0) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('5')
-                    } else if (i <= 4) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i) + '')
-                    } else if (i <= 14) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    } else if (i <= 16) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 2) + '');
-                    } else if (i == 17) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('19');
-                    } else if (i == 18) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('16');
-                    } else {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    }
-                }
+                var values = pageMap.map[1].value;
+
+                t.expect(values[0].getId()).toBe('1'); // 0
+                t.expect(values[1].getId()).toBe('2'); // 1
+                t.expect(values[2].getId()).toBe('3'); // 2
+                t.expect(values[3].getId()).toBe('4'); // 3
+                t.expect(values[4].getId()).toBe('5'); // 4
+                t.expect(values[5].getId()).toBe('6'); // 5
+                t.expect(values[6].getId()).toBe('7'); // 6
+                t.expect(values[7].getId()).toBe('8'); // 7
+                t.expect(values[8].getId()).toBe('9'); // 8
+                t.expect(values[9].getId()).toBe('10'); // 9
+                t.expect(values[10].getId()).toBe('11'); // 10
+                t.expect(values[11].getId()).toBe('12'); // 11
+                t.expect(values[12].getId()).toBe('20'); // 12 13 20
+                t.expect(values[13].getId()).toBe('13'); // 13 14 13
+                t.expect(values[14].getId()).toBe('14'); // 14 15 14
+                t.expect(values[15].getId()).toBe('15'); // 15 16 15
+                t.expect(values[16].getId()).toBe('16'); // 16 17 16
+                t.expect(values[17].getId()).toBe('17'); // 17 18 17
+                t.expect(values[18].getId()).toBe('18'); // 18 19 18
+                t.expect(values[19].getId()).toBe('19'); // 19 20 19
+                t.expect(values[20].getId()).toBe('21'); // 20 21 20
+                t.expect(values[21].getId()).toBe('22'); // 21 22 21
+                t.expect(values[22].getId()).toBe('23'); // 22 23 22
+                t.expect(values[23].getId()).toBe('24'); // 23 24 23
+                t.expect(values[24].getId()).toBe('25'); // 24 25 24
+                //       25
                 checkRecords(pageMap, t);
-
-                t.diag('next move');
-                sourceRecord = PageMapUtil.getRecordAt(sourcePosition3, pageMap);
-                t.expect(PageMapUtil.moveRecord(sourcePosition3, targetPosition3, pageMap)).toBe(true);
-                checkMaintainedIndex(targetPosition3, sourceRecord, pageMap, t);
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 13 14 15 17 18 16 19 20 21 22 23 24 25
-
-                // 0 1 2 3 4 5 6 7 8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-                // 5 1 2 3 4 6 7 8 9 10 11 12 20 13 14 15 17 18 16 19 21 22 23 24 25
-
-
-                for (var i = 0; i < 25; i++) {
-                    if (i == 0) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('5')
-                    } else if (i <= 4) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i) + '')
-                    } else if (i <= 11) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    } else if (i == 12) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe('20');
-                    }else if (i <= 15) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i) + '');
-                    } else if (i <= 17) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    } else if (i == 18) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((19) + '');
-                    } else if (i == 19) {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((16) + '');
-                    } else {
-                        t.expect(pageMap.map[1].value[i].getId()).toBe((i + 1) + '');
-                    }
-                }
-
-                checkRecords(pageMap, t);
-            })
+                checkOrder(left, sourceRecord, right, pageMap, t);
+            });
 
 
         });
@@ -509,11 +550,18 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
-                }), sourceRecord;
+                }),
+                targetPositionLeft = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : targetPage,
+                    index : targetIndex - 1
+                }), sourceRecord, leftRecord, rightRecord;
 
             // wait for storeload
             t.waitForMs(250, function() {
+                leftRecord   = PageMapUtil.getRecordAt(targetPositionLeft, pageMap);
+                rightRecord   = PageMapUtil.getRecordAt(targetPosition, pageMap);
                 sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
+
 
                 t.expect(sourceRecord.get('id')).toBe(
                     getExpectedId(sourcePosition, pageMap)
@@ -523,8 +571,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 );
 
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
-                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
-
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
+                checkOrder(leftRecord, sourceRecord, rightRecord, pageMap, t);
 
                 var storeIndex = 0;
                 for (var a in map) {
@@ -570,11 +618,18 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     page  : targetPage,
                     index : targetIndex
                 }),
-                sourceRecord;
+                targetPositionLeft = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : targetPage,
+                    index : targetIndex - 1
+                }),
+                sourceRecord, targetRecordLeft, targetRecordRight, targetIdL, targetIdR;
 
             // wait for storeload
             t.waitForMs(250, function() {
                 sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
+
+                targetRecordLeft  = PageMapUtil.getRecordAt(targetPositionLeft, pageMap);
+                targetRecordRight = PageMapUtil.getRecordAt(targetPosition, pageMap);
 
                 t.expect(sourceRecord.get('id')).toBe(
                     getExpectedId(sourcePosition, pageMap)
@@ -583,11 +638,10 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     getExpectedTestProp(sourcePosition, pageMap)
                 );
 
-
                 t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
-                checkMaintainedIndex(targetPosition, sourceRecord, pageMap, t);
+                checkMaintainedIndex(sourcePosition, targetPosition, sourceRecord, pageMap, t);
+                checkOrder(targetRecordLeft, sourceRecord, targetRecordRight, pageMap, t);
 
-                // 4 23 - 8 19
                 var storeIndex = 0;
                 for (var a in map) {
                     var page = map[a].value;
@@ -595,9 +649,9 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
                     for (var i = 0, len = page.length; i < len; i++) {
                         var rec = page[i];
-                        if (a == 8 && i != 19) {
+                        if (a == 8 && i != 18) {
                             t.expect(rec.getId()).toBe((storeIndex + 2) + '');
-                        } else if (a == 8 && i == 19) {
+                        } else if (a == 8 && i == 18) {
                             storeIndex--;
                             t.expect(rec.getId()).toBe(getExpectedId(sourcePosition, pageMap));
                         } else if (a == 4 && (i >= 23 && i < 25)) {
@@ -611,7 +665,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                         storeIndex++;
                     }
                 }
-                checkRecords(pageMap, t);
+
             })
         });
 
@@ -621,4 +675,5 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
 
 
-})})});
+
+    })})});
