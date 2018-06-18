@@ -264,14 +264,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             Ext.raise({
                 msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
                 position : position
-            })
+            });
         }
 
         if (!(pageMap instanceof Ext.data.PageMap)) {
             Ext.raise({
                 msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
                 pageMap : pageMap
-            })
+            });
         }
 
         map   = pageMap.map;
@@ -307,14 +307,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             Ext.raise({
                 msg    : '\'record\' must be an instance of Ext.data.Model',
                 record : record
-            })
+            });
         }
 
         if (!(pageMap instanceof Ext.data.PageMap)) {
             Ext.raise({
-                msg    : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                record : record
-            })
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
         }
 
         if (pageMap.indexOf(record) == -1) {
@@ -322,7 +322,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
                 msg     : '\'record\' seems not to be a member of \'pageMap\'',
                 record  : record,
                 pageMap : pageMap
-            })
+            });
         }
 
         page  = pageMap.getPageFromRecordIndex(pageMap.indexOf(record));
@@ -334,7 +334,46 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
             pages : conjoon.cn_core.Util.listNeighbours(pages, page)
-        })
+        });
+    },
+
+
+    /**
+     * Returns an array of {conjoon.cn_core.data.pageMap.PageRange}s currently
+     * loaded in the pageMap.
+     *
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return {Array} An array which entries consists of {conjoon.cn_core.data.pageMap.PageRange}
+     * entries, ordered from lowest to highest pageRange.
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}
+     */
+    getAvailablePageRanges : function(pageMap) {
+
+        var me         = this,
+            ranges     = [],
+            pageRanges = [];
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        for (var i in pageMap.map) {
+            ranges.push(i);
+        }
+
+        ranges = conjoon.cn_core.Util.groupIndices(ranges);
+        for (var i = 0, len = ranges.length; i < len; i++) {
+            pageRanges.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : ranges[i]
+            }))
+        };
+
+        return pageRanges;
     }
 
 });

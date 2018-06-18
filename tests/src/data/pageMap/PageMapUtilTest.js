@@ -106,6 +106,15 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             page  : page,
             index : index
         })
+    },
+    createTmpMap = function() {
+
+        var pm = Ext.create('Ext.data.PageMap');
+        for (var i = 0, len = arguments.length; i < len; i++) {
+            pm.map[arguments[i]] = {};
+        }
+
+        return pm;
     };
 
 
@@ -670,7 +679,37 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it('getAvailablePageRanges()', function(t) {
 
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                tests = [{
+                    map      : createTmpMap(1, 5, 2, 3, 7, 8, 9, 11, 12),
+                    expected : [[1, 2, 3], [5], [7, 8, 9], [11, 12]]
+                }],
+                test, rangeCollection, field;
+
+            try{PageMapUtil.getAvailablePageRanges();}catch(e){exc = e;};
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+
+
+            for (var i = 0, len = tests.length; i < len; i++) {
+                test = tests[i];
+
+                rangeCollection = PageMapUtil.getAvailablePageRanges(test.map);
+
+                t.expect(rangeCollection.length).toBe(test.expected.length);
+
+                for (var a = 0, lena = rangeCollection.length; a < lena; a++) {
+                    t.expect(rangeCollection[a].toArray()).toEqual(test.expected[a]);
+                }
+
+
+            }
+
+
+        });
 
 
 
