@@ -374,6 +374,88 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         };
 
         return pageRanges;
+    },
+
+
+    /**
+     * Returns true if the first page is available in the PageMap,
+     * otherwise false
+     *
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @returns {boolean}
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}
+     */
+    isFirstPageLoaded : function(pageMap) {
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        return !!pageMap.map[1]
+    },
+
+
+    /**
+     * Returns true if the last page is available in the PageMap,
+     * otherwise false
+     *
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @returns {boolean}
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}
+     */
+    isLastPageLoaded : function(pageMap) {
+
+        var me, pageRanges, store, pageSize, lastPage;
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        me         = this;
+        pageRanges = me.getAvailablePageRanges(pageMap);
+        store      = pageMap.getStore();
+        pageSize   = pageMap.getPageSize();
+        lastPage   = pageRanges[pageRanges.length - 1].getLast();
+
+        return (pageSize * lastPage) === store.getTotalCount();
+    },
+
+
+    /**
+     * Returns the assumed number of the last page that could possibly be
+     * loaded into the PageMap.
+     *
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @returns {Number}
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}
+     */
+    getLastPossiblePageNumber : function(pageMap) {
+
+        var store, pageSize;
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        store    = pageMap.getStore();
+        pageSize = pageMap.getPageSize();
+
+        return Math.floor(store.getTotalCount() / pageSize);
     }
 
 });

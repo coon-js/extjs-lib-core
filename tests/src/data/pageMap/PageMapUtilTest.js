@@ -712,7 +712,66 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it("isFirstPageLoaded()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+            try{PageMapUtil.isFirstPageLoaded()}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+
+
+            t.expect(PageMapUtil.isFirstPageLoaded(createTmpMap(1, 5, 2))).toBe(true);
+            t.expect(PageMapUtil.isFirstPageLoaded(createTmpMap(3, 11, 12))).toBe(false);
+        });
+
+
+        t.it("isLastPageLoaded()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap();
+
+            try{PageMapUtil.isLastPageLoaded()}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+
+
+            t.waitForMs(250, function() {
+
+                t.expect(pageMap.getStore().getTotalCount()).toBe(500);
+                t.expect(pageMap.map[1]).toBeDefined();
+                t.expect(PageMapUtil.isLastPageLoaded(pageMap)).toBe(false);
+
+                pageMap.getStore().loadPage(20);
+
+                t.waitForMs(250, function() {
+                    t.expect(PageMapUtil.isLastPageLoaded(pageMap)).toBe(true);
+                });
+            });
+        });
+
+
+        t.it("getLastPossiblePageNumber()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap();
+
+            try{PageMapUtil.getLastPossiblePageNumber()}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
 
 
 
-    })})});
+            t.waitForMs(250, function() {
+                t.expect(pageMap.getStore().getTotalCount()).toBe(500);
+                t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(20);
+            });
+
+        });
+
+
+
+})})});
