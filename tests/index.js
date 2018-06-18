@@ -70,6 +70,7 @@ harness.start({
         {
             group : 'pageMap',
             items : [
+                'src/data/pageMap/IndexLookupTest.js',
                 'src/data/pageMap/PageMapUtilTest.js',
                 'src/data/pageMap/PageRangeTest.js',
                 'src/data/pageMap/RecordPositionTest.js'

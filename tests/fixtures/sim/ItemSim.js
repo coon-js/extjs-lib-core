@@ -36,7 +36,8 @@ Ext.define('conjoon.cn_core.fixtures.sim.ItemSim', {
     for (var i = 0, len = 500; i < len; i++) {
         items.push({
             id       : (i + 1) + '',
-            testProp : i
+            testProp : i,
+            testPropForIndexLookup : (i + 1)
         });
     }
 
