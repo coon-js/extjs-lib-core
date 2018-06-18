@@ -191,6 +191,19 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
                     return tF[index] && tF[index] === v;
                }).length === tL;
 
+    },
+
+
+    /**
+     * Returns an array representation of this PageRange.
+     *
+     * @return {Array}
+     */
+    toArray : function() {
+
+        // 0? see https://jsperf.com/cloning-arrays/3
+        return this.getPages().slice(0);
+
     }
 
 

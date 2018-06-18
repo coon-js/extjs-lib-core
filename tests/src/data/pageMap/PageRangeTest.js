@@ -144,4 +144,25 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
     });
 
 
+    t.it('toArray()', function(t) {
+
+        var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : [3, 4, 5]
+            }),
+            arr;
+
+        arr = range.toArray();
+
+        t.expect(arr).toEqual([3, 4, 5]);
+
+        // mae sure no reference to the original page array is returned
+        arr[0] = 8;
+
+        t.expect(range.getFirst()).toBe(3);
+
+
+
+    });
+
+
 });
