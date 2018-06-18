@@ -27,6 +27,22 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
+    t.it('constructor()', function(t) {
+
+        var exc, e;
+
+        try {Ext.create('conjoon.cn_core.data.pageMap.PageRange');} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be specified');
+
+        t.expect(
+            Ext.create('conjoon.cn_core.data.pageMap.PageRange', {pages:[1]})
+            instanceof conjoon.cn_core.data.pageMap.PageRange
+        ).toBe(true);
+
+
+    });
+
     t.it('applyPages()', function(t) {
 
         var exc, e;

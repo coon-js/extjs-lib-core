@@ -55,10 +55,27 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
         pages : undefined
     },
 
+
+    /**
+     * Creates a new instance of conjoon.cn_core.data.pageMap.PageRange.
+     *
+     * @param {Object} cfg
+     * @param [Array} cfg.pages An array of pages to be represented by this instance
+     *
+     * @throws if pages is not specified
+     */
     constructor : function(cfg) {
 
-        this.initConfig(cfg);
+        cfg = cfg || {};
 
+        if (!cfg.hasOwnProperty('pages')) {
+            Ext.raise({
+                msg : '\'pages\' must be specified',
+                cfg : cfg
+            });
+        }
+
+        this.initConfig(cfg);
     },
 
 
