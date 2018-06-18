@@ -152,7 +152,6 @@ Ext.define('conjoon.cn_core.Util', {
         pages.sort(function(a, b){return a-b});
 
         pages.reduce(function(previousValue, currentValue, index, array){
-            console.log(currentValue, ' - ', previousValue);
             if (currentValue > previousValue + 1) {
                 groups.push([]);
             }
