@@ -90,8 +90,8 @@ Ext.define('conjoon.cn_core.Util', {
 
         // parse, filter, sort
         pages = list.map(function(v){return parseInt(v, 10)});
-        pages.filter(function (value, index, self) {
-            return self.indexOf(value) === index;
+        pages = pages.filter(function (value, index, self) {
+            return self.indexOf(value, 0) === index;
         });
         pages.sort(function(a, b){return a-b});
 
@@ -121,6 +121,47 @@ Ext.define('conjoon.cn_core.Util', {
         }
         return range;
 
+    },
+
+
+    /**
+     * Expects a numeric array and returns an array where the entries are itself
+     * arrays representing possible groups of subsequent indices, ordered from
+     * lowest to highest. Dublicate items will be removed.
+     *
+     *      var list   = ['4', 5, '1', '3', 6, '8'];
+     *      conjoon.cn_core.Util.listNeighbours(list); // [[1], [3, 4, 5], [6]]
+     *
+     *      var list   = ['1', 2, '3'];
+     *      conjoon.cn_core.Util.listNeighbours(list); // [[1, 2, 3]]
+     *
+     * @param {Array} list The list of values to return the grouped indices from
+     *
+     * @return {Array} The ordered, grouped list of indices
+     */
+    groupIndices : function(list) {
+
+        var groups = [],
+            pages;
+
+        // parse, filter, sort
+        pages = list.map(function(v){return parseInt(v, 10)});
+        pages = pages.filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        });
+        pages.sort(function(a, b){return a-b});
+
+        pages.reduce(function(previousValue, currentValue, index, array){
+            console.log(currentValue, ' - ', previousValue);
+            if (currentValue > previousValue + 1) {
+                groups.push([]);
+            }
+            groups[groups.length - 1].push(currentValue);
+            return currentValue;
+        }, -1);
+
+        return groups;
     }
+
 
 });
