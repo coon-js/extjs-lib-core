@@ -180,6 +180,50 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it('storeIndexToPosition()', function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap = createPageMap(),
+                invalid  = 1000000000,
+                expected = [{
+                    result : createPos(4, 5),
+                    pos    : 105
+                }, {
+                    result : createPos(1, 0),
+                    pos    : 0
+                }, {
+                    result : createPos(1, 24),
+                    pos    : 24
+                }];
+
+
+            t.waitForMs(250, function() {
+
+                try {PageMapUtil.storeIndexToPosition(null, pageMap);} catch (e) {exc = e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+                t.expect(exc.msg.toLowerCase()).toContain('index');
+
+                try {PageMapUtil.storeIndexToPosition(expected[0].pos, null);} catch (e) {exc = e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+                t.expect(exc.msg.toLowerCase()).toContain('pagemap');
+
+                try {PageMapUtil.storeIndexToPosition(invalid, pageMap);} catch (e) {exc = e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('exceeds');
+                t.expect(exc.msg.toLowerCase()).toContain('total count');
+
+                for (var i = 0, len = expected.length; i < len; i++) {
+                    t.expect(PageMapUtil.storeIndexToPosition(expected[i].pos, pageMap).equalTo(expected[i].result)).toBe(true);
+                }
+
+            });
+
+        });
+
+
         t.it('getPageRangeForRecord() - exception Record', function(t) {
 
             var exc, e;

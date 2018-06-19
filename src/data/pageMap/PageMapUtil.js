@@ -42,6 +42,54 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
 
     /**
+     * Computes the expected RecordPosition representing the given store index.
+     * The index is not guaranteed to hold a record.
+     *
+     * @param {Number} position
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return {conjoon.cn_core.data.pageMap.RecordPosition}
+     *
+     * @throws if position less than 0, or if pageMap is not an instance of
+     * {Ext.data.PageMap} or if index is greater than the total count of the
+     * PageMap's store
+     */
+    storeIndexToPosition : function(index, pageMap) {
+
+        var me    = this,
+            index = !Ext.isNumber(index) ? -1 : parseInt(index, 10);
+
+        if (index < 0 ) {
+            Ext.raise({
+                msg   : '\'index\' must be a number greater than -1',
+                index : index
+            });
+        }
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        if (index >= pageMap.getStore().getTotalCount()) {
+            Ext.raise({
+                msg        : '\'index\' of position exceeds the total count of the PageMap\'s store',
+                totalCount : pageMap.getStore().getTotalCount(),
+                index      : index
+            });
+        }
+
+        return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            page  : Math.max(1, Math.floor(index /  pageMap.getPageSize())),
+            index : index % pageMap.getPageSize()
+        });
+    },
+
+
+
+    /**
      * Computes the expected store index of the record represented by position.
      * The index is not guaranteed to hold a record.
      *
