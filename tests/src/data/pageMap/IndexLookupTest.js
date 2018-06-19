@@ -56,7 +56,8 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
         return pm;
     },
     createSorter = function(cfg) {
-        var store;
+
+        var store, conf = {};
 
         store = Ext.create('Ext.data.BufferedStore', {
             autoLoad : true,
@@ -73,13 +74,20 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
             }
         });
 
-        return Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', {
+        conf = {
             pageMap : store.getData()
-        });
+        };
+
+        if (cfg.compareFunction) {
+            conf.compareFunction = cfg.compareFunction;
+        }
+
+        return Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', conf);
 
     };
 
 t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
+
 
     t.it("prerequisites", function(t) {
 
@@ -105,6 +113,283 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
+    t.it("getCompareFunction()", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmpFunc = sorter.getCompareFunction();
+
+        t.expect(Ext.isFunction(cmpFunc)).toBe(true);
+
+        t.expect(cmpFunc(0, 0)).toBe(0);
+        t.expect(cmpFunc('0', 0)).toBe(1);
+        t.expect(cmpFunc(-1, 0)).toBe(-1);
+
+
+    });
+
+
+    t.it("applyCompareFunction()", function(t) {
+
+        var exc, e,
+            sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp = function(val1, val2, field){};
+
+        try{sorter.applyCompareFunction(null)}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('is not a');
+
+        try{sorter.applyCompareFunction(Ext.emptyFn)}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('already set');
+
+        sorter = createSorter({
+            sorters         : [{property : 'testPropForIndexLookup', direction : 'DESC'}],
+            compareFunction : cmp
+        });
+
+        t.expect(sorter.getCompareFunction()).toBe(cmp)
+
+    });
+
+
+    t.it("scanRangeForIndex() - exceptions", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup',
+            exc, e;
+
+        t.waitForMs(550, function() {
+            sorter.getPageMap().removeAtKey(1)
+            t.expect(sorter.getPageMap().map[1]).not.toBeDefined();
+
+            try{sorter.scanRangeForIndex(1, 1, 8000, property, 'DESC', cmp);} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('page not available');
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort DESC - page 1 (1)", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(1, 1, 8000, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(1, 1, 500.5, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(1, 1, 499.5, property, 'DESC', cmp)).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 499, property, 'DESC', cmp)).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'DESC', cmp)).toEqual([1, 0]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 498, property, 'DESC', cmp)).toEqual([1, 2]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 497, property, 'DESC', cmp)).toEqual([1, 3]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 476, property, 'DESC', cmp)).toEqual([1, 24]);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort DESC - page 1 (2)", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.scanRangeForIndex(1, 1, 476, property, 'DESC', cmp)).toEqual([1, 24]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 475, property, 'DESC', cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(1, 1, 501, property, 'DESC', cmp)).toBe(-1)
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort DESC - page 2 - 4", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.getPageMap().map[2]).toBeDefined();
+            t.expect(sorter.getPageMap().map[3]).toBeDefined();
+            t.expect(sorter.getPageMap().map[4]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(2, 4, 476, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 475, property, 'DESC', cmp)).toEqual([2, 0]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 426, property, 'DESC', cmp)).toEqual([3, 24]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 1, property, 'DESC', cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 453, property, 'DESC', cmp)).toEqual([2, 22]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 402, property, 'DESC', cmp)).toEqual([4, 23]);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort ASC - page 1", function(t) {
+
+        var dir    = 'ASC',
+            sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : dir}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(1, 1, -1, property, dir, cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(1, 1, -1.5, property, dir, cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(1, 1, 1.5, property, dir, cmp)).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 2, property, dir, cmp)).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 1, property, dir, cmp)).toEqual([1, 0]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 3, property, dir, cmp)).toEqual([1, 2]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 4, property, dir, cmp)).toEqual([1, 3]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 25, property, dir, cmp)).toEqual([1, 24]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 26, property, dir, cmp)).toBe(1);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort ASC - page 2 - 4", function(t) {
+
+        var dir    = 'ASC',
+            sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : dir}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.getPageMap().map[2]).toBeDefined();
+            t.expect(sorter.getPageMap().map[3]).toBeDefined();
+            t.expect(sorter.getPageMap().map[4]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(2, 4, 22, property, dir, cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 26, property, dir, cmp)).toEqual([2, 0]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 50, property, dir, cmp)).toEqual([2, 24]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 180, property, dir, cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 48, property, dir, cmp)).toEqual([2, 22]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 99, property, dir, cmp)).toEqual([4, 23]);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort DESC - page 1 (2)", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.scanRangeForIndex(1, 1, 476, property, 'DESC', cmp)).toEqual([1, 24]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 475, property, 'DESC', cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(1, 1, 501, property, 'DESC', cmp)).toBe(-1)
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - sort DESC - page 2 - 4", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.getPageMap().map[2]).toBeDefined();
+            t.expect(sorter.getPageMap().map[3]).toBeDefined();
+            t.expect(sorter.getPageMap().map[4]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(2, 4, 476, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 475, property, 'DESC', cmp)).toEqual([2, 0]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 426, property, 'DESC', cmp)).toEqual([3, 24]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 1, property, 'DESC', cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(2, 4, 453, property, 'DESC', cmp)).toEqual([2, 22]);
+            t.expect(sorter.scanRangeForIndex(2, 4, 402, property, 'DESC', cmp)).toEqual([4, 23]);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - ignoreId ASC", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(1, 1, 1, property, 'ASC', cmp, '1')).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 1, property, 'ASC', cmp)).toEqual([1, 0]);
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - ignoreId DESC", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'DESC', cmp, '500')).toEqual([1, 1]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'DESC', cmp)).toEqual([1, 0]);
+        });
+    });
+
+
+    t.it("findInsertIndex() - sort DESC -  between page 1 and page 3, page 2 not available", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            pageMap = sorter.getPageMap();
+
+        t.waitForMs(550, function() {
+
+            pageMap.removeAtKey(2);
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.getPageMap().map[2]).not.toBeDefined();
+            t.expect(sorter.getPageMap().map[3]).toBeDefined();
+
+            t.expect(sorter.findInsertIndex(prop(476))).toEqual([1, 24]);
+            t.expect(sorter.findInsertIndex(prop(475))).toBe(0);
+            t.expect(sorter.findInsertIndex(prop(450))).toEqual([3, 0]);
+            t.expect(sorter.findInsertIndex(prop(451))).toBe(0);
+
+        });
+    });
+
+
     t.it("findInsertIndex() - sort DESC - last page available", function(t) {
 
         var sorter = createSorter({
@@ -117,9 +402,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
             t.waitForMs(250, function() {
                 t.expect(sorter.getPageMap().map[20]).toBeDefined();
-
                 t.expect(sorter.findInsertIndex(prop(0))).toEqual([20, 24]);
-
             });
         });
 
@@ -160,28 +443,6 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
 
     });
-
-
-    t.it("findInsertIndex() - sort DESC -  page 1", function(t) {
-
-        var sorter = createSorter({
-            sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
-        });
-
-        t.waitForMs(550, function() {
-            t.expect(sorter.getPageMap().map[1]).toBeDefined();
-            t.expect(sorter.findInsertIndex(prop(8000))).toEqual([1, 0]);
-            t.expect(sorter.findInsertIndex(prop(500.5))).toEqual([1, 0]);
-            t.expect(sorter.findInsertIndex(prop(499.5))).toEqual([1, 1]);
-            t.expect(sorter.findInsertIndex(prop(499))).toEqual([1, 1]);
-            t.expect(sorter.findInsertIndex(prop(500))).toEqual([1, 0]);
-            t.expect(sorter.findInsertIndex(prop(498))).toEqual([1, 2]);
-            t.expect(sorter.findInsertIndex(prop(497))).toEqual([1, 3]);
-            t.expect(sorter.findInsertIndex(prop(476))).toEqual([1, 24]);
-
-        });
-    });
-
 
 
 
