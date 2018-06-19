@@ -366,6 +366,25 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
     });
 
+    t.it("findInsertIndex() - exception", function(t) {
+
+        var sorter = createSorter({
+                sorters : [
+                    {property : 'testPropForIndexLookup', direction : 'DESC'},
+                    {property : 'foo', direction : 'DESC'}
+                ]
+            }),
+            pageMap = sorter.getPageMap(),
+            exc, e;
+
+        t.waitForMs(550, function() {
+
+            try {sorter.findInsertIndex(prop(476));}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('one sorter');
+        });
+    });
+
 
     t.it("findInsertIndex() - sort DESC -  between page 1 and page 3, page 2 not available", function(t) {
 
