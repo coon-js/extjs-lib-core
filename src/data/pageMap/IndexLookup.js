@@ -208,7 +208,11 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      *
      * @param record
      * @return {Mixed} A number if no concrete assumption about the insert index
-     * can be made, or an array containing page/index-position of the record.
+     * can be made (-1 insert somewhere before available PageRanges, 1 somewhere
+     * after, 0 somewhere inbetween), or an array containing page/index-position
+     * of the record. This implementation will return min/max bounds if the record
+     * can be inserted at the beginning or the very end of the PageRanges, and the
+     * available PageRange represents the start/end of the available data.
      *
      *
      * @throws if more than one sorter was configured
