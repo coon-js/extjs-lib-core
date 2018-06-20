@@ -176,6 +176,29 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
+    t.it("scanRangeForIndex() - sort ASC", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testProp', direction : 'ASC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            property  = 'testPropForIndexLookup',
+            pageMap   = sorter.getPageMap() ;
+
+        for (var i = 1; i <= 19; i++) {
+            sorter.getPageMap().getStore().loadPage(i);
+        }
+
+
+        t.waitForMs(550, function() {
+
+            t.expect(pageMap.map[9].value[0].get('testProp')).toBe(200);
+            t.expect(sorter.scanRangeForIndex(1, 19, 203, property, 'ASC', cmp)).toEqual([9, 2]);
+
+        });
+    });
+
+
     t.it("scanRangeForIndex() - sort DESC - page 1 (1)", function(t) {
 
         var sorter = createSorter({
