@@ -209,6 +209,160 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     });
 
+    t.it('conjoon.cn_core.data.pageMap.RecordPosition.create()', function(t) {
+
+        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            exc, e, pos,
+            tests = [
+                [1, 2],
+                [4, 9],
+                [211, 99],
+                [8, 3, 4, 2]
+            ];
+
+        try{RecordPosition.create();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create(['foo', null]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create({}, {});}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create({});}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create([]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create([1]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{RecordPosition.create(0, 1);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        // with array as arg
+        for (var i = 0, len = tests.length; i < len; i++) {
+            pos = RecordPosition.create.call(null, tests[i]);
+            t.expect(pos instanceof conjoon.cn_core.data.pageMap.RecordPosition).toBe(true);
+            t.expect(pos.getPage()).toBe(tests[i][0]);
+            t.expect(pos.getIndex()).toBe(tests[i][1]);
+        }
+
+        // with arguments as args
+        for (var i = 0, len = tests.length; i < len; i++) {
+            pos = RecordPosition.create.apply(null, tests[i]);
+            t.expect(pos instanceof conjoon.cn_core.data.pageMap.RecordPosition).toBe(true);
+            t.expect(pos.getPage()).toBe(tests[i][0]);
+            t.expect(pos.getIndex()).toBe(tests[i][1]);
+        }
+
+    });
+
+
+    t.it('lessThan()', function(t) {
+
+        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            left, right,
+            tests = [{
+                left  : [1, 2],
+                right : [1, 2],
+                exp   : false
+            }, {
+                left  : [1, 1],
+                right : [1, 2],
+                exp   : true
+            }, {
+                left  : [34, 2],
+                right : [3, 2],
+                exp   : false
+            }, {
+                left  : [1, 9],
+                right : [1, 2],
+                exp   : false
+            }, {
+                left  : [10,32],
+                right : [112, 2],
+                exp   : true
+            }],
+            exc, e;
+
+        left = RecordPosition.create(1, 1);
+
+        try{left.lessThan();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+        exc = undefined;
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            left  = RecordPosition.create(tests[i].left);
+            right = RecordPosition.create(tests[i].right);
+
+            t.expect(left.lessThan(right)).toBe(tests[i].exp)
+        }
+
+    });
+
+
+    t.it('greaterThan()', function(t) {
+
+        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            left, right,
+            tests = [{
+                left  : [1, 2],
+                right : [1, 2],
+                exp   : false
+            }, {
+                left  : [1, 2],
+                right : [1, 1],
+                exp   : true
+            }, {
+                left  : [3, 2],
+                right : [34, 2],
+                exp   : false
+            }, {
+                left  : [1, 2],
+                right : [1, 9],
+                exp   : false
+            }, {
+                left  : [112, 2],
+                right : [10,32],
+                exp   : true
+            }],
+            exc, e;
+
+        left = RecordPosition.create(1, 1);
+
+        try{left.lessThan();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+        exc = undefined;
+
+        for (var i = 0, len = tests.length; i < len; i++) {
+            left  = RecordPosition.create(tests[i].left);
+            right = RecordPosition.create(tests[i].right);
+
+            t.expect(left.greaterThan(right)).toBe(tests[i].exp)
+        }
+
+    });
+
 
 
 });

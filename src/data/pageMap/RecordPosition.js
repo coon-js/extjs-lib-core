@@ -82,6 +82,42 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
         index : undefined
     },
 
+    statics : {
+
+        /**
+         * Tries to cerate a new position based on the information given in data,
+         * which is either an array where the first index is treated as the page,
+         * and the second index is treated as the index, or wto arguments, where
+         * the first argument represents the page, and teh second the index for
+         * which a RecordPosition should be created.
+         *
+         * @param {Mixed} data
+         *
+         * @return {conjoon.cn_core.data.pageMap.RecordPosition}
+         *
+         * @throws if the arguments could not be processed, or if any exception
+         * from the class constructor is thrown.
+         */
+        create : function(data) {
+
+            if (arguments.length > 1) {
+                data = [arguments[0], arguments[1]];
+            } else if (!Ext.isArray(data)){
+                Ext.raise({
+                    msg       : 'static method expects an array or two arguments ' +
+                                'representing page and index',
+                    arguments : arguments
+                });
+            }
+
+            return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                page  : data[0],
+                index : data[1]
+            });
+        }
+
+    },
+
     /**
      *
      * @param {Object} cfg
@@ -202,8 +238,7 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
      */
     equalTo : function(target) {
 
-        var me = this,
-            tF, tL;
+        var me = this;
 
         if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
@@ -214,6 +249,66 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
 
         return me === target ||
             (me.getPage() === target.getPage() && me.getIndex() === target.getIndex());
+
+    },
+
+
+    /**
+     * Returns true if the position represented by target is greater than this
+     * position.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} target
+     *
+     * @return {Boolean} true if target represents a position greater than this
+     * position
+     *
+     * @throws if target is not an instance of
+     * {conjoon.cn_core.data.pageMap.RecordPosition}
+     */
+    lessThan : function(target) {
+
+        var me = this,
+            tF, tL;
+
+        if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+            Ext.raise({
+                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                target : target
+            })
+        }
+
+        return (me.getPage() < target.getPage() ||
+               (me.getPage() === target.getPage() && me.getIndex() < target.getIndex()));
+
+    },
+
+
+    /**
+     * Returns true if the position represented by target is less than this
+     * position.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} target
+     *
+     * @return {Boolean} true if target represents a position less than this
+     * position
+     *
+     * @throws if target is not an instance of
+     * {conjoon.cn_core.data.pageMap.RecordPosition}
+     */
+    greaterThan : function(target) {
+
+        var me = this,
+            tF, tL;
+
+        if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+            Ext.raise({
+                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                target : target
+            })
+        }
+
+        return (me.getPage() > target.getPage() ||
+            (me.getPage() === target.getPage() && me.getIndex() > target.getIndex()));
 
     }
 
