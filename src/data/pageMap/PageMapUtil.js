@@ -37,7 +37,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
     requires : [
         'conjoon.cn_core.Util',
         'conjoon.cn_core.data.pageMap.RecordPosition',
-        'conjoon.cn_core.data.pageMap.PageRange'
+        'conjoon.cn_core.data.pageMap.PageRange',
+        'conjoon.cn_core.data.pageMap.IndexRange'
     ],
 
 
@@ -82,7 +83,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
         return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-            page  : Math.max(1, Math.floor(index /  pageMap.getPageSize())),
+            page  : Math.floor(index /  pageMap.getPageSize()) + 1,
             index : index % pageMap.getPageSize()
         });
     },
@@ -504,6 +505,67 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         pageSize = pageMap.getPageSize();
 
         return Math.floor(store.getTotalCount() / pageSize);
+    },
+
+
+    /**
+     * Returns the conjoon.cn_core.data.pageMap.IndexRange representing start
+     * and end.
+     *
+     * @param {Number} start
+     * @param {Number} end
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return {conjoon.cn_core.data.pageMap.IndexRange}
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}, if start
+     * or end are less than 0 or not a number, if start is less than end
+     * or any other exception thrown by #storeIndexToPosition, or by the
+     * constructor of IndexRange
+     */
+    storeIndexToRange : function(start, end, pageMap) {
+
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        if (!Ext.isNumber(start) || !Ext.isNumber(end)) {
+            Ext.raise({
+                msg   : '\'start\' and \'end\' must be a number.',
+                start : start,
+                end   : end
+            })
+        }
+        start = parseInt(start, 10);
+        end   = parseInt(end, 10);
+
+        if (start < 0 || end < 0) {
+            Ext.raise({
+                msg   : '\'start\' and \'end\' must be greater than or equal to 0',
+                start : start,
+                end   : end
+            })
+        }
+
+        if (start > end) {
+            Ext.raise({
+                msg   : '\'start\' must be less than or equal to \'end\'',
+                start : start,
+                end   : end
+            })
+        }
+
+        start = this.storeIndexToPosition(start, pageMap);
+        end   = this.storeIndexToPosition(end, pageMap);
+
+        return Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
+            start : start,
+            end   : end
+        });
     }
 
 });

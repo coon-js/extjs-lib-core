@@ -157,6 +157,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     result : 24
                 }];
 
+
+
             try {PageMapUtil.positionToStoreIndex(null, pageMap);} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
@@ -187,15 +189,28 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 pageMap = createPageMap(),
                 invalid  = 1000000000,
                 expected = [{
-                    result : createPos(4, 5),
+                    result : createPos(2, 0),
+                    pos    : 25
+                }, {
+                    result : createPos(2, 1),
+                    pos    : 26
+                }, {
+                    result : createPos(5, 5),
                     pos    : 105
+                }, {
+                    result : createPos(5, 6),
+                    pos    : 106
                 }, {
                     result : createPos(1, 0),
                     pos    : 0
                 }, {
                     result : createPos(1, 24),
                     pos    : 24
+                }, {
+                    result : createPos(2, 14),
+                    pos    : 39
                 }];
+
 
 
             t.waitForMs(250, function() {
@@ -215,7 +230,9 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(exc.msg.toLowerCase()).toContain('exceeds');
                 t.expect(exc.msg.toLowerCase()).toContain('total count');
 
+
                 for (var i = 0, len = expected.length; i < len; i++) {
+                    console.log(expected[i].pos, expected[i].result, '->', PageMapUtil.storeIndexToPosition(expected[i].pos, pageMap))
                     t.expect(PageMapUtil.storeIndexToPosition(expected[i].pos, pageMap).equalTo(expected[i].result)).toBe(true);
                 }
 
@@ -817,5 +834,46 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it("storeIndexToRange()", function(t) {
 
-})})});
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap();
+
+            try{PageMapUtil.storeIndexToRange(null, 9, pageMap)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            exc = undefined;
+
+            try{PageMapUtil.storeIndexToRange(-1, 3, pageMap)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be greater than or equal');
+            exc = undefined;
+
+            try{PageMapUtil.storeIndexToRange(3, -1, pageMap)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be greater than or equal');
+            exc = undefined;
+
+            try{PageMapUtil.storeIndexToRange(3, 4)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            exc = undefined;
+
+            t.waitForMs(250, function() {
+                t.expect(
+                    PageMapUtil.storeIndexToRange(3, 4, pageMap) instanceof conjoon.cn_core.data.pageMap.IndexRange
+                ).toBe(true);
+            });
+
+
+
+        });
+
+
+
+    })})});
