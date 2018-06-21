@@ -23,68 +23,68 @@
 describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
 
     var createPageMap = function() {
-        var store;
+            var store;
 
-        store = Ext.create('Ext.data.BufferedStore', {
-            autoLoad : true,
-            pageSize : 25,
-            fields : ['id', 'testProp'],
-            proxy : {
-                type : 'rest',
-                url  : 'cn_core/fixtures/PageMapItems',
-                reader : {
-                    type         : 'json',
-                    rootProperty : 'data'
+            store = Ext.create('Ext.data.BufferedStore', {
+                autoLoad : true,
+                pageSize : 25,
+                fields : ['id', 'testProp'],
+                proxy : {
+                    type : 'rest',
+                    url  : 'cn_core/fixtures/PageMapItems',
+                    reader : {
+                        type         : 'json',
+                        rootProperty : 'data'
+                    }
                 }
+            });
+
+            return store.getData();
+        },
+        prop = function(testProperty) {
+            return Ext.create('Ext.data.Model', {
+                testPropForIndexLookup : testProperty
+            });
+        },
+        createTmpMap = function() {
+
+            var pm = Ext.create('Ext.data.PageMap');
+            for (var i = 0, len = arguments.length; i < len; i++) {
+                pm.map[arguments[i]] = {};
             }
-        });
 
-        return store.getData();
-    },
-    prop = function(testProperty) {
-        return Ext.create('Ext.data.Model', {
-            testPropForIndexLookup : testProperty
-        });
-    },
-    createTmpMap = function() {
+            return pm;
+        },
+        createSorter = function(cfg) {
 
-        var pm = Ext.create('Ext.data.PageMap');
-        for (var i = 0, len = arguments.length; i < len; i++) {
-            pm.map[arguments[i]] = {};
-        }
+            var store, conf = {};
 
-        return pm;
-    },
-    createSorter = function(cfg) {
-
-        var store, conf = {};
-
-        store = Ext.create('Ext.data.BufferedStore', {
-            autoLoad : true,
-            pageSize : 25,
-            fields : ['id', 'testProp'],
-            sorters: cfg.sorters,
-            proxy : {
-                type : 'rest',
-                url  : 'cn_core/fixtures/PageMapItems',
-                reader : {
-                    type         : 'json',
-                    rootProperty : 'data'
+            store = Ext.create('Ext.data.BufferedStore', {
+                autoLoad : true,
+                pageSize : 25,
+                fields : ['id', 'testProp'],
+                sorters: cfg.sorters,
+                proxy : {
+                    type : 'rest',
+                    url  : 'cn_core/fixtures/PageMapItems',
+                    reader : {
+                        type         : 'json',
+                        rootProperty : 'data'
+                    }
                 }
-            }
-        });
+            });
 
-        conf = {
-            pageMap : store.getData()
+            conf = {
+                pageMap : store.getData()
+            };
+
+            if (cfg.compareFunction) {
+                conf.compareFunction = cfg.compareFunction;
+            }
+
+            return Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', conf);
+
         };
-
-        if (cfg.compareFunction) {
-            conf.compareFunction = cfg.compareFunction;
-        }
-
-        return Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', conf);
-
-    };
 
 t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
