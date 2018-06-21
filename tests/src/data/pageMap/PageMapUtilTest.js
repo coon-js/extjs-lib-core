@@ -895,6 +895,46 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                     PageMapUtil.storeIndexToRange(3, 4, pageMap) instanceof conjoon.cn_core.data.pageMap.IndexRange
                 ).toBe(true);
             });
+        });
+
+
+        t.it("getPageRangeForPage()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap(),
+                range;
+
+            try{PageMapUtil.getPageRangeForPage(null, pageMap)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            exc = undefined;
+
+            try{PageMapUtil.getPageRangeForPage(-1, pageMap)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            exc = undefined;
+
+            try{PageMapUtil.getPageRangeForPage(4)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            exc = undefined;
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(6);
+
+                range = PageMapUtil.getPageRangeForPage(3, pageMap);
+                t.expect(range  instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+                t.expect(range.toArray()).toEqual([3, 4, 5]);
+
+                range = PageMapUtil.getPageRangeForPage(6, pageMap);
+                t.expect(range).toBe(null);
+            });
 
 
 

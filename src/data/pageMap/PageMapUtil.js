@@ -390,7 +390,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     /**
      * Private helper to determine the neighbour pages for a record.
-     * 
+     *
      * @private
      */
     getRangeForRecord : function(record, pageMap) {
@@ -428,6 +428,65 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         return conjoon.cn_core.Util.listNeighbours(pages, page);
 
 
+    },
+
+
+    /**
+     * Returns the Page range where the specific page can be found in.
+     * Returns null if no PageRange could be found.
+     *
+     * @param {Number} page
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return conjoon.cn_core.data.pageMap.PageRange
+     *
+     * @throws if page is not a number, or if pageMap is not an instance of
+     * {Ext.data.PageMap}, or if multiple ranges where found
+     */
+    getPageRangeForPage : function(page, pageMap) {
+
+        var me    = this,
+            page  = parseInt(page, 10),
+            found = [],
+            range, tmp;
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+        if (!Ext.isNumber(page) || page < 1) {
+            Ext.raise({
+                msg     : '\'page\' must be a number greater or equal to 1',
+                pageMap : pageMap
+            });
+        }
+
+        range = me.getAvailablePageRanges(pageMap);
+        for (var i = 0, len = range.length; i < len; i++) {
+            tmp = range[i].toArray();
+            if (tmp.indexOf(page) !== -1) {
+                found.push(tmp);
+            }
+        }
+
+        if (!found.length) {
+            return null;
+        }
+
+        if (found.length > 1) {
+            Ext.raise({
+                msg   : '\'range\' has more than one entry for page',
+                range : range,
+                page  : page
+            });
+        }
+
+        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pages : found[0]
+        });
     },
 
 
