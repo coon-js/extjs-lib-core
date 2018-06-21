@@ -350,6 +350,50 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getPageRangeForRecord : function(record, pageMap) {
 
+        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pages : this.getRangeForRecord(record, pageMap)
+        });
+
+    },
+
+
+    /**
+     * Returns the list of pages which are greater than or equal to the page the
+     * record is a member of. Only direct neighbours are considered.
+     *
+     * @param {Ext.data.Model} record
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return {conjoon.cn_core.data.pageMap.PageRange}
+     *
+     * @see conjoon.cn_core.Util.listNeighbours
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if record
+     * is not an instance of {Ext.data.Model}, or if record is not found in the
+     * pageMap.
+     */
+    getRightSideRange : function(record, pageMap) {
+
+        var me      = this,
+            range   = me.getRangeForRecord(record, pageMap),
+            pagePos = pageMap.getPageFromRecordIndex(pageMap.indexOf(record)),
+            filter  = function(value){
+                          return value >= pagePos;
+                      };
+
+
+        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pages: range.filter(filter)
+        });
+    },
+
+
+    /**
+     * Private helper to determine the neighbour pages for a record.
+     * 
+     * @private
+     */
+    getRangeForRecord : function(record, pageMap) {
         var page, pages;
 
         if (!(record instanceof Ext.data.Model)) {
@@ -381,9 +425,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             pages.push(i);
         }
 
-        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
-            pages : conjoon.cn_core.Util.listNeighbours(pages, page)
-        });
+        return conjoon.cn_core.Util.listNeighbours(pages, page);
+
+
     },
 
 

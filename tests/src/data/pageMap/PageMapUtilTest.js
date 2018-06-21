@@ -316,6 +316,32 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
         });
 
+        t.it('getRightSideRange()', function(t) {
+
+            var exc, e, pageMap, record, range;
+
+            record  = Ext.create('Ext.data.Model');
+            pageMap = Ext.create('Ext.data.PageMap');
+
+            pageMap.map = {1 : [], 2 : [], 8 : [], 9 : [], 10 : [], 11 : [], 15 : []};
+            pageMap.indexOf = function() {
+                return 1
+            };
+
+            pageMap.getPageFromRecordIndex = function() {
+                return 10;
+            }
+
+            range = conjoon.cn_core.data.pageMap.PageMapUtil.getRightSideRange(
+                record, pageMap);
+
+            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range.getPages()).toEqual([10, 11])
+
+
+        });
+
+
         t.it('getRecordAt()', function(t) {
             var pageMap        = createPageMap(),
                 map            = pageMap.map,
