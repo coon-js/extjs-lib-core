@@ -324,12 +324,12 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
             left, right,
             tests = [{
-                left  : [1, 2],
-                right : [1, 2],
+                left : [1, 2],
+                right  : [1, 2],
                 exp   : false
             }, {
-                left  : [1, 2],
-                right : [1, 1],
+                left : [1, 2],
+                right  : [1, 1],
                 exp   : true
             }, {
                 left  : [3, 2],
@@ -348,7 +348,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
         left = RecordPosition.create(1, 1);
 
-        try{left.lessThan();}catch(e){exc = e;}
+        try{left.greaterThan();}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
