@@ -27,6 +27,14 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
+    t.requireOk('conjoon.cn_core.data.pageMap.PageRange', function() {
+
+
+
+
+/*
+
+
     t.it('constructor()', function(t) {
 
         var exc, e;
@@ -163,6 +171,69 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
     });
+*/
 
 
-});
+    t.it('conjoon.cn_core.data.pageMap.RecordPosition.create()', function(t) {
+
+        var PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            exc, e, range,
+            tests = [
+                [1, 2],
+                [4, 5],
+                [211, 212],
+                [8, 9, 10, 11]
+            ];
+
+        try{PageRange.create();}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create(['foo']);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create({}, {});}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create({});}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create([]);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create([1], 0);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        try{PageRange.create(0, 1);}catch(e){exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        exc = undefined;
+
+        // with array as arg
+        for (var i = 0, len = tests.length; i < len; i++) {
+            range = PageRange.create.call(null, tests[i]);
+            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range.toArray()).toEqual(tests[i]);
+        }
+
+        // with arguments as args
+        for (var i = 0, len = tests.length; i < len; i++) {
+            range = PageRange.create.apply(null, tests[i]);
+            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range.toArray()).toEqual(tests[i]);
+        }
+
+    });
+
+})});

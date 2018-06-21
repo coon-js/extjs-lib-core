@@ -56,6 +56,46 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
     },
 
 
+    statics : {
+
+        /**
+         * Tries to cerate a new range based on the information given in data,
+         * which is either an array which is assumed to be a sorted list of numbers
+         * representing a page range, or an argument list of page ranges in the
+         * proper order..
+         *
+         * @param {Mixed} data
+         *
+         * @return {conjoon.cn_core.data.pageMap.PageRange}
+         *
+         * @throws if the arguments could not be processed, or if any exception
+         * from the class constructor is thrown.
+         */
+        create : function(data) {
+
+            if (arguments.length == 1 && !Ext.isArray(arguments[0])) {
+                data = [arguments[0]];
+            } else if (arguments.length > 1) {
+                data = Array.prototype.slice.apply(arguments, [0]);
+            }
+
+            if (!Ext.isArray(data)){
+                Ext.raise({
+                    msg  : 'static method expects an array or arguments ' +
+                           'representing a page range',
+                    arguments : arguments
+                });
+            }
+
+            return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : data
+            });
+        }
+
+    },
+
+
+
     /**
      * Creates a new instance of conjoon.cn_core.data.pageMap.PageRange.
      *
@@ -108,13 +148,16 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
             })
         }
 
-        pages = pages.map(function(v){return parseInt(v, 10)});
+        pages = pages.map(function(v){
+            return parseInt(v, 10);
+        });
 
-        if (pages[0] < 1) {
+        if (pages[0] < 1 || isNaN(pages[0])) {
             Ext.raise({
-                msg   : 'a page range\'s first page must not be less than 1',
+                msg   : 'a page range\'s first page must not be less than 1 ' +
+                        'and must be a number',
                 pages : pages
-            })
+            });
         }
 
         for (var i = 1, len = pages.length; i < len; i++) {
