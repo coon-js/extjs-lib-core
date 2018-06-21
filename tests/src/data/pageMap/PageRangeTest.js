@@ -31,10 +31,6 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
 
-
-/*
-
-
     t.it('constructor()', function(t) {
 
         var exc, e;
@@ -171,7 +167,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
     });
-*/
+
 
 
     t.it('conjoon.cn_core.data.pageMap.RecordPosition.create()', function(t) {
