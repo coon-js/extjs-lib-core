@@ -90,22 +90,32 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         var  exc, e,
             feeder = createFeeder();
 
-        t.expect(feeder.isFeedMarkedForRecycling(4)).toBe(false);
-        feeder.recycledFeeds = [897, 224, 255, 363623,4];
-        t.expect(feeder.isFeedMarkedForRecycling(4)).toBe(true);
+        t.waitForMs(250, function() {
+            t.expect(feeder.isFeedMarkedForRecycling(4)).toBe(false);
+            feeder.recycledFeeds = [897, 224, 255, 363623,4];
 
-        try {feeder.isFeedMarkedForRecycling(0)} catch (e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be a number');
-        exc = undefined;
+            try {feeder.isFeedMarkedForRecycling(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('is marked for recycling, but');
+            exc = undefined;
+
+            feeder.getPageMap().removeAtKey(4);
+            t.expect(feeder.isFeedMarkedForRecycling(4)).toBe(true);
+
+            try {feeder.isFeedMarkedForRecycling(0)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            exc = undefined;
 
 
-        try {feeder.isFeedMarkedForRecycling('uioi')} catch (e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be a number');
-        exc = undefined;
+            try {feeder.isFeedMarkedForRecycling('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            exc = undefined;
+        });
 
     });
 
@@ -117,8 +127,25 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
         t.waitForMs(250, function() {
 
+            feeder.feeder[4] =  {};
+            try {feeder.canUseFeederAt(4)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('a feeder for');
+            exc = undefined;
+
+            feeder.feeder =  {};
+
             t.expect(feeder.canUseFeederAt(4)).toBe(true);
             feeder.recycledFeeds = [897, 224, 255, 363623,4];
+
+            try {feeder.canUseFeederAt(4)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('is marked for recycling');
+            exc = undefined;
+
+            feeder.getPageMap().removeAtKey(4);
             t.expect(feeder.canUseFeederAt(4)).toBe(false);
 
             try {feeder.canUseFeederAt(0)} catch (e) {exc = e;}
@@ -149,7 +176,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
-    t.it('findFeederIndexForRange()', function(t) {
+    t.it('findFeederIndexForPage() - up', function(t) {
 
         var exc, e,
             feeder    = createFeeder(),
@@ -157,29 +184,518 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
         t.waitForMs(250, function() {
 
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5))).toBe(12);
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4))).toBe(12);
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(12);
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(12);
 
+            feeder.getPageMap().removeAtKey(6);
             feeder.recycledFeeds = [6];
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5, 6))).toBe(12);
+            t.expect(feeder.findFeederIndexForPage(6, 1)).toBe(-1);
 
             feeder.getPageMap().removeAtKey(5);
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5))).toBe(4);
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5, 6))).toBe(12);
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(-1);
+            t.expect(feeder.findFeederIndexForPage(7, 1)).toBe(12);
 
             feeder.feeder[6] = {};
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5))).toBe(4);
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(4);
 
             feeder.feeder[5] = {};
-            t.expect(feeder.findFeederIndexForRange(PageRange.create(4, 5))).toBe(5);
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(5);
 
+            feeder.getPageMap().removeAtKey(1);
+            t.expect(feeder.findFeederIndexForPage(1, 1)).toBe(-1);
 
-
-            try {feeder.findFeederIndexForRange('uioi')} catch (e) {exc = e;}
+            try {feeder.findFeederIndexForPage('uioi')} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
             exc = undefined;
+
+            try {feeder.findFeederIndexForPage(5)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be -1 or 1');
+            t.expect(exc.msg.toLowerCase()).toContain('direction');
+            exc = undefined;
+
+        });
+
+    });
+
+
+    t.it('findFeederIndexForPage() - down', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(1);
+
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(2);
+            t.expect(feeder.findFeederIndexForPage(4, -1)).toBe(2);
+
+            feeder.recycledFeeds = [6];
+            t.expect(feeder.findFeederIndexForPage(6, -1)).toBe(2);
+
+            feeder.getPageMap().removeAtKey(5);
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(-1);
+
+            // exception - 5 is not in page map anymore
+            // 6 is crecycled but still pan PageMap
+            try {t.expect(feeder.findFeederIndexForPage(6, -1));} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
+
+            feeder.feeder[3] = {};
+            t.expect(feeder.findFeederIndexForPage(4, -1)).toBe(2);
+
+            feeder.feeder[5] = {};
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(5);
+
+            feeder.getPageMap().removeAtKey(1);
+            t.expect(feeder.findFeederIndexForPage(1, -1)).toBe(-1);
+
+            try {feeder.findFeederIndexForPage('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            try {feeder.findFeederIndexForPage(5)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be -1 or 1');
+            t.expect(exc.msg.toLowerCase()).toContain('direction');
+            exc = undefined;
+
+        });
+
+    });
+
+
+    t.it('findFeederIndexForPage() - up', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange;
+
+        t.waitForMs(250, function() {
+            feeder.feeder[5] = {};
+            // ignores feeder at 5, since we start looking for possible feeder at the end.
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(12);
+
+        });
+
+    });
+
+
+    t.it('findFeederIndexForPage() - up (removed page, existing feeder)', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(12);
+            feeder.feeder[12] = {};
+            // ignores feeder at 5, since we start looking for possible feeder at the end.
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(12);
+
+        });
+
+    });
+
+
+    t.it('findFeederIndexForPage() - up (removed page, recycled feeder)', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(12);
+            feeder.recycledFeeds = [12];
+            // ignores feeder at 5, since we start looking for possible feeder at the end.
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(11);
+
+        });
+
+    });
+
+
+    t.it('findFeederIndexForPage() - down (removed page, existing feeder)', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(1);
+            feeder.feeder[1] = {};
+            // ignores feeder at 5, since we start looking for possible feeder at the end.
+            t.expect(feeder.findFeederIndexForPage(4, -1)).toBe(1);
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.feeder[3] = {};
+            // ignores feeder at 5, since we start looking for possible feeder at the end.
+            t.expect(feeder.findFeederIndexForPage(4, -1)).toBe(3);
+
+        });
+
+    });
+
+
+    t.it('swapMapToFeeder() - exceptions', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            try {feeder.swapMapToFeeder('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+
+            feeder.recycledFeeds = [4];
+            try {feeder.swapMapToFeeder(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('already marked for');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            feeder.getPageMap().removeAtKey(5);
+            try {feeder.swapMapToFeeder(5)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+
+            feeder.getPageMap().removeAtKey(5);
+            try {feeder.swapMapToFeeder(5)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            feeder.feeder[8] = {};
+            try {feeder.swapMapToFeeder(8)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('already exists');
+            t.expect(exc.msg.toLowerCase()).toContain('feeder');
+            exc = undefined;
+
+        });
+
+    });
+
+
+    t.it('swapMapToFeeder()', function(t) {
+
+        var exc, e, page,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap(),
+            mapValues = [],
+            collect   = function(data) {
+                for (var i = 0, len = data.length; i<  len; i++) {
+                    mapValues.push(data[i].clone());
+                }
+            };
+
+        t.waitForMs(250, function() {
+
+            page = 5;
+
+            t.expect(feeder.feeder[page]).toBeUndefined();
+            t.expect(feeder.recycledFeeds.indexOf(page)).toBe(-1);
+            t.expect(feeder.getPageMap().map[page]).toBeTruthy();
+
+            collect(pageMap.map[page].value);
+            feeder.swapMapToFeeder(page);
+
+            t.expect(feeder.getPageMap().map[page]).toBeFalsy();
+            t.expect(feeder.feeder[page]).toBeDefined();
+            t.expect(feeder.getPageMap().getPageSize()).toBeGreaterThan(0);
+            t.expect(mapValues.length).toBe(feeder.getPageMap().getPageSize());
+            t.expect(feeder.feeder[page].length).toBe(mapValues.length);
+
+            for (var i = 0, len = feeder.getPageMap().getPageSize(); i < len; i++) {
+                t.expect(feeder.feeder[page][i] instanceof Ext.data.Model).toBe(true);
+                t.expect(feeder.feeder[page][i].data).toEqual(mapValues[i].data);
+            }
+
+
+        });
+
+    });
+
+
+    t.it('clear()', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            feeder.feeder        = {0  : []};
+            feeder.recycledFeeds = [8];
+
+            feeder.clear();
+
+            t.expect(feeder.feeder).toEqual({});
+            t.expect(feeder.recycledFeeds).toEqual([]);
+        });
+
+    });
+
+
+    t.it('recycleFeeder() - exceptions', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            try {feeder.recycleFeeder('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            try {feeder.recycleFeeder(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            feeder.feeder[4] = [1];
+            try {feeder.recycleFeeder(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('is not empty');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            feeder.feeder[4] = [];
+            feeder.recycledFeeds = [4];
+            try {feeder.recycleFeeder(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('is already marked');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+        });
+
+    });
+
+
+    t.it('recycleFeeder()', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            feeder.feeder[4] = [];
+            t.expect(feeder.recycledFeeds).toEqual([]);
+
+            feeder.recycleFeeder(4);
+
+            t.expect(feeder.feeder[4]).toBeUndefined();
+            t.expect(feeder.recycledFeeds).toEqual([4]);
+
+        });
+
+    });
+
+
+    t.it('createFeeder() - exceptions', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            try {feeder.createFeeder('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            try {feeder.createFeeder(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be -1 or 1');
+            t.expect(exc.msg.toLowerCase()).toContain('direction');
+            exc = undefined;
+
+
+        });
+
+    });
+
+
+    t.it('createFeeder() - -1', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            t.expect(feeder.createFeeder(13, 1)).toBe(-1);
+
+
+        });
+
+    });
+
+
+    t.it('createFeeder() - n', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            t.expect(feeder.feeder[12]).toBeUndefined();
+            t.expect(feeder.createFeeder(4, 1)).toBe(12);
+            t.expect(feeder.feeder[12]).toBeDefined();
+
+            console.log(feeder);
+
+        });
+
+    });
+
+
+    t.it('feedPage() - exceptions', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            try {feeder.feedPage('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            try {feeder.feedPage(4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be -1 or 1');
+            t.expect(exc.msg.toLowerCase()).toContain('direction');
+            exc = undefined;
+
+
+            try {feeder.feedPage(14, 1)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+
+        });
+
+    });
+
+
+    t.it('feedPage() - down', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            removePage = 5, targetPage = 2,
+            itemCount = 3,
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(removePage);
+
+            for (var i = 0, len = itemCount; i < len; i++) {
+                pageMap.map[targetPage].value.pop();
+            }
+
+            t.expect(pageMap.map[targetPage].value.length).toBe(pageSize - itemCount);
+
+            feeder.feedPage(targetPage, 1);
+
+
+            var tmp = targetPage;
+            while (tmp < removePage - 1) {
+                t.expect(pageMap.map[tmp].value.length).toBe(pageSize);
+                tmp++;
+            }
+
+            t.expect(feeder.feeder[removePage - 1]).toBeDefined();
+            t.expect(feeder.feeder[removePage - 1].length).toBe(pageSize - itemCount);
+
+        });
+
+    });
+
+    t.it('feedPage() - down (2)', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            removePage = 5, targetPage = 2,
+            itemCount = 25,
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(removePage);
+
+            feeder.createFeeder(4, 1);
+
+            t.expect(feeder.feeder[4]).toBeDefined();
+            feeder.feeder[4].pop();
+            feeder.feeder[4].pop();
+            feeder.feeder[4].pop();
+            t.expect(feeder.feeder[4].length).toBe(pageSize - 3);
+
+            for (var i = 0, len = itemCount; i < len; i++) {
+                pageMap.map[targetPage].value.pop();
+            }
+
+            t.expect(pageMap.map[targetPage].value.length).toBe(pageSize - itemCount);
+
+            feeder.feedPage(targetPage, 1);
+
+            t.expect(pageMap.map[3]).toBeUndefined();
+            t.expect(pageMap.map[4]).toBeUndefined();
+            t.expect(feeder.feeder[4]).toBeUndefined();
+            t.expect(feeder.feeder[3]).toBeDefined();
+            t.expect(feeder.feeder[3].length).toBe(22);
+
+            t.expect(pageMap.map[2].value.length).toBe(pageSize);
+
+            t.expect(feeder.recycledFeeds).toEqual([4]);
 
         });
 

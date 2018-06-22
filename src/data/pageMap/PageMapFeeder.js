@@ -25,13 +25,17 @@
  * A PageMapFeeder is responsible for shifting records in between PageRanges
  * to make sure a plugged view can show changes in the underlying BufferedStore
  * without the need of immediately reloading it.
+ * It is important that the events of the BufferedStore, like the beforeprefetch
+ * event, are considered properly, since the BufferedStore will periodically
+ * request new page ranges from the PageMap.
  *
  *
  */
 Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.PageRange'
+        'conjoon.cn_core.data.pageMap.PageRange',
+        'conjoon.cn_core.data.pageMap.PageMapUtil'
     ],
 
     config : {
@@ -49,6 +53,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     feeder : null,
 
+
+    /**
+     * @type {Array} recycledFeeds
+     * @private
+     */
     recycledFeeds : null,
 
 
@@ -114,15 +123,294 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
-     * Tries to look up the feeder index for the specified range.
+     * Feeds the page as the specified position with either data from a feed
+     * after "page" or before "page". Feeders will be created if necessary and
+     * possible. The amount of items taken from the feeder equal to the PageMaps
+     * pageSize - the page target's length.
+     * This implementation will take care of creating feeders until the demands
+     * of the target page can be satisfied, which means that this method will
+     * create feeds or move existing ones to the recycle bin in necessary.
+     *
+     * @param {Number} page
+     * @param {Number} direction
+     *
+
+     * @throws if page is not a number or less than 1, or if direction is not -1
+     * or 1, or if the target page does not exist,
+     */
+    feedPage : function(page, direction) {
+
+        var me          = this,
+            pageMap     = me.getPageMap(),
+            map         = pageMap.map,
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            index, targetLength, items, feed, range, start, end;
+
+        if (!Ext.isNumber(page) || (page < 1)) {
+            Ext.raise({
+                msg  : '\'page\' must be a number less or equal to 1',
+                page : page
+            });
+        }
+
+        if (!Ext.isNumber(direction) || (direction !== 1 && direction !== -1)) {
+            Ext.raise({
+                msg       : '\'direction\' must be -1 or 1',
+                direction : direction
+            });
+        }
+
+        if (!map[page]) {
+            Ext.raise({
+                msg  : '\'page\' does not exist in the PageMap',
+                page : page
+            });
+        }
+
+        targetLength = pageMap.getPageSize() - map[page].value.length;
+
+        while (targetLength > 0) {
+
+            index = me.createFeeder(page, direction);
+
+            if (index === -1) {
+                Ext.raise({
+                    msg   : 'could not satisfy feeding demands for page',
+                    page  : page,
+                    index : index
+                });
+            }
+
+            range = PageMapUtil.getPageRangeForPage(page, pageMap);
+            range = range.toArray();
+            range = range.slice(range.indexOf(page), range.length)
+            start = range[0];
+            end   = range.pop();
+
+            feed = me.feeder[index];
+
+            if (direction === 1) {
+                items = feed.splice(
+                    0,
+                    Math.min(targetLength, feed.length)
+                );
+
+                if (feed.length == 0) {
+                    me.recycleFeeder(index);
+                }
+
+                for (var i = start; i < end; i++) {
+                    map[i].value = map[i].value.concat(map[i + 1].value.splice(
+                        0, items.length));
+                }
+
+                map[end].value = map[end].value.concat(items);
+
+                targetLength -= items.length;
+            }
+
+        }
+
+
+
+
+
+
+
+
+    },
+
+
+    /**
+     * Will create a new feeder for the specified page and the specified direction
+     * (-1 for feeding from data behind the specified page, 1 for feeding from a
+     * page after the specified page).
+     *
+     * @param {Number} page
+     * @param {Number} direction
+     *
+     * @return {Number} the target index of the feeder created, or -1 if no
+     * feeder can be used
+     *
+     * @throws if page is not a number or less than 1, or if direction is not -1
+     * or 1
+     */
+    createFeeder : function(page, direction) {
+
+        var me = this, index;
+
+        direction = parseInt(direction, 10);
+        page      = parseInt(page, 10);
+
+        if (!Ext.isNumber(page) || (page < 1)) {
+            Ext.raise({
+                msg  : '\'page\' must be a number less or equal to 1',
+                page : page
+            });
+        }
+
+        if (!Ext.isNumber(direction) || (direction !== 1 && direction !== -1)) {
+            Ext.raise({
+                msg       : '\'direction\' must be -1 or 1',
+                direction : direction
+            });
+        }
+
+        index = me.findFeederIndexForPage(page, direction);
+
+        if (index === -1) {
+            return -1;
+        }
+
+        if (!me.feeder[index]) {
+            me.swapMapToFeeder(index);
+        }
+
+        return index;
+
+    },
+
+
+    /**
+     * Moves the feeder for the specified page to the recycle bin, e.g. the feeder
+     * is empty and cannot satisfy pages which needs to be fed, but is marked so any
+     * prefetch observer can veto its loading.
+     *
+     * @param {Number} page
+     *
+     * @throws if page is not a number or less than 1, or if the feeder for the
+     * specified page does not exist, or if the feeder still has entries or if the
+     * feeder is already marked for recycling
+     */
+    recycleFeeder : function(page) {
+
+        var me      = this,
+            pageMap = me.getPageMap();
+
+        if (!Ext.isNumber(page) || (page < 1)) {
+            Ext.raise({
+                msg  : '\'page\' must be a number less or equal to 1',
+                page : page
+            });
+        }
+
+        if (!me.feeder[page]) {
+            Ext.raise({
+                msg  : 'the feeder for the specified \'page\' does not exist',
+                page : page
+            });
+        }
+
+        if (me.feeder[page].length) {
+            Ext.raise({
+                msg  : 'the feeder for the specified \'page\' is not empty',
+                page : page
+            });
+        }
+
+        if (me.recycledFeeds.indexOf(page) !== -1) {
+            Ext.raise({
+                msg  : 'the feeder for the specified \'page\' is already marked for recycling',
+                page : page
+            });
+        }
+
+        me.recycledFeeds.push(page);
+        delete me.feeder[page];
+    },
+
+
+    /**
+     * Clears this feeder. Should be called whenever the PageMap is re-initialized,
+     * for example during a complete reload of the BufferedStore which is using
+     * the PageMap.
+     *
+     */
+    clear : function() {
+
+        var me = this;
+
+        me.feeder        = {};
+        me.recycledFeeds = [];
+    },
+
+    /**
+     * Swaps the specified page in the page map. The feeder for the page must not
+     * exist already since it gets created here.
+     * This method will remove the page out of the pageMap.
+     *
+     * @param {Number} page
+     *
+     * @private
+     *
+     * @throws if page is not a number or less than 1, or if the page was already
+     * marked as recycled, or if the page is not existing, or if the feeder for
+     * the page already exists.
+     */
+    swapMapToFeeder : function(page) {
+
+        var me      = this,
+            pageMap = me.getPageMap(),
+            map     = pageMap.map,
+            feed, data;
+
+        page = parseInt(page, 10);
+
+        if (!Ext.isNumber(page) || (page < 1)) {
+            Ext.raise({
+                msg  : '\'page\' must be a number less or equal to 1',
+                page : page
+            });
+        }
+
+        if (me.recycledFeeds.indexOf(page) !== -1) {
+            Ext.raise({
+                msg  : '\'page\' is already marked for recycling, cannot use',
+                page : page
+            })
+        }
+
+        if (!map[page]) {
+            Ext.raise({
+                msg  : '\'page\' does not exist in page map',
+                page : page
+            })
+        }
+
+        if (me.feeder[page]) {
+            Ext.raise({
+                msg  : 'the feeder for the specified \'page\' already exists',
+                page : page
+            })
+        }
+
+        feed = [];
+        data = pageMap.map[page].value;
+
+        for (var i = 0, len = pageMap.getPageSize(); i < len; i++) {
+            feed.push(data[i].clone());
+        }
+
+        me.feeder[page] = feed;
+
+        pageMap.removeAtKey(page);
+
+    },
+
+
+    /**
+     * Tries to look up the feeder index for the specified page.
      * It is possible that this method returns the index of a page which also
      * exist in a PageMap. In this case, an immediate swapping from the source
      * page to the feeder should be triggered by the API.
-     * This method also considers that the PageRange specified in range
-     * is not necessarily complete, and checks the right-hand side for further
-     * neighbour pages.
+     * This method will determine the existing PageRange for the specified page.
+     * "direction" can be used to specify where the feeder should be looked up,
+     * e.g. -1 for the start of the page range, 1 for the end of the page range.
+     * This method also considers that beyond the first or last page
+     * (depending on direction) might exist a feeder which can be used.
      *
-     * @param {conjoon.cn_core.data.pageMap.PageRange} range
+     * @param {Number} page
+     * @param {Number} direction
      *
      * @return {Number} The index of the feeder to use, which might exist or
      * might not exist. It is safe to use the feeder at the index or to
@@ -130,33 +418,69 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @private
      *
-     * @throws if range is not an instance of conjoon.cn_core.data.pageMap.PageRange
+     * @throws if any of the specified arguments do not satisfy the parameter
+     * conditions, or if conjoon.data.pageMap.PageMapUtil#getPageRangeForPage
+     * throws an exception
      */
-    findFeederIndexForRange : function(range) {
+    findFeederIndexForPage : function(page, direction) {
 
         var me      = this,
             pageMap = me.getPageMap(),
             map     = pageMap.map,
-            start, end ,ind;
+            start, end ,ind, direction,
+            range, cmp, feederIndex;
 
-        if (!(range instanceof conjoon.cn_core.data.pageMap.PageRange)) {
+        direction = parseInt(direction, 10);
+        page      = parseInt(page, 10);
+
+        if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg     : '\'range\' must be an instance of conjoon.cn_core.data.pageMap.PageRange',
-                range : range
+                msg  : '\'page\' must be a number less or equal to 1',
+                page : page
             });
+        }
+
+        if (!Ext.isNumber(direction) || (direction !== 1 && direction !== -1)) {
+            Ext.raise({
+                msg       : '\'direction\' must be -1 or 1',
+                direction : direction
+            });
+        }
+
+        range = conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForPage(page, pageMap);
+
+        if (range === null) {
+            // no pageRange found, lets have a look if the page
+            // can requirements can be satisfied by an existing feeder
+            return me.canUseFeederAt(page) ? page : -1;
+
         }
 
         start = range.getFirst();
         end   = range.getLast();
-        ind   = end;
 
-        while (map[end]) {
-            end++;
-        }
-
-        for (var i = end; i >= start; i--) {
-            if (me.canUseFeederAt(i)) {
-                return i;
+        // let's walk up and find a possible feeder index
+        if (direction > 0) {
+            cmp = end;
+            while (map[cmp]) {
+                end = cmp;
+                cmp++;
+            }
+            for (var i = end + 1; i >= start; i--) {
+                if (me.canUseFeederAt(i)) {
+                    return i;
+                }
+            }
+        } else {
+            cmp = start;
+            while (map[cmp]) {
+                start = cmp;
+                cmp--;
+            }
+            for (var i = Math.max(start - 1, 1); i <= end; i++) {
+                if (me.canUseFeederAt(i)) {
+                    return i;
+                }
             }
         }
 
@@ -177,7 +501,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @private
      *
-     * @throws if page is not a number or less than 1
+     * @throws if page is not a number or less than 1, or if a feeder was found
+     * for which the PageMap still exists
      */
     canUseFeederAt : function(page) {
 
@@ -198,6 +523,13 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         if (me.feeder[page]) {
+            if (pageMap.map[page]) {
+                Ext.raise({
+                    msg   : 'a feeder for \'page\' exists, but the page exists ' +
+                            'also in the PageMap',
+                    page  : page
+                });
+            }
             return true;
         }
 
@@ -217,10 +549,15 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * be reloaded IF the representing page is requested in the view again.
      *
      * @param {Number} page
+     *
+     * @throws if the feed is marked for recycling and the page exists in the
+     * pageMap
      */
     isFeedMarkedForRecycling : function(page) {
 
-        var me = this;
+        var me          = this,
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+             pageMap     = me.getPageMap();
 
         page = parseInt(page, 10);
 
@@ -234,6 +571,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         if (me.recycledFeeds.indexOf(page) === -1) {
             return false;
         }
+
+       if (pageMap.map[page]) {
+           Ext.raise({
+               msg  : 'the feed for the specified \'page\' is marked for recycling, ' +
+                      'but still exists in the PageMap',
+               page : page
+           })
+       }
 
         return true;
     }
