@@ -195,7 +195,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             fromRange,
             toRange,
             map,
-            toPage, fromPage, maintainIndex;
+            toPage, fromPage;
 
         if (!(from instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
@@ -248,26 +248,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         toPage   = to.getPage();
         fromPage = from.getPage();
 
-        /**
-         * iterate through indexMap to make sure indexOf works properly after
-         * moving records.
-         */
-        maintainIndex = function() {
-
-            var pageSize   = pageMap.getPageSize(),
-                storeIndex = (Math.min(toPage, fromPage) - 1) * pageSize,
-                start      = Math.min(toPage, fromPage),
-                len        = Math.max(toPage, fromPage),
-                page;
-
-           for (var i = start; i <= len; i++) {
-                page = pageMap.map[i];
-                for (var a = 0, lena = pageSize; a < lena; a++) {
-                    pageMap.indexMap[page.value[a].internalId] = storeIndex++;
-                }
-            }
-        };
-
         map[toPage].value.splice(to.getIndex(), 0, fromRecord);
 
         if (toPage === fromPage && from.getIndex() > to.getIndex()) {
@@ -288,8 +268,69 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             }
         }
 
-        maintainIndex();
+        me.maintainIndexMap(conjoon.cn_core.data.pageMap.PageRange.createFor(
+            Math.min(fromPage, toPage),
+            Math.max(fromPage, toPage)
+        ), pageMap);
         return true;
+    },
+
+
+    /**
+     * Maintains the indexMap index for the PageMaps index map so the view is
+     * able to properly reference records once the position of data has
+     * been changed due to moving / removing data.
+     *
+     * @param {conjoon.cn_core.data.pageMap.PageRange} pageRange the page range
+     * for which re-computing the index map should occur
+     * @param {Ext.data.PageMap}  the PageMap which indexMap should be updated
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if pageRange
+     * is not an instance of {conjoon.cn_core.data.pageMap.PageRange}, or if any
+     * map in the specified pageRange does not exist
+     */
+    maintainIndexMap : function(pageRange, pageMap){
+
+        var pageSize, storeIndex, start, end, indexMap,values, page;
+
+        if (!(pageRange instanceof conjoon.cn_core.data.pageMap.PageRange)) {
+            Ext.raise({
+                msg       : '\'pageRange\' must be an instance of conjoon.cn_core.data.pageMap.PageRange',
+                pageRange : pageRange
+            });
+        }
+
+        if (!(pageMap instanceof Ext.data.PageMap)) {
+            Ext.raise({
+                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                pageMap : pageMap
+            });
+        }
+
+
+        pageSize   = pageMap.getPageSize(),
+        storeIndex = (pageRange.getFirst() - 1) * pageSize,
+        start      = pageRange.getFirst()
+        end        = pageRange.getLast(),
+        indexMap   = pageMap.indexMap;
+
+        for (var i = start; i <= end; i++) {
+
+            page = pageMap.map[i];
+
+            if (!page) {
+                Ext.raise({
+                    msg  : 'the index for the specified PageRange does not exist in the PageMap',
+                    page : i
+                });
+            }
+
+            values = page.value;
+            for (var a = 0, lena = pageSize; a < lena; a++) {
+                indexMap[values[a].internalId] = storeIndex++;
+            }
+        }
+
     },
 
 

@@ -381,6 +381,141 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             })
         });
 
+
+        t.it("maintainIndexMap() - exceptions", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap(),
+                range;
+
+            try{PageMapUtil.maintainIndexMap(null)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('pagerange');
+            exc = undefined;
+
+            try{PageMapUtil.maintainIndexMap(PageRange.create(1, 2, 3, 4, 5, 6))}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('pagemap');
+            exc = undefined;
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(5);
+
+                try{PageMapUtil.maintainIndexMap(PageRange.create(1, 2, 3, 4, 5, 6), pageMap)}catch(e){exc = e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+                exc = undefined;
+
+            });
+
+        });
+
+
+        t.it("maintainIndexMap()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap(),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+                range = [1, 2, 3];
+
+                fakeIndex = 9999;
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        pageMap.indexMap[map[i].value[a].internalId] = fakeIndex++;
+                    }
+                }
+
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            pageMap.indexMap[map[i].value[a].internalId]
+                        ).not.toBe((i - 1) * pageMap.getPageSize() + a);
+                    }
+                }
+
+                PageMapUtil.maintainIndexMap(PageRange.create(range), pageMap);
+
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            pageMap.indexMap[map[i].value[a].internalId]
+                        ).toBe((i - 1) * pageMap.getPageSize() + a);
+                        t.expect(
+                            pageMap.getStore().getAt((i - 1) * pageMap.getPageSize() + a)
+                        ).toBe(map[i].value[a]);
+                    }
+                }
+            });
+
+        });
+
+
+
+        t.it("maintainIndexMap() - after remove", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap(),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+                range = [4, 5, 6];
+
+                pageMap.removeAtKey(1);
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(3);
+
+
+                fakeIndex = 9999;
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        pageMap.indexMap[map[i].value[a].internalId] = fakeIndex++;
+                    }
+                }
+
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            pageMap.indexMap[map[i].value[a].internalId]
+                        ).not.toBe((i - 1) * pageMap.getPageSize() + a);
+                    }
+                }
+
+                PageMapUtil.maintainIndexMap(PageRange.create(range), pageMap);
+
+                for (var i = range[0], len = range[range.length - 1]; i <= len; i++) {
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            pageMap.indexMap[map[i].value[a].internalId]
+                        ).toBe((i - 1) * pageMap.getPageSize() + a);
+                        t.expect(
+                            pageMap.getStore().getAt((i - 1) * pageMap.getPageSize() + a)
+                        ).toBe(map[i].value[a]);
+                    }
+                }
+
+            });
+
+        });
+
+
         t.it('moveRecord() - exceptions', function(t) {
 
             var exc, e,
@@ -526,6 +661,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 checkRecords(pageMap, t);
             });
         });
+
 
         t.it('moveRecord() - same page, t > s', function(t) {
 
