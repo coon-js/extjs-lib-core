@@ -183,13 +183,19 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
             range = PageMapUtil.getPageRangeForPage(page, pageMap);
             range = range.toArray();
-            range = range.slice(range.indexOf(page), range.length)
+            if (direction === 1) {
+                range = range.slice(range.indexOf(page), range.length)
+            } else {
+                range = range.slice(0, range.indexOf(page) + 1);
+            }
+
             start = range[0];
             end   = range.pop();
 
             feed = me.feeder[index];
 
             if (direction === 1) {
+                // feed from the bottom of the last feed
                 items = feed.splice(
                     0,
                     Math.min(targetLength, feed.length)
@@ -205,16 +211,39 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 }
 
                 map[end].value = map[end].value.concat(items);
+            } else if (direction === -1) {
 
-                targetLength -= items.length;
+                // feed from the top of the first feed
+                items = feed.splice(
+                    Math.max(0, feed.length - targetLength),
+                    Math.min(targetLength, feed.length)
+                );
+
+                if (feed.length == 0) {
+                    me.recycleFeeder(index);
+                }
+
+                for (var i = start; i < end; i++) {
+
+                    Array.prototype.unshift.apply(
+                        map[i + 1].value,
+                        map[i].value.splice(
+                            map[i].value - items.length, items.length
+                        )
+                    );
+                }
+
+                Array.prototype.unshift.apply(map[start].value, items);
             }
+
+            targetLength -= items.length;
 
         }
 
 
 
 
-
+        console.log("UPDATE INDEX MAP?");
 
 
 
@@ -407,7 +436,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * "direction" can be used to specify where the feeder should be looked up,
      * e.g. -1 for the start of the page range, 1 for the end of the page range.
      * This method also considers that beyond the first or last page
-     * (depending on direction) might exist a feeder which can be used.
+     * (depending on direction) might exist a feeder which can be used. This
+     * method is guaranteed to never return a feederIndex which equals to the
+     * specified page, since this means that in the specified direction no
+     * feeder exists which couls possibly be used.
      *
      * @param {Number} page
      * @param {Number} direction
@@ -427,8 +459,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         var me      = this,
             pageMap = me.getPageMap(),
             map     = pageMap.map,
-            start, end ,ind, direction,
-            range, cmp, feederIndex;
+            feeder  = me.feeder,
+            start, end, direction,
+            range, cmp, feederIndex = -1;
 
         direction = parseInt(direction, 10);
         page      = parseInt(page, 10);
@@ -450,9 +483,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         range = conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForPage(page, pageMap);
 
         if (range === null) {
-            // no pageRange found, lets have a look if the page
-            // can requirements can be satisfied by an existing feeder
-            return me.canUseFeederAt(page) ? page : -1;
+            // no pageRange found
+            return -1;
 
         }
 
@@ -466,9 +498,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 end = cmp;
                 cmp++;
             }
+            // adjust start to the page range next to the requested page,
+            // including the page itself. e.g.
+            //    page : 5
+            //    pageRange : [1, 2, 3, 4, 5, 6, 7, 8, 9]
             for (var i = end + 1; i >= start; i--) {
                 if (me.canUseFeederAt(i)) {
-                    return i;
+                    feederIndex =  i;
+                    break;
                 }
             }
         } else {
@@ -479,12 +516,18 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
             for (var i = Math.max(start - 1, 1); i <= end; i++) {
                 if (me.canUseFeederAt(i)) {
-                    return i;
+                    feederIndex =  i;
+                    break;
                 }
             }
         }
 
-        return -1;
+
+        if (feederIndex === page) {
+            return -1;
+        }
+
+        return feederIndex;
     },
 
 
@@ -493,7 +536,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * if it is not part of the pending collector already. It will also return
      * true, if the feeder is already existing (NOT marked for recycling). It
      * will return false if the pageMap.map for the page is not existing, after
-     * the previous tests did not satisfy their codnitions.
+     * the previous tests did not satisfy their conditions..
      *
      * @param {Number} page
      *
@@ -506,10 +549,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     canUseFeederAt : function(page) {
 
-        var me          = this,
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-            page        = parseInt(page, 10),
-            pageMap     = me.getPageMap();
+        var me      = this,
+            page    = parseInt(page, 10),
+            pageMap = me.getPageMap();
 
         if (!Ext.isNumber(page) || page < 1) {
             Ext.raise({

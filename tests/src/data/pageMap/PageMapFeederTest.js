@@ -196,10 +196,10 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
             t.expect(feeder.findFeederIndexForPage(7, 1)).toBe(12);
 
             feeder.feeder[6] = {};
-            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(4);
+            t.expect(feeder.findFeederIndexForPage(4, 1)).toBe(-1);
 
             feeder.feeder[5] = {};
-            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(5);
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(-1);
 
             feeder.getPageMap().removeAtKey(1);
             t.expect(feeder.findFeederIndexForPage(1, 1)).toBe(-1);
@@ -253,7 +253,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
             t.expect(feeder.findFeederIndexForPage(4, -1)).toBe(2);
 
             feeder.feeder[5] = {};
-            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(5);
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(-1);
 
             feeder.getPageMap().removeAtKey(1);
             t.expect(feeder.findFeederIndexForPage(1, -1)).toBe(-1);
@@ -350,6 +350,67 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
 
     });
+
+
+    t.it('findFeederIndexForPage() - no siblings', function(t) {
+        var exc, e,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(6)
+
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(-1);
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(-1);
+        });
+    });
+
+
+    t.it('findFeederIndexForPage() - no siblings (2)', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(7)
+
+            t.expect(pageMap.map[5]).toBeDefined();
+            t.expect(pageMap.map[6]).toBeDefined();
+
+            t.expect(feeder.findFeederIndexForPage(6, 1)).toBe(-1);
+            t.expect(feeder.findFeederIndexForPage(6, -1)).toBe(5); // -
+            t.expect(feeder.findFeederIndexForPage(5, -1)).toBe(-1);
+            t.expect(feeder.findFeederIndexForPage(5, 1)).toBe(6); // -
+
+        });
+    });
+
+
+    t.it('findFeederIndexForPage() - no siblings (3)', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            feeder.feeder[7] = {};
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(7)
+
+            t.expect(pageMap.map[5]).toBeDefined();
+            t.expect(pageMap.map[6]).toBeDefined();
+
+            t.expect(feeder.findFeederIndexForPage(6, 1)).toBe(7);
+        });
+    });
+
+
 
 
     t.it('swapMapToFeeder() - exceptions', function(t) {
@@ -580,8 +641,6 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
             t.expect(feeder.createFeeder(4, 1)).toBe(12);
             t.expect(feeder.feeder[12]).toBeDefined();
 
-            console.log(feeder);
-
         });
 
     });
@@ -621,6 +680,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
 
     });
+
 
 
     t.it('feedPage() - down', function(t) {
@@ -671,7 +731,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
             pageMap.removeAtKey(removePage);
 
-            feeder.createFeeder(4, 1);
+            t.expect(feeder.createFeeder(targetPage, 1)).toBe(4);
 
             t.expect(feeder.feeder[4]).toBeDefined();
             feeder.feeder[4].pop();
@@ -696,6 +756,87 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
             t.expect(pageMap.map[2].value.length).toBe(pageSize);
 
             t.expect(feeder.recycledFeeds).toEqual([4]);
+
+        });
+
+    });
+
+
+    t.it('feedPage() - up', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            removePage = 1, targetPage = 5,
+            itemCount = 3,
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(removePage);
+
+            for (var i = 0, len = itemCount; i < len; i++) {
+                pageMap.map[targetPage].value.shift();
+            }
+
+            t.expect(pageMap.map[targetPage].value.length).toBe(pageSize - itemCount);
+
+            feeder.feedPage(targetPage, -1);
+
+            var tmp = removePage + 2;
+            while (tmp < targetPage + 1) {
+                t.expect(pageMap.map[tmp].value.length).toBe(pageSize);
+                tmp++;
+            }
+
+            t.expect(feeder.feeder[removePage + 1]).toBeDefined();
+            t.expect(feeder.feeder[removePage + 1].length).toBe(pageSize - itemCount);
+
+        });
+
+    });
+
+
+
+    t.it('feedPage() - up (2)', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            removePage = 1, targetPage = 5,
+            itemCount = 25,
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(removePage);
+
+            feeder.createFeeder(targetPage, -1);
+
+            t.expect(feeder.feeder[2]).toBeDefined();
+
+            // remove in feeder
+            feeder.feeder[2].shift();
+            feeder.feeder[2].shift();
+            feeder.feeder[2].shift();
+
+
+            // remove in targetpage
+            for (var i = 0, len = itemCount; i < len; i++) {
+                pageMap.map[targetPage].value.shift();
+            }
+
+            t.expect(pageMap.map[targetPage].value.length).toBe(pageSize - itemCount);
+
+            feeder.feedPage(targetPage, -1);
+
+
+            t.expect(feeder.feeder[2]).toBeUndefined();
+            t.expect(feeder.feeder[3]).toBeDefined();
+            t.expect(feeder.feeder[3].length).toBe(22);
+            t.expect(pageMap.map[3]).toBeUndefined();
+            t.expect(pageMap.map[4]).toBeDefined()
+            t.expect(pageMap.map[4].value.length).toBe(pageSize);
 
         });
 
