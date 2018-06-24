@@ -62,13 +62,22 @@ describe('conjoon.cn_core.UtilTest', function(t) {
                 value     : ['1', 2, '3'],
                 expected  : [[1, 2, 3]]
             }, {
+                value     : [3, 4, 5, 4, 5],
+                expected  : [[3, 4, 5]]
+            }, {
                 value     : ['1', 2, '3', 3, 16, 99, 4, 5, 6, 9, 10 , 11, '7', 15],
                 expected  : [[1, 2, 3, 4, 5, 6, 7], [9 ,10, 11], [15, 16], [99]]
-            }], test;
+            }], test, exc, e;
+
+            try{conjoon.cn_core.Util.groupIndices('foo');}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+
 
             for (var i = 0, len = tests.length; i < len; i++) {
                 test = tests[i];
 
+                t.expect(conjoon.cn_core.Util.groupIndices(test.value)).not.toBe(test.value);
                 t.expect(conjoon.cn_core.Util.groupIndices(test.value)).toEqual(test.expected);
             }
         });

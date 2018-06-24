@@ -138,11 +138,20 @@ Ext.define('conjoon.cn_core.Util', {
      * @param {Array} list The list of values to return the grouped indices from
      *
      * @return {Array} The ordered, grouped list of indices
+     *
+     * @throws if list is not an array
      */
     groupIndices : function(list) {
 
         var groups = [],
             pages;
+
+        if (!Ext.isArray(list)) {
+            Ext.raise({
+                msg  : '\'list\' must be an array',
+                list : list
+            })
+        }
 
         // parse, filter, sort
         pages = list.map(function(v){return parseInt(v, 10)});
