@@ -798,16 +798,21 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
 
 
+
     t.it('feedPage() - up (2)', function(t) {
 
         var exc, e,
-            feeder  = createFeeder(),
-            pageMap = feeder.getPageMap(),
-            removePage = 1, targetPage = 5,
-            itemCount = 25,
-            pageSize = pageMap.getPageSize();
+            feeder      = createFeeder(),
+            pageMap     = feeder.getPageMap(),
+            removePage  = 1, targetPage = 5,
+            itemCount   = 25,
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize    = pageMap.getPageSize(),
+            indizes     = [] ;
 
         t.waitForMs(250, function() {
+
+            t.isCalled('maintainIndexMap', PageMapUtil);
 
             pageMap.removeAtKey(removePage);
 
@@ -815,15 +820,16 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
             t.expect(feeder.feeder[2]).toBeDefined();
 
-            // remove in feeder
-            feeder.feeder[2].shift();
-            feeder.feeder[2].shift();
-            feeder.feeder[2].shift();
+            // remove in feeder and make sure indexMap is updated
+            delete pageMap.indexMap[feeder.feeder[2].pop().internalId];
+            delete pageMap.indexMap[feeder.feeder[2].pop().internalId];
+            delete pageMap.indexMap[feeder.feeder[2].pop().internalId];
 
 
             // remove in targetpage
             for (var i = 0, len = itemCount; i < len; i++) {
-                pageMap.map[targetPage].value.shift();
+                delete pageMap.indexMap[
+                    pageMap.map[targetPage].value.shift().internalId];
             }
 
             t.expect(pageMap.map[targetPage].value.length).toBe(pageSize - itemCount);
@@ -837,6 +843,22 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
             t.expect(pageMap.map[3]).toBeUndefined();
             t.expect(pageMap.map[4]).toBeDefined()
             t.expect(pageMap.map[4].value.length).toBe(pageSize);
+
+            for (var i in pageMap.map) {
+                for (var a = 0, lena = pageMap.map[i].value.length; a < lena; a++) {
+                    indizes.push(pageMap.indexMap[pageMap.map[i].value[a].internalId]);
+                }
+            }
+
+            for (var i = 0, len = indizes.length; i < len; i++) {
+                if (!indizes[i]) {
+                    t.fail("unexpected undefined index in indexMap: "  + i + '; ' + indizes[i]);
+                }
+                if (indizes.indexOf(indizes[i], i + 1) !== -1) {
+                    t.fail("unexpected duplicate index in indexMap: " + i + '; ' + indizes[i]);
+                }
+            }
+
 
         });
 

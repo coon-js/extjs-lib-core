@@ -35,7 +35,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
     requires : [
         'conjoon.cn_core.data.pageMap.PageRange',
-        'conjoon.cn_core.data.pageMap.PageMapUtil'
+        'conjoon.cn_core.data.pageMap.PageMapUtil',
+        'conjoon.cn_core.Util'
     ],
 
     config : {
@@ -140,10 +141,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     feedPage : function(page, direction) {
 
-        var me          = this,
-            pageMap     = me.getPageMap(),
-            map         = pageMap.map,
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+        var me             = this,
+            pageMap        = me.getPageMap(),
+            map            = pageMap.map,
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageRange      = conjoon.cn_core.data.pageMap.PageRange,
+            maintainRanges = [],
             index, targetLength, items, feed, range, start, end;
 
         if (!Ext.isNumber(page) || (page < 1)) {
@@ -188,6 +191,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             } else {
                 range = range.slice(0, range.indexOf(page) + 1);
             }
+
+            maintainRanges = maintainRanges.concat(range);
+            maintainRanges.indexOf(index) !== -1 &&
+                maintainRanges.splice(maintainRanges.indexOf(index), 1);
 
             start = range[0];
             end   = range[range.length - 1];
@@ -238,6 +245,19 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
             targetLength -= items.length;
 
+        }
+
+        maintainRanges = conjoon.cn_core.Util.groupIndices(maintainRanges);
+
+        for (var i = 0, len = maintainRanges.length; i < len; i++) {
+
+            PageMapUtil.maintainIndexMap(
+                PageRange.createFor(
+                    maintainRanges[i][0],
+                    maintainRanges[i][maintainRanges[i].length - 1]
+                ),
+                pageMap
+            )
         }
     },
 
@@ -413,6 +433,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         me.feeder[page] = feed;
+
+        // this will clear the indexMap for the registered records and
+        // their internalIds
 
         pageMap.removeAtKey(page);
     },
