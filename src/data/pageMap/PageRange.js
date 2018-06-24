@@ -62,7 +62,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
          * Tries to cerate a new range based on the information given in data,
          * which is either an array which is assumed to be a sorted list of numbers
          * representing a page range, or an argument list of page ranges in the
-         * proper order..
+         * proper order.
          *
          * @param {Mixed} data
          *
