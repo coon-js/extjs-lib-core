@@ -190,7 +190,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
 
             start = range[0];
-            end   = range.pop();
+            end   = range[range.length - 1];
 
             feed = me.feeder[index];
 
@@ -239,14 +239,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             targetLength -= items.length;
 
         }
-
-
-
-
-        console.log("UPDATE INDEX MAP?");
-
-
-
     },
 
 
@@ -423,7 +415,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         me.feeder[page] = feed;
 
         pageMap.removeAtKey(page);
-
     },
 
 
