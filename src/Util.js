@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,6 +160,56 @@ Ext.define('conjoon.cn_core.Util', {
         }, -1);
 
         return groups;
+    },
+
+
+    /**
+     * Creates the range for the specified start and end.
+     *
+     * @example
+     *      createRange(3, 4) // [3, 4, 5]
+     *
+     *      createRange(5, 5) // [5]
+     *
+     *
+     * @param {Number} start
+     * @param {Number} end
+     *
+     * @return {Array}
+     *
+     * @throws if start is not a number or less than 1, or if end is not a number
+     * or if end is less than start
+     */
+    createRange : function(start, end) {
+
+        var ret;
+
+        start = parseInt(start, 10);
+        end   = parseInt(end, 10);
+
+        if (!Ext.isNumber(start)) {
+            Ext.raise({
+                msg   : '\'start\' must be a number',
+                start : start
+            });
+        }
+
+        if (!Ext.isNumber(end) || end < start) {
+            Ext.raise({
+                msg   : '\'end\' must be a number equal to or greater than start',
+                end   : end,
+                start : start
+            });
+        }
+
+        ret = new Array(Math.abs(start - end) + 1);
+        // needs to be filled so we can apply map to it
+        ret.fill(undefined);
+
+        return ret.map(function() {
+            return start++;
+        });
+
     }
 
 

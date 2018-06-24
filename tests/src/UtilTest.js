@@ -73,6 +73,59 @@ describe('conjoon.cn_core.UtilTest', function(t) {
             }
         });
 
-    });
 
-});
+        t.it('createRange()', function(t) {
+
+            var Util = conjoon.cn_core.Util,
+                exc, e,
+                tests = [{
+                    value    : ['1', 3],
+                    expected : [1, 2, 3]
+                }, {
+                    value     : [1, 2],
+                    expected  : [1, 2]
+                }, {
+                    value     : [1, '5'],
+                    expected  : [1, 2, 3, 4, 5]
+                }, {
+                    value     : [9, 12],
+                    expected  : [9, 10, 11, 12]
+                }, {
+                    value     : [0, 2],
+                    expected  : [0, 1, 2]
+                }, {
+                    value     : [-4, -3],
+                    expected  : [-4, -3]
+                }], test;
+
+
+            try{Util.createRange('foo');}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('start');
+            t.expect(exc.msg.toLowerCase()).not.toContain('end');
+
+            try{Util.createRange(1, 'bar');}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+            t.expect(exc.msg.toLowerCase()).toContain('end');
+
+            try{Util.createRange(1, -9);}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('greater than');
+            t.expect(exc.msg.toLowerCase()).toContain('end');
+
+
+
+            for (var i = 0, len = tests.length; i < len; i++) {
+                test = tests[i];
+
+                t.expect(Util.createRange.apply(null, test.value)).toEqual(test.expected);
+            }
+        });
+
+
+})});

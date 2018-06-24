@@ -47,8 +47,20 @@
  *          // throws, pages was already set
  *          range.setPages([6,7,8]);
  *
+ *          var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+ *              pages : [3]
+ *          });
+ *
+ *          range.getFirst(); // 3
+ *          range.getLast();  // 3
+ *
  */
 Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
+
+
+    requires : [
+        'conjoon.cn_core.Util'
+    ],
 
 
     config : {
@@ -89,6 +101,28 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
 
             return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
                 pages : data
+            });
+        },
+
+
+        /**
+         * Creates the range for the specified start and endpage.
+         *
+         * @example
+         *      createFor(3, 4) // [3, 4, 5]
+         *
+         *
+         * @param {Number} start
+         * @param {Number} end
+         *
+         * @return {conjoon.cn_core.data.pageMap.PageRange}
+         *
+         * @throws any exception thrown by {conjoon.cn_core.Util#createRange}
+         * or by this class constructor
+         */
+        createFor : function(start, end) {
+            return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : conjoon.cn_core.Util.createRange(start, end)
             });
         }
 
@@ -158,6 +192,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
                         'and must be a number',
                 pages : pages
             });
+        }
+
+        if (pages.length === 1) {
+            return pages;
         }
 
         for (var i = 1, len = pages.length; i < len; i++) {

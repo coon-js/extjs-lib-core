@@ -148,6 +148,32 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
     });
 
 
+    t.it('equalTo() - (2)', function(t) {
+
+        var rangeLeft = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : [3]
+            }),
+            rangeRight = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : [3]
+            }),
+            rangeNope_1 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : [5]
+            }),
+            rangeNope_2 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : [6]
+            }), exc, e;
+
+
+        t.expect(rangeLeft.equalTo(rangeLeft)).toBe(true);
+        t.expect(rangeLeft.equalTo(rangeRight)).toBe(true);
+        t.expect(rangeRight.equalTo(rangeLeft)).toBe(true);
+        t.expect(rangeLeft.equalTo(rangeNope_1)).toBe(false);
+        t.expect(rangeLeft.equalTo(rangeNope_2)).toBe(false);
+        t.expect(rangeNope_1.equalTo(rangeNope_2)).toBe(false);
+
+    });
+
+
     t.it('toArray()', function(t) {
 
         var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
@@ -156,25 +182,35 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
             arr;
 
         arr = range.toArray();
-
         t.expect(arr).toEqual([3, 4, 5]);
 
         // mae sure no reference to the original page array is returned
         arr[0] = 8;
-
         t.expect(range.getFirst()).toBe(3);
 
 
+        range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pages : [3]
+        });
+
+        arr = range.toArray();
+        t.expect(arr).toEqual([3]);
+
+        // mae sure no reference to the original page array is returned
+        arr[0] = 3;
+        t.expect(range.getFirst()).toBe(3);
+        t.expect(range.getLast()).toBe(3);
 
     });
 
 
 
-    t.it('conjoon.cn_core.data.pageMap.RecordPosition.create()', function(t) {
+    t.it('conjoon.cn_core.data.pageMap.PageRange.create()', function(t) {
 
         var PageRange = conjoon.cn_core.data.pageMap.PageRange,
             exc, e, range,
             tests = [
+                [4],
                 [1, 2],
                 [4, 5],
                 [211, 212],
@@ -228,6 +264,27 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
             range = PageRange.create.apply(null, tests[i]);
             t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
             t.expect(range.toArray()).toEqual(tests[i]);
+        }
+
+    });
+
+
+    t.it('conjoon.cn_core.data.pageMap.PageRange.createFor()', function(t) {
+
+        t.isCalledNTimes('createRange', conjoon.cn_core.Util, 2);
+
+        var PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            exc, e, range,
+            tests = [
+                [1, 2],
+                [4, 5]
+            ];
+
+
+        // with arguments as args
+        for (var i = 0, len = tests.length; i < len; i++) {
+            range = PageRange.createFor.apply(null, tests[i]);
+            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
         }
 
     });
