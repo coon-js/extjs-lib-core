@@ -21,7 +21,10 @@ harness.configure({
         'conjoon.test'    : './src'
     },
     preload        : [
-        conjoon.tests.config.paths.extjs.js.url
+        conjoon.tests.config.paths.extjs.js.url,
+
+        // not loadable via requireOk, since this is not an ExtJS Class
+        '../src/data/pageMap/operation/ResultReason.js'
     ]
 });
 
@@ -70,6 +73,16 @@ harness.start({
         {
             group : 'pageMap',
             items : [
+                {
+                    group : 'operation',
+                    items : [
+                        'src/data/pageMap/operation/OperationTest.js',
+                        'src/data/pageMap/operation/RemoveRequestTest.js',
+                        'src/data/pageMap/operation/RequestTest.js',
+                        'src/data/pageMap/operation/ResultReasonTest.js',
+                        'src/data/pageMap/operation/ResultTest.js'
+                    ]
+                },
                 'src/data/pageMap/IndexLookupTest.js',
                 'src/data/pageMap/IndexRangeTest.js',
                 'src/data/pageMap/PageMapFeederTest.js',
