@@ -27,3 +27,5 @@
 Ext.namespace('conjoon.cn_core.data.pageMap.operation.ResultReason');
 
 conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND = 404;
+
+conjoon.cn_core.data.pageMap.operation.ResultReason.OK = 200;

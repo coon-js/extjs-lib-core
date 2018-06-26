@@ -36,6 +36,7 @@ describe('conjoon.cn_core.data.pageMap.operation.ResultReasonTest', function(t) 
 
             t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND).toBeDefined();
 
+            t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason.OK).toBeDefined();
         });
 
 
