@@ -51,6 +51,21 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
             return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 pageMap : createPageMap()
             });
+        },
+        testOp = function(op, expected, t) {
+
+            var Operation = conjoon.cn_core.data.pageMap.operation;
+            t.expect(op instanceof Operation.Operation).toBe(true);
+            t.expect(op.getRequest() instanceof Operation.RemoveRequest).toBe(true);
+            t.expect(op.getResult() instanceof Operation.Result).toBe(true);
+
+            t.expect(op.getResult().getSuccess()).toBe(expected.success);
+
+            if (expected.reason) {
+                t.expect(op.getResult().getReason()).toBe(expected.reason);
+            }
+
+
         };
 
 // +----------------------------------------------------------------------------
@@ -797,8 +812,6 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
-
-
     t.it('feedPage() - up (2)', function(t) {
 
         var exc, e,
@@ -859,6 +872,73 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
                 }
             }
 
+
+        });
+
+    });
+
+
+
+    t.it('removeRecord() - exceptions', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap  = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            try {feeder.removeRecord('uioi')} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+            t.expect(exc.msg.toLowerCase()).toContain('record');
+            exc = undefined;
+
+
+        });
+
+    });
+
+
+    t.it('removeRecord() - not found', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap  = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            var op = feeder.removeRecord(prop(10000000000), 1);
+
+
+            testOp(op, {
+                success : false,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND
+            }, t);
+        });
+
+    });
+
+
+    t.it('removeRecord() - found', function(t) {
+
+        var exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            rec = pageMap.map[3].value[5];
+
+            t.expect(pageMap.map[3].value.length).toBe(25);
+            op = feeder.removeRecord(rec, 1);
+            t.expect(pageMap.map[3].value.length).toBe(25);
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
 
         });
 

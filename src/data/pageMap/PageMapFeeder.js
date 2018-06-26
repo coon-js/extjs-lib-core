@@ -36,7 +36,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     requires : [
         'conjoon.cn_core.data.pageMap.PageRange',
         'conjoon.cn_core.data.pageMap.PageMapUtil',
-        'conjoon.cn_core.Util'
+        'conjoon.cn_core.Util',
+        'conjoon.cn_core.data.pageMap.operation.Operation',
+        'conjoon.cn_core.data.pageMap.operation.RemoveRequest',
+        'conjoon.cn_core.data.pageMap.operation.ResultReason'
     ],
 
     config : {
@@ -120,6 +123,74 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
         return pageMap;
+    },
+
+
+    /**
+     * Removes the specified record.
+     * The empty space in the PageMap's map will be refeed by this feeder,
+     * by a call to #feedPage.
+     * The result of this operation will be available in the returned
+     * {conjoon.cn_core.data.pageMap.Operation}-object.
+     *
+     * @param {Ext.data.Model} record The record to remove
+     * @param {Number} direction -1 for feed-data from before this record's
+     * position, 1 for feed data from after this record's position.
+     *
+     * @return {conjoon.cn_core.data.pageMap.Operation} The operation with the
+     * result, which hints to the state of this PageMap.
+     *
+     * @throws if record is not an instance of {Ext.data.Model}, or any exception
+     * thrown by #feedPage
+     */
+    removeRecord : function(record, direction) {
+
+        var me          = this,
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageMap, index, op, position, page, pageIndex, map,
+            ResultReason;
+
+
+        if (!(record instanceof Ext.data.Model)) {
+            Ext.raise({
+                msg    : '\'record\' must be an instance of Ext.data.Model',
+                record : record
+            });
+        }
+
+        ResultReason = conjoon.cn_core.data.pageMap.operation.ResultReason;
+        pageMap      = me.getPageMap();
+        index        = pageMap.indexOf(record);
+
+        op = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
+            request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
+        });
+
+        if (index === -1) {
+            op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
+                success : false,
+                reason  : ResultReason.RECORD_NOT_FOUND
+            }));
+
+            return op;
+        }
+
+        position  = PageMapUtil.storeIndexToPosition(index, pageMap);
+        map       = pageMap.map;
+        page      = position.getPage();
+        pageIndex = position.getIndex();
+
+        map[page].value.splice(pageIndex, 1);
+
+        me.feedPage(page, direction);
+
+        op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
+            success : true,
+            reason  : ResultReason.OK
+        }));
+
+        return op;
+
     },
 
 
@@ -611,9 +682,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     isFeedMarkedForRecycling : function(page) {
 
-        var me          = this,
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-             pageMap     = me.getPageMap();
+        var me      = this,
+            pageMap = me.getPageMap();
 
         page = parseInt(page, 10);
 
