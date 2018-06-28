@@ -945,4 +945,94 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
+
+    t.it('removeRecord() - found in feed', function(t) {
+
+        var exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            feeds;
+
+        t.waitForMs(250, function() {
+
+            feeds = feeder.feeder;
+
+            pageMap.removeAtKey(1);
+            pageMap.removeAtKey(5);
+
+            rec = pageMap.map[3].value[5];
+
+            t.expect(pageMap.map[3].value.length).toBe(25);
+            op = feeder.removeRecord(rec, 1);
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+            t.expect(pageMap.map[3].value.length).toBe(25);
+
+
+            t.expect(feeder.feeder[4]).toBeDefined();
+            t.expect(feeder.feeder[4].length).toBe(24);
+
+            rec = feeds[4][2];
+            op  = feeder.removeRecord(rec, 1);
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+            t.expect(feeds[4].length).toBe(23);
+
+
+            // test recycle
+            feeds[4].splice(1, 22);
+            t.expect(feeds[4].length).toBe(1);
+            rec = feeds[4][0];
+            op  = feeder.removeRecord(rec, 1);
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+            t.expect(feeds[4]).toBeUndefined();
+            t.expect(feeder.recycledFeeds.indexOf(4)).not.toBe(-1);
+
+
+        });
+
+    });
+
+
+    t.it('removeRecord() - all ranges properly considered', function(t) {
+
+        var exc, e,
+            feeder  = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            // [3, 4, 5] [7, 8]
+            pageMap.removeAtKey(1);
+            pageMap.removeAtKey(2);
+            // 3
+            // 4
+            // 5
+            pageMap.removeAtKey(6);
+            // 7
+            // 8
+            pageMap.removeAtKey(9);
+            pageMap.removeAtKey(10);
+
+            // remove 3, 2
+
+            feeder.removeRecord(pageMap.map[3].value[1], 1);
+
+            t.expect(feeder.feeder[5]).toBeDefined();
+
+        });
+
+    });
+
+
 })});

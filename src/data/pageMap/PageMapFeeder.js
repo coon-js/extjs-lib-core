@@ -127,11 +127,67 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
+     * Moves the record from the specified from-position to the specified to
+     * position. The result of this operation is encapsulated in the returning
+     * conjoon.cn_core.data.pageMap.Operation-object.
+     * Feeds will be considered if either from or to do not exist in the actual
+     * PageMap's map: if from and to can be found in current pages swapped to the
+     * feeder, this positions will be used if they are safe to use.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
+     *
+     * @return {conjoon.cn_core.data.pageMap.Operation}
+     */
+    moveRecord : function(from, to) {
+
+
+    },
+
+
+    /**
+     * Note:
+     * Calling APIs should consider the totalCount change of a BufferedStore
+     * which might be using the PageMap-
+     *
+     * Adds the specified record to the specified to-position, and shifts data
+     * either beyond or after the to-position.
+     * This implementation considers feeds and will shift data to it if
+     * applicable.
+     * The position will only be used for existing maps in PageMap, not for
+     * feeds.
+     * Shifted records will create pages if the shifting does not end in an
+     * already existing feed.
+     * If the shifting ends in an existing feed and the the feed will be filled
+     * up to pageSize, a page will be created for it.
+     * If shifting ends up in a recycled feed, the feed will be re-created again.
+     *
+     * @param {Ext.data.Model} record
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
+     * @param {Number} direction
+     *
+     * @return {conjoon.cn_core.data.pageMap.Operation} The operation with the
+     * result, which hints to the state of this PageMap.
+     */
+    addRecord : function(record, to, direction) {
+
+
+    },
+
+
+    /**
+     * Note:
+     * Calling APIs should consider the totalCount change of a BufferedStore
+     * which might be using the PageMap-
+     *
      * Removes the specified record.
      * The empty space in the PageMap's map will be refeed by this feeder,
      * by a call to #feedPage.
      * The result of this operation will be available in the returned
      * {conjoon.cn_core.data.pageMap.Operation}-object.
+     * If the record was not found in the PageMap's map, current feeders will be
+     * searched for it by comparing id-values (feeders do not hold references to
+     * the original records anymore9.
      *
      * @param {Ext.data.Model} record The record to remove
      * @param {Number} direction -1 for feed-data from before this record's
@@ -148,7 +204,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         var me          = this,
             PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
             pageMap, index, op, position, page, pageIndex, map,
-            ResultReason;
+            ResultReason, feed;
 
 
         if (!(record instanceof Ext.data.Model)) {
@@ -166,7 +222,42 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
         });
 
+        // look in feeds
         if (index === -1) {
+            for (var i in me.feeder) {
+                if (page !== undefined) {
+                    break;
+                }
+                for (var a = 0, lena = me.feeder[i].length; a < lena; a++) {
+                    if (me.feeder[i][a].getId() === record.getId()) {
+                        page      = i;
+                        pageIndex = a;
+                        break;
+                    }
+                }
+            }
+
+            // found. splice, recycle if necessary and return
+            if (page !== undefined) {
+                me.feeder[page].splice(pageIndex, 1);
+
+                // recycles the feeder if necessary
+                if (me.feeder[page].length == 0) {
+                    me.recycleFeeder(page);
+                }
+
+                op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
+                    success : true,
+                    reason  : ResultReason.OK
+                }));
+
+                return op;
+            }
+
+        }
+
+        // neither found in feeds nor regular map, return
+        if (index === -1 && page === undefined) {
             op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
                 success : false,
                 reason  : ResultReason.RECORD_NOT_FOUND
@@ -174,6 +265,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
             return op;
         }
+
 
         position  = PageMapUtil.storeIndexToPosition(index, pageMap);
         map       = pageMap.map;
@@ -205,6 +297,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Number} page
      * @param {Number} direction
+     * @param {String} 
      *
 
      * @throws if page is not a number or less than 1, or if direction is not -1
@@ -222,7 +315,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg  : '\'page\' must be a number less or equal to 1',
+                msg  : '\'page\' must be a number greater than 0',
                 page : page
             });
         }
@@ -356,7 +449,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg  : '\'page\' must be a number less or equal to 1',
+                msg  : '\'page\' must be a number greater than 0',
                 page : page
             });
         }
@@ -396,12 +489,13 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     recycleFeeder : function(page) {
 
-        var me      = this,
-            pageMap = me.getPageMap();
+        var me = this;
+
+        page = parseInt(page, 10);
 
         if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg  : '\'page\' must be a number less or equal to 1',
+                msg  : '\'page\' must be a number greater than 0',
                 page : page
             });
         }
@@ -470,7 +564,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg  : '\'page\' must be a number less or equal to 1',
+                msg  : '\'page\' must be a number greater than 0',
                 page : page
             });
         }
@@ -553,7 +647,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         if (!Ext.isNumber(page) || (page < 1)) {
             Ext.raise({
-                msg  : '\'page\' must be a number less or equal to 1',
+                msg  : '\'page\' must be a number greater or equal to 1',
                 page : page
             });
         }
