@@ -83,6 +83,7 @@ harness.start({
                         'src/data/pageMap/operation/ResultTest.js'
                     ]
                 },
+                'src/data/pageMap/FeedTest.js',
                 'src/data/pageMap/IndexLookupTest.js',
                 'src/data/pageMap/IndexRangeTest.js',
                 'src/data/pageMap/PageMapFeederTest.js',

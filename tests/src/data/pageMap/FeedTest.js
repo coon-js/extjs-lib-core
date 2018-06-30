@@ -1,0 +1,405 @@
+/**
+ * conjoon
+ * (c) 2007-2018 conjoon.org
+ * licensing@conjoon.org
+ *
+ * lib-cn_core
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
+
+    const
+
+        pageSize = 25,
+
+        createFeed = function(cfg) {
+        return Ext.create('conjoon.cn_core.data.pageMap.Feed', cfg);
+    },
+    prop = function(id) {
+        return Ext.create('Ext.data.Model', {
+            id : id + '' || Ext.id()
+        });
+    },
+    createProps = function(size) {
+
+        let data = [];
+
+        for (let i = 1; i < size + 1; i++) {
+            data.push(prop(i));
+        }
+
+        return data;
+    },
+    createFeedRandomFilled = function(cfg, full) {
+
+        let feed = createFeed(cfg);
+
+        for (let i = 0, len = pageSize; i < len; i++) {
+            feed.data[full ? i : i % 2] = prop();
+        }
+
+        return feed;
+    };
+
+// +----------------------------------------------------------------------------
+// |                    =~. Tests .~=
+// +----------------------------------------------------------------------------
+
+    t.requireOk('conjoon.cn_core.data.pageMap.Feed', function() {
+
+        const Feed = conjoon.cn_core.data.pageMap.Feed;
+
+    t.it('constructor()', function(t) {
+
+        let exc, e,
+            Feed = conjoon.cn_core.data.pageMap.Feed;
+
+        t.expect(Feed.POSITION_START).toBeDefined();
+        t.expect(Feed.POSITION_END).toBeDefined();
+
+        t.expect(Feed.POSITION_END).not.toBe(Feed.POSITION_START);
+
+        try{createFeed()}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('is required');
+        t.expect(exc.msg.toLowerCase()).toContain('size');
+
+        try{createFeed({size : pageSize})}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('is required');
+        t.expect(exc.msg.toLowerCase()).toContain('position');
+
+        let feed = createFeed({
+            size     : pageSize,
+            position : Feed.POSITION_START
+        });
+
+
+        t.expect(feed.getSize()).toBe(pageSize);
+        t.expect(feed.getPosition()).toBe(Feed.POSITION_START);
+        t.expect(feed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+
+
+        try{feed.setSize(32)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('already set');
+        t.expect(exc.msg.toLowerCase()).toContain('size');
+
+        try{feed.setPosition(Feed.POSITION_START)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('already set');
+        t.expect(exc.msg.toLowerCase()).toContain('position');
+
+        t.expect(feed.data).toBeDefined();
+        t.expect(feed.data.length).toBe(feed.getSize());
+
+
+    });
+
+
+    t.it('hasUndefined()', function(t) {
+
+        let feed = createFeed({
+            size     : pageSize,
+            position : Feed.POSITION_START
+        });
+
+        t.expect(feed.hasUndefined()).toBe(true);
+
+        feed = createFeedRandomFilled({
+            size : pageSize,
+            position : Feed.POSITION_START
+        }, true);
+        t.expect(feed.hasUndefined()).toBe(false);
+        feed.data[0] = undefined;
+        t.expect(feed.hasUndefined()).toBe(true);
+
+        feed = createFeedRandomFilled({
+            size : pageSize,
+            position : Feed.POSITION_END
+        }, true);
+        t.expect(feed.hasUndefined()).toBe(false);
+        feed.data[pageSize -1] = undefined;
+        t.expect(feed.hasUndefined()).toBe(true);
+
+    });
+
+
+    t.it('toArray()', function(t) {
+
+        let feed = createFeed({
+                size     : pageSize,
+                position : Feed.POSITION_START
+            }), arr;
+
+
+        arr = feed.toArray();
+
+        t.expect(Ext.isArray(arr)).toBe(true);
+
+        t.expect(arr.length).toBe(pageSize);
+
+        t.expect(arr).toBe(feed.data)
+
+    });
+
+
+    t.it('getFreeSpace()', function(t) {
+
+        let feed = createFeed({
+            size     : pageSize,
+            position : Feed.POSITION_START
+        });
+
+        t.expect(feed.getFreeSpace()).toBe(pageSize);
+
+        feed = createFeedRandomFilled({
+            size : pageSize,
+            position : Feed.POSITION_START
+        }, true);
+        feed.data[0] = undefined;
+        feed.data[1] = undefined;
+        feed.data[2] = undefined;
+        feed.data[3] = undefined;
+        t.expect(feed.getFreeSpace()).toBe(4);
+
+        feed = createFeedRandomFilled({
+            size : pageSize,
+            position : Feed.POSITION_END
+        }, true);
+        feed.data[pageSize - 1] = undefined;
+        feed.data[pageSize - 2] = undefined;
+        t.expect(feed.getFreeSpace()).toBe(2);
+
+
+
+    });
+
+
+    t.it('fill()', function(t) {
+
+        let exc, e,
+            feed = createFeed({
+                size     : pageSize,
+                position : Feed.POSITION_START
+            });
+
+
+        try {feed.fill('foo')}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be a none-empty array');
+        t.expect(exc.msg.toLowerCase()).not.toContain('ext.data.model');
+        exc = undefined;
+
+        try {feed.fill([])}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be a none-empty array');
+        t.expect(exc.msg.toLowerCase()).not.toContain('ext.data.model');
+        exc = undefined;
+
+        try {feed.fill(['foo'])}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('must be an array');
+        t.expect(exc.msg.toLowerCase()).toContain('ext.data.model');
+        exc = undefined;
+
+        t.expect(feed.fill(createProps(10))).toEqual([]);
+        t.expect(feed.getFreeSpace()).toBe(pageSize - 10);
+
+        let props = createProps(17),
+            eq    = [props[15], props[16]];
+
+        t.expect(feed.fill(props)).toEqual(eq);
+        t.expect(feed.getFreeSpace()).toBe(0);
+
+        props = createProps(pageSize);
+        t.expect(feed.fill(props)).toEqual(props);
+
+        for (let i = 0; i < pageSize; i++) {
+            if (i < 10) {
+                t.expect(feed.data[i].getId()).toBe((i + 1) + '');
+            } else {
+                t.expect(feed.data[i].getId()).toBe(((i + 1) - 10) + '');
+            }
+
+        }
+
+        // POSITION END
+        feed = createFeed({
+            size     : pageSize,
+            position : Feed.POSITION_END
+        });
+
+        t.expect(feed.fill(createProps(10))).toEqual([]);
+        t.expect(feed.getFreeSpace()).toBe(pageSize - 10);
+
+        props = createProps(17),
+        eq    = [props[0], props[1]];
+
+        t.expect(feed.fill(props)).toEqual(eq);
+        t.expect(feed.getFreeSpace()).toBe(0);
+
+        props = createProps(pageSize);
+        t.expect(feed.fill(props)).toEqual(props);
+
+        for (let i = 0; i < pageSize; i++) {
+            if (i < 15) {
+                t.expect(feed.data[i].getId()).toBe((i + 3) + '');
+            } else {
+                t.expect(feed.data[i].getId()).toBe(((i + 1) - 15) + '');
+            }
+
+        }
+    });
+
+
+    t.it('getAt()', function(t) {
+
+        let exc, e,
+            feed = createFeed({
+                size     : pageSize,
+                position : Feed.POSITION_START
+            });
+
+
+        try {feed.getAt(-1)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        t.expect(exc.msg.toLowerCase()).toContain('index');
+        exc = undefined;
+
+        try {feed.getAt(pageSize)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        t.expect(exc.msg.toLowerCase()).toContain('index');
+        exc = undefined;
+
+        feed.fill(createProps(pageSize).splice(1, pageSize -1));
+
+        t.expect(feed.getAt(0)).toBeUndefined();
+        t.expect(feed.getAt(1).getId()).toBe('2');
+        t.expect(feed.getAt(pageSize - 1).getId()).toBe('25');
+
+
+        feed = createFeed({
+            size     : pageSize,
+            position : Feed.POSITION_END
+        })
+
+        feed.fill(createProps(pageSize).splice(1, pageSize -1));
+
+        t.expect(feed.getAt(pageSize - 1)).toBeUndefined();
+        t.expect(feed.getAt(pageSize - 2).getId()).toBe('25');
+        t.expect(feed.getAt(0).getId()).toBe('2');
+    });
+
+
+    t.it('extract', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size     : 25,
+                position : conjoon.cn_core.data.pageMap.Feed.POSITION_START
+            }),
+            props = createProps(pageSize),
+            eq    = [props[pageSize - 3], props[pageSize - 2], props[pageSize - 1]];
+
+
+        try {feed.extract(-1)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        t.expect(exc.msg.toLowerCase()).toContain('count');
+        exc = undefined;
+
+        try {feed.extract(pageSize + 1)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        t.expect(exc.msg.toLowerCase()).toContain('count');
+        exc = undefined;
+
+        t.expect(feed.fill(props)).toEqual([]);
+
+        t.expect(feed.extract(3)).toEqual(eq);
+        t.expect(feed.getAt(0)).toBeUndefined();
+        t.expect(feed.getAt(1)).toBeUndefined();
+        t.expect(feed.getAt(2)).toBeUndefined();
+
+        t.expect(feed.fill(eq)).toEqual([]);
+
+        t.expect(feed.getAt(0).getId()).toBe('1');
+        t.expect(feed.getAt(1).getId()).toBe('2');
+        t.expect(feed.getAt(2).getId()).toBe('3');
+
+        t.expect(feed.getAt(pageSize - 1).getId()).toBe('25');
+        t.expect(feed.getAt(pageSize - 2).getId()).toBe('24');
+        t.expect(feed.getAt(pageSize - 3).getId()).toBe('23');
+
+        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size     : 25,
+            position : conjoon.cn_core.data.pageMap.Feed.POSITION_END
+        });
+        props = createProps(pageSize),
+        eq    = [props[0], props[1], props[2]];
+        t.expect(feed.fill(props)).toEqual([]);
+        t.expect(feed.extract(3)).toEqual(eq);
+
+        t.expect(feed.getAt(pageSize - 1)).toBeUndefined();
+        t.expect(feed.getAt(pageSize - 2)).toBeUndefined();
+        t.expect(feed.getAt(pageSize - 3)).toBeUndefined();
+    });
+
+
+    t.it('example', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size     : 25,
+            position : conjoon.cn_core.data.pageMap.Feed.POSITION_START
+        });
+
+        let data = [
+            Ext.create('Ext.data.Model', {id : '1'}),
+            Ext.create('Ext.data.Model', {id : '2'}),
+            Ext.create('Ext.data.Model', {id : '3'})
+        ];
+
+        feed.fill(data);
+
+        let size = feed.getSize();
+
+        // note for how POSITION_START will start feeding the Feed at its end.
+        t.expect(feed.getAt(size - 1).getId()).toBe('3'); // '3'
+        t.expect(feed.getAt(size - 2).getId()).toBe('2'); // '2'
+        t.expect(feed.getAt(size - 3).getId()).toBe('1'); // '1'
+
+        t.expect(feed.getAt(size - 4)).toBeUndefined(); // undefined
+        t.expect(feed.getAt(0)).toBeUndefined(); // undefined
+
+
+
+    });
+
+})});
