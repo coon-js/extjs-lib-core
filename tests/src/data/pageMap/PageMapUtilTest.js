@@ -1071,9 +1071,41 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 range = PageMapUtil.getPageRangeForPage(6, pageMap);
                 t.expect(range).toBe(null);
             });
+        });
+
+        t.it("getRightSidePageRangeForPage()", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap(),
+                range;
+
+            t.isCalled('filterPageValue', PageMapUtil);
+            t.isCalled('filterPageMapValue', PageMapUtil);
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(6);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(1, pageMap);
+                t.expect(Ext.isArray(range)).toBe(true);
+                t.expect(range.length).toBe(2);
+                t.expect(range[0].toArray()).toEqual([3, 4, 5]);
+                t.expect(range[1].toArray()).toEqual([7, 8 , 9, 10, 11, 12]);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(5, pageMap);
+                t.expect(range.length).toBe(1);
+                t.expect(range[0].toArray()).toEqual([7, 8 , 9, 10, 11, 12]);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(6, pageMap);
+                t.expect(range).toBe(null);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(7, pageMap);
+                t.expect(range).toBe(null);
 
 
-
+            });
         });
 
 

@@ -34,6 +34,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     singleton : true,
 
+    mixins : [
+        'conjoon.cn_core.data.pageMap.ArgumentFilter'
+    ],
+
     requires : [
         'conjoon.cn_core.Util',
         'conjoon.cn_core.data.pageMap.RecordPosition',
@@ -57,8 +61,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     storeIndexToPosition : function(index, pageMap) {
 
-        var me    = this,
-            index = !Ext.isNumber(index) ? -1 : parseInt(index, 10);
+        const me = this;
+
+        index = !Ext.isNumber(index) ? -1 : parseInt(index, 10);
 
         if (index < 0 ) {
             Ext.raise({
@@ -67,12 +72,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         if (index >= pageMap.getStore().getTotalCount()) {
             Ext.raise({
@@ -105,7 +105,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     positionToStoreIndex : function(position, pageMap) {
 
-        var me = this;
+        const me = this;
 
         if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
@@ -114,12 +114,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         if (position.getIndex() >= pageMap.getPageSize()) {
             Ext.raise({
@@ -189,8 +184,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     moveRecord : function(from, to, pageMap) {
 
-        var me = this,
-            fromRecord,
+        const me = this;
+
+        let fromRecord,
             toRecord,
             fromRange,
             toRange,
@@ -211,12 +207,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         // if from and to are equal we do no further checks and return true
         if (from.equalTo(to)) {
@@ -291,7 +282,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     maintainIndexMap : function(pageRange, pageMap){
 
-        var pageSize, storeIndex, start, end, indexMap,values, page;
+        const me = this;
+
+        let pageSize, storeIndex, start, end, indexMap,values, page;
 
         if (!(pageRange instanceof conjoon.cn_core.data.pageMap.PageRange)) {
             Ext.raise({
@@ -300,13 +293,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
-
+        pageMap = me.filterPageMapValue(pageMap);
 
         pageSize   = pageMap.getPageSize(),
         storeIndex = (pageRange.getFirst() - 1) * pageSize,
@@ -348,7 +335,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getRecordAt : function(position, pageMap) {
 
-        var map, page, index;
+        const me = this;
+
+        let map, page, index;
 
         if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
@@ -357,12 +346,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         map   = pageMap.map;
         page  = position.getPage();
@@ -415,13 +399,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getRightSideRange : function(record, pageMap) {
 
-        var me      = this,
+        const me      = this,
             range   = me.getRangeForRecord(record, pageMap),
             pagePos = pageMap.getPageFromRecordIndex(pageMap.indexOf(record)),
             filter  = function(value){
                           return value >= pagePos;
                       };
-
 
         return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
             pages: range.filter(filter)
@@ -435,7 +418,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @private
      */
     getRangeForRecord : function(record, pageMap) {
-        var page, pages;
+
+        const me = this;
+
+        let page, pages;
 
         if (!(record instanceof Ext.data.Model)) {
             Ext.raise({
@@ -444,12 +430,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         if (pageMap.indexOf(record) == -1) {
             Ext.raise({
@@ -471,6 +452,45 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     },
 
+    /**
+     * Returns the right side PageRanges for the specified page, not including the
+     * range this page can be found in.
+     *
+     * @param {Number} page
+     * @param {Ext.data.PageMap} pageMap
+     *
+     * @return conjoon.cn_core.data.pageMap.PageRange
+     */
+    getRightSidePageRangeForPage : function(page, pageMap) {
+
+        const me   = this;
+
+        let found = [],
+            range, tmp, fill = false;
+
+        pageMap = me.filterPageMapValue(pageMap);
+        page    = me.filterPageValue(page);
+
+        range = me.getAvailablePageRanges(pageMap);
+        for (var i = 0, len = range.length; i < len; i++) {
+            tmp = range[i].toArray();
+
+            if (fill === true) {
+                found.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                    pages : tmp
+                }));
+            }
+            if (!fill && tmp.indexOf(page) !== -1) {
+                fill = true;
+            }
+        }
+
+        if (!found.length) {
+            return null;
+        }
+
+        return found;
+    },
 
     /**
      * Returns the Page range where the specific page can be found in.
@@ -486,24 +506,13 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getPageRangeForPage : function(page, pageMap) {
 
-        var me    = this,
-            page  = parseInt(page, 10),
-            found = [],
+        const me = this;
+
+        let found = [],
             range, tmp;
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
-
-        if (!Ext.isNumber(page) || page < 1) {
-            Ext.raise({
-                msg     : '\'page\' must be a number greater or equal to 1',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
+        page    = me.filterPageValue(page);
 
         range = me.getAvailablePageRanges(pageMap);
         for (var i = 0, len = range.length; i < len; i++) {
@@ -544,16 +553,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getAvailablePageRanges : function(pageMap) {
 
-        var me         = this,
-            ranges     = [],
-            pageRanges = [];
+        const me = this;
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        let ranges       = [],
+              pageRanges = [];
+
+        pageMap = me.filterPageMapValue(pageMap);
 
         for (var i in pageMap.map) {
             ranges.push(i);
@@ -582,12 +587,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     isFirstPageLoaded : function(pageMap) {
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        const me = this;
+
+        pageMap = me.filterPageMapValue(pageMap);
 
         return !!pageMap.map[1]
     },
@@ -605,20 +607,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     isLastPageLoaded : function(pageMap) {
 
-        var me, pageRanges, store, pageSize, lastPage;
+        const me = this;
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
-        me         = this;
-        pageRanges = me.getAvailablePageRanges(pageMap);
-        store      = pageMap.getStore();
-        pageSize   = pageMap.getPageSize();
-        lastPage   = pageRanges[pageRanges.length - 1].getLast();
+        const pageRanges = me.getAvailablePageRanges(pageMap),
+              store      = pageMap.getStore(),
+              pageSize   = pageMap.getPageSize(),
+              lastPage   = pageRanges[pageRanges.length - 1].getLast();
 
         return (pageSize * lastPage) === store.getTotalCount();
     },
@@ -636,14 +632,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     getLastPossiblePageNumber : function(pageMap) {
 
-        var store, pageSize;
+        const me = this;
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        let store, pageSize;
+
+        pageMap = me.filterPageMapValue(pageMap);
 
         store    = pageMap.getStore();
         pageSize = pageMap.getPageSize();
@@ -669,13 +662,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      */
     storeIndexToRange : function(start, end, pageMap) {
 
+        const me = this;
 
-        if (!(pageMap instanceof Ext.data.PageMap)) {
-            Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
-                pageMap : pageMap
-            });
-        }
+        pageMap = me.filterPageMapValue(pageMap);
 
         if (!Ext.isNumber(start) || !Ext.isNumber(end)) {
             Ext.raise({
@@ -703,8 +692,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             })
         }
 
-        start = this.storeIndexToPosition(start, pageMap);
-        end   = this.storeIndexToPosition(end, pageMap);
+        start = me.storeIndexToPosition(start, pageMap);
+        end   = me.storeIndexToPosition(end, pageMap);
 
         return Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
             start : start,
