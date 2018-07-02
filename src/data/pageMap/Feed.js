@@ -26,16 +26,24 @@
  * to serve as a local data feeder for other pages, or that was created to be
  * filled with data to serve as a page at one point if enough data is available.
  * A feed can either exist at the beginning of a Page Range or at the end, and
- * its role is specified in "position" which either equals to "start" or "end".
- * (see conjoon.cn_core.data.pageMap.Feed.POSITION_START and conjoon.cn_core.data.pageMap.Feed.POSITION_END).
- * The position of a Feed determines the direction from where it gets filled
- * and from where data gets removed.
+ * this position is specified by either previous or next which are mutual exclusive
+ * and point to the page for which the Feed was created, whereas
+ *   let n be the index at which the feed was created
+ *   #previous must be n - 1
+ *   #next must be n + 1
+ * but only one of these values can exist for a Feed, thus, a Feed has a left-hand
+ * neighbour OR a right hand neighbour, but not both.
+ *
+ * Note, that during the lifetime of a Feed it is not guaranteed that the previous
+ * or next page remains existing in a data collection (such as a PageMap's map)
+ * as long as the Feed itself. The purpose of these properties is to give the
+ * Feed information for which feeding direction it was created.
  *
  * @example
  *
  *      let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
- *          size     : 25,
- *          position : conjoon.cn_core.data.pageMap.Feed.POSITION_START
+ *          size : 25,
+ *          next : 4
  *      });
  *
  *      let data = [
@@ -48,33 +56,22 @@
  *
  *      let size = feed.getSize();
  *
- *      // note for how POSITION_START will start feeding the Feed at its end.
+ *      // note for how with #next set to 4, this Feed is assumed to represent
+ *      // a page at the position 3, and data is available at its end
  *      console.log(feed.getAt(size - 1).getId()); // '3'
  *      console.log(feed.getAt(size - 2).getId()); // '2'
  *      console.log(feed.getAt(size - 3).getId()); // '1'
  *
  *      console.log(feed.getAt(size - 4)); // undefined
  *      console.log(feed.getAt(0)); // undefined
- *
- * Note:
- * =====
- * An empty feed is an array filled up with n (n = pageSize) undefined values.
- * This is available as soon as the Feed was created.
  */
 Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
-    statics : {
-        /**
-         * @type {Number}
-         */
-        POSITION_START : -1,
 
-        /**
-         * @type {Number}
-         */
-        POSITION_END : 1
+    mixins : [
+        'conjoon.cn_core.data.pageMap.ArgumentFilter'
+    ],
 
-    },
 
     config : {
 
@@ -85,9 +82,14 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
         size : undefined,
 
         /**
-         * @cfg {Mixed} position
+         * @cfg {Mixed} previous
          */
-        position : undefined
+        previous : undefined,
+
+        /**
+         * @cfg {Mixed} next
+         */
+        next : undefined
     },
 
 
@@ -119,18 +121,21 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
             });
         }
 
-        if (!cfg.hasOwnProperty('position')) {
+        if (!cfg.hasOwnProperty('previous') && !cfg.hasOwnProperty('next')) {
             Ext.raise({
-                msg : '\'position\' is required for this class',
+                msg : '\'previous\' or \'next\' is required for this class',
+                cfg : cfg
+            });
+        }
+
+        if (cfg.hasOwnProperty('previous') && cfg.hasOwnProperty('next')) {
+            Ext.raise({
+                msg : 'either \'previous\' or \'next\' must be set, but not both',
                 cfg : cfg
             });
         }
 
         me.initConfig(cfg);
-
-        me.data = new Array(me.getSize());
-        me.data.fill(undefined, 0 , me.getSize());
-
     },
 
 
@@ -143,18 +148,17 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
         const me = this;
 
-        return me.data[0] === undefined ||
-               me.data[me.getSize() - 1] === undefined;
+        return me.getSize() - me.data.length !== 0;
     },
 
 
     /**
      * This method fills a feed with data either at the start of the feed
      * (shifting data up) or the end of the feed (shifting data
-     * down) based on the specified #position for this Feed.
-     * Data in records will be treated accordingly to position of this Feed:
-     * if the position is POSITION_END, records will be popped and unshifted to the feed,
-     * if it is POSITION_START, data will be shifted from the records and pushed
+     * down) based on the values specified for #previous and #next.
+     * Data in records will be treated accordingly:
+     * if #previous is defined, records will be popped and unshifted to the feed,
+     * but if #next is defined, data will be shifted from the records and pushed
      * onto the feed, until the feed is full or no more data is available in records.
      *
      * @param {Array} an array of {Ext.data.Model}
@@ -170,7 +174,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
         const me      = this,
               size    = me.getSize(),
               free    = me.getFreeSpace(),
-              isStart = me.getPosition() === me.statics().POSITION_START;
+              isStart = !me.getPrevious();
 
         if (!Ext.isArray(records) || records.length === 0) {
             Ext.raise({
@@ -195,14 +199,12 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
         if (isStart) {
             recs = records.splice(0, free);
-            data.splice(0, recs.length);
             me.data = data.concat(recs);
 
             return records;
         }
 
         recs = records.splice(Math.max(0, records.length - free), free);
-        data.splice(size - recs.length, recs.length);
         Array.prototype.unshift.apply(me.data, recs);
 
         return records;
@@ -211,16 +213,15 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
     /**
      * Removes the specified number of records from either the start
-     * (#POSITION_END) or the end (#POSITION_START) of the Feed.
+     * or the end of the Feed, depending on #next and #previous.
      * This method is a convenient shortcut to popping/shifting data when the
      * feed should be used as a "feeder" for pages.
-     * Freed positions will be marked explicitely as undefined in this feed.
      *
      * @param {Number} count The number of data entries to extract
      *
      * @return {Array} an array with the records from this feed. The length
      * might be less than the requested number of data to extract if there are
-     * not enough "defined" entries to satisfy "count"
+     * not enough entries to satisfy "count"
      *
      * @throws if index is less than 1 or greater than page size
      */
@@ -228,7 +229,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
         const me      = this,
               size    = me.getSize(),
-              isStart = me.getPosition() === me.statics().POSITION_START;
+              isStart = !me.getPrevious();
 
         count = parseInt(count, 10);
 
@@ -239,17 +240,13 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
             });
         }
 
-        let replace = (new Array(count)).fill(undefined, 0, count);
-
         if (isStart) {
-            recs = me.data.splice(size - count, count);
-            Array.prototype.unshift.apply(me.data, replace);
+            recs = me.data.splice(Math.max(0, me.data.length - count), count);
 
             return recs;
         }
 
         recs = me.data.splice(0, count);
-        me.data = me.data.concat(replace);
 
         return recs;
     },
@@ -260,8 +257,8 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * for the first entry.
      * Note:
      * =====
-     * the index is the absolute value of an entry in the Feed, so calling APIs
-     * should consider the #position this Feed was created with.
+     * Calling APIs should consider the fill order for Feeds depending on #previous
+     * and #next. see #fill
      *
      * @param {Number} index
      *
@@ -271,8 +268,9 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      */
     getAt : function(index) {
 
-        const me   = this,
-              size = me.getSize();
+        const me      = this,
+              size    = me.getSize(),
+              isStart = !me.getPrevious();
 
         index = parseInt(index, 10);
 
@@ -281,6 +279,10 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
                 msg   : "'index' is out of bounds",
                 index : index
             });
+        }
+
+        if (isStart) {
+            return me.data[index  - (size - me.data.length)];
         }
 
         return me.data[index];
@@ -302,45 +304,15 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
 
     /**
-     * Counts the empty positions in this Feed depending on its position.
-     * (POSITION_START will start counting at the beginning of the data,
-     * POSITION_END will start at the end of the data).
+     * Counts the empty positions in this Feed.
      *
-     * @param {Number} direction
-     *
+     * @return {Number}
      */
     getFreeSpace : function() {
 
-        const me      = this,
-              statics = me.statics(),
-              isStart = me.getPosition() === statics.POSITION_START,
-              size    = me.getSize();
+        const me = this;
 
-        let free = 0, i;
-
-        switch (isStart) {
-
-            case true:
-                for (i = 0; i < size; i++) {
-                    if (me.data[i] !== undefined) {
-                        break;;
-                    }
-                    free++;
-                }
-                break;
-
-            default:
-                for (i = size - 1; i >= 0; i--) {
-                    if (me.data[i] !== undefined) {
-                        break;
-                    }
-                    free++;
-                }
-                break;
-
-        }
-
-        return free;
+        return me.getSize() - me.data.length;
     },
 
 
@@ -374,42 +346,86 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
             });
         }
 
+        me.data = new Array();
 
         return size;
     },
 
 
     /**
-     * Applies the position to this instance
+     * Applies the "previous" page number to this instance.
      *
-     * @param {Mixed} position
+     * Note:
+     * =====
+     * #previous and #next are mutual exclusive
      *
-     * @throws if position was already set, or if position does not equal to
-     * #POSITION_START or #POSITION_END
+     * @param {Number} previous
+     *
+     * @throws if previous was already set, or if next was already set
+     *
+     * @see #next
      */
-    applyPosition : function(position) {
+    applyPrevious : function(previous) {
 
-        const me      = this,
-            statics = me.statics();
+        const me = this;
 
-        if (me.getPosition() !== undefined) {
+        return me.setPageHint('previous', previous);
+    },
+
+
+    /**
+     * Applies the "next" page number to this instance.
+     *
+     * Note:
+     * =====
+     * #previous and #next are mutual exclusive
+     *
+     * @param {Number} next
+     *
+     * @throws if next was already set, or if previous was already set
+     *
+     * @see #previous
+     */
+    applyNext : function(next) {
+
+        const me = this;
+
+        return me.setPageHint('next', next);
+    },
+
+
+    /**
+     * @private
+     */
+    setPageHint : function(type, value) {
+
+        const me          = this,
+              getter      = 'get' + type[0].toUpperCase() + type.substring(1),
+              pend        = type === 'next' ? 'previous'  : 'next',
+              pendGetter  = 'get' + pend[0].toUpperCase() + pend.substring(1),
+              initializer = 'is' + type[0].toUpperCase() + type.substring(1) + 'Initializing';
+
+        // abort here if the initializer for the mutual exclusive property
+        // is currently running so it can safely apply undefined
+        if (me[initializer]) {
+            return;
+        }
+
+        if (me[getter]() !== undefined) {
             Ext.raise({
-                msg      : '\'position\' is already set',
-                position : me.getPosition()
+                msg   : '\'' + type + '\' is already set',
+                value :me[getter]()
             });
         }
 
-
-        if ([statics.POSITION_START,
-            statics.POSITION_END].indexOf(position) === -1) {
+        if (me[pendGetter]() !== undefined) {
             Ext.raise({
-                msg      : '\'position\' must be POSITION_START or POSITION_END',
-                position : position
+                msg   : '\'' + pend + '\' is already set, cannot set both',
+                value : me[pendGetter]()
             });
         }
 
-
-        return position;
+        return me.filterPageValue(value);
     }
 
 

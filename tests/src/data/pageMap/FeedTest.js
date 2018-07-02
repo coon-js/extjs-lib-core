@@ -49,7 +49,12 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         let feed = createFeed(cfg);
 
         for (let i = 0, len = pageSize; i < len; i++) {
-            feed.data[full ? i : i % 2] = prop();
+            if (!full && (i % 2 === 0)) {
+                feed.data.push(prop());
+                continue;
+            }
+
+            feed.data[i] = prop();
         }
 
         return feed;
@@ -68,11 +73,6 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         let exc, e,
             Feed = conjoon.cn_core.data.pageMap.Feed;
 
-        t.expect(Feed.POSITION_START).toBeDefined();
-        t.expect(Feed.POSITION_END).toBeDefined();
-
-        t.expect(Feed.POSITION_END).not.toBe(Feed.POSITION_START);
-
         try{createFeed()}catch(e){exc = e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
@@ -83,33 +83,76 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('is required');
-        t.expect(exc.msg.toLowerCase()).toContain('position');
+        t.expect(exc.msg.toLowerCase()).toContain('previous');
+        t.expect(exc.msg.toLowerCase()).toContain('next');
+
+        try{createFeed({size : pageSize, previous : 4, next : 6})}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('not both');
+        t.expect(exc.msg.toLowerCase()).toContain('previous');
+        t.expect(exc.msg.toLowerCase()).toContain('next');
 
         let feed = createFeed({
             size     : pageSize,
-            position : Feed.POSITION_START
+            previous : 4
         });
 
-
-        t.expect(feed.getSize()).toBe(pageSize);
-        t.expect(feed.getPosition()).toBe(Feed.POSITION_START);
         t.expect(feed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+        t.expect(feed.getSize()).toBe(pageSize);
+        t.expect(feed.getPrevious()).toBe(4);
+
+        t.expect(feed.data).toBeDefined();
+        t.expect(feed.data.length).toBe(0);
 
 
+        // SIZE
         try{feed.setSize(32)}catch(e){exc = e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('already set');
         t.expect(exc.msg.toLowerCase()).toContain('size');
 
-        try{feed.setPosition(Feed.POSITION_START)}catch(e){exc = e};
+
+        // PREVIOUS
+        feed = createFeed({
+            size     : pageSize,
+            previous : 4
+        });
+
+        t.expect(feed.getNext()).toBeUndefined();
+        t.expect(feed.getPrevious()).toBe(4);
+        try{feed.setPrevious(2)}catch(e){exc = e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('already set');
-        t.expect(exc.msg.toLowerCase()).toContain('position');
+        t.expect(exc.msg.toLowerCase()).toContain('previous');
 
-        t.expect(feed.data).toBeDefined();
-        t.expect(feed.data.length).toBe(feed.getSize());
+        try{feed.setNext(8)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('cannot set both');
+        t.expect(exc.msg.toLowerCase()).toContain('previous');
+
+
+        // NEXT
+        feed = createFeed({
+            size : pageSize,
+            next : 6
+        });
+        t.expect(feed.getPrevious()).toBeUndefined();
+        t.expect(feed.getNext()).toBe(6);
+        try{feed.setNext(2)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('already set');
+        t.expect(exc.msg.toLowerCase()).toContain('next');
+
+        try{feed.setPrevious(8)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('cannot set both');
+        t.expect(exc.msg.toLowerCase()).toContain('next');
 
 
     });
@@ -119,25 +162,25 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         let feed = createFeed({
             size     : pageSize,
-            position : Feed.POSITION_START
+            previous : 2
         });
 
         t.expect(feed.hasUndefined()).toBe(true);
 
         feed = createFeedRandomFilled({
             size : pageSize,
-            position : Feed.POSITION_START
+            next : 2
         }, true);
         t.expect(feed.hasUndefined()).toBe(false);
-        feed.data[0] = undefined;
+        feed.data.splice(0, 1);
         t.expect(feed.hasUndefined()).toBe(true);
 
         feed = createFeedRandomFilled({
             size : pageSize,
-            position : Feed.POSITION_END
+            previous : 2
         }, true);
         t.expect(feed.hasUndefined()).toBe(false);
-        feed.data[pageSize -1] = undefined;
+        feed.data.splice(pageSize - 1, 1);
         t.expect(feed.hasUndefined()).toBe(true);
 
     });
@@ -147,15 +190,13 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         let feed = createFeed({
                 size     : pageSize,
-                position : Feed.POSITION_START
+            previous : 2
             }), arr;
 
 
         arr = feed.toArray();
 
         t.expect(Ext.isArray(arr)).toBe(true);
-
-        t.expect(arr.length).toBe(pageSize);
 
         t.expect(arr).toBe(feed.data)
 
@@ -166,27 +207,27 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         let feed = createFeed({
             size     : pageSize,
-            position : Feed.POSITION_START
+            previous : 2
         });
 
         t.expect(feed.getFreeSpace()).toBe(pageSize);
 
         feed = createFeedRandomFilled({
             size : pageSize,
-            position : Feed.POSITION_START
+            next :  3
         }, true);
-        feed.data[0] = undefined;
-        feed.data[1] = undefined;
-        feed.data[2] = undefined;
-        feed.data[3] = undefined;
+        feed.data.splice(0, 1);
+        feed.data.splice(1, 1);
+        feed.data.splice(2, 1);
+        feed.data.splice(3, 1);
         t.expect(feed.getFreeSpace()).toBe(4);
 
         feed = createFeedRandomFilled({
             size : pageSize,
-            position : Feed.POSITION_END
+            previous : 2
         }, true);
-        feed.data[pageSize - 1] = undefined;
-        feed.data[pageSize - 2] = undefined;
+        feed.data.splice(pageSize - 1, 1);
+        feed.data.splice(pageSize - 2, 1);
         t.expect(feed.getFreeSpace()).toBe(2);
 
 
@@ -199,7 +240,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         let exc, e,
             feed = createFeed({
                 size     : pageSize,
-                position : Feed.POSITION_START
+                next : 2
             });
 
 
@@ -248,7 +289,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         // POSITION END
         feed = createFeed({
             size     : pageSize,
-            position : Feed.POSITION_END
+            previous : 2
         });
 
         t.expect(feed.fill(createProps(10))).toEqual([]);
@@ -278,8 +319,8 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         let exc, e,
             feed = createFeed({
-                size     : pageSize,
-                position : Feed.POSITION_START
+                size : pageSize,
+                next : 2
             });
 
 
@@ -306,7 +347,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         feed = createFeed({
             size     : pageSize,
-            position : Feed.POSITION_END
+            previous : 2
         })
 
         feed.fill(createProps(pageSize).splice(1, pageSize -1));
@@ -320,8 +361,8 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
     t.it('extract', function(t) {
 
         let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
-                size     : 25,
-                position : conjoon.cn_core.data.pageMap.Feed.POSITION_START
+                size : 25,
+                next : 2
             }),
             props = createProps(pageSize),
             eq    = [props[pageSize - 3], props[pageSize - 2], props[pageSize - 1]];
@@ -360,7 +401,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
             size     : 25,
-            position : conjoon.cn_core.data.pageMap.Feed.POSITION_END
+            previous : 2
         });
         props = createProps(pageSize),
         eq    = [props[0], props[1], props[2]];
@@ -376,8 +417,8 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
     t.it('example', function(t) {
 
         let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
-            size     : 25,
-            position : conjoon.cn_core.data.pageMap.Feed.POSITION_START
+            size : 25,
+            next : 2
         });
 
         let data = [
