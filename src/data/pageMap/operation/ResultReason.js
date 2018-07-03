@@ -22,10 +22,18 @@
  */
 
 /**
+ * Static class serves as collection for status codes for PageMap operations.
  *
+ * @example
+ *     conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND // 404
  */
-Ext.namespace('conjoon.cn_core.data.pageMap.operation.ResultReason');
+Ext.define('conjoon.cn_core.data.pageMap.operation.ResultReason', {
 
-conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND = 404;
+    statics : {
 
-conjoon.cn_core.data.pageMap.operation.ResultReason.OK = 200;
+        RECORD_NOT_FOUND : 404,
+
+        OK : 200
+    }
+
+});
