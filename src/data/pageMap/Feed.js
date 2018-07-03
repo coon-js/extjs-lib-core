@@ -316,6 +316,19 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
     },
 
 
+    /**
+     * Returns true if this Feed is completely empty.
+     *
+     * @return {Boolean}
+     */
+    isEmpty : function() {
+
+        const me = this;
+
+        return me.data.length === 0;
+    },
+
+
 // -------- apply*
 
     /**

@@ -443,4 +443,26 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     });
 
+
+    t.it('isEmpty()', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size : 25,
+            next : 2
+        });
+
+        let data = [
+            Ext.create('Ext.data.Model', {id : '1'}),
+            Ext.create('Ext.data.Model', {id : '2'}),
+            Ext.create('Ext.data.Model', {id : '3'})
+        ];
+
+        t.expect(feed.isEmpty()).toBe(true);
+
+        feed.fill(data);
+
+        t.expect(feed.isEmpty()).toBe(false);
+    });
+
+
 })});
