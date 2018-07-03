@@ -68,12 +68,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         pageMap : null
     },
 
+
     /**
      * @type {Object} feed
      * @private
      */
     feed : null,
-
 
     /**
      * Creates a new instance.
@@ -330,7 +330,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * @param {Number} direction
      * @param {String}
      *
-
+     *
+     *
      * @throws if page is not a number or less than 1, or if direction is not -1
      * or 1, or if the target page does not exist,
      */
@@ -458,182 +459,259 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
-     * Will create a new feed for the specified page and the specified direction
-     * (-1 for feeding from data behind the specified page, 1 for feeding from a
-     * page after the specified page).
+     * Sanitizes this feeders data when the specified action for the specified
+     * page is called.
+     * It makes sure of the following:
+     *
+     * - single pages where no Feed can be created for and where no shifiting can
+     * happen are marked in reloadWhenInView (not removed to not trigger any
+     * unneccesary re-caching)
+     * - feeds that have a neighbour page which would violate the rule not to
+     * have one ( [10] (11:12) [12]) are removed
+     * - feeds that don't have a neighbour page are removed
+     *
      *
      * @param {Number} page
-     * @param {Number} direction
+     * @param {Mixed} action any of #ACTION_ADD / #ACTION_REMOVE
      *
-     * @return {Number} the target index of the feed created, or -1 if no
-     * feed can be used
+     * @return {Boolean} true when sanitizing processed, otherwise false (e.g.
+     * if page is not available)
      *
-     * @throws if page is not a number or less than 1, or if direction is not -1
-     * or 1
+     * @private
+     *
+     * @throws if action is invalid, or if page is the position of a feed
      */
-    createFeed : function(page, direction) {
+    sanitizeFeedsForActionAtPage : function(page, action) {
 
-        var me = this, index;
+        const me          = this,
+              ADD         = me.statics().ACTION_ADD,
+              REMOVE      = me.statics().ACTION_REMOVE,
+              pageMap     = me.getPageMap(),
+              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+              feeds       = me.feed;
 
-        direction = parseInt(direction, 10);
-        page      = parseInt(page, 10);
+        page = me.filterPageValue(page);
 
-        if (!Ext.isNumber(page) || (page < 1)) {
+        if (me.getFeedAt(page)) {
             Ext.raise({
-                msg  : '\'page\' must be a number greater than 0',
+                msg  : "requested sanitizing for 'page' cannot be processed since " +
+                       "the page is represented by a Feed",
                 page : page
             });
         }
 
-        if (!Ext.isNumber(direction) || (direction !== 1 && direction !== -1)) {
+        if ([ADD, REMOVE].indexOf(action) === -1) {
             Ext.raise({
-                msg       : '\'direction\' must be -1 or 1',
-                direction : direction
+                msg    : '\'action\' must be any of ACTION_ADD or ACTION_REMOVE',
+                action : action
             });
         }
 
-        index = me.findFeedIndexForPage(page, direction);
-
-        if (index === -1) {
-            return -1;
+        if (!pageMap.peekPage(page)) {
+            return false;
         }
 
-        if (!me.feed[index]) {
-            me.swapMapToFeed(index);
+        let currentPageRange = PageMapUtil.getPageRangeForPage(page, pageMap, true),
+            rightRange       = PageMapUtil.getRightSidePageRangeForPage(page, pageMap, true),
+            index, first, last, range, i;
+
+        // go through all feeds and swap pageCandidates to map
+        // precedence is given already existing pages since they
+        // have possibly been added during a prefetch from the BufferedStore,
+        // if any
+        for (i in me.feed) {
+            i = me.filterPageValue(i);
+            if (me.isPageCandidate(i)) {
+                if (pageMap.peekPage(i)) {
+                    me.removeFeedAt(i);
+                } else {
+                    me.swapFeedToMap(i);
+                }
+            } else {
+
+                switch (action) {
+                    // check if neighbour Feed has data for shifting from right side
+                    case REMOVE:
+                        if (me.getFeedAt(i).getPrevious() === i - 1 && me.getFeedAt(i).isEmpty()) {
+                            me.removeFeedAt(i);
+                            if (me.getFeedAt(i - 2) && me.getFeedAt(i - 2).getNext() === i - 1) {
+                                me.removeFeedAt(i - 2);
+                            }
+                        }
+                        break;
+
+                    // ... and left side
+                    case ADD:
+                        if (me.getFeedAt(i).getNext() === i + 1 && me.getFeedAt(i).isEmpty()) {
+                            me.removeFeedAt(i);
+                            if (me.getFeedAt(i + 2) && me.getFeedAt(i + 2).getPrevious() === i + 1) {
+                                me.removeFeedAt(i + 2);
+                            }
+                        }
+                        break;
+                }
+
+            }
+
+
+
         }
 
-        return index;
+        range = currentPageRange !== null ? currentPageRange : [];
+        range = range.concat(rightRange !== null ? rightRange : []);
 
+        range.splice(0, range.indexOf(page) + 1);
+
+        // remove all single pages
+        for (i = 0, len = range.length; i < len; i++) {
+            index = range[i];
+
+            if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)) {
+                pageMap.removeAtKey(index);
+            }
+        }
+
+        return true;
     },
 
 
     /**
-     * Moves the feed for the specified page to the recycle bin, e.g. the feed
-     * is empty and cannot satisfy pages which needs to be fed, but is marked so any
-     * prefetch observer can veto its loading.
+     * Removes the Feed at the specified position. Will silently return with false
+     * if the feed could not be found at the specified position.
      *
      * @param {Number} page
      *
-     * @throws if page is not a number or less than 1, or if the feed for the
-     * specified page does not exist, or if the feeder still has entries or if the
-     * feeder is already marked for recycling
+     * @return {Boolean} true if the Feed was found and removed, otherwise
+     * false if no Feed was found at the specified page.
+     *
+     * @private
      */
-    recycleFeed : function(page) {
+    removeFeedAt : function(page) {
 
-        var me = this;
+        const me = this;
 
-        page = parseInt(page, 10);
+        page = me.filterPageValue(page);
 
-        if (!Ext.isNumber(page) || (page < 1)) {
+        if (!me.getFeedAt(page)) {
+            return false;
+        }
+
+        delete me.feed[page];
+
+        return true;
+    },
+
+
+    /**
+     * Swaps the specified Feed back to the page map and removes the Feed afterwards.
+     * The PageMap's map must not exist. This method does not check if the
+     * Feed to swap is a page candidate.
+     *
+     * @param {Number} page
+     *
+     * @private
+     *
+     * @throws if the page is already existing, or if the Feed does not exist
+     */
+    swapFeedToMap : function(page) {
+
+        const me       = this,
+              pageMap  = me.getPageMap(),
+              map      = pageMap.map;
+
+        let feed, feedData, data;
+
+        page = me.filterPageValue(page);
+
+        if (pageMap.peekPage(page)) {
             Ext.raise({
-                msg  : '\'page\' must be a number greater than 0',
+                msg  : '\'page\' does still exist in page map',
                 page : page
             });
         }
 
-        if (!me.feed[page]) {
+        feed = me.getFeedAt(page);
+
+        if (!feed) {
             Ext.raise({
                 msg  : 'the feed for the specified \'page\' does not exist',
                 page : page
             });
         }
 
-        if (me.feed[page].length) {
-            Ext.raise({
-                msg  : 'the feed for the specified \'page\' is not empty',
-                page : page
-            });
+        feedData = me.getFeedAt(page).toArray();
+
+        data = [];
+
+        // mirror the data
+        for (var i = 0, len = feedData.length; i < len; i++) {
+            data.push(feedData[i].clone());
         }
 
-        if (me.hollowFeeds.indexOf(page) !== -1) {
-            Ext.raise({
-                msg  : 'the feed for the specified \'page\' is hollow',
-                page : page
-            });
-        }
+        me.removeFeedAt(page);
+        pageMap.addPage(page, data);
 
-        me.hollowFeeds.push(page);
-        delete me.feed[page];
+
+        return feed;
     },
 
-
-    /**
-     * Clears this feeder. Should be called whenever the PageMap is re-initialized,
-     * for example during a complete reload of the BufferedStore which is using
-     * the PageMap.
-     *
-     */
-    clear : function() {
-
-        var me = this;
-
-        me.feed        = {};
-        me.hollowFeeds = [];
-    },
 
     /**
      * Swaps the specified page in the page map. The feed for the page must not
      * exist already since it gets created here.
-     * This method will remove the page out of the pageMap.
+     * This method will remove the page out of the pageMap before the Feed gets
+     * created.
      *
      * @param {Number} page
      *
+     * @return {conjoon.cn_core.data.pageMap.Feed}
+     *
      * @private
      *
-     * @throws if page is not a number or less than 1, or if the page was already
-     * marked as recycled, or if the page is not existing, or if the feed for
-     * the page already exists.
+     * @throws if the page is not existing, or if the feed for
+     * the page already exists, or if #createFeedAt throws
      */
     swapMapToFeed : function(page) {
 
-        var me      = this,
-            pageMap = me.getPageMap(),
-            map     = pageMap.map,
-            feed, data;
+        const me       = this,
+              pageMap  = me.getPageMap(),
+              map      = pageMap.map;
 
-        page = parseInt(page, 10);
+        let feed, feedData, data;
 
-        if (!Ext.isNumber(page) || (page < 1)) {
+        page = me.filterPageValue(page);
+
+        if (!pageMap.peekPage(page)) {
             Ext.raise({
-                msg  : '\'page\' must be a number greater than 0',
+                msg  : '\'page\' does not exist in page map',
                 page : page
             });
         }
 
-        if (me.hollowFeeds.indexOf(page) !== -1) {
-            Ext.raise({
-                msg  : '\'page\' is already marked for recycling, cannot use',
-                page : page
-            })
-        }
-
-        if (!map[page]) {
-            Ext.raise({
-                msg  : '\'page\' does not exist in page map',
-                page : page
-            })
-        }
-
-        if (me.feed[page]) {
+        if (me.getFeedAt(page)) {
             Ext.raise({
                 msg  : 'the feed for the specified \'page\' already exists',
                 page : page
-            })
+            });
         }
 
-        feed = [];
-        data = pageMap.map[page].value;
+        feedData = [];
+        // no getter so we don't trigger LRU implementation of PageMap
+        data = pageMap.peekPage(page).value;
 
+        // mirror the data
         for (var i = 0, len = pageMap.getPageSize(); i < len; i++) {
-            feed.push(data[i].clone());
+            feedData.push(data[i].clone());
         }
 
-        me.feed[page] = feed;
-
-        // this will clear the indexMap for the registered records and
+        // removeAtKey should clear the indexMap for the registered records and
         // their internalIds
-
         pageMap.removeAtKey(page);
+
+        feed = me.createFeedAt(page);
+        feed.fill(feedData);
+
+        return feed;
     },
 
 
@@ -651,11 +729,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * Note:
      * =====
-     * This method should always be called together with #invalidateFeeds which
+     * This method should always be called together with #sanitizeFeedsForActionAtPage which
      * automatically removes Feeds and pages which cannot be used for the current operation
      * at the specified page, since during the last Feed creation pages might have
      * been added which violate Feed-creation rules
-     * [3, 4] (5) [7, 8] -> loads page 6 ->  [3, 4] (5) [6, 7, 8] Feed 5 must be
+     * [3, 4] (5) [7, 8] -> loads page 6 ->  [3, 4] (5:4) [6, 7, 8] Feed 5 must be
      * invalidated.
      *
      * @param {Number} page
@@ -698,15 +776,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         let currentPageRange = PageMapUtil.getPageRangeForPage(page, pageMap),
             rightRange       = PageMapUtil.getRightSidePageRangeForPage(page, pageMap),
             indexes          = [],
-            first, last, range,
-            hasPreviousFeed = function(page) {
-                return me.getFeedAt(page - 1) &&
-                       me.getFeedAt(page - 1).getNext() === page;
-            },
-            hasNextFeed = function(page) {
-                return me.getFeedAt(page + 1) &&
-                    me.getFeedAt(page + 1).getPrevious() === page;
-            };
+            first, last, range;
+
 
 
         switch (action) {
@@ -729,10 +800,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                             indexes.push([
                                 // can we feed from an existing Feed before first?
                                 // if so, use it
-                                hasPreviousFeed(first) ? first - 1 : first,
+                                me.hasPreviousFeed(first) ? first - 1 : first,
                                 last + 1
                             ]);
-                        } else if (hasPreviousFeed(first)) {
+                        } else if (me.hasPreviousFeed(first)) {
                             // we must consider feeds that embed the current page
                             // (11) [12] (13)
                             indexes.push([first - 1, last + 1]);
@@ -751,7 +822,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 // for the current page range, check if a feed exists at the end
                 // of the range which we can use for feeding
                 if (currentPageRange.getLast() === page) {
-                    if (hasNextFeed(page)) {
+                    if (me.hasNextFeed(page)) {
                         indexes.push([page + 1]);
                     } else {
                         return null;
@@ -773,7 +844,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                                 // for the upper index, we're looking for an existing
                                 // Feed that actually serves the last page in this range
                                 // we'll use this!
-                                hasNextFeed(last) ? last + 1 : last
+                                me.hasNextFeed(last) ? last + 1 : last
                             ]);
                         }
                     }
@@ -785,131 +856,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
         return indexes.length ? indexes : null;
-
-
-        return;
-
-       /* var me      = this,
-            pageMap = me.getPageMap(),
-            map     = pageMap.map,
-            feed  = me.feed,
-            start, end, direction,
-            range, cmp, feedIndex = -1;
-
-        direction = me.filterDirectionValue(direction);
-        page      = me.filterPageValue(page);
-
-        range = conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForPage(page, pageMap);
-
-        if (range === null) {
-            // no pageRange found
-            return -1;
-        }
-
-        start = range.getFirst();
-        end   = range.getLast();
-
-        // let's walk up and find a possible feed index
-        if (direction > 0) {
-            cmp = end;
-            while (map[cmp]) {
-                end = cmp;
-                cmp++;
-            }
-            // adjust start to the page range next to the requested page,
-            // including the page itself. e.g.
-            //    page : 5
-            //    pageRange : [1, 2, 3, 4, 5, 6, 7, 8, 9]
-            for (var i = end + 1; i >= start; i--) {
-                if (me.canUseFeedAt(i)) {
-                    feedIndex =  i;
-                    break;
-                }
-            }
-        } else {
-            cmp = start;
-            while (map[cmp]) {
-                start = cmp;
-                cmp--;
-            }
-            for (var i = Math.max(start - 1, 1); i <= end; i++) {
-                if (me.canUseFeedAt(i)) {
-                    feedIndex =  i;
-                    break;
-                }
-            }
-        }
-
-
-        if (feedIndex === page) {
-            return -1;
-        }
-
-        return feedIndex;*/
     },
-
-
-    /**
-     * Returns true if the feed can be used or if can be created safely, i.e.
-     * if it is not part of the pending collector already. It will also return
-     * true, if the feed is already existing (NOT marked for recycling). It
-     * will return false if the pageMap.map for the page is not existing, after
-     * the previous tests did not satisfy their conditions..
-     * This method also considers the direction for either feeding from the top
-     * or the bottom. A feed can be used for right-hand data if at least the
-     * data-index for pageSize - 1 is set, and for left-hand data if at least the
-     * data index 0 is set.
-     * Depending on the direction, existing neighbour feeds will be considered
-     * and the method will return false if a direct left-hand feed exists and
-     * the direction is specified as 1, or a direct right-hand feed exists and
-     * the direction is marked as -1.
-     *
-     * @param {Number} page
-     * @param {Number} direction
-     *
-     * @return {Boolean}
-     *
-     * @private
-     *
-     * @throws if page is not a number or less than 1, or if a feed was found
-     * for which the PageMap still exists
-     */
-    canUseFeedAt : function(page, direction) {
-
-        var me      = this,
-            page    = parseInt(page, 10),
-            pageMap = me.getPageMap();
-
-        if (!Ext.isNumber(page) || page < 1) {
-            Ext.raise({
-                msg   : '\'page\' must be a number greater than 0',
-                page  : page
-            });
-        }
-
-        if (me.isFeedMarkedForRecycling(page)) {
-            return false;
-        }
-
-        if (me.feed[page]) {
-            if (pageMap.map[page]) {
-                Ext.raise({
-                    msg   : 'a feed for \'page\' exists, but the page exists ' +
-                            'also in the PageMap',
-                    page  : page
-                });
-            }
-            return true;
-        }
-
-        if (!pageMap.map[page]) {
-            return false;
-        }
-
-        return true;
-    },
-
-
 
 
     /**
@@ -1103,6 +1050,42 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return me.feed[page] ? me.feed[page] : null;
 
+    },
+
+
+    /**
+     * Returns true if the page has a feed at its left side.
+     *
+     * @param {Number} page
+     *
+     * @returns {Boolean}
+     */
+    hasPreviousFeed : function(page) {
+
+        const me = this;
+
+        page = me.filterPageValue(page);
+
+        return (me.getFeedAt(page - 1) !== null &&
+               me.getFeedAt(page - 1).getNext() === page);
+    },
+
+
+    /**
+     * Returns true if the page has a feed at its right side.
+     *
+     * @param {Number}  page
+     *
+     * @returns {Boolean}
+     */
+    hasNextFeed : function(page) {
+
+        const me = this;
+
+        page = me.filterPageValue(page);
+
+        return (me.getFeedAt(page + 1) !== null &&
+               me.getFeedAt(page + 1).getPrevious() === page);
     }
 
 
