@@ -458,10 +458,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @param {Number} page
      * @param {Ext.data.PageMap} pageMap
+     * @param {Boolean=false} flat true to return the range as an ungrouped,
+     * flat array in ascending order
      *
-     * @return conjoon.cn_core.data.pageMap.PageRange
+     * @return {conjoon.cn_core.data.pageMap.PageRange|Array}
      */
-    getRightSidePageRangeForPage : function(page, pageMap) {
+    getRightSidePageRangeForPage : function(page, pageMap, flat) {
 
         const me   = this;
 
@@ -476,9 +478,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             tmp = range[i].toArray();
 
             if (fill === true) {
-                found.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
-                    pages : tmp
-                }));
+                if (flat !== true) {
+                    found.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                        pages : tmp
+                    }));
+                } else {
+                    found = found.concat(tmp)
+                }
+
             }
             if (!fill && tmp.indexOf(page) !== -1) {
                 fill = true;
@@ -498,13 +505,15 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @param {Number} page
      * @param {Ext.data.PageMap} pageMap
+     * @param {Boolean=false} flat true to return the range as an ungrouped,
+     * flat array in ascending order
      *
-     * @return conjoon.cn_core.data.pageMap.PageRange
+     * @return {conjoon.cn_core.data.pageMap.PageRange|Array}
      *
      * @throws if page is not a number, or if pageMap is not an instance of
      * {Ext.data.PageMap}, or if multiple ranges where found
      */
-    getPageRangeForPage : function(page, pageMap) {
+    getPageRangeForPage : function(page, pageMap, flat) {
 
         const me = this;
 
@@ -534,9 +543,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
-            pages : found[0]
-        });
+        return flat !== true
+                    ? Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                          pages : found[0]
+                      })
+                    : found[0];
     },
 
 

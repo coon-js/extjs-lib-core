@@ -316,6 +316,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
         });
 
+
         t.it('getRightSideRange()', function(t) {
 
             var exc, e, pageMap, record, range;
@@ -1073,6 +1074,30 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             });
         });
 
+
+        t.it("getPageRangeForPage() - flat", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap(),
+                range;
+
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(6);
+
+                range = PageMapUtil.getPageRangeForPage(3, pageMap, true);
+                t.expect(Ext.isArray(range)).toBe(true);
+                t.expect(range).toEqual([3, 4, 5]);
+
+                range = PageMapUtil.getPageRangeForPage(6, pageMap, true);
+                t.expect(range).toBe(null);
+            });
+        });
+
+
         t.it("getRightSidePageRangeForPage()", function(t) {
 
             var exc, e,
@@ -1102,6 +1127,38 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(range).toBe(null);
 
                 range = PageMapUtil.getRightSidePageRangeForPage(7, pageMap);
+                t.expect(range).toBe(null);
+
+
+            });
+        });
+
+
+        t.it("getRightSidePageRangeForPage() - flat", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = createPageMap(),
+                range;
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(6);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(1, pageMap, true);
+                t.expect(Ext.isArray(range)).toBe(true);
+                t.expect(range.length).toBe(9);
+                t.expect(range).toEqual([3, 4, 5, 7, 8 , 9, 10, 11, 12]);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(5, pageMap, true);
+                t.expect(range.length).toBe(6);
+                t.expect(range).toEqual([7, 8 , 9, 10, 11, 12]);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(6, pageMap, true);
+                t.expect(range).toBe(null);
+
+                range = PageMapUtil.getRightSidePageRangeForPage(7, pageMap, true);
                 t.expect(range).toBe(null);
 
 
