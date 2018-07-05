@@ -184,140 +184,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
-     * Note:
-     * Calling APIs should consider the totalCount change of a BufferedStore
-     * which might be using the PageMap-
-     *
-     * Removes the specified record.
-     * The empty space in the PageMap's map will be refeed by this feeder,
-     * by a call to #feedPage.
-     * The result of this operation will be available in the returned
-     * {conjoon.cn_core.data.pageMap.Operation}-object.
-     * If the record was not found in the PageMap's map, current feeds will be
-     * searched for it by comparing id-values (feeds do not hold references to
-     * the original records anymore9.
-     *
-     * @param {Ext.data.Model} record The record to remove
-     * @param {Number} direction -1 for feed-data from before this record's
-     * position, 1 for feed data from after this record's position.
-     *
-     * @return {conjoon.cn_core.data.pageMap.Operation} The operation with the
-     * result, which hints to the state of this PageMap.
-     *
-     * @throws if record is not an instance of {Ext.data.Model}, or any exception
-     * thrown by #feedPage
-     */
-    removeRecord : function(record, direction) {
-
-        var me          = this,
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-            pageMap, index, op, position, page, pageIndex, map,
-            ResultReason, feed;
-
-
-        if (!(record instanceof Ext.data.Model)) {
-            Ext.raise({
-                msg    : '\'record\' must be an instance of Ext.data.Model',
-                record : record
-            });
-        }
-
-        ResultReason = conjoon.cn_core.data.pageMap.operation.ResultReason;
-        pageMap      = me.getPageMap();
-        index        = pageMap.indexOf(record);
-
-        op = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
-            request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
-        });
-
-        // look in feeds
-        if (index === -1) {
-            for (var i in me.feed) {
-                if (page !== undefined) {
-                    break;
-                }
-                for (var a = 0, lena = me.feed[i].length; a < lena; a++) {
-                    if (me.feed[i][a].getId() === record.getId()) {
-                        page      = i;
-                        pageIndex = a;
-                        break;
-                    }
-                }
-            }
-
-            // found. splice, recycle if necessary and return
-            if (page !== undefined) {
-                me.feed[page].splice(pageIndex, 1);
-
-                // recycles the feed if necessary
-                if (me.feed[page].length == 0) {
-                    me.recyclefeed(page);
-                }
-
-                op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
-                    success : true,
-                    reason  : ResultReason.OK
-                }));
-
-                return op;
-            }
-
-        }
-
-        // neither found in feeds nor regular map, return
-        if (index === -1 && page === undefined) {
-            op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
-                success : false,
-                reason  : ResultReason.RECORD_NOT_FOUND
-            }));
-
-            return op;
-        }
-
-        position  = PageMapUtil.storeIndexToPosition(index, pageMap);
-        map       = pageMap.map;
-        page      = position.getPage();
-        pageIndex = position.getIndex();
-
-        map[page].value.splice(pageIndex, 1);
-
-        me.feedPage(page, direction);
-        var ranges = PageMapUtil.getAvailablePageRanges(pageMap),
-            right;
-
-        for (var i = 0, len = ranges.length; right === undefined, i < len; i++) {
-            if (ranges[i].toArray().indexOf(page) !== -1) {
-                right = i + 1;
-            }
-        }
-
-
-        if (right) {
-            for (var i = right, len = ranges.length; i < len; i++) {
-                var newPosForFeed = ranges[i].toArray()[0] - 1;
-                me.createFeedAt(newPosForFeed, 1);
-                var rec = map[ranges[i].toArray()[0]].value.splice(0, 1)[0].clone();
-                me.fillFeed(newPosForFeed, [rec], 1)
-                me.feedPage(ranges[i].toArray()[0], 1);
-                if (me.feed[newPosForFeed].indexOf(undefined) === -1) {
-                    me.getPageMap().addPage(newPosForFeed, me.feed[newPosForFeed]);
-                    delete me.feed[newPosForFeed];
-                }
-
-            }
-        }
-
-        op.setResult(Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
-            success : true,
-            reason  : ResultReason.OK
-        }));
-
-        return op;
-
-    },
-
-
-    /**
      * Feeds the page as the specified position with either data from a feed
      * after "page" or before "page". feeds will be created if necessary and
      * possible. The amount of items taken from the feed equal to the PageMaps
@@ -326,135 +192,118 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * of the target page can be satisfied, which means that this method will
      * create feeds or move existing ones to the recycle bin in necessary.
      *
+     *  // - RANGE       = [1, 2] [4, 5] [8, 9 , 10, 11]
+     *  // - REM (1, 1)  =  [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
+     *
+     *  // computed feed indexes [[2], [3, 5], [7, 11]]
+     *
      * @param {Number} page
-     * @param {Number} direction
+     * @param {Mixed} action
      * @param {String}
      *
+     * @throws if the target page does not exist,
      *
-     *
-     * @throws if page is not a number or less than 1, or if direction is not -1
-     * or 1, or if the target page does not exist,
+     * @private
      */
-    feedPage : function(page, direction) {
+    removeRecord : function(record) {
 
-        var me             = this,
-            pageMap        = me.getPageMap(),
-            map            = pageMap.map,
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-            PageRange      = conjoon.cn_core.data.pageMap.PageRange,
-            maintainRanges = [],
-            index, targetLength, items, feed, range, start, end;
+        const me           = this,
+              pageMap      = me.getPageMap(),
+              REMOVE       = me.statics().ACTION_REMOVE,
+              op           = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
+                  request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
+              }),
+              Util           = conjoon.cn_core.Util,
+              PageRange      = conjoon.cn_core.data.pageMap.PageRange,
+              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+              ResultReason   = conjoon.cn_core.data.pageMap.operation.ResultReason,
+              maintainRanges = [],
+              createResult = function(cfg) {
+                  op.setResult(Ext.create(
+                      'conjoon.cn_core.data.pageMap.operation.Result',
+                      cfg
+                  ));
+                  return op;
+              },
+              shiftToLeft = function(currentPage, currentRecords) {
 
-        if (!Ext.isNumber(page) || (page < 1)) {
-            Ext.raise({
-                msg  : '\'page\' must be a number greater than 0',
-                page : page
+                  let isPage = !!pageMap.peekPage(currentPage),
+                      page   = isPage
+                               ? pageMap.peekPage(currentPage).value
+                               : me.getFeedAt(currentPage),
+                      tmp;
+
+                  if (isPage) {
+                      maintainRanges.push(currentPage);
+                      tmp = page.splice(0, 1);
+                      if (currentRecords) {
+                          page.push(currentRecords[0]);
+                      }
+                  } else {
+                      tmp = page.extract(1);
+                      if (currentRecords) {
+                          page.fill(currentRecords);
+                      }
+                  }
+
+                  return tmp;
+              };
+
+
+        let recordIndex = pageMap.indexOf(record);
+
+        if (recordIndex === -1) {
+            return createResult({
+                success : false,
+                reason  : ResultReason.RECORD_NOT_FOUND
             });
         }
 
-        if (!Ext.isNumber(direction) || (direction !== 1 && direction !== -1)) {
-            Ext.raise({
-                msg       : '\'direction\' must be -1 or 1',
-                direction : direction
+        let position    = PageMapUtil.storeIndexToPosition(recordIndex, pageMap),
+            page        = position.getPage(),
+            index       = position.getIndex(),
+            feedIndexes = me.prepareForAction(page, REMOVE);
+
+        if (feedIndexes === null) {
+            return createResult({
+                success : false,
+                reason  : ResultReason.FEED_INDEXES_NOT_AVAILABLE
             });
         }
 
-        if (!map[page]) {
-            Ext.raise({
-                msg  : '\'page\' does not exist in the PageMap',
-                page : page
-            });
+        let lower          = feedIndexes[0][0],
+            records        = null;
+
+        // fill up range before targetPage
+        if (page + 1 < lower) {
+            feedIndexes[0].unshift(page + 1);
         }
 
-        targetLength = pageMap.getPageSize() - map[page].value.length;
+        Ext.Array.each(feedIndexes, function(range) {
+            let start = range[0],
+                end   = range[range.length - 1];
 
-        while (targetLength > 0) {
+            do {
+                records = shiftToLeft(end, records);
+            } while (end-- > start);
+        });
 
-            index = me.createFeed(page, direction);
+        let remRec = pageMap.map[page].value.splice(index, 1);
+        delete pageMap.indexMap[remRec[0].internalId];
+        pageMap.map[page].value.push(records[0]);
 
-            if (index === -1) {
-                Ext.raise({
-                    msg   : 'could not satisfy feeding demands for page',
-                    page  : page,
-                    index : index
-                });
-            }
-
-            range = PageMapUtil.getPageRangeForPage(page, pageMap);
-            range = range.toArray();
-            if (direction === 1) {
-                range = range.slice(range.indexOf(page), range.length)
-            } else {
-                range = range.slice(0, range.indexOf(page) + 1);
-            }
-
-            maintainRanges = maintainRanges.concat(range);
-            maintainRanges.indexOf(index) !== -1 &&
-                maintainRanges.splice(maintainRanges.indexOf(index), 1);
-
-            start = range[0];
-            end   = range[range.length - 1];
-
-            feed = me.feed[index];
-
-            if (direction === 1) {
-                // feed from the bottom of the last feed
-                items = feed.splice(
-                    0,
-                    Math.min(targetLength, feed.length)
+        Ext.Array.each(Util.groupIndices(maintainRanges),
+            function(range) {
+                PageMapUtil.maintainIndexMap(
+                    PageRange.createFor(range[0], range[range.length - 1]), pageMap
                 );
-
-                if (feed.length == 0) {
-                    me.recycleFeed(index);
-                }
-
-                for (var i = start; i < end; i++) {
-                    map[i].value = map[i].value.concat(map[i + 1].value.splice(
-                        0, items.length));
-                }
-
-                map[end].value = map[end].value.concat(items);
-            } else if (direction === -1) {
-
-                // feed from the top of the first feed
-                items = feed.splice(
-                    Math.max(0, feed.length - targetLength),
-                    Math.min(targetLength, feed.length)
-                );
-
-                if (feed.length == 0) {
-                    me.recycleFeeder(index);
-                }
-
-                for (var i = start; i < end; i++) {
-
-                    Array.prototype.unshift.apply(
-                        map[i + 1].value,
-                        map[i].value.splice(
-                            map[i].value - items.length, items.length
-                        )
-                    );
-                }
-
-                Array.prototype.unshift.apply(map[start].value, items);
             }
+        );
 
-            targetLength -= items.length;
-
-        }
-
-        maintainRanges = conjoon.cn_core.Util.groupIndices(maintainRanges);
-
-        for (var i = 0, len = maintainRanges.length; i < len; i++) {
-
-            PageMapUtil.maintainIndexMap(
-                PageRange.createFor(
-                    maintainRanges[i][0],
-                    maintainRanges[i][maintainRanges[i].length - 1]
-                ),
-                pageMap
-            )
-        }
+        return createResult({
+            success : true,
+            reason  : ResultReason.OK
+        });
     },
 
 
@@ -479,7 +328,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @private
      *
-     * @throws if action is invalid, or if page is the position of a feed
+     * @throws if action is invalid, or if page is the position of a feed,
+     * or if the free space does not equal across all available Feeds
      */
     sanitizeFeedsForActionAtPage : function(page, action) {
 
@@ -513,13 +363,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         let currentPageRange = PageMapUtil.getPageRangeForPage(page, pageMap, true),
             rightRange       = PageMapUtil.getRightSidePageRangeForPage(page, pageMap, true),
-            index, first, last, range, i;
+            index, range, i, free = -1;
 
         // go through all feeds and swap pageCandidates to map
         // precedence is given already existing pages since they
         // have possibly been added during a prefetch from the BufferedStore,
         // if any
         for (i in me.feed) {
+
             i = me.filterPageValue(i);
             if (me.isPageCandidate(i)) {
                 if (pageMap.peekPage(i)) {
@@ -552,9 +403,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 }
 
             }
-
-
-
         }
 
         range = currentPageRange !== null ? currentPageRange : [];
@@ -569,6 +417,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)) {
                 pageMap.removeAtKey(index);
             }
+        }
+
+        for (i in me.feed) {
+            if (free !== -1 && free !==  me.feed[i].getFreeSpace()) {
+                Ext.raise({
+                    msg  : 'Feed out of sync at ' + i,
+                    feed : me.feed[i]
+                });
+            }
+
+            free = me.feed[i].getFreeSpace();
         }
 
         return true;
@@ -754,7 +613,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               ADD         = me.statics().ACTION_ADD,
               REMOVE      = me.statics().ACTION_REMOVE,
               pageMap     = me.getPageMap(),
-              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+              isAdd       = action === ADD;
 
         page = me.filterPageValue(page);
 
@@ -765,97 +624,60 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        if (me.getFeedAt(page)) {
-            Ext.raise({
-                msg  : "requested indexes for 'page' cannot be determined since " +
-                       "the page is represented by a Feed",
-                page : page
-            });
+        // no chance for feeding
+        if (!isAdd && (!pageMap.peekPage(page + 1) && !me.getFeedAt(page + 1))) {
+            return null;
         }
 
-        let currentPageRange = PageMapUtil.getPageRangeForPage(page, pageMap),
-            rightRange       = PageMapUtil.getRightSidePageRangeForPage(page, pageMap),
-            indexes          = [],
-            first, last, range;
+        let found   = me.groupWithFeedsForPage(page),
+            indexes = [], grp, end;
 
-
-
-        switch (action) {
-
-            case ADD:
-
-                if (!currentPageRange) {
-                    return null;
-                }
-                indexes.push([currentPageRange.getLast() + 1]);
-
-                if (rightRange) {
-
-                    for (var i = 0, len = rightRange.length; i < len; i++) {
-                        range = rightRange[i];
-                        first = range.getFirst();
-                        last  = range.getLast();
-                        // single pages cannot be used
-                        if (first !== last) {
-                            indexes.push([
-                                // can we feed from an existing Feed before first?
-                                // if so, use it
-                                me.hasPreviousFeed(first) ? first - 1 : first,
-                                last + 1
-                            ]);
-                        } else if (me.hasPreviousFeed(first)) {
-                            // we must consider feeds that embed the current page
-                            // (11) [12] (13)
-                            indexes.push([first - 1, last + 1]);
-                        }
-                    }
-                }
-
-                break;
-
-            case REMOVE:
-
-                if (!currentPageRange) {
-                    return null;
-                }
-
-                // for the current page range, check if a feed exists at the end
-                // of the range which we can use for feeding
-                if (currentPageRange.getLast() === page) {
-                    if (me.hasNextFeed(page)) {
-                        indexes.push([page + 1]);
-                    } else {
-                        return null;
-                    }
-
-                } else {
-                    indexes.push([currentPageRange.getLast()]);
-                }
-
-                if (rightRange) {
-                    for (var i = 0, len = rightRange.length; i < len; i++) {
-                        range = rightRange[i];
-                        first = range.getFirst();
-                        last  = range.getLast();
-                        // single pages cannot be used
-                        if (first !== last) {
-                            indexes.push([
-                                first - 1,
-                                // for the upper index, we're looking for an existing
-                                // Feed that actually serves the last page in this range
-                                // we'll use this!
-                                me.hasNextFeed(last) ? last + 1 : last
-                            ]);
-                        }
-                    }
-                }
-
-                break;
-
+        if (found === null) {
+            return null;
         }
 
+        Ext.Array.each(found, function(range, foundIndex) {
+            grp = [];
+            end = range.length - 1;
 
-        return indexes.length ? indexes : null;
+            if (!isAdd && foundIndex === found.length - 1) {
+                if (me.getFeedAt(range[end - 1])) {
+                    return;
+                }
+            }
+
+            if (range.indexOf(page) !== -1) {
+                if (isAdd &&
+                    range.indexOf(page) === end &&
+                    !me.getFeedAt(page)) {
+                    indexes.push([page + 1]);
+                }
+            } else {
+                grp.push(
+                    isAdd || me.getFeedAt(range[0])
+                        ? range[0]
+                        : range[0] - 1
+                );
+            }
+
+            if (range.length === 1) {
+                return;
+            }
+
+            grp.push(
+                isAdd && !me.getFeedAt(range[end])
+                    ? range[end] + 1
+                    : range[end]
+            );
+
+            if (grp.length) {
+                indexes.push(grp);
+            }
+
+        });
+
+
+        return indexes;
     },
 
 
@@ -924,7 +746,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * @throws
      * - if the page still exists in the map
      * - if no neighbour page could be found
-     * - if the feed would have two neighbour pages
      * - if an existing feed's previous or next value does not equal to the
      * newly computed values
      */
@@ -942,14 +763,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             Ext.raise({
                 msg  : "Unexpected page at " + page,
                 page : pageMap.peekPage(page)
-            });
-        }
-
-        if (pageMap.peekPage(page - 1) && pageMap.peekPage(page + 1)) {
-            Ext.raise({
-                msg    : "Feed for the requested \'page\' must not have two neighbour pages",
-                before : pageMap.peekPage(page - 1),
-                after  : pageMap.peekPage(page + 1)
             });
         }
 
@@ -1086,6 +899,146 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return (me.getFeedAt(page + 1) !== null &&
                me.getFeedAt(page + 1).getPrevious() === page);
+    },
+
+
+    /**
+     * Returns page ranges depending on the feeds and pages available.
+     * Feeds will be treated as regular pages and considered accordingly when
+     * ranges get computed.
+     * The specified page is included in the range.
+     *
+     *  @example
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(1)
+     *          // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(3)
+     *          // -> [3] [4, 5, 6] [8, 9 10]
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(7)
+     *          // -> null
+     *
+     * @param {Number} page
+     *
+     * @returns {Array|null} an array of ranges or null if no range could
+     * be determined
+     *
+     * @private
+     */
+    groupWithFeedsForPage : function(page) {
+
+        const me      = this,
+              pageMap = me.getPageMap(),
+              range   = [],
+              found   = [],
+              current = [];
+
+        page = me.filterPageValue(page);
+
+        if (!pageMap.peekPage(page) && !me.getFeedAt(page)) {
+            return null;
+        }
+
+        for (var i in pageMap.map) {
+            i = parseInt(i, 10);
+            if (i >= page) {
+                range.push(i);
+            }
+        }
+
+        for (var i in me.feed) {
+            i = parseInt(i, 10);
+            if (i >= page) {
+                range.push(i);
+            }
+        }
+
+        // no feeds, no pages -> return
+        if (!range.length) {
+            return null;
+        }
+
+        range.sort(function(a, b){return a-b});
+
+        for (var i = 0, len = range.length; i < len; i++) {
+            let feed = me.getFeedAt(range[i]);
+            if (i === len - 1 || (feed && feed.getPrevious()) ||
+                (range[i + 1] - 1 !== range[i])) {
+                current.push(range[i]);
+                found.push(current.splice(0, current.length));
+                continue;
+            }
+
+            current.push(range[i]);
+        }
+
+        return found;
+    },
+
+
+    /**
+     * Prepares this feeder by sanitizing pages and feeds for the requested
+     * operation. Feeds will be created if necessary.
+     *
+     * @param {Number} page
+     * @param {Mixed} ation
+     *
+     * @return {Array} returns the ranges that were created to indicate feed
+     * positions, or null if preparing the feeder failed
+     *
+     * @throws if action does not equal to #ACTION_ADD and #ACTION_REMOVE
+     *
+     * @private
+     */
+    prepareForAction : function(page, action) {
+
+        const me      = this,
+              ADD     = me.statics().ACTION_ADD,
+              REMOVE  = me.statics().ACTION_REMOVE,
+              pageMap = me.getPageMap(),
+              isAdd   = action === ADD;
+
+        page = me.filterPageValue(page);
+
+        if ([ADD, REMOVE].indexOf(action) === -1) {
+            Ext.raise({
+                msg    : '\'action\' must be any of ACTION_ADD or ACTION_REMOVE',
+                action : action
+            });
+        }
+
+        me.sanitizeFeedsForActionAtPage(page, action);
+        let feedIndexes = me.findFeedIndexesForActionAtPage(page, action);
+
+        if (feedIndexes === null) {
+            return null;
+        }
+
+        let createAndSwap = function(at) {
+            if (pageMap.peekPage(at)) {
+                me.swapMapToFeed(at);
+            }
+            me.createFeedAt(at);
+        };
+
+        Ext.Array.each(feedIndexes, function(range, feedIndex) {
+            Ext.Array.each(range, function(currentPage, rangeIndex) {
+                let length = range.length,
+                    end    = range[length - 1];
+
+                createAndSwap(range[0]);
+                if (length > 1) {
+                    createAndSwap(range[1]);
+                }
+
+            });
+        });
+
+        return feedIndexes;
     }
 
 

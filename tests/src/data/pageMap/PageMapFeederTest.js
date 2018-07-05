@@ -102,7 +102,11 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
             }
 
 
+        },
+        toIntMap = function(arr) {
+            return arr.map(function(v){return parseInt(v, 10);});
         };
+
 
 // +----------------------------------------------------------------------------
 // |                    =~. Tests .~=
@@ -147,9 +151,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-    /**
-     * getFeedAt
-     */
     t.it('getFeedAt()', function(t) {
 
         let exc, e, feed = createFeed({
@@ -168,9 +169,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-    /**
-     * isPageCandidate
-     */
     t.it('isPageCandidate()', function(t) {
         let exc, e, candidate = createFeedFilled({
                 size     : 25,
@@ -192,9 +190,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-    /**
-     * createFeedAt
-     */
+
     t.it('createFeedAt()', function(t) {
 
         let exc, e, ret, feed,
@@ -210,14 +206,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected page at");
         exc = undefined;
-
-        pageMap.map[3] = {};
-        try{feeder.createFeedAt(2)}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must not have two neighbour pages");
-        exc = undefined;
-
 
         delete pageMap.map[1];
         delete pageMap.map[3];
@@ -377,7 +365,312 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-    t.it('findFeedIndexesForActionAtPage()', function(t) {
+    t.it('groupWithFeedsForPage() - A', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+            feeder.createFeedAt(3);
+            feeder.createFeedAt(4);
+            feeder.createFeedAt(6);
+            feeder.createFeedAt(10);
+
+            t.expect(feeder.groupWithFeedsForPage(1)).toEqual([[1, 2, 3], [4, 5, 6], [8, 9, 10]]);
+        });
+    });
+
+
+    t.it('groupWithFeedsForPage() - B', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+            feeder.createFeedAt(3);
+            feeder.createFeedAt(4);
+            feeder.createFeedAt(6);
+            feeder.createFeedAt(10);
+
+            t.expect(feeder.groupWithFeedsForPage(3)).toEqual([[3], [4, 5, 6], [8, 9, 10]]);
+        });
+    });
+
+
+    t.it('groupWithFeedsForPage() - C', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+
+            feeder.createFeedAt(4);
+            feeder.createFeedAt(6);
+            feeder.createFeedAt(10);
+
+            t.expect(feeder.groupWithFeedsForPage(3)).toEqual(null);
+        });
+
+
+    });
+
+
+
+    t.it('findFeedIndexesForActionAtPage() - A', function(t) {
+
+        // - RANGE       = [1, 2] [4, 5] [8, 9 , 10, 11]
+        // - REM (1, 1)  =  [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(12);
+
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(1, REMOVE)).toEqual(
+                [[2], [3, 5], [7, 11]]
+            );
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - B', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(1);
+            feeder.getPageMap().removeAtKey(2);
+            feeder.getPageMap().removeAtKey(5);
+            feeder.getPageMap().removeAtKey(9);
+            feeder.getPageMap().removeAtKey(10);
+
+
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual(
+                [[5], [6, 9], [11, 13]]
+            );
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - C', function(t) {
+
+         // [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
+        // REM 2
+        // [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
+        // --> [2] [3, 5] [7, 11]
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(2);
+            feeder.getPageMap().removeAtKey(3);
+
+            feeder.getPageMap().removeAtKey(5);
+            feeder.getPageMap().removeAtKey(6);
+
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+            feeder.createFeedAt(2);
+            feeder.createFeedAt(3);
+            feeder.createFeedAt(5);
+            feeder.createFeedAt(7);
+            feeder.createFeedAt(11);
+
+
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(2, REMOVE)).toEqual(
+                [[3, 5], [7, 11]]
+            );
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - D', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+            // [1, 2, 3, 4, 5] [7, 8, 9 10 , 11. 12]
+            feeder.getPageMap().removeAtKey(6);
+            t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[6], [7, 13]]);
+            t.expect(feeder.findFeedIndexesForActionAtPage(1, ADD)).toEqual([[6], [7, 13]]);
+        });
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - E', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+            t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[13]]);
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - F', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+
+            // [1, 2] (3:2) [5] [8, 9, 10, 11, 12]
+            //
+            feeder.createFeedAt(3);
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - G', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // [1, 2] [5], [8, 9] [11, 12]
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(1, ADD)).toEqual([[3], [8, 10], [11, 13]]);
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - H', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // [1, 2] [5], [8, 9] [12]
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            delete feeder.feed[13];
+            delete feeder.feed[7];
+            t.expect(feeder.getFeedAt(13)).toBe(null);
+            t.expect(feeder.getFeedAt(7)).toBe(null);
+            feeder.createFeedAt(10);
+            t.expect(feeder.getFeedAt(10).getPrevious()).toBe(9);
+            feeder.createFeedAt(11);
+            t.expect(feeder.getFeedAt(11).getNext()).toBe(12);
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(9, REMOVE)).toEqual([[10]]);
+
+        });
+
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - I', function(t) {
 
         var exc, e,
             feeder    = createFeeder(),
@@ -421,12 +714,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(feeder.findFeedIndexesForActionAtPage(5, REMOVE)).toBe(null);
             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[6], [8, 13]]);
 
-            feeder.feed[3] = [prop()];
-            try {feeder.findFeedIndexesForActionAtPage(3, ADD)} catch (e) {exc = e;}
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('cannot be determined');
-            exc = undefined;
+            feeder.createFeedAt(3);
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
+            feeder.removeFeedAt(3);
 
             // [1, 2] [5] [8, 9], [11, 12]
             feeder.getPageMap().removeAtKey(3);
@@ -434,6 +724,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(6);
             feeder.getPageMap().removeAtKey(7);
             feeder.getPageMap().removeAtKey(10);
+
+
 
             t.expect(feeder.findFeedIndexesForActionAtPage(1, ADD)).toEqual([[3], [8, 10], [11, 13]]);
             t.expect(feeder.findFeedIndexesForActionAtPage(1, REMOVE)).toEqual([[2], [7, 9], [10, 12]]);
@@ -484,7 +776,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(feeder.findFeedIndexesForActionAtPage(9, ADD)).toEqual([[10], [11, 13]]);
             t.expect(feeder.findFeedIndexesForActionAtPage(9, REMOVE)).toBe(null);
 
-            // [1, 2] [5] [8, 9], (10), (11) [12]
+            // [1, 2] [5] [8, 9], (10:9), (11:12) [12]
             feeder.getPageMap().removeAtKey(3);
             feeder.getPageMap().removeAtKey(4);
             feeder.getPageMap().removeAtKey(6);
@@ -502,11 +794,33 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
 
             t.expect(feeder.findFeedIndexesForActionAtPage(9, ADD)).toEqual([[10], [11, 13]]);
+
             t.expect(feeder.findFeedIndexesForActionAtPage(9, REMOVE)).toEqual([[10]]);
 
 
         });
 
+    });
+
+
+    t.it('findFeedIndexesForActionAtPage() - J', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(1);
+            feeder.getPageMap().removeAtKey(5);
+
+
+            // [2, 3, 4] [6, 7, 8, 9, 10, 11, 12]
+            // [2, 3] (4:3) (5:6) [8, 9, 10, 11] (12:11)
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, REMOVE)).toEqual([[4], [5, 12]]);
+        });
     });
 
 
@@ -990,81 +1304,297 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
+    t.it('sanitizeFeedsForActionAtPage() - H', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
 
 
-    return;
+            // throws exception since feed at 10 will be out of sync with
+            // other Feeds
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(5);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(8);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+
+            t.expect(feeder.createFeedAt(3).getPrevious()).toBe(2);
+            t.expect(feeder.createFeedAt(8).getNext()).toBe(9);
+            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+
+            feeder.getFeedAt(3).fill([Ext.create('Ext.data.Model'), Ext.create('Ext.data.Model')]);
+            feeder.getFeedAt(8).fill([Ext.create('Ext.data.Model'), Ext.create('Ext.data.Model')]);
+            feeder.getFeedAt(10).fill([Ext.create('Ext.data.Model')]);
+
+            try {feeder.sanitizeFeedsForActionAtPage(1, ADD)}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('out of sync');
+            t.expect(exc.msg.toLowerCase()).toContain('10');
+            exc = undefined;
+        });
+
+    });
+
+
+
+
+        t.it('prepareForAction() - exceptions', function(t) {
+
+            let exc, e, rec, op,
+                feeder   = createFeeder(),
+                pageMap  = feeder.getPageMap(),
+                map      = pageMap.map,
+                ADD      = PageMapFeeder.ACTION_ADD,
+                REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+
+            try {feeder.prepareForAction(8)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('must be any of');
+            t.expect(exc.msg.toLowerCase()).toContain('action');
+            exc = undefined;
+        });
+
+
+        t.it('prepareForAction() - A', function(t) {
+            let exc, e, rec, op,
+                feeder   = createFeeder(),
+                pageMap  = feeder.getPageMap(),
+                map      = pageMap.map,
+                ADD      = PageMapFeeder.ACTION_ADD,
+                REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+            t.waitForMs(250, function() {
+
+                // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+                // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(9);
+
+
+                t.expect(feeder.prepareForAction(2, REMOVE)).toEqual(
+                    [[3], [4, 8], [9, 12]]
+                );
+
+
+                t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 5, 6, 7, 10, 11]);
+                t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([3, 4, 8, 9, 12]);
+            })
+
+        });
+
+
+        t.it('prepareForAction() - B', function(t) {
+            let exc, e, rec, op,
+                feeder   = createFeeder(),
+                pageMap  = feeder.getPageMap(),
+                map      = pageMap.map,
+                ADD      = PageMapFeeder.ACTION_ADD,
+                REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+            t.waitForMs(250, function() {
+
+                // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                // [1, 2, 3]  [5, 6, 7, 8]  [10, 11, 12]
+                // [1, 2, 3](4:3)  (5:6)[6, 7, 8](9:8)  (10:11)[11, 12](13:12)
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(9);
+
+                t.expect(feeder.prepareForAction(2, ADD)).toEqual(
+                    [[4], [5, 9], [10, 13]]
+                );
+                t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 3, 6, 7, 8, 11, 12]);
+                t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([4, 5, 9, 10, 13]);
+            })
+
+        });
+
+
+        t.it('removeRecord() - not found', function(t) {
+
+            let exc, e,
+                feeder  = createFeeder(),
+                pageMap  = feeder.getPageMap();
+
+            t.waitForMs(250, function() {
+
+
+                var op = feeder.removeRecord(prop(10000000000));
+
+
+                testOp(op, {
+                    success : false,
+                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND
+                }, t);
+            });
+
+        });
+
+
+        t.it('removeRecord() - no feedIndexes available', function(t) {
+
+            let exc, e,
+                feeder  = createFeeder(),
+                pageMap  = feeder.getPageMap();
+
+            t.waitForMs(250, function() {
+
+                feeder.findFeedIndexesForActionAtPage = function() {return null;}
+
+                var op = feeder.removeRecord(pageMap.map[1].value[0]);
+
+                testOp(op, {
+                    success : false,
+                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE
+                }, t);
+            });
+
+        });
+
+
+        t.it('removeRecord() - found', function(t) {
+
+            let exc, e, rec, op,
+                feeder   = createFeeder(),
+                pageMap  = feeder.getPageMap(),
+                map      = pageMap.map,
+                pageSize = pageMap.getPageSize(),
+                mapping  = {},
+                indexMap = {},
+                recNextId;
+
+            t.waitForMs(250, function() {
+
+                rec     = map[3].value[5];
+                recNext = map[3].value[6];
+
+
+                // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                // createFeedIndexes:
+                // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+                t.expect(map[3].value[5]).not.toBe(recNext);
+                t.expect(map[3].value.length).toBe(25);
+
+                for (var i = 11; i > 3; i--) {
+                    mapping[i]     = {};
+                    mapping[i][24] = map[i + 1].value[0].getId();
+                    mapping[i][0]  = map[i].value[1].getId();
+
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        indexMap[map[i].value[a].internalId] = pageMap.indexMap[map[i].value[a].internalId];
+                    }
+                }
+
+
+                op = feeder.removeRecord(rec);
+                t.expect(map[3].value.length).toBe(25);
+
+                for (var i = 11; i > 3; i--) {
+                    t.expect(map[i].value[24].getId()).toBe(mapping[i][24]);
+                    t.expect(map[i].value[0].getId()).toBe(mapping[i][0]);
+
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            indexMap[map[i].value[a].internalId]
+                        ).not.toBe(pageMap.indexMap[map[i].value[a].internalId]);
+                    }
+                }
+
+                t.expect(map[3].value[5]).toBe(recNext);
+                t.expect(pageMap.indexOf(rec)).toBe(-1);
+                t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
+
+                testOp(op, {
+                    success : true,
+                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                }, t);
+
+            });
+        });
+
+
+    t.it('removeRecord() - found in feed', function(t) {
+
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            map      = pageMap.map,
+            pageSize = pageMap.getPageSize(),
+            mapping  = {},
+            indexMap = {},
+            recNextId;
+
+        t.waitForMs(250, function() {
+
+            rec     = map[3].value[5];
+            recNext = map[3].value[6];
+
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            pageMap.removeAtKey();
+
+            t.expect(map[3].value[5]).not.toBe(recNext);
+            t.expect(map[3].value.length).toBe(25);
+
+            for (var i = 11; i > 3; i--) {
+                mapping[i]     = {};
+                mapping[i][24] = map[i + 1].value[0].getId();
+                mapping[i][0]  = map[i].value[1].getId();
+
+                for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                    indexMap[map[i].value[a].internalId] = pageMap.indexMap[map[i].value[a].internalId];
+                }
+            }
+
+
+            op = feeder.removeRecord(rec);
+            t.expect(map[3].value.length).toBe(25);
+
+            for (var i = 11; i > 3; i--) {
+                t.expect(map[i].value[24].getId()).toBe(mapping[i][24]);
+                t.expect(map[i].value[0].getId()).toBe(mapping[i][0]);
+
+                for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                    t.expect(
+                        indexMap[map[i].value[a].internalId]
+                    ).not.toBe(pageMap.indexMap[map[i].value[a].internalId]);
+                }
+            }
+
+            t.expect(map[3].value[5]).toBe(recNext);
+            t.expect(pageMap.indexOf(rec)).toBe(-1);
+            t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+        });
+
+    });
+
+
+
 
     /*
-
-
-
-
-
-
-
-
-
-
-
-
-
-        t.it('createFeeder() - exceptions', function(t) {
-
-            var exc, e,
-                feeder = createFeeder();
-
-            t.waitForMs(250, function() {
-
-                try {feeder.createFeeder('uioi')} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('must be a number');
-                t.expect(exc.msg.toLowerCase()).toContain('page');
-                exc = undefined;
-
-                try {feeder.createFeeder(4)} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('must be -1 or 1');
-                t.expect(exc.msg.toLowerCase()).toContain('direction');
-                exc = undefined;
-
-
-            });
-
-        });
-
-
-        t.it('createFeeder() - -1', function(t) {
-
-            var exc, e,
-                feeder = createFeeder();
-
-            t.waitForMs(250, function() {
-
-                t.expect(feeder.createFeeder(13, 1)).toBe(-1);
-
-
-            });
-
-        });
-
-
-        t.it('createFeeder() - n', function(t) {
-
-            var exc, e,
-                feeder = createFeeder();
-
-            t.waitForMs(250, function() {
-
-                t.expect(feeder.feeder[12]).toBeUndefined();
-                t.expect(feeder.createFeeder(4, 1)).toBe(12);
-                t.expect(feeder.feeder[12]).toBeDefined();
-
-            });
-
-        });
-
 
         t.it('feedPage() - exceptions', function(t) {
 
@@ -1284,128 +1814,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
 
 
-        t.it('removeRecord() - exceptions', function(t) {
-
-            var exc, e,
-                feeder  = createFeeder(),
-                pageMap  = feeder.getPageMap();
-
-            t.waitForMs(250, function() {
-
-                try {feeder.removeRecord('uioi')} catch (e) {exc = e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-                t.expect(exc.msg.toLowerCase()).toContain('record');
-                exc = undefined;
-
-
-            });
-
-        });
-
-
-        t.it('removeRecord() - not found', function(t) {
-
-            var exc, e,
-                feeder  = createFeeder(),
-                pageMap  = feeder.getPageMap();
-
-            t.waitForMs(250, function() {
-
-                var op = feeder.removeRecord(prop(10000000000), 1);
-
-
-                testOp(op, {
-                    success : false,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND
-                }, t);
-            });
-
-        });
-
-
-        t.it('removeRecord() - found', function(t) {
-
-            var exc, e, rec, op,
-                feeder   = createFeeder(),
-                pageMap  = feeder.getPageMap(),
-                pageSize = pageMap.getPageSize();
-
-            t.waitForMs(250, function() {
-
-                rec = pageMap.map[3].value[5];
-
-                t.expect(pageMap.map[3].value.length).toBe(25);
-                op = feeder.removeRecord(rec, 1);
-                t.expect(pageMap.map[3].value.length).toBe(25);
-
-                testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
-                }, t);
-
-            });
-
-        });
-
-
-
-        t.it('removeRecord() - found in feed', function(t) {
-
-            var exc, e, rec, op,
-                feeder   = createFeeder(),
-                pageMap  = feeder.getPageMap(),
-                pageSize = pageMap.getPageSize(),
-                feeds;
-
-            t.waitForMs(250, function() {
-
-                feeds = feeder.feeder;
-
-                pageMap.removeAtKey(1);
-                pageMap.removeAtKey(5);
-
-                rec = pageMap.map[3].value[5];
-
-                t.expect(pageMap.map[3].value.length).toBe(25);
-                op = feeder.removeRecord(rec, 1);
-                testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
-                }, t);
-
-                t.expect(pageMap.map[3].value.length).toBe(25);
-
-
-                t.expect(feeder.feeder[4]).toBeDefined();
-                t.expect(feeder.feeder[4].length).toBe(24);
-
-                rec = feeds[4][2];
-                op  = feeder.removeRecord(rec, 1);
-                testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
-                }, t);
-                t.expect(feeds[4].length).toBe(23);
-
-
-                // test recycle
-                feeds[4].splice(1, 22);
-                t.expect(feeds[4].length).toBe(1);
-                rec = feeds[4][0];
-                op  = feeder.removeRecord(rec, 1);
-                testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
-                }, t);
-                t.expect(feeds[4]).toBeUndefined();
-                t.expect(feeder.recycledFeeds.indexOf(4)).not.toBe(-1);
-
-
-            });
-
-        });
 
 
         t.it('removeRecord() - removed record not available in indexMap anymore', function(t) {
