@@ -130,10 +130,10 @@ Ext.define('conjoon.cn_core.Util', {
      * lowest to highest. Dublicate items will be removed.
      *
      *      var list   = ['4', 5, '1', '3', 6, '8'];
-     *      conjoon.cn_core.Util.listNeighbours(list); // [[1], [3, 4, 5], [6]]
+     *      conjoon.cn_core.Util.groupIndices(list); // [[1], [3, 4, 5], [6]]
      *
      *      var list   = ['1', 2, '3'];
-     *      conjoon.cn_core.Util.listNeighbours(list); // [[1, 2, 3]]
+     *      conjoon.cn_core.Util.groupIndices(list); // [[1, 2, 3]]
      *
      * @param {Array} list The list of values to return the grouped indices from
      *
