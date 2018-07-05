@@ -463,7 +463,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @return {conjoon.cn_core.data.pageMap.PageRange|Array}
      */
-    getRightSidePageRangeForPage : function(page, pageMap, flat) {
+    getRightSidePageRangeForPage : function(page, pageMap, flat = false) {
 
         const me   = this;
 
@@ -513,7 +513,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @throws if page is not a number, or if pageMap is not an instance of
      * {Ext.data.PageMap}, or if multiple ranges where found
      */
-    getPageRangeForPage : function(page, pageMap, flat) {
+    getPageRangeForPage : function(page, pageMap, flat = false) {
 
         const me = this;
 
