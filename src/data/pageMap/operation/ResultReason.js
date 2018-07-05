@@ -33,7 +33,9 @@ Ext.define('conjoon.cn_core.data.pageMap.operation.ResultReason', {
 
         RECORD_NOT_FOUND : 404,
 
-        OK : 200
+        OK : 200,
+
+        FEED_INDEXES_NOT_AVAILABLE : 500
     }
 
 });
