@@ -271,7 +271,9 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         let props = createProps(17),
             eq    = [props[15], props[16]];
 
+        t.expect(props.length).toBe(17);
         t.expect(feed.fill(props)).toEqual(eq);
+        t.expect(props.length).toBe(17);
         t.expect(feed.getFreeSpace()).toBe(0);
 
         props = createProps(pageSize);
@@ -469,6 +471,103 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         feed.fill(data);
 
         t.expect(feed.isEmpty()).toBe(false);
+    });
+
+
+    t.it('indexOf()', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }), rec = Ext.create('Ext.data.Model', {id : '2'});
+
+        try {feed.indexOf(87)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('instance of');
+        exc = undefined;
+
+        t.expect(feed.indexOf(rec)).toBe(-1);
+
+        let data = [
+            Ext.create('Ext.data.Model', {id : '1'}),
+            Ext.create('Ext.data.Model', {id : '2'}),
+            rec,
+            Ext.create('Ext.data.Model', {id : '3'}),
+            Ext.create('Ext.data.Model', {id : '4'}),
+            Ext.create('Ext.data.Model', {id : '5'}),
+            Ext.create('Ext.data.Model', {id : '6'}),
+            Ext.create('Ext.data.Model', {id : '7'})
+        ];
+
+        feed.fill(data);
+
+        t.expect(feed.indexOf(Ext.create('Ext.data.Model', {id : '5'}))).toBe(-1);
+
+
+        t.expect(feed.indexOf(rec)).toBe(19);
+
+        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size     : 25,
+            previous : 2
+        });
+
+        feed.fill(data);
+
+        t.expect(feed.indexOf(rec)).toBe(2);
+
+
+    });
+
+
+    t.it('removeAt()', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size : 25,
+            next : 2
+        }), rec = Ext.create('Ext.data.Model', {id : '2'});
+
+        try {feed.removeAt(-3)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        exc = undefined;
+
+        t.expect(feed.removeAt(5)).toBeUndefined();
+
+        let data = [
+            Ext.create('Ext.data.Model', {id : '1'}),
+            Ext.create('Ext.data.Model', {id : '2'}),
+            rec,
+            Ext.create('Ext.data.Model', {id : '3'}),
+            Ext.create('Ext.data.Model', {id : '4'}),
+            Ext.create('Ext.data.Model', {id : '5'}),
+            Ext.create('Ext.data.Model', {id : '6'}),
+            Ext.create('Ext.data.Model', {id : '7'})
+        ];
+
+        feed.fill(data);
+
+        t.expect(feed.getFreeSpace()).toBe(17);
+        t.expect(feed.indexOf(data[2])).toBe(19);
+        t.expect(feed.removeAt(19)).toBe(data[2]);
+        t.expect(feed.getFreeSpace()).toBe(18);
+        t.expect(feed.indexOf(data[2])).toBe(-1);
+
+        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            size     : 25,
+            previous : 2
+        });
+
+        feed.fill(data);
+
+        t.expect(feed.getFreeSpace()).toBe(17);
+        t.expect(feed.indexOf(rec)).toBe(2);
+        t.expect(feed.removeAt(2)).toBe(rec);
+        t.expect(feed.getFreeSpace()).toBe(18);
+        t.expect(feed.indexOf(rec)).toBe(-1);
+
+
     });
 
 

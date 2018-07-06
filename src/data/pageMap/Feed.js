@@ -193,6 +193,13 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
             });
         }
 
+        // copy so we do not slice and splice the original reference
+        let tmp = [];
+        for (let i = 0, len = records.length; i < len; i++) {
+            tmp.push(records[i]);
+        }
+        records = tmp;
+
         let data = me.data,
             len  = records.length,
             recs;
@@ -208,6 +215,98 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
         Array.prototype.unshift.apply(me.data, recs);
 
         return records;
+    },
+
+
+    /**
+     * Tries to look up the specified record in this Feed.
+     * Will return its index if found, otherwise -1. Records will be compared
+     * using their id, first, than if they represent the same object.
+     * Note:
+     * =====
+     * The index computed is the absolute index based on this Feed's size.
+     *
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @return {Number}
+     *
+     * @throws if record is not an instance of Ext.data.Model
+     */
+    indexOf : function(record) {
+
+        const me      = this,
+              isStart = !me.getPrevious();
+
+        let index = - 1,
+            i, rec;
+
+        if (!(record instanceof Ext.data.Model)) {
+            Ext.raise({
+                msg    : "'record' needs to be an instance of Ext.data.Model",
+                record : record
+            });
+        }
+
+        for (i = 0, len = me.data.length; i < len; i++) {
+            rec = me.data[i];
+
+            if (rec.getId() === record.getId() && rec === record) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index === -1) {
+            return -1;
+        }
+
+        return isStart
+               ? me.getSize() - (me.data.length - index)
+               : index;
+    },
+
+
+    /**
+     * Removes the entry at the specified index.
+     * Note:
+     * =====
+     * Calling APIs should consider the fill order for Feeds depending on #previous
+     * and #next. see #fill The index expected is the index based on the pageSize
+     * and the fill-order. Counting starts left or right (i.e. beginning or end)
+     * of the Feed.
+     *
+     * @param {Number} index
+     *
+     * @return undefined if the entry at the specified position was not defined,
+     * otherwise the record that was removed
+     *
+     * @throws if index is less than 0 or greater than #size - 1
+     */
+    removeAt : function(index) {
+
+        const me     = this,
+              size    = me.getSize(),
+              isStart = !me.getPrevious();
+
+        index = parseInt(index, 10);
+
+        if (index < 0 || index > size -1) {
+            Ext.raise({
+                msg   : "'index' is out of bounds",
+                index : index
+            });
+        }
+
+        if (isStart) {
+            index = index  - (size - me.data.length);
+        }
+
+        if (!me.data[index]) {
+            return undefined;
+        }
+
+        return me.data.splice(index, 1)[0];
     },
 
 
