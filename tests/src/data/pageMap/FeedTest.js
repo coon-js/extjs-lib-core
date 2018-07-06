@@ -382,6 +382,13 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('count');
         exc = undefined;
 
+        try {feed.extract()}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('bounds');
+        t.expect(exc.msg.toLowerCase()).toContain('count');
+        exc = undefined;
+
         t.expect(feed.fill(props)).toEqual([]);
 
         t.expect(feed.extract(3)).toEqual(eq);

@@ -233,7 +233,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
         count = parseInt(count, 10);
 
-        if (count < 1 || count > size) {
+        if (!Ext.isNumber(count) || (count < 1 || count > size)) {
             Ext.raise({
                 msg   : "'count' is out of bounds",
                 count : count
