@@ -312,24 +312,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * page is called.
      * It makes sure of the following:
      *
-     * - single pages where no Feed can be created for and where no shifiting can
-     * happen are marked in reloadWhenInView (not removed to not trigger any
-     * unneccesary re-caching)
      * - feeds that have a neighbour page which would violate the rule not to
      * have one ( [10] (11:12) [12]) are removed
-     * - feeds that don't have a neighbour page are removed
+     * - feeds that don't have a neighbour page are removed,
      *
      *
      * @param {Number} page
      * @param {Mixed} action any of #ACTION_ADD / #ACTION_REMOVE
      *
-     * @return {Boolean} true when sanitizing processed, otherwise false (e.g.
-     * if page is not available)
+     * @return {Boolean} true when sanitizing processed, otherwise false, e.g.
+     * if no Feed and no page exist at the specified position
      *
      * @private
      *
-     * @throws if action is invalid, or if page is the position of a feed,
-     * or if the free space does not equal across all available Feeds
+     * @throws if action is invalid, or if the free space does not equal
+     * across all available Feeds
      */
     sanitizeFeedsForActionAtPage : function(page, action) {
 
@@ -342,14 +339,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         page = me.filterPageValue(page);
 
-        if (me.getFeedAt(page)) {
-            Ext.raise({
-                msg  : "requested sanitizing for 'page' cannot be processed since " +
-                       "the page is represented by a Feed",
-                page : page
-            });
-        }
-
         if ([ADD, REMOVE].indexOf(action) === -1) {
             Ext.raise({
                 msg    : '\'action\' must be any of ACTION_ADD or ACTION_REMOVE',
@@ -357,7 +346,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        if (!pageMap.peekPage(page)) {
+        if (!me.getFeedAt(page) && !pageMap.peekPage(page)) {
             return false;
         }
 
@@ -378,29 +367,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 } else {
                     me.swapFeedToMap(i);
                 }
-            } else {
+            } else  if (me.getFeedAt(i).isEmpty()) {
+                me.removeFeedAt(i);
+                
 
-                switch (action) {
-                    // check if neighbour Feed has data for shifting from right side
-                    case REMOVE:
-                        if (me.getFeedAt(i).getPrevious() === i - 1 && me.getFeedAt(i).isEmpty()) {
-                            me.removeFeedAt(i);
-                            if (me.getFeedAt(i - 2) && me.getFeedAt(i - 2).getNext() === i - 1) {
-                                me.removeFeedAt(i - 2);
-                            }
-                        }
-                        break;
-
-                    // ... and left side
-                    case ADD:
-                        if (me.getFeedAt(i).getNext() === i + 1 && me.getFeedAt(i).isEmpty()) {
-                            me.removeFeedAt(i);
-                            if (me.getFeedAt(i + 2) && me.getFeedAt(i + 2).getPrevious() === i + 1) {
-                                me.removeFeedAt(i + 2);
-                            }
-                        }
-                        break;
-                }
 
             }
         }
@@ -522,6 +492,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * created.
      *
      * @param {Number} page
+     * @param {Number} targetPage The next page this Feed should serve
      *
      * @return {conjoon.cn_core.data.pageMap.Feed}
      *
@@ -530,7 +501,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * @throws if the page is not existing, or if the feed for
      * the page already exists, or if #createFeedAt throws
      */
-    swapMapToFeed : function(page) {
+    swapMapToFeed : function(page, targetPage) {
 
         const me       = this,
               pageMap  = me.getPageMap(),
@@ -538,7 +509,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         let feed, feedData, data;
 
-        page = me.filterPageValue(page);
+        page       = me.filterPageValue(page);
+        targetPage = me.filterPageValue(targetPage);
+
 
         if (!pageMap.peekPage(page)) {
             Ext.raise({
@@ -549,7 +522,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         if (me.getFeedAt(page)) {
             Ext.raise({
-                msg  : 'the feed for the specified \'page\' already exists',
+                msg  : 'the feed for the specified \'page\' already exists and is not empty',
                 page : page
             });
         }
@@ -567,7 +540,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         // their internalIds
         pageMap.removeAtKey(page);
 
-        feed = me.createFeedAt(page);
+        feed = me.createFeedAt(page, targetPage);
         feed.fill(feedData);
 
         return feed;
@@ -637,6 +610,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         Ext.Array.each(found, function(range, foundIndex) {
+
             grp = [];
             end = range.length - 1;
 
@@ -721,8 +695,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * Creates an empty feed representing the specified page if it does not exist,
      * and returns it. If the feed already exists, the existing one will be
      * returned.
-     * The Feed's previous and next values are computed automatically based on
-     * the available neighbour pages.
+     * The Feed's previous or next value is specified in targetPage
      *
      * Example:
      *  (1) PageMap : [3, 4, 5], [7, 8, 9]
@@ -745,11 +718,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @throws
      * - if the page still exists in the map
-     * - if no neighbour page could be found
+     * - if no neighbour page could be found based on neighbourPage
      * - if an existing feed's previous or next value does not equal to the
      * newly computed values
      */
-    createFeedAt : function(page) {
+    createFeedAt : function(page, targetPage) {
 
         const me       = this,
               pageMap  = me.getPageMap(),
@@ -757,7 +730,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         let feed, position;
 
-        page = me.filterPageValue(page);
+        page       = me.filterPageValue(page);
+        targetPage = me.filterPageValue(targetPage);
+
+        if (Math.abs(targetPage - page) !== 1) {
+            Ext.raise({
+                msg        : "\'targetPage\' value must be 1 less or more than \'page\'.",
+                targetPage : targetPage,
+                page       : page
+            });
+
+        }
 
         if (pageMap.peekPage(page)) {
             Ext.raise({
@@ -775,12 +758,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         switch (true) {
 
-            case !!pageMap.peekPage(page - 1):
-                position = ['previous', page - 1];
-            break;
+            case targetPage - page < 0:
+                position = ['previous', targetPage];
+                break;
 
-            case !!pageMap.peekPage(page + 1):
-                position = ['next', page + 1];
+            case targetPage - page > 0:
+                position = ['next', targetPage];
                 break;
         }
 
@@ -790,8 +773,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             if ((position[0] === 'previous' && feed.getPrevious() !== position[1]) ||
                 (position[0] === 'next' && feed.getNext() !== position[1])) {
                 Ext.raise({
-                    msg      : "The computed previous/next values for the existing " +
-                               "feed do not match is current values",
+                    msg      : Ext.String.format("The computed previous/next values for the existing " +
+                               "feed do not match is current values. Requested: {0}: {1}; " +
+                               "available: {2}, {3}",
+                                position[0], position[1],
+                                feed.getPrevious() ? 'previous' : 'next',
+                                feed.getPrevious() ? feed.getPrevious() : feed.getNext()),
                     computed : position,
                     previous : feed.getPrevious(),
                     next     : feed.getNext()
@@ -965,9 +952,18 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         range.sort(function(a, b){return a-b});
 
         for (var i = 0, len = range.length; i < len; i++) {
-            let feed = me.getFeedAt(range[i]);
+            let feed        = me.getFeedAt(range[i]),
+                currentPage = range[i];
+
+            if (currentPage === page) {
+              //  found.push([page]);
+              //  continue;
+            }
+
+
             if (i === len - 1 || (feed && feed.getPrevious()) ||
-                (range[i + 1] - 1 !== range[i])) {
+                (range[i + 1] - 1 !== currentPage) ||
+                (me.getFeedAt(range[i + 1]) && me.getFeedAt(range[i + 1]).getPrevious() !== currentPage) ) {
                 current.push(range[i]);
                 found.push(current.splice(0, current.length));
                 continue;
@@ -1018,21 +1014,25 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             return null;
         }
 
-        let createAndSwap = function(at) {
-            if (pageMap.peekPage(at)) {
-                me.swapMapToFeed(at);
-            }
-            me.createFeedAt(at);
-        };
+        let createAndSwap = function(at, targetPage) {
+                if (pageMap.peekPage(at)) {
+                    me.swapMapToFeed(at, targetPage);
+                }
+                me.createFeedAt(at, targetPage);
+            },
+            targetPage, length, end;
+
 
         Ext.Array.each(feedIndexes, function(range, feedIndex) {
             Ext.Array.each(range, function(currentPage, rangeIndex) {
-                let length = range.length,
-                    end    = range[length - 1];
+                length = range.length,
+                end    = range[range.length - 1];
 
-                createAndSwap(range[0]);
                 if (length > 1) {
-                    createAndSwap(range[1]);
+                    createAndSwap(range[0], range[0] + 1);
+                    createAndSwap(range[1], range[1] - 1);
+                } else {
+                    createAndSwap(range[0], isAdd ? range[0] + 1 : range[0] - 1);
                 }
 
             });

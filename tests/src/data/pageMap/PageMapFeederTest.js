@@ -41,11 +41,26 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 
             return store.getData();
         },
-        prop = function(testProperty) {
-            return Ext.create('Ext.data.Model', {
+        prop = function(testProperty, id) {
+            let cfg = {
                 testPropForIndexLookup : testProperty
-            });
+            };
+            if (id) {
+                cfg.id = id;
+            }
+            return Ext.create('Ext.data.Model', cfg);
         },
+        propsMax  = function(length) {
+
+            let data = [];
+
+            for (var i = 0;  i < length; i++) {
+                data.push(prop());
+            }
+
+            return data;
+
+        };
         createFeeder = function() {
 
             return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
@@ -201,10 +216,16 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         t.isCalled('filterPageValue', feeder);
 
         pageMap.map[1] = {};
-        try{feeder.createFeedAt(1)}catch(e){exc=e;}
+        try{feeder.createFeedAt(1, 2)}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("unexpected page at");
+        exc = undefined;
+
+        try{feeder.createFeedAt(1, 8)}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("targetpage");
         exc = undefined;
 
         delete pageMap.map[1];
@@ -221,7 +242,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         feeder.feed = {};
         feeder.feed[2] = Ext.create(Feed, {size : pageSize, previous : 1});
         pageMap.map[3] = {};
-        try{feeder.createFeedAt(2)}catch(e){exc=e;}
+        try{feeder.createFeedAt(2, 3)}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("the computed");
@@ -233,7 +254,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         feeder.feed = {};
         feeder.feed[3] = Ext.create(Feed, {size : pageSize, next : 4});
         pageMap.map[2] = {};
-        try{feeder.createFeedAt(3)}catch(e){exc=e;}
+        try{feeder.createFeedAt(3, 2)}catch(e){exc=e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("the computed");
@@ -245,8 +266,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         feeder.feed = {};
         pageMap.map[2] = {};
 
-        t.expect(feeder.createFeedAt(3).getPrevious()).toBe(2);
-        t.expect(feeder.createFeedAt(1).getNext()).toBe(2);
+        t.expect(feeder.createFeedAt(3, 2).getPrevious()).toBe(2);
+        t.expect(feeder.createFeedAt(1, 2).getNext()).toBe(2);
 
         delete pageMap.map[1];
         delete pageMap.map[2];
@@ -254,12 +275,91 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         feeder.feed = {}
         pageMap.map[3] = {};
 
-        ret = feeder.createFeedAt(2);
+        ret = feeder.createFeedAt(2, 3);
         t.expect(ret instanceof Feed).toBe(true);
 
-        t.expect(feeder.createFeedAt(2)).toBe(ret);
+        t.expect(feeder.createFeedAt(2, 3)).toBe(ret);
 
-        t.expect(feeder.createFeedAt(2)).toBe(feeder.getFeedAt(2));
+        t.expect(feeder.createFeedAt(2, 3)).toBe(feeder.getFeedAt(2));
+    });
+
+
+    t.it('swapMapToFeed() - exceptions', function(t) {
+
+        var exc, e,
+            feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+
+            feeder.getPageMap().removeAtKey(5);
+            try {feeder.swapMapToFeed(5, 4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+            t.expect(exc.msg.toLowerCase()).toContain('page');
+            exc = undefined;
+
+            feeder.feed[8] = {};
+            try {feeder.swapMapToFeed(8, 9)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('already exists');
+            t.expect(exc.msg.toLowerCase()).toContain('feed');
+            exc = undefined;
+            feeder.feed = {};
+
+            try {feeder.swapMapToFeed(8, 4)} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('targetpage');
+            exc = undefined;
+
+
+        });
+
+    });
+
+
+    t.it('swapMapToFeed()', function(t) {
+
+        let exc, e, page, newFeed,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap(),
+            mapValues = [],
+            collect   = function(data) {
+                for (var i = 0, len = data.length; i<  len; i++) {
+                    mapValues.push(data[i].clone());
+                }
+            };
+
+        t.waitForMs(250, function() {
+
+            page = 5;
+            pageMap.removeAtKey(page + 1);
+
+
+            t.expect(feeder.getFeedAt(page)).toBe(null);
+            t.expect(feeder.getPageMap().peekPage(page)).toBeTruthy();
+
+            collect(pageMap.map[page].value);
+            newFeed = feeder.swapMapToFeed(page, page - 1);
+            t.expect(newFeed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+
+            t.expect(feeder.getPageMap().peekPage(page)).toBeFalsy();
+            t.expect(feeder.getFeedAt(page)).toBeDefined();
+            t.expect(feeder.getFeedAt(page)).toBe(newFeed);
+
+            t.expect(feeder.getPageMap().getPageSize()).toBeGreaterThan(0);
+
+            for (var i = 0, len = feeder.getPageMap().getPageSize(); i < len; i++) {
+                t.expect(feeder.getFeedAt(page).getAt(i) instanceof Ext.data.Model).toBe(true);
+                t.expect(feeder.getFeedAt(page).getAt(i).data).toEqual(mapValues[i].data);
+            }
+
+
+        });
+
     });
 
 
@@ -291,7 +391,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         delete pageMap.map[1];
         pageMap.map[2] = {};
 
-        feeder.createFeedAt(1);
+        feeder.createFeedAt(1, 2);
 
 
         p  = prop();
@@ -339,7 +439,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             pageMap.removeAtKey(4);
             pageMap.removeAtKey(3);
 
-            feeder.createFeedAt(4);
+            feeder.createFeedAt(4, 5);
 
             t.expect(feeder.hasPreviousFeed(5)).toBe(true);
         });
@@ -358,7 +458,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             pageMap.removeAtKey(6);
             pageMap.removeAtKey(7);
 
-            feeder.createFeedAt(6);
+            feeder.createFeedAt(6, 5);
 
             t.expect(feeder.hasNextFeed(5)).toBe(true);
         });
@@ -387,14 +487,16 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(11);
             feeder.getPageMap().removeAtKey(12);
 
-            feeder.createFeedAt(3);
-            feeder.createFeedAt(4);
-            feeder.createFeedAt(6);
-            feeder.createFeedAt(10);
+            feeder.createFeedAt(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
 
             t.expect(feeder.groupWithFeedsForPage(1)).toEqual([[1, 2, 3], [4, 5, 6], [8, 9, 10]]);
         });
     });
+
+
 
 
     t.it('groupWithFeedsForPage() - B', function(t) {
@@ -419,10 +521,10 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(11);
             feeder.getPageMap().removeAtKey(12);
 
-            feeder.createFeedAt(3);
-            feeder.createFeedAt(4);
-            feeder.createFeedAt(6);
-            feeder.createFeedAt(10);
+            feeder.createFeedAt(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
 
             t.expect(feeder.groupWithFeedsForPage(3)).toEqual([[3], [4, 5, 6], [8, 9, 10]]);
         });
@@ -452,15 +554,54 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(12);
 
 
-            feeder.createFeedAt(4);
-            feeder.createFeedAt(6);
-            feeder.createFeedAt(10);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
 
             t.expect(feeder.groupWithFeedsForPage(3)).toEqual(null);
         });
 
 
     });
+
+
+
+    t.it("groupWithFeedsForPage() - D", function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            pageMap   = feeder.getPageMap(),
+            pageSize  = pageMap.getPageSize(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(9, 10);
+
+            t.expect(feeder.getFeedAt(4).getNext()).toBe(5);
+            t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
+
+
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+
+            t.expect(feeder.groupWithFeedsForPage(3)).toEqual([
+                [3], [4, 5, 6, 7, 8], [9, 10, 11, 12]
+            ]);
+
+        });
+
+
+    });
+
+
 
 
 
@@ -542,11 +683,11 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(11);
             feeder.getPageMap().removeAtKey(12);
 
-            feeder.createFeedAt(2);
-            feeder.createFeedAt(3);
-            feeder.createFeedAt(5);
-            feeder.createFeedAt(7);
-            feeder.createFeedAt(11);
+            feeder.createFeedAt(2, 1);
+            feeder.createFeedAt(3, 4);
+            feeder.createFeedAt(5, 4);
+            feeder.createFeedAt(7, 8);
+            feeder.createFeedAt(11, 10);
 
 
 
@@ -606,7 +747,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
             // [1, 2] (3:2) [5] [8, 9, 10, 11, 12]
             //
-            feeder.createFeedAt(3);
+            feeder.createFeedAt(3, 2);
             t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
         });
 
@@ -658,9 +799,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             delete feeder.feed[7];
             t.expect(feeder.getFeedAt(13)).toBe(null);
             t.expect(feeder.getFeedAt(7)).toBe(null);
-            feeder.createFeedAt(10);
+            feeder.createFeedAt(10, 9);
             t.expect(feeder.getFeedAt(10).getPrevious()).toBe(9);
-            feeder.createFeedAt(11);
+            feeder.createFeedAt(11, 12);
             t.expect(feeder.getFeedAt(11).getNext()).toBe(12);
 
             t.expect(feeder.findFeedIndexesForActionAtPage(9, REMOVE)).toEqual([[10]]);
@@ -714,7 +855,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(feeder.findFeedIndexesForActionAtPage(5, REMOVE)).toBe(null);
             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[6], [8, 13]]);
 
-            feeder.createFeedAt(3);
+            feeder.createFeedAt(3, 2);
             t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
             feeder.removeFeedAt(3);
 
@@ -738,7 +879,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(6);
             feeder.getPageMap().removeAtKey(7);
             feeder.getPageMap().removeAtKey(10);
-            feeder.createFeedAt(13);
+            feeder.createFeedAt(13, 12);
             t.expect(feeder.getFeedAt(13).getPrevious()).toBe(12);
 
             t.expect(feeder.findFeedIndexesForActionAtPage(1, ADD)).toEqual([[3], [8, 10], [11, 13]]);
@@ -755,7 +896,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             delete feeder.feed[13];
             t.expect(feeder.getFeedAt(13)).toBe(null);
-            feeder.createFeedAt(7);
+            feeder.createFeedAt(7, 8);
             t.expect(feeder.getFeedAt(7).getNext()).toBe(8);
 
             t.expect(feeder.findFeedIndexesForActionAtPage(1, ADD)).toEqual([[3], [7, 10], [11, 13]]);
@@ -787,9 +928,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             delete feeder.feed[7];
             t.expect(feeder.getFeedAt(13)).toBe(null);
             t.expect(feeder.getFeedAt(7)).toBe(null);
-            feeder.createFeedAt(10);
+            feeder.createFeedAt(10, 9);
             t.expect(feeder.getFeedAt(10).getPrevious()).toBe(9);
-            feeder.createFeedAt(11);
+            feeder.createFeedAt(11, 12);
             t.expect(feeder.getFeedAt(11).getNext()).toBe(12);
 
 
@@ -824,74 +965,81 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-    t.it('swapMapToFeed() - exceptions', function(t) {
+    t.it('findFeedIndexesForActionAtPage() - K', function(t) {
 
         var exc, e,
-            feeder = createFeeder();
+            feeder    = createFeeder(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE,
+            pageMap   = feeder.getPageMap();
 
         t.waitForMs(250, function() {
 
+            // When removing in a feed, we must make sure the Feed exists,
+            // otherwise we cannot remove from it
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
 
-            feeder.getPageMap().removeAtKey(5);
-            try {feeder.swapMapToFeed(5)} catch (e) {exc = e;}
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
-            t.expect(exc.msg.toLowerCase()).toContain('page');
-            exc = undefined;
 
-            feeder.feed[8] = {};
-            try {feeder.swapMapToFeed(8)} catch (e) {exc = e;}
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('already exists');
-            t.expect(exc.msg.toLowerCase()).toContain('feed');
-            exc = undefined;
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.swapMapToFeed(8, 7);
+            feeder.createFeedAt(9, 10);
+            feeder.swapMapToFeed(12, 11);
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(4, REMOVE)).toEqual([
+                [8], [9, 12]
+            ]);
 
         });
-
     });
 
 
-    t.it('swapMapToFeed()', function(t) {
+    t.it('findFeedIndexesForActionAtPage() - L', function(t) {
 
-        let exc, e, page, newFeed,
+        var exc, e,
             feeder    = createFeeder(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE,
             pageMap   = feeder.getPageMap(),
-            mapValues = [],
-            collect   = function(data) {
-                for (var i = 0, len = data.length; i<  len; i++) {
-                    mapValues.push(data[i].clone());
-                }
-            };
+            pageSize  = pageMap.getPageSize();
 
         t.waitForMs(250, function() {
 
-            page = 5;
-            pageMap.removeAtKey(page + 1);
+            // When removing in a feed, we must make sure the Feed exists,
+            // otherwise we cannot remove from it
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2, 3] (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
 
 
-            t.expect(feeder.getFeedAt(page)).toBe(null);
-            t.expect(feeder.getPageMap().peekPage(page)).toBeTruthy();
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
 
-            collect(pageMap.map[page].value);
-            newFeed = feeder.swapMapToFeed(page);
-            t.expect(newFeed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(9, 10);
 
-            t.expect(feeder.getPageMap().peekPage(page)).toBeFalsy();
-            t.expect(feeder.getFeedAt(page)).toBeDefined();
-            t.expect(feeder.getFeedAt(page)).toBe(newFeed);
+            t.expect(feeder.getFeedAt(4).getNext()).toBe(5);
+            t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
 
-            t.expect(feeder.getPageMap().getPageSize()).toBeGreaterThan(0);
 
-            for (var i = 0, len = feeder.getPageMap().getPageSize(); i < len; i++) {
-                t.expect(feeder.getFeedAt(page).getAt(i) instanceof Ext.data.Model).toBe(true);
-                t.expect(feeder.getFeedAt(page).getAt(i).data).toEqual(mapValues[i].data);
-            }
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+
+            t.expect(feeder.findFeedIndexesForActionAtPage(4, REMOVE)).toEqual([
+                [8], [9, 12]
+            ]);
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 3, 5, 6, 7, 8, 10, 11, 12]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([4, 9]);
 
 
         });
-
     });
 
 
@@ -905,7 +1053,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
             pageMap.removeAtKey(page);
             pageMap.removeAtKey(page + 1);
-            newFeed = feeder.createFeedAt(page);
+            newFeed = feeder.createFeedAt(page, page - 1);
 
             t.expect(newFeed).toBeTruthy();
             t.expect(feeder.getFeedAt(page)).not.toBe(null);
@@ -961,7 +1109,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             pageMap.removeAtKey(page + 1);
 
             // swap to Feed
-            newFeed = feeder.swapMapToFeed(page);
+            newFeed = feeder.swapMapToFeed(page, page - 1);
             t.expect(newFeed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
             t.expect(feeder.getPageMap().peekPage(page)).toBeFalsy();
             collect(newFeed.toArray());
@@ -982,7 +1130,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         });
     });
 
-
     t.it('sanitizeFeedsForActionAtPage() - exceptions', function(t) {
         var exc, e,
             feeder = createFeeder();
@@ -999,14 +1146,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(5);
             feeder.getPageMap().removeAtKey(6);
 
-            feeder.createFeedAt(5);
-            try {feeder.sanitizeFeedsForActionAtPage(5, conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD)} catch (e) {exc = e;}
-            t.expect(exc).toBeDefined();
-            t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('processed');
-            t.expect(exc.msg.toLowerCase()).toContain('feed');
-            exc = undefined;
-
+            // former exceptin
+            feeder.createFeedAt(5, 4);
+            t.expect(feeder.sanitizeFeedsForActionAtPage(5, conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD)).toBe(true);
         });
 
     });
@@ -1086,7 +1228,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(7);
             feeder.getPageMap().removeAtKey(11);
 
-            feeder.swapMapToFeed(10);
+            feeder.swapMapToFeed(10, 9);
 
             t.expect(feeder.getFeedAt(10)).toBeTruthy();
             t.expect(feeder.getFeedAt(10).getPrevious()).toBe(9);
@@ -1133,7 +1275,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             feeder.getPageMap().removeAtKey(11);
 
-            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+            t.expect(feeder.createFeedAt(10, 9).getPrevious()).toBe(9);
 
             feeder.getFeedAt(10).fill([Ext.create('Ext.data.Model')])
 
@@ -1168,7 +1310,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             feeder.getPageMap().removeAtKey(11);
 
-            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+            t.expect(feeder.createFeedAt(10, 9).getPrevious()).toBe(9);
 
             feeder.sanitizeFeedsForActionAtPage(1, REMOVE);
 
@@ -1201,8 +1343,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             feeder.getPageMap().removeAtKey(11);
 
-            t.expect(feeder.createFeedAt(8).getNext()).toBe(9);
-            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+            t.expect(feeder.createFeedAt(8, 9).getNext()).toBe(9);
+            t.expect(feeder.createFeedAt(10, 9).getPrevious()).toBe(9);
 
             feeder.sanitizeFeedsForActionAtPage(1, REMOVE);
 
@@ -1236,8 +1378,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             feeder.getPageMap().removeAtKey(11);
 
-            t.expect(feeder.createFeedAt(8).getNext()).toBe(9);
-            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+            t.expect(feeder.createFeedAt(8, 9).getNext()).toBe(9);
+            t.expect(feeder.createFeedAt(10, 9).getPrevious()).toBe(9);
 
             feeder.sanitizeFeedsForActionAtPage(1, ADD);
 
@@ -1326,9 +1468,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getPageMap().removeAtKey(10);
             feeder.getPageMap().removeAtKey(11);
 
-            t.expect(feeder.createFeedAt(3).getPrevious()).toBe(2);
-            t.expect(feeder.createFeedAt(8).getNext()).toBe(9);
-            t.expect(feeder.createFeedAt(10).getPrevious()).toBe(9);
+            t.expect(feeder.createFeedAt(3, 2).getPrevious()).toBe(2);
+            t.expect(feeder.createFeedAt(8, 9).getNext()).toBe(9);
+            t.expect(feeder.createFeedAt(10, 9).getPrevious()).toBe(9);
 
             feeder.getFeedAt(3).fill([Ext.create('Ext.data.Model'), Ext.create('Ext.data.Model')]);
             feeder.getFeedAt(8).fill([Ext.create('Ext.data.Model'), Ext.create('Ext.data.Model')]);
@@ -1344,6 +1486,103 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
     });
 
+
+    t.it('sanitizeFeedsForActionAtPage() - I', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD,
+            REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // 3 - full, 4 - empty, 8 - full, 9 - empty , 12 full
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.swapMapToFeed(8, 7);
+            feeder.createFeedAt(9, 10);
+            feeder.swapMapToFeed(12, 11);
+
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(4).getFreeSpace()).toBe(pageSize);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(pageSize);
+            t.expect(feeder.getFeedAt(12).getFreeSpace()).toBe(0);
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 5, 6, 7, 10, 11]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([3, 4, 8, 9, 12]);
+
+            t.expect(feeder.sanitizeFeedsForActionAtPage(4, REMOVE)).toBe(true);
+
+            // [1, 2 ,3](4:5) [5, 6, 7
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 3, 5, 6, 7, 8, 10, 11, 12]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([]);
+        })
+
+    });
+
+
+
+    t.it('sanitizeFeedsForActionAtPage() - J', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD,
+            REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // 3 - full, 4 - empty, 8 - full, 9 - empty , 12 full
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.swapMapToFeed(8, 7);
+            feeder.createFeedAt(9, 10);
+            feeder.swapMapToFeed(12, 11);
+
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(4).getFreeSpace()).toBe(pageSize);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(pageSize);
+            t.expect(feeder.getFeedAt(12).getFreeSpace()).toBe(0);
+
+            feeder.getFeedAt(3).extract(1);
+            feeder.getFeedAt(8).extract(1);
+            feeder.getFeedAt(12).extract(1);
+
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 5, 6, 7, 10, 11]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([3, 4, 8, 9, 12]);
+
+            t.expect(feeder.sanitizeFeedsForActionAtPage(4, REMOVE)).toBe(true);
+
+            // [1, 2 ,3](4:5) [5, 6, 7
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 5, 6, 7, 10, 11]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([3, 4, 8, 9, 12]);
+        })
+
+    });
 
 
 
@@ -1388,6 +1627,11 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                     [[3], [4, 8], [9, 12]]
                 );
 
+                t.expect(feeder.getFeedAt(3).getPrevious()).toBe(2);
+                t.expect(feeder.getFeedAt(4).getNext()).toBe(5);
+                t.expect(feeder.getFeedAt(8).getPrevious()).toBe(7);
+                t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
+                t.expect(feeder.getFeedAt(12).getPrevious()).toBe(11);
 
                 t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 5, 6, 7, 10, 11]);
                 t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([3, 4, 8, 9, 12]);
@@ -1421,6 +1665,94 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             })
 
         });
+
+
+    t.it('prepareForAction() - C', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD,
+            REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // 3 - full, 4 - empty, 8 - full, 9 - empty , 12 full
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.swapMapToFeed(8, 7);
+            feeder.createFeedAt(9, 10);
+            feeder.swapMapToFeed(12, 11);
+
+            feeder.getFeedAt(3).extract(1);
+            feeder.getFeedAt(8).extract(1);
+            feeder.getFeedAt(12).extract(1);
+
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+            t.expect(feeder.prepareForAction(4, REMOVE)).toEqual([
+                [8], [9, 12]
+            ]);
+
+            t.expect(feeder.getFeedAt(8).getPrevious()).toBe(7);
+            t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
+            t.expect(feeder.getFeedAt(12).getPrevious()).toBe(11);
+        })
+
+    });
+
+
+
+
+    t.it('prepareForAction() - D', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD,
+            REMOVE   = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // 3 - full, 4 - empty, 8 - full, 9 - empty , 12 full
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.swapMapToFeed(8, 7);
+            feeder.createFeedAt(9, 10);
+            feeder.swapMapToFeed(12, 11);
+
+
+            // [1, 2, 3] [5, 6, 7, 8] [10, 11, 12]
+
+            feeder.getFeedAt(4).fill(propsMax(pageSize));
+
+            t.expect(feeder.prepareForAction(4, REMOVE)).toEqual([
+                [8], [9, 12]
+            ]);
+
+            t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 3, 4, 5, 6, 7, 10, 11]);
+            t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([8, 9, 12]);
+
+        })
+
+    });
 
 
         t.it('removeRecord() - not found', function(t) {
@@ -1527,72 +1859,84 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         });
 
 
-    t.it('removeRecord() - found in feed', function(t) {
+        t.it('removeRecord() - found in feed', function(t) {
 
-        let exc, e, rec, op,
-            feeder   = createFeeder(),
-            pageMap  = feeder.getPageMap(),
-            map      = pageMap.map,
-            pageSize = pageMap.getPageSize(),
-            mapping  = {},
-            indexMap = {},
-            recNextId;
+            let exc, e, rec, op,
+                feeder    = createFeeder(),
+                pageMap   = feeder.getPageMap(),
+                map       = pageMap.map,
+                pageSize  = pageMap.getPageSize(),
+                mapping   = {},
+                indexMap  = {},
+                REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+                removedId = null,
+                recNextId;
 
-        t.waitForMs(250, function() {
+            t.waitForMs(250, function() {
 
-            rec     = map[3].value[5];
-            recNext = map[3].value[6];
+                // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+                // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(9);
+
+                feeder.swapMapToFeed(3, 2);
+                feeder.createFeedAt(4, 5);
+                feeder.swapMapToFeed(8, 7);
+                feeder.createFeedAt(9, 10);
+                feeder.swapMapToFeed(12, 11);
+
+                feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+                feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+                t.expect(feeder.prepareForAction(4, REMOVE)).toEqual([
+                    [8], [9, 12]
+                ]);
+
+                t.expect(toIntMap(Ext.Object.getKeys(pageMap.map))).toEqual([1, 2, 3, 5, 6, 7, 10, 11]);
+                t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([4, 8, 9, 12]);
 
 
-            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
-            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+                rec = feeder.getFeedAt(4).getAt(3);
+                removeId = rec.getId();
+                t.expect(rec.getId()).toBe('1002');
 
-            pageMap.removeAtKey();
 
-            t.expect(map[3].value[5]).not.toBe(recNext);
-            t.expect(map[3].value.length).toBe(25);
+                op = feeder.removeRecord(rec);
+               // t.expect(feeder.getFeedAt(4)).getFreeSpace().toBe(pageSize - 5);
+                //t.expect(feeder.getFeedAt(4).getAt(3).getId()).toBe('1003');
+                return;
 
-            for (var i = 11; i > 3; i--) {
-                mapping[i]     = {};
-                mapping[i][24] = map[i + 1].value[0].getId();
-                mapping[i][0]  = map[i].value[1].getId();
 
-                for (var a = 0, lena = map[i].value.length; a < lena; a++) {
-                    indexMap[map[i].value[a].internalId] = pageMap.indexMap[map[i].value[a].internalId];
+                t.expect(feeder.getFeedAt(4)).toBe(25);
+
+                for (var i = 11; i > 3; i--) {
+                    t.expect(map[i].value[24].getId()).toBe(mapping[i][24]);
+                    t.expect(map[i].value[0].getId()).toBe(mapping[i][0]);
+
+                    for (var a = 0, lena = map[i].value.length; a < lena; a++) {
+                        t.expect(
+                            indexMap[map[i].value[a].internalId]
+                        ).not.toBe(pageMap.indexMap[map[i].value[a].internalId]);
+                    }
                 }
-            }
 
+                t.expect(map[3].value[5]).toBe(recNext);
+                t.expect(pageMap.indexOf(rec)).toBe(-1);
+                t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
 
-            op = feeder.removeRecord(rec);
-            t.expect(map[3].value.length).toBe(25);
+                testOp(op, {
+                    success : true,
+                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                }, t);
 
-            for (var i = 11; i > 3; i--) {
-                t.expect(map[i].value[24].getId()).toBe(mapping[i][24]);
-                t.expect(map[i].value[0].getId()).toBe(mapping[i][0]);
-
-                for (var a = 0, lena = map[i].value.length; a < lena; a++) {
-                    t.expect(
-                        indexMap[map[i].value[a].internalId]
-                    ).not.toBe(pageMap.indexMap[map[i].value[a].internalId]);
-                }
-            }
-
-            t.expect(map[3].value[5]).toBe(recNext);
-            t.expect(pageMap.indexOf(rec)).toBe(-1);
-            t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
-
-            testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
-            }, t);
+            });
 
         });
 
-    });
 
-
-
+return;
 
     /*
 
