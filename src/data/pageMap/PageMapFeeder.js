@@ -86,7 +86,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     constructor : function(cfg) {
 
-        var me = this;
+        const me = this;
 
         cfg = cfg || {};
 
@@ -197,9 +197,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      *  // computed feed indexes [[2], [3, 5], [7, 11]]
      *
-     * @param {Number} page
-     * @param {Mixed} action
-     * @param {String}
+     * @param {Ext.data.Model} record
      *
      * @throws if the target page does not exist,
      *
@@ -209,6 +207,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         const me           = this,
               pageMap      = me.getPageMap(),
+              map          = pageMap.map,
               REMOVE       = me.statics().ACTION_REMOVE,
               op           = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
                   request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
@@ -250,17 +249,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               };
 
 
-        let recordIndex = pageMap.indexOf(record);
+        let recordIndex = pageMap.indexOf(record),
+            position    = recordIndex !== -1 ? PageMapUtil.storeIndexToPosition(recordIndex, pageMap) : null;
+            position    = position
+                          ? position
+                            // look in feeds
+                          : me.findInFeeds(record);
 
-        if (recordIndex === -1) {
+        if (!position) {
             return createResult({
                 success : false,
                 reason  : ResultReason.RECORD_NOT_FOUND
             });
         }
 
-        let position    = PageMapUtil.storeIndexToPosition(recordIndex, pageMap),
-            page        = position.getPage(),
+        let page        = position.getPage(),
             index       = position.getIndex(),
             feedIndexes = me.prepareForAction(page, REMOVE);
 
@@ -271,8 +274,24 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        let lower          = feedIndexes[0][0],
-            records        = null;
+        // let's catch edge cases here in case sanitizing removed the
+        // page the record was previously found at.
+        // this can happen if the record was found on a single page
+        // which gets removed during sanitizing
+        // usually, sanitizing does not remove existing pages
+        // it only removes pages- if any - that are to the right of the page
+        // for which an action was requested. However, the pagemap *MIGHT*
+        // have been updated from an HttpRequest (Prefetch BufferedStore),
+        // or from any other hostile API
+        if (me.getRecordAt(page, index) !== record) {
+            Ext.raise({
+                msg    : "Unexpected error: record is not available at page {0} and index {1} anymore",
+                record : record
+            });
+        }
+
+        let lower   = feedIndexes[0][0],
+            records = null;
 
         // fill up range before targetPage
         if (page + 1 < lower) {
@@ -288,9 +307,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             } while (end-- > start);
         });
 
-        let remRec = pageMap.map[page].value.splice(index, 1);
+        let remRec = map[page].value.splice(index, 1);
         delete pageMap.indexMap[remRec[0].internalId];
-        pageMap.map[page].value.push(records[0]);
+        map[page].value.push(records[0]);
 
         Ext.Array.each(Util.groupIndices(maintainRanges),
             function(range) {
@@ -369,9 +388,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 }
             } else  if (me.getFeedAt(i).isEmpty()) {
                 me.removeFeedAt(i);
-                
-
-
             }
         }
 
@@ -474,7 +490,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         // mirror the data
         for (var i = 0, len = feedData.length; i < len; i++) {
-            data.push(feedData[i].clone());
+            data.push(feedData[i]);
         }
 
         me.removeFeedAt(page);
@@ -533,7 +549,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         // mirror the data
         for (var i = 0, len = pageMap.getPageSize(); i < len; i++) {
-            feedData.push(data[i].clone());
+            feedData.push(data[i]);
         }
 
         // removeAtKey should clear the indexMap for the registered records and
@@ -1039,7 +1055,98 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         });
 
         return feedIndexes;
-    }
+    },
+
+
+    /**
+     * Tries to look up the record in the available Feeds and returns the
+     * RecordPosition if found, otherwise null.
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @return {conjoon.cn_core.data.pageMap.RecordPosition|null}
+     *
+     * @see conjoon.cn_core.data.pageMap.Feed#indexOf
+     *
+     * @throws if record is not an instance of {Ext.data.Model}
+     */
+    findInFeeds : function(record) {
+
+        const me    = this,
+              feeds = me.feed;
+
+        if (!(record instanceof Ext.data.Model)) {
+            Ext.raise({
+               msg    : "'record' must be an instance of Ext.data.Model",
+               record : record
+            });
+        }
+
+        let feed, index;
+
+        for (feed in feeds) {
+            index = feeds[feed].indexOf(record);
+
+            if (index !== -1) {
+                return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : feed,
+                    index : index
+                });
+            }
+        }
+
+        return null;
+    },
+
+
+    /**
+     * Returns the record found at the specified page and the specified index.
+     * The record is searched in the PageMap and in the existing Feeds, and
+     * returned if found.
+     *
+     * @param {Number} page The page in the PageMap or the Feeds to query
+     * @param {Number} index The index where the record should be retrieved from
+     *
+     * @return {Ext.data.Model|undefined} Returns the record found at the position,
+     * otherwise undefined if either record or position do not exist.
+     *
+     * @private
+     *
+     * @throws if page or index are not valid
+     */
+    getRecordAt : function(page, index) {
+
+        const me          = this,
+              pageMap     = me.getPageMap(),
+              map         = pageMap.map;
+
+        page  = me.filterPageValue(page);
+        index = parseInt(index, 10);
+
+        if (index < 0 || index > pageMap.getPageSize()) {
+            Ext.raise({
+                msg   : Ext.String.format("'index' {0} is out of bounds"),
+                index : index
+            });
+        }
+
+        let pageAt = map[page];
+
+        // look in page
+        if (pageAt && pageAt.value[index]) {
+            return pageAt.value[index];
+        }
+
+        // ... and not found. So s.ok in feed
+
+        let feed = me.getFeedAt(page);
+
+        if (feed && feed.getAt(index)) {
+            return feed.getAt(index);
+        }
+
+        return undefined;
+    },
 
 
 });
