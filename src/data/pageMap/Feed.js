@@ -458,7 +458,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
             });
         }
 
-        me.data = new Array();
+        me.data = [];
 
         return size;
     },
