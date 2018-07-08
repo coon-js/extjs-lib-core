@@ -317,6 +317,52 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
     });
 
 
+    t.it('fill() - reverseDirection - A', function(t) {
+
+        let exc, e,
+            feed = createFeed({
+                size     : pageSize,
+                next : 2
+            });
+
+        let rec1 = prop();
+        let rec2 = prop();
+        let rec3 = prop();
+        let rec4 = prop();
+
+        feed.fill([rec1, rec2]);
+        t.expect(feed.getAt(23)).toBe(rec1);
+        t.expect(feed.getAt(24)).toBe(rec2);
+
+        feed.fill([rec3, rec4], true);
+        t.expect(feed.getAt(21)).toBe(rec3);
+        t.expect(feed.getAt(22)).toBe(rec4);
+    });
+
+
+    t.it('fill() - reverseDirection - B', function(t) {
+
+        let exc, e,
+            feed = createFeed({
+                size     : pageSize,
+                previous : 2
+            });
+
+        let rec1 = prop();
+        let rec2 = prop();
+        let rec3 = prop();
+        let rec4 = prop();
+
+        feed.fill([rec1, rec2]);
+        t.expect(feed.getAt(0)).toBe(rec1);
+        t.expect(feed.getAt(1)).toBe(rec2);
+
+        feed.fill([rec3, rec4], true);
+        t.expect(feed.getAt(2)).toBe(rec3);
+        t.expect(feed.getAt(3)).toBe(rec4);
+    });
+
+
     t.it('getAt()', function(t) {
 
         let exc, e,

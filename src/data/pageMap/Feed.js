@@ -162,6 +162,9 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * onto the feed, until the feed is full or no more data is available in records.
      *
      * @param {Array} an array of {Ext.data.Model}
+     * @param {Boolean} reverseDirection true to force filling of the feed from
+     * the opposite direction from where it would usually get filled
+     *
      *
      * @return {Array} remaining records which could not be added to the feed
      * anymore are returned in an array, or an empty array if all data was added.
@@ -169,12 +172,14 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * @throws
      * - if data is not an array of {Ext.data.Model}
      */
-    fill : function(records) {
+    fill : function(records, reverseDirection) {
 
         const me      = this,
               size    = me.getSize(),
               free    = me.getFreeSpace(),
-              isStart = !me.getPrevious();
+              isStart = reverseDirection === true
+                        ? !!me.getPrevious()
+                        : !me.getPrevious();
 
         if (!Ext.isArray(records) || records.length === 0) {
             Ext.raise({
