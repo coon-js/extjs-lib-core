@@ -172,7 +172,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * @throws
      * - if data is not an array of {Ext.data.Model}
      */
-    fill : function(records, reverseDirection) {
+    fill : function(records, reverseDirection = false) {
 
         const me      = this,
               size    = me.getSize(),
@@ -320,8 +320,15 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * or the end of the Feed, depending on #next and #previous.
      * This method is a convenient shortcut to popping/shifting data when the
      * feed should be used as a "feeder" for pages.
+     * Bey default, data from Feeds that have a previous page are extracted from
+     * the beginning, otherwise from the end. This is so that data can virtually
+     * shift down into the direction where the sibling page they are serving
+     * can be found.
+     * The arguments reverseDirection lets you change this default behavior.
      *
      * @param {Number} count The number of data entries to extract
+     * @param {Boolean} reverseDirection true to reverse the direction data
+     * is usually extracted from
      *
      * @return {Array} an array with the records from this feed. The length
      * might be less than the requested number of data to extract if there are
@@ -329,11 +336,13 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      *
      * @throws if index is less than 1 or greater than page size
      */
-    extract : function(count) {
+    extract : function(count, reverseDirection = false) {
 
         const me      = this,
               size    = me.getSize(),
-              isStart = !me.getPrevious();
+              isStart = reverseDirection === true
+                        ? !!me.getPrevious()
+                        : !me.getPrevious();
 
         count = parseInt(count, 10);
 

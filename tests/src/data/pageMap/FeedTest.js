@@ -469,6 +469,23 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
     });
 
 
+    t.it('extract - reverseDirection', function(t) {
+
+        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            props = createProps(pageSize);
+
+
+        t.expect(feed.fill(props)).toEqual([]);
+
+        t.expect(feed.extract(1)[0]).toEqual(props[24]);
+        t.expect(feed.extract(1, true)[0]).toEqual(props[0]);
+
+    });
+
+
     t.it('example', function(t) {
 
         let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
