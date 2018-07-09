@@ -224,7 +224,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                   ));
                   return op;
               },
-              shiftToLeft = function(currentPage, currentRecords) {
+              shiftToLeft = function(currentPage, currentRecords, recordsAreFromPage) {
 
                   let isPage = !!pageMap.peekPage(currentPage),
                       page   = isPage
@@ -235,12 +235,35 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                   if (isPage) {
                       maintainRanges.push(currentPage);
                       tmp = page.splice(0, 1);
-                      if (currentRecords) {
+                      if (currentRecords && currentRecords.length) {
                           page.push(currentRecords[0]);
                       }
                   } else {
-                      tmp = page.extract(1);
-                      if (currentRecords) {
+                      // since we are going through the data from left to right,
+                      // a feed that has a next page marks the beginning of a range
+                      // and for us the end. We extract at the left side to make
+                      // sure adding data from the right side shifts data properly
+                      // down
+                      tmp = page.extract(1, page.getNext() ? true : false);
+
+                      // identify currentRecords. If swapped from a previous feed,
+                      // check if we can reuse then
+                      if (me.getFeedAt(recordsAreFromPage)) {
+                          if (!me.canServeFromFeed(recordsAreFromPage, currentPage)) {
+                              return tmp;
+                          }  else {
+                              // override fill direction as it would usually get filled
+                              // according to its previous / next settings.
+                              // since we are walking from right to left, we have to fill
+                              // the feed from right
+                              if (page.getPrevious()) {
+                                  page.fill(currentRecords, true);
+                                  return tmp;
+                              }
+                          }
+                      }
+
+                      if (currentRecords && currentRecords.length) {
                           page.fill(currentRecords);
                       }
                   }
@@ -298,18 +321,27 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             feedIndexes[0].unshift(page + 1);
         }
 
-        Ext.Array.each(feedIndexes, function(range) {
+        // start at last range and walk down in reverse ordder
+        Ext.Array.each(feedIndexes.reverse(), function(range) {
             let start = range[0],
                 end   = range[range.length - 1];
 
             do {
-                records = shiftToLeft(end, records);
+                records = shiftToLeft(end, records, end + 1 ? end + 1 : -1);
             } while (end-- > start);
         });
 
-        let remRec = map[page].value.splice(index, 1);
-        delete pageMap.indexMap[remRec[0].internalId];
-        map[page].value.push(records[0]);
+        // change Feed or page, depending where the record was found
+        let feed = me.getFeedAt(page),
+            remRec;
+        if (!feed) {
+            remRec = map[page].value.splice(index, 1)
+            map[page].value.push(records[0]);
+            delete pageMap.indexMap[remRec[0].internalId];
+        } else {
+            remRec = feed.removeAt(index);
+            feed.fill(records);
+        }
 
         Ext.Array.each(Util.groupIndices(maintainRanges),
             function(range) {
@@ -344,8 +376,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @private
      *
-     * @throws if action is invalid, or if the free space does not equal
-     * across all available Feeds
+     * @throws if action is invalid
      */
     sanitizeFeedsForActionAtPage : function(page, action) {
 
@@ -403,17 +434,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)) {
                 pageMap.removeAtKey(index);
             }
-        }
-
-        for (i in me.feed) {
-            if (free !== -1 && free !==  me.feed[i].getFreeSpace()) {
-                Ext.raise({
-                    msg  : 'Feed out of sync at ' + i,
-                    feed : me.feed[i]
-                });
-            }
-
-            free = me.feed[i].getFreeSpace();
         }
 
         return true;
@@ -598,11 +618,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     findFeedIndexesForActionAtPage : function(page, action) {
 
-        const me          = this,
-              ADD         = me.statics().ACTION_ADD,
-              REMOVE      = me.statics().ACTION_REMOVE,
-              pageMap     = me.getPageMap(),
-              isAdd       = action === ADD;
+        const me                    = this,
+              ADD                   = me.statics().ACTION_ADD,
+              REMOVE                = me.statics().ACTION_REMOVE,
+              pageMap               = me.getPageMap(),
+              isAdd                 = action === ADD,
+              isAlreadyMarkedAsFeed = function(indexes, page) {
+
+                  for (let i = 0, len = indexes.length; i < len; i++) {
+                      if (indexes[i][0] === page || indexes[i][1] === page) {
+                          return true;
+                      }
+                  }
+
+                  return false;
+              };
 
         page = me.filterPageValue(page);
 
@@ -644,7 +674,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 }
             } else {
                 grp.push(
-                    isAdd || me.getFeedAt(range[0])
+                    isAdd || me.getFeedAt(range[0]) || isAlreadyMarkedAsFeed(indexes, range[0] - 1)
                         ? range[0]
                         : range[0] - 1
                 );
@@ -1147,6 +1177,69 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return undefined;
     },
+
+
+    /**
+     * Returns true if the feed at fromIndex might pass its data down to a
+     * page or Feed at toIndex.
+     * This is usually true if the page at toIndex is served from the Feed at
+     * toIndex has n-1 entries and the Feed at fromIndex has n entries, where
+     * n is pageSize. This gives a direct neighbour feed the chance to be filled
+     * up completely to be re-created as a page again.
+     * This method will silently return false if neither feeds nor pages at
+     * toIndex  exist.
+     * The method also checks if the feed has enough data items to serve a
+     * neighbour page(!).
+     * This method is usually needed when the API needs to check if two
+     * independent Feeds can serve one another to make one Feed a page again.
+     *
+     *
+     * @param {Number} fromIndex
+     * @param {Number} toIndex
+     *
+     * @return {Boolean}
+     *
+     *
+     *
+     * @throws if the feed at fromINdex does not exist.
+     *
+     * @private
+     */
+    canServeFromFeed : function(fromIndex, toIndex) {
+
+        const me       = this,
+              pageMap  = me.getPageMap();
+
+        fromIndex = me.filterPageValue(fromIndex);
+        toIndex   = me.filterPageValue(toIndex);
+
+        let feed = me.getFeedAt(fromIndex);
+
+        if (!feed) {
+            Ext.raise({
+                msg       : "The Feed at 'fromIndex' " + fromIndex + " does not exist.",
+                fromIndex : fromIndex
+            });
+        }
+
+        if (pageMap.peekPage(toIndex) && feed.getFreeSpace() < feed.getSize()) {
+            if (feed.getPrevious() === toIndex || feed.getNext() === toIndex) {
+                return true;
+            }
+        }
+
+        let targetFeed = me.getFeedAt(toIndex);
+
+        if (!targetFeed) {
+            return false;
+        }
+
+        if (targetFeed.getFreeSpace() === 1 && feed.getFreeSpace() === 0) {
+            return true;
+        }
+
+        return false;
+    }
 
 
 });
