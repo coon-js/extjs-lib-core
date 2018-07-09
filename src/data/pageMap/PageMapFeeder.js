@@ -199,6 +199,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
+     * @return {conjoon.cn_core.data.pageMap.operation.Operation}
+     *
      * @throws if the target page does not exist,
      *
      * @private
@@ -239,12 +241,19 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                           page.push(currentRecords[0]);
                       }
                   } else {
-                      // since we are going through the data from left to right,
-                      // a feed that has a next page marks the beginning of a range
-                      // and for us the end. We extract at the left side to make
-                      // sure adding data from the right side shifts data properly
-                      // down
-                      tmp = page.extract(1, page.getNext() ? true : false);
+
+                      if (!page.getNext()) {
+                          tmp = page.extract(1);
+                      } else {
+                          // since we are going through the data from left to right,
+                          // a feed that has a next page marks the beginning of a range
+                          // and for us the end. We extract at the left side to make
+                          // sure adding data from the right side shifts data properly
+                          // down
+                          if (page.getFreeSpace() === 0) {
+                              tmp = page.extract(1, true);
+                          }
+                      }
 
                       // identify currentRecords. If swapped from a previous feed,
                       // check if we can reuse then
@@ -256,7 +265,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                               // according to its previous / next settings.
                               // since we are walking from right to left, we have to fill
                               // the feed from right
-                              if (page.getPrevious()) {
+                              if (page.getPrevious() && currentRecords && currentRecords.length) {
                                   page.fill(currentRecords, true);
                                   return tmp;
                               }
@@ -307,8 +316,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         // have been updated from an HttpRequest (Prefetch BufferedStore),
         // or from any other hostile API
         if (me.getRecordAt(page, index) !== record) {
+
             Ext.raise({
-                msg    : "Unexpected error: record is not available at page {0} and index {1} anymore",
+                msg    : Ext.String.format(
+                    "Unexpected error: record is not available at page {0} and index {1} anymore",
+                    page, index),
                 record : record
             });
         }
@@ -338,6 +350,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             remRec = map[page].value.splice(index, 1)
             map[page].value.push(records[0]);
             delete pageMap.indexMap[remRec[0].internalId];
+            maintainRanges.push(page);
         } else {
             remRec = feed.removeAt(index);
             feed.fill(records);
@@ -345,6 +358,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         Ext.Array.each(Util.groupIndices(maintainRanges),
             function(range) {
+
                 PageMapUtil.maintainIndexMap(
                     PageRange.createFor(range[0], range[range.length - 1]), pageMap
                 );
@@ -1183,8 +1197,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * Returns true if the feed at fromIndex might pass its data down to a
      * page or Feed at toIndex.
      * This is usually true if the page at toIndex is served from the Feed at
-     * toIndex has n-1 entries and the Feed at fromIndex has n entries, where
-     * n is pageSize. This gives a direct neighbour feed the chance to be filled
+     * toIndex has n-x entries (with 0 < x  <= n) and the Feed at fromIndex has
+     * n entries, where n is pageSize. This gives a direct neighbour feed the
+     * chance to be filled
      * up completely to be re-created as a page again.
      * This method will silently return false if neither feeds nor pages at
      * toIndex  exist.
@@ -1234,7 +1249,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             return false;
         }
 
-        if (targetFeed.getFreeSpace() === 1 && feed.getFreeSpace() === 0) {
+        if (targetFeed.getFreeSpace() > 0 && feed.getFreeSpace() === 0) {
             return true;
         }
 

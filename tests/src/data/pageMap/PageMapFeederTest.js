@@ -2308,8 +2308,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
             }, t);
 
-            // although 9 is 25, it is not allowed to shift to 8
-            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(2);
+            // 9 is 25, it is NOW allowed to shift to 8, since 8 has enough room to get filled up
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(1);
             t.expect(feeder.isPageCandidate(9)).toBe(true);
             t.expect(feeder.prepareForAction(2, REMOVE)).toEqual([
                 [3], [4, 8], [9, 12]
@@ -2412,6 +2412,83 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
             t.expect(feeder.isPageCandidate(8)).toBe(true);
             t.expect(feeder.isPageCandidate(9)).toBe(true);
+        });
+    });
+
+
+    t.it('removeRecord() - recreate feeds (serving from Feed) - D', function(t) {
+
+        let exc, e, rec, op,
+            feeder    = createFeeder(),
+            pageMap   = feeder.getPageMap(),
+            map       = pageMap.map,
+            pageSize  = pageMap.getPageSize(),
+            mapping   = {},
+            indexMap  = {},
+            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            removedId = null,
+            recNextId;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
+
+            pageMap.removeAtKey(3);
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(8);
+            pageMap.removeAtKey(9);
+
+            feeder.createFeedAt(3, 2);
+            feeder.createFeedAt(8, 7);
+            feeder.createFeedAt(9, 10);
+
+            pageMap.removeAtKey(5);
+            feeder.createFeedAt(5, 6);
+            feeder.getFeedAt(5).fill(propsMax(pageSize, 66));
+            feeder.swapFeedToMap(5);
+
+            feeder.createFeedAt(4, 5);
+
+            feeder.getFeedAt(3).fill(propsMax(pageSize - 1, 300));
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1, 400));
+            feeder.getFeedAt(8).fill(propsMax(pageSize - 5, 800));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 5, 900));
+
+
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(5);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(5);
+
+            let remMe = function(page, value) {
+                op = feeder.removeRecord(map[page].value[value]);
+                testOp(op, {
+                    success : true,
+                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                }, t);
+            };
+
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(4);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(6);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(3);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(7);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(2);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(8);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(1);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(9);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(10);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(10);
+            remMe(2, 12);
+            t.expect(feeder.getFeedAt(9).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(10);
+
         });
     });
 
