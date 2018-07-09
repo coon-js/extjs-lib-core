@@ -365,6 +365,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
         );
 
+        me.sanitizeFeedsForPage(page);
+
         return createResult({
             success : true,
             reason  : ResultReason.OK
@@ -373,42 +375,28 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
-     * Sanitizes this feeders data when the specified action for the specified
-     * page is called.
+     * Sanitizes this feeders' data for the specified page and related ranges.
      * It makes sure of the following:
      *
      * - feeds that have a neighbour page which would violate the rule not to
      * have one ( [10] (11:12) [12]) are removed
      * - feeds that don't have a neighbour page are removed,
      *
-     *
      * @param {Number} page
-     * @param {Mixed} action any of #ACTION_ADD / #ACTION_REMOVE
      *
      * @return {Boolean} true when sanitizing processed, otherwise false, e.g.
      * if no Feed and no page exist at the specified position
      *
      * @private
-     *
-     * @throws if action is invalid
      */
-    sanitizeFeedsForActionAtPage : function(page, action) {
+    sanitizeFeedsForPage : function(page) {
 
         const me          = this,
-              ADD         = me.statics().ACTION_ADD,
-              REMOVE      = me.statics().ACTION_REMOVE,
               pageMap     = me.getPageMap(),
               PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
               feeds       = me.feed;
 
         page = me.filterPageValue(page);
-
-        if ([ADD, REMOVE].indexOf(action) === -1) {
-            Ext.raise({
-                msg    : '\'action\' must be any of ACTION_ADD or ACTION_REMOVE',
-                action : action
-            });
-        }
 
         if (!me.getFeedAt(page) && !pageMap.peekPage(page)) {
             return false;
@@ -611,7 +599,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * Note:
      * =====
-     * This method should always be called together with #sanitizeFeedsForActionAtPage which
+     * This method should always be called together with #sanitizeFeedsForPage which
      * automatically removes Feeds and pages which cannot be used for the current operation
      * at the specified page, since during the last Feed creation pages might have
      * been added which violate Feed-creation rules
@@ -1067,7 +1055,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        me.sanitizeFeedsForActionAtPage(page, action);
+        me.sanitizeFeedsForPage(page, action);
         let feedIndexes = me.findFeedIndexesForActionAtPage(page, action);
 
         if (feedIndexes === null) {
