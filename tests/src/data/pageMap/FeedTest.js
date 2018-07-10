@@ -34,12 +34,12 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
             id : id + '' || Ext.id()
         });
     },
-    createProps = function(size) {
+    createProps = function(size, startIndex) {
 
         let data = [];
 
         for (let i = 1; i < size + 1; i++) {
-            data.push(prop(i));
+            data.push(prop(startIndex ? startIndex  + i : i));
         }
 
         return data;
@@ -265,27 +265,27 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('ext.data.model');
         exc = undefined;
 
-        t.expect(feed.fill(createProps(10))).toEqual([]);
+        t.expect(feed.fill(createProps(10, 800))).toEqual([]);
         t.expect(feed.getFreeSpace()).toBe(pageSize - 10);
 
-        let props = createProps(17),
-            eq    = [props[15], props[16]];
+        let props = createProps(17, 900),
+            eq    = [feed.getAt(15), feed.getAt(16)];
 
         t.expect(props.length).toBe(17);
         t.expect(feed.fill(props)).toEqual(eq);
         t.expect(props.length).toBe(17);
         t.expect(feed.getFreeSpace()).toBe(0);
 
-        props = createProps(pageSize);
-        t.expect(feed.fill(props)).toEqual(props);
+        let oldProps = [];
+        for (var i = 0, len = feed.data.length; i < len; i++){
+            oldProps.push(feed.data[i]);
+        }
+
+        props = createProps(pageSize, 1000);
+        t.expect(feed.fill(props)).toEqual(oldProps);
 
         for (let i = 0; i < pageSize; i++) {
-            if (i < 10) {
-                t.expect(feed.data[i].getId()).toBe((i + 1) + '');
-            } else {
-                t.expect(feed.data[i].getId()).toBe(((i + 1) - 10) + '');
-            }
-
+                t.expect(feed.data[i].getId()).toBe((i + 1001) + '');
         }
 
         // POSITION END
@@ -297,22 +297,22 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(feed.fill(createProps(10))).toEqual([]);
         t.expect(feed.getFreeSpace()).toBe(pageSize - 10);
 
-        props = createProps(17),
-        eq    = [props[0], props[1]];
+        props = createProps(17, 800),
+        eq    = [feed.getAt(8), feed.getAt(9)];
 
         t.expect(feed.fill(props)).toEqual(eq);
         t.expect(feed.getFreeSpace()).toBe(0);
 
-        props = createProps(pageSize);
-        t.expect(feed.fill(props)).toEqual(props);
+        oldProps = [];
+        for (var i = 0, len = feed.data.length; i < len; i++){
+            oldProps.push(feed.data[i]);
+        }
+
+        props = createProps(pageSize, 900);
+        t.expect(feed.fill(props)).toEqual(oldProps);
 
         for (let i = 0; i < pageSize; i++) {
-            if (i < 15) {
-                t.expect(feed.data[i].getId()).toBe((i + 3) + '');
-            } else {
-                t.expect(feed.data[i].getId()).toBe(((i + 1) - 15) + '');
-            }
-
+            t.expect(feed.data[i].getId()).toBe((i + 901) + '');
         }
     });
 
@@ -629,8 +629,140 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(feed.removeAt(2)).toBe(rec);
         t.expect(feed.getFreeSpace()).toBe(18);
         t.expect(feed.indexOf(rec)).toBe(-1);
+    });
 
 
+
+    t.it("insertAt()", function(t){
+
+        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                previous : 2
+            }),
+            recN = [prop(900)], recP = [prop(900)], recListN = createProps(26),
+            recListP = createProps(26),
+            spillListN = [recN[0], recListN[0]],
+            spillListP = [recListP[25], recP[0]];
+
+        t.isCalled('filterIndexValue', feedNext);
+        t.isCalled('filterRecordsArray', feedNext);
+
+        t.isCalled('filterIndexValue', feedPrev);
+        t.isCalled('filterRecordsArray', feedPrev);
+
+        // one record
+        t.expect(feedNext.insertAt(recN, 24)).toEqual([]);
+        t.expect(feedPrev.insertAt(recP, 0)).toEqual([]);
+
+        t.expect(feedNext.getAt(24)).toBe(recN[0]);
+        t.expect(feedPrev.getAt(0)).toBe(recP[0]);
+
+        // mutliple records with spill
+        t.expect(feedNext.insertAt(recListN, 24)).toEqual(spillListN);
+        t.expect(feedPrev.insertAt(recListP, 0)).toEqual(spillListP);
+
+        let ls    = [prop(1000), prop(1001)],
+            spill = [feedNext.getAt(0), feedNext.getAt(1)],
+            moved =  feedNext.getAt(9);
+
+        t.expect(feedNext.insertAt(ls, 9)).toEqual(spill);
+        t.expect(feedNext.getAt(7)).toBe(moved);
+        t.expect(feedNext.getAt(9)).toBe(ls[1]);
+        t.expect(feedNext.getAt(8)).toBe(ls[0]);
+
+
+        ls = [prop(2000), prop(2001)],
+            spill = [feedPrev.getAt(23), feedPrev.getAt(24)],
+            moved =  feedPrev.getAt(9);
+
+        t.expect(feedPrev.insertAt(ls, 9)).toEqual(spill);
+        t.expect(feedPrev.getAt(11)).toBe(moved);
+        t.expect(feedPrev.getAt(10)).toBe(ls[1]);
+        t.expect(feedPrev.getAt(9)).toBe(ls[0]);
+    });
+
+
+    t.it("insertAt() - undefined index", function(t){
+        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                previous : 2
+            }),
+            recN = [prop(900), prop(901)], recP = [prop(900), prop(901)],
+            fillPropsN = createProps(4),
+            fillPropsP = createProps(4);
+
+        t.expect(feedNext.fill(fillPropsN)).toEqual([]);
+
+        t.expect(feedNext.getAt(12)).toBeUndefined();
+        t.expect(feedNext.insertAt(recN, 12)).toEqual([]);
+
+        t.expect(feedNext.getAt(24)).toBe(fillPropsN[3]);
+        t.expect(feedNext.getAt(23)).toBe(fillPropsN[2]);
+        t.expect(feedNext.getAt(22)).toBe(fillPropsN[1]);
+        t.expect(feedNext.getAt(21)).toBe(fillPropsN[0]);
+        t.expect(feedNext.getAt(20)).toBe(recN[1]);
+        t.expect(feedNext.getAt(19)).toBe(recN[0]);
+
+
+        t.expect(feedPrev.fill(fillPropsP)).toEqual([]);
+
+        t.expect(feedPrev.getAt(12)).toBeUndefined();
+        t.expect(feedPrev.insertAt(recP, 12)).toEqual([]);
+
+        t.expect(feedPrev.getAt(3)).toBe(fillPropsP[3]);
+        t.expect(feedPrev.getAt(2)).toBe(fillPropsP[2]);
+        t.expect(feedPrev.getAt(1)).toBe(fillPropsP[1]);
+        t.expect(feedPrev.getAt(0)).toBe(fillPropsP[0]);
+        t.expect(feedPrev.getAt(5)).toBe(recP[1]);
+        t.expect(feedPrev.getAt(4)).toBe(recP[0]);
+    });
+
+
+    t.it("insertAt() - reverse direction", function(t){
+        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                previous : 2
+            }),
+            recN = [prop(900), prop(901)], recP = [prop(900), prop(901)],
+            fillPropsN = createProps(4),
+            fillPropsP = createProps(4);
+
+        t.expect(feedNext.fill(fillPropsN)).toEqual([]);
+
+        t.expect(feedNext.getAt(12)).toBeUndefined();
+        t.expect(feedNext.insertAt(recN, 12, true)).toEqual([]);
+
+        t.expect(feedNext.getAt(22)).toBe(fillPropsN[3]);
+        t.expect(feedNext.getAt(21)).toBe(fillPropsN[2]);
+        t.expect(feedNext.getAt(20)).toBe(fillPropsN[1]);
+        t.expect(feedNext.getAt(19)).toBe(fillPropsN[0]);
+        t.expect(feedNext.getAt(24)).toBe(recN[1]);
+        t.expect(feedNext.getAt(23)).toBe(recN[0]);
+
+
+        t.expect(feedPrev.fill(fillPropsP)).toEqual([]);
+
+        t.expect(feedPrev.getAt(12)).toBeUndefined();
+        t.expect(feedPrev.insertAt(recP, 12, true)).toEqual([]);
+
+        t.expect(feedPrev.getAt(5)).toBe(fillPropsP[3]);
+        t.expect(feedPrev.getAt(4)).toBe(fillPropsP[2]);
+        t.expect(feedPrev.getAt(3)).toBe(fillPropsP[1]);
+        t.expect(feedPrev.getAt(2)).toBe(fillPropsP[0]);
+        t.expect(feedPrev.getAt(1)).toBe(recP[1]);
+        t.expect(feedPrev.getAt(0)).toBe(recP[0]);
     });
 
 

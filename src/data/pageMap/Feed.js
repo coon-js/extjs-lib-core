@@ -166,60 +166,28 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * the opposite direction from where it would usually get filled
      *
      *
-     * @return {Array} remaining records which could not be added to the feed
-     * anymore are returned in an array, or an empty array if all data was added.
+     * @return {Array} remaining records which fell out during adding the specified
+     * records
      *
      * @throws
      * - if data is not an array of {Ext.data.Model}
+     *
+     * @see #insertAt
      */
     fill : function(records, reverseDirection = false) {
 
         const me      = this,
               size    = me.getSize(),
-              free    = me.getFreeSpace(),
               isStart = reverseDirection === true
                         ? !!me.getPrevious()
                         : !me.getPrevious();
 
-        if (!Ext.isArray(records) || records.length === 0) {
-            Ext.raise({
-                msg     : '\'records\' must be a none-empty array',
-                records : records
-            });
-
-        } else {
-            Ext.Array.forEach(records, function(value) {
-                if (!(value instanceof Ext.data.Model)) {
-                    Ext.raise({
-                        msg     : '\'records\' must be an array of Ext.data.Model instances',
-                        records : records
-                    });
-                }
-            });
-        }
-
-        // copy so we do not slice and splice the original reference
-        let tmp = [];
-        for (let i = 0, len = records.length; i < len; i++) {
-            tmp.push(records[i]);
-        }
-        records = tmp;
-
-        let data = me.data,
-            len  = records.length,
-            recs;
 
         if (isStart) {
-            recs = records.splice(0, free);
-            me.data = data.concat(recs);
-
-            return records;
+            return me.insertAt(records, (size - 1), reverseDirection);
         }
 
-        recs = records.splice(Math.max(0, records.length - free), free);
-        Array.prototype.unshift.apply(me.data, recs);
-
-        return records;
+        return me.insertAt(records, 0, reverseDirection);
     },
 
 
@@ -246,12 +214,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
         let index = - 1,
             i, rec;
 
-        if (!(record instanceof Ext.data.Model)) {
-            Ext.raise({
-                msg    : "'record' needs to be an instance of Ext.data.Model",
-                record : record
-            });
-        }
+        record = me.filterRecordValue(record);
 
         for (i = 0, len = me.data.length; i < len; i++) {
             rec = me.data[i];
@@ -294,14 +257,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
               size    = me.getSize(),
               isStart = !me.getPrevious();
 
-        index = parseInt(index, 10);
-
-        if (index < 0 || index > size -1) {
-            Ext.raise({
-                msg   : "'index' is out of bounds",
-                index : index
-            });
-        }
+        index = me.filterIndexValue(index, size);
 
         if (isStart) {
             index = index  - (size - me.data.length);
@@ -312,6 +268,75 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
         }
 
         return me.data.splice(index, 1)[0];
+    },
+
+
+    /**
+     * Inserts the specified records at the specified index, and returns any
+     * records that are pushed out of the Feed. The Feed's bounds are denoted by
+     * #size.
+     * If the index computed based on the page this Feed is serving is undefined,
+     * the data will be appended/prepended to the Feed.
+     * The default behavior for this method is, that records fall out at the side
+     * which is not serving a page, until reverseDirection is set to true
+     *
+     * @param {Array} an array of {Ext.data.Model}  to insert
+     * @param {Number} index The position in Feed where the entries should be added
+     * @param {Boolean} reverseDirection true to force filling of the feed from
+     * the opposite direction from where it would usually get filled
+     *
+     * @return an array with records that did not fit into the Feed anymore, or
+     * an empty array if no record spill was caused by the insert operation
+     *
+     * @throws if index is less than 0 or greater than #size - 1
+     */
+    insertAt : function(records, index, reverseDirection = false) {
+
+        const me      = this,
+              size    = me.getSize(),
+              data    = me.data,
+              isStart = reverseDirection === true
+                        ? !!me.getPrevious()
+                        : !me.getPrevious();
+
+        records = me.filterRecordsArray(records);
+        index  = me.filterIndexValue(index, size);
+
+        // copy so we do not slice and splice the original reference
+        let tmp = [];
+        for (let i = 0, len = records.length; i < len; i++) {
+            tmp.push(records[i]);
+        }
+        records = tmp;
+
+        if (isStart) { // 10, 25, 10 ->      10 -  15     // 5 - (25 - 10)
+            index = index  - (size - me.data.length);
+        }
+
+        // 4 (24, 23, 22, 21) -> 20 ( => 4, 3, 2, 1, 0)
+        // 12
+        // 25 - 4 => 21
+
+        if (!data[index]) {
+            index = isStart
+                    ? -1
+                    : me.data.length;
+        }
+
+
+        let dataSpill = [];
+
+        Array.prototype.splice.apply(data, [index + (isStart ? 1 : 0), 0].concat(records));
+
+        let len = data.length;
+
+        if (len > size) {
+            dataSpill = isStart
+                        ? data.splice(0, len - size)
+                        : data.splice(size, len - size);
+        }
+
+        return dataSpill;
     },
 
 
