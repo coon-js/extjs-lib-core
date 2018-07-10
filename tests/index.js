@@ -76,6 +76,7 @@ harness.start({
                 {
                     group : 'operation',
                     items : [
+                        'src/data/pageMap/operation/AddRequestTest.js',
                         'src/data/pageMap/operation/OperationTest.js',
                         'src/data/pageMap/operation/RemoveRequestTest.js',
                         'src/data/pageMap/operation/RequestTest.js',
