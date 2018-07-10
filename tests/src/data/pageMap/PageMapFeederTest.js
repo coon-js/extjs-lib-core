@@ -89,7 +89,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 
             var Operation = conjoon.cn_core.data.pageMap.operation;
             t.expect(op instanceof Operation.Operation).toBe(true);
-            t.expect(op.getRequest() instanceof Operation.RemoveRequest).toBe(true);
+            t.expect(op.getRequest() instanceof Operation.Request).toBe(true);
             t.expect(op.getResult() instanceof Operation.Result).toBe(true);
 
             t.expect(op.getResult().getSuccess()).toBe(expected.success);
@@ -1776,6 +1776,33 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
+    t.it('prepareForAction() - E', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
+            // 3 - full, 4 - empty, 8 - full, 9 - empty , 12 full
+            // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] (12:11)
+
+            t.expect(feeder.prepareForAction(1, ADD)).toEqual([
+                [13]
+            ]);
+
+            t.expect(feeder.getFeedAt(13).getNext()).toBeUndefined();
+            t.expect(feeder.getFeedAt(13).getPrevious()).toBe(12);
+        })
+
+    });
+
+
+
         t.it('removeRecord() - not found', function(t) {
 
             let exc, e,
@@ -2580,6 +2607,98 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
+    t.it('addRecord - exceptions', function(t) {
+
+        let exc, e, rec, op,
+            feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec         = null;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
+
+
+            let addRec = prop(999, "999");
+
+            try{t.expect(feeder.addRecord(addRec, RecordPosition.create(1313, 2)));
+            } catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("does not exist");
+            t.expect(exc.msg.toLowerCase()).toContain("page");
+            exc = e;
+
+        });
+
+
+    });
+
+
+    t.it('addRecord - A', function(t) {
+
+        let exc, e, rec, op,
+            feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec         = null,
+            lastRec        = null,
+            mapping        = [],
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
+
+            for (let i in map) {
+                for (let a = 0; a < pageSize; a++) {
+                    mapping.push(map[i].value[a].getId());
+                }
+            }
+
+            lastRec = map[12].value[24];
+
+
+            t.expect(feeder.prepareForAction(1, ADD)).toEqual([
+                [13]
+            ]);
+
+            let addRec = prop(999, "999");
+
+            t.expect(feeder.getFeedAt(13)).toBeTruthy();
+            t.expect(feeder.getFeedAt(13).getPrevious()).toBe(12);
+            op = feeder.addRecord(addRec, RecordPosition.create(1, 0));
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+            t.expect(feeder.getFeedAt(13)).not.toBeNull();
+            t.expect(map[12]).toBeTruthy();
+            t.expect(map[1].value[0]).toBe(addRec);
+            t.expect(pageMap.indexOf(lastRec)).toBe(-1);
+            t.expect(feeder.getFeedAt(13).getAt(0)).toBe(lastRec);
+
+            for (let a = 1, lena = mapping.length; a < lena; a++) {
+                let cp = PageMapUtil.storeIndexToPosition(a, pageMap);
+                t.expect(map[cp.getPage()].value[cp.getIndex()].getId()).toBe(mapping[a - 1]);
+            }
+
+
+        });
+
+
+    });
 
 
 

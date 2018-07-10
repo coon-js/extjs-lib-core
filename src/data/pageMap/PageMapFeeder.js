@@ -154,31 +154,120 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
-     * Note:
-     * Calling APIs should consider the totalCount change of a BufferedStore
-     * which might be using the PageMap-
-     *
      * Adds the specified record to the specified to-position, and shifts data
-     * either beyond or after the to-position.
+     * accordingly.
      * This implementation considers feeds and will shift data to it if
      * applicable.
-     * The position will only be used for existing maps in PageMap, not for
-     * feeds.
-     * Shifted records will create pages if the shifting does not end in an
-     * already existing feed.
-     * If the shifting ends in an existing feed and the the feed will be filled
-     * up to pageSize, a page will be created for it.
-     * If shifting ends up in a recycled feed, the feed will be re-created again.
+     * The position may be a position in the map itself or in an existing Feed.
      *
      * @param {Ext.data.Model} record
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
-     * @param {Number} direction
      *
      * @return {conjoon.cn_core.data.pageMap.Operation} The operation with the
      * result, which hints to the state of this PageMap.
+     *
+     * @throws if the requested page or the requested Feed does not exist
      */
-    addRecord : function(record, to, direction) {
+    addRecord : function(record, to) {
 
+        const me           = this,
+            pageMap      = me.getPageMap(),
+            map          = pageMap.map,
+            ADD          = me.statics().ACTION_ADD,
+            op           = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
+                request : Ext.create('conjoon.cn_core.data.pageMap.operation.AddRequest')
+            }),
+            pageSize       = pageMap.getPageSize(),
+            Util           = conjoon.cn_core.Util,
+            PageRange      = conjoon.cn_core.data.pageMap.PageRange,
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+            ResultReason   = conjoon.cn_core.data.pageMap.operation.ResultReason,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            maintainRanges = [],
+            createResult = function(cfg) {
+                op.setResult(Ext.create(
+                    'conjoon.cn_core.data.pageMap.operation.Result',
+                    cfg
+                ));
+                return op;
+            };
+
+        let page, index;
+
+        record = me.filterRecordValue(record);
+        to     = me.filterRecordPositionValue(to, pageSize);
+
+        page  = to.getPage();
+        index = to.getIndex();
+
+        if (!pageMap.peekPage(page) && !me.getFeedAt(page)) {
+            Ext.raise({
+                msg : "the requested 'page' does not exist in PageMap and does not exist in Feeds",
+                page : page
+            });
+        }
+
+        let feedIndexes = me.prepareForAction(page, ADD);
+
+        let lower   = feedIndexes[0][0],
+            records = [record];
+
+        // fill up range before targetPage
+        if (page < lower) {
+            feedIndexes[0].unshift(page);
+        }
+
+        let insertIndex = index,
+            internalId;
+
+        Ext.Array.each(feedIndexes, function(range) {
+
+            let currentPage = range[0],
+                end         = range[1];
+
+            while (currentPage <= end) {
+
+                let feed = me.getFeedAt(currentPage);
+
+                // targetPage found
+                if (currentPage === page) {
+                    insertIndex = index;
+                } else {
+                    insertIndex = 0;
+                }
+
+                if (!feed) {
+                    map[currentPage].value.splice(insertIndex, 0, records[0]);
+                    maintainRanges.push(currentPage);
+                    records = map[currentPage].value.splice(pageSize, 1);
+                } else {
+                    internalId = records.length ? records[0].internalId : null;
+                    records = feed.insertAt(records, insertIndex, !!feed.getNext());
+                    if (internalId) {
+                        delete pageMap.indexMap[internalId];
+                    }
+                }
+
+                currentPage++;
+            }
+        });
+
+
+        Ext.Array.each(Util.groupIndices(maintainRanges),
+            function(range) {
+
+                PageMapUtil.maintainIndexMap(
+                    PageRange.createFor(range[0], range[range.length - 1]), pageMap
+                );
+            }
+        );
+
+        me.sanitizeFeedsForPage(page);
+
+        return createResult({
+            success : true,
+            reason  : ResultReason.OK
+        });
 
     },
 
@@ -191,6 +280,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * This implementation will take care of creating feeds until the demands
      * of the target page can be satisfied, which means that this method will
      * create feeds or move existing ones to the recycle bin in necessary.
+     *
+     * Note:
+     * Calling APIs should consider the totalCount change of a BufferedStore
+     * which might be using the PageMap of this Feeder.
+     *
      *
      *  // - RANGE       = [1, 2] [4, 5] [8, 9 , 10, 11]
      *  // - REM (1, 1)  =  [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
@@ -1080,7 +1174,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                     createAndSwap(range[0], range[0] + 1);
                     createAndSwap(range[1], range[1] - 1);
                 } else {
-                    createAndSwap(range[0], isAdd ? range[0] + 1 : range[0] - 1);
+                    // one page, the next Feed following must serve it
+                    createAndSwap(range[0], range[0] - 1);
                 }
 
             });
