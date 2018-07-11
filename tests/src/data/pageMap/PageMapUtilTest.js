@@ -44,6 +44,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         return store.getData();
 
     },
+    createFeeder = function() {
+
+        return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+            pageMap : createPageMap()
+        });
+    },
     getExpectedId = function(pos, pageMap) {
         return (((pos.getPage() - 1) * pageMap.getPageSize()) + (pos.getIndex() + 1)) + '';
     },
@@ -928,13 +934,49 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 for (var a = 0, lena = rangeCollection.length; a < lena; a++) {
                     t.expect(rangeCollection[a].toArray()).toEqual(test.expected[a]);
                 }
-
-
             }
+        });
+
+
+        t.it("getAvailableRanges()", function(t) {
+
+            let exc, e,
+                feeder   = createFeeder(),
+                pageMap  = feeder.getPageMap(),
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                expected = [[1, 2, 3], [5], [7, 8, 9], [11, 12]];
+
+            t.waitForMs(250, function() {
+
+                try{PageMapUtil.getAvailableRanges();}catch(e){exc = e;};
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+                t.expect(exc.msg.toLowerCase()).toContain('pagemapfeeder');
+
+
+                pageMap.removeAtKey(3);
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(6);
+                pageMap.removeAtKey(9);
+                pageMap.removeAtKey(10);
+                pageMap.removeAtKey(11);
+
+                feeder.createFeedAt(3, 2);
+                feeder.createFeedAt(9, 8);
+                feeder.createFeedAt(11, 12);
+
+                let rangeCollection = PageMapUtil.getAvailableRanges(feeder);
+
+                t.expect(rangeCollection.length).toBe(4);
+
+                for (var a = 0, lena = rangeCollection.length; a < lena; a++) {
+                    t.expect(rangeCollection[a].toArray()).toEqual(expected[a]);
+                }
+
+            });
 
 
         });
-
 
         t.it("isFirstPageLoaded()", function(t) {
 

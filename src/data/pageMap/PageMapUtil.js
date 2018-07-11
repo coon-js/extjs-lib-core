@@ -553,6 +553,45 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     /**
      * Returns an array of {conjoon.cn_core.data.pageMap.PageRange}s currently
+     * loaded in the pageMap while considering the available Feeds in the passed
+     * PageMapFeeder.
+     *
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
+     *
+     * @return {Array} An array which entries consists of {conjoon.cn_core.data.pageMap.PageRange}
+     * entries, ordered from lowest to highest pageRange.
+     *
+     * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if pageMapFeeder
+     * is not an instance of {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     */
+    getAvailableRanges : function(pageMapFeeder) {
+
+        const me = this;
+
+        let ranges       = [],
+            pageRanges = [];
+
+        if (!(pageMapFeeder instanceof  conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+            Ext.raise({
+                msg           : "'pageMapFeeder' must be an instance of conjoon.cn_core.data.pageMap.PageMapFeeder",
+                pageMapFeeder : pageMapFeeder
+            });
+        }
+
+        ranges = pageMapFeeder.groupWithFeeds();
+        for (var i = 0, len = ranges.length; i < len; i++) {
+            pageRanges.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                pages : ranges[i]
+            }))
+        };
+
+        return pageRanges;
+    },
+
+
+
+    /**
+     * Returns an array of {conjoon.cn_core.data.pageMap.PageRange}s currently
      * loaded in the pageMap.
      *
      * @param {Ext.data.PageMap} pageMap
