@@ -751,7 +751,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             // [1, 2] (3:2) [5] [8, 9, 10, 11, 12]
             //
             feeder.createFeedAt(3, 2);
-            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[3], [8, 13]])
         });
 
     });
@@ -859,7 +859,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[6], [8, 13]]);
 
             feeder.createFeedAt(3, 2);
-            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[8, 13]])
+            t.expect(feeder.findFeedIndexesForActionAtPage(3, ADD)).toEqual([[3], [8, 13]])
             feeder.removeFeedAt(3);
 
             // [1, 2] [5] [8, 9], [11, 12]
@@ -1803,6 +1803,80 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
 
 
+    t.it('prepareForAction() - F', function(t) {
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
+            pageMap.removeAtKey(3);
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(5);
+            feeder.swapMapToFeed(6, 7);
+            feeder.getFeedAt(6).extract(1);
+            feeder.swapMapToFeed(8, 7);
+            feeder.getFeedAt(8).extract(1);
+            feeder.swapMapToFeed(9, 10);
+            feeder.getFeedAt(9).extract(1);
+            feeder.swapMapToFeed(12, 11);
+            feeder.getFeedAt(12).extract(1);
+
+            t.expect(feeder.prepareForAction(1, ADD)).toEqual([
+                [3], [6, 8], [9, 12]
+            ]);
+
+            t.expect(feeder.getFeedAt(3).getPrevious()).toBe(2);
+            t.expect(feeder.getFeedAt(6).getNext()).toBe(7);
+            t.expect(feeder.getFeedAt(8).getPrevious()).toBe(7);
+            t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
+            t.expect(feeder.getFeedAt(12).getPrevious()).toBe(11);
+        })
+
+    });
+
+
+    t.it("prepareForAction() - G", function(t) {
+
+        let exc, e, rec, op,
+            feeder   = createFeeder(),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            map      = pageMap.map,
+            ADD      = PageMapFeeder.ACTION_ADD;
+
+        t.waitForMs(250, function() {
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.getFeedAt(3).extract(1)
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(5);
+            feeder.swapMapToFeed(6, 7);
+            feeder.getFeedAt(6).extract(1);
+            feeder.swapMapToFeed(8, 7);
+            feeder.getFeedAt(8).extract(1);
+            feeder.swapMapToFeed(9, 10);
+            feeder.getFeedAt(9).extract(1);
+            feeder.swapMapToFeed(12, 11);
+            feeder.getFeedAt(12).extract(1);
+
+            t.expect(feeder.prepareForAction(3, ADD)).toEqual([
+                [3], [6, 8], [9, 12]
+            ]);
+
+        })
+    });
+
+
+
+
+
+
         t.it('removeRecord() - not found', function(t) {
 
             let exc, e,
@@ -2173,6 +2247,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("does not exist");
 
+            t.expect(feeder.canServeFromFeed(3, 3)).toBe(false);
             t.expect(feeder.canServeFromFeed(3, 1)).toBe(false);
             t.expect(feeder.canServeFromFeed(3, 2)).toBe(false);
 
@@ -2656,8 +2731,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
         t.waitForMs(250, function() {
 
-            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-            // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
+
 
             for (let i in map) {
                 for (let a = 0; a < pageSize; a++) {
@@ -2701,6 +2775,297 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
+    t.it('addRecord - B', function(t) {
+
+        let exc, e, rec, op,
+            feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec         = null,
+            lastRec        = null,
+            mapping        = [],
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
+
+            pageMap.removeAtKey(3);
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(5);
+            feeder.swapMapToFeed(6, 7);
+            feeder.getFeedAt(6).extract(1);
+            feeder.swapMapToFeed(8, 7);
+            feeder.getFeedAt(8).extract(1);
+            feeder.swapMapToFeed(9, 10);
+            feeder.getFeedAt(9).extract(1);
+            feeder.swapMapToFeed(12, 11);
+            feeder.getFeedAt(12).extract(1);
+
+            t.expect(feeder.prepareForAction(1, ADD)).toEqual([
+                [3], [6, 8], [9, 12]
+            ]);
+
+            let addRec = prop(999, "999");
+
+            // enforce feed structure
+            feeder.sanitizeFeedsForPage = function() {
+                return true;
+            };
+
+            let undefinedRecords = {
+                3 : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                6 : [0, 1],
+                9 : [0, 1]
+            };
+
+            let movedRecords = {
+                1  : {5 : addRec},
+                2  : {0 : map[1].value[24]},
+                3  : {0 : map[2].value[24]},
+                7  : {0 : feeder.getFeedAt(6).getAt(24)},
+                8  : {0 : map[7].value[24]},
+                10 : {0 : feeder.getFeedAt(9).getAt(24)},
+                11 : {0 : map[10].value[24]},
+                12 : {0 : map[11].value[24]}
+            };
+
+            op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+            for (let i in undefinedRecords) {
+                for (let a = 0, lena = undefinedRecords[i].length; a < lena; a++) {
+                    t.expect(feeder.getFeedAt(i).getAt(undefinedRecords[i][a])).toBeUndefined();
+                }
+
+            }
+
+            for (let i in movedRecords) {
+                let movedMap = movedRecords[i];
+                let feed     = feeder.getFeedAt(i);
+
+                for (let u in movedMap) {
+                    if (feed) {
+                        t.expect(feed.getAt(u)).toBe(movedMap[u]);
+                    } else {
+                        t.expect(map[i].value[u]).toBe(movedMap[u]);
+                    }
+                }
+            }
+
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(0);
+        });
+    });
+
+
+
+    t.it('addRecord - C', function(t) {
+
+        let exc, e, rec, op,
+            feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec         = null,
+            lastRec        = null,
+            mapping        = [],
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.getFeedAt(3).extract(1)
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(5);
+            feeder.swapMapToFeed(6, 7);
+            feeder.getFeedAt(6).extract(1);
+            feeder.swapMapToFeed(8, 7);
+            feeder.getFeedAt(8).extract(1);
+            feeder.swapMapToFeed(9, 10);
+            feeder.getFeedAt(9).extract(1);
+            feeder.swapMapToFeed(12, 11);
+            feeder.getFeedAt(12).extract(1);
+
+            t.expect(feeder.prepareForAction(1, ADD)).toEqual([
+                [3], [6, 8], [9, 12]
+            ]);
+
+            let feed3Rec = prop(777, "777");
+            let newFeed3Rec = feeder.getFeedAt(3).getAt(23);
+            t.expect(newFeed3Rec).toBeTruthy();
+            feeder.getFeedAt(3).fill([feed3Rec]);
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(3).getAt(24)).toBe(newFeed3Rec);
+            let prevFeed3Rec = feeder.getFeedAt(3).getAt(23);
+            t.expect(feeder.getFeedAt(3).getAt(0)).toBe(feed3Rec);
+
+            let addRec = prop(999, "999");
+
+            // enforce feed structure
+            feeder.sanitizeFeedsForPage = function() {
+                return true;
+            };
+
+            let undefinedRecords = {
+                6 : [0, 1],
+                9 : [0, 1]
+            };
+
+            let movedRecords = {
+                1  : {5 : addRec},
+                2  : {0 : map[1].value[24]},
+                3  : {0 : map[2].value[24]},
+                7  : {0 : feeder.getFeedAt(6).getAt(24)},
+                8  : {0 : map[7].value[24]},
+                10 : {0 : feeder.getFeedAt(9).getAt(24)},
+                11 : {0 : map[10].value[24]},
+                12 : {0 : map[11].value[24]}
+            };
+
+            op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+            t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
+
+            for (let i in undefinedRecords) {
+                for (let a = 0, lena = undefinedRecords[i].length; a < lena; a++) {
+                    t.expect(feeder.getFeedAt(i).getAt(undefinedRecords[i][a])).toBeUndefined();
+                }
+            }
+
+            for (let i in movedRecords) {
+                let movedMap = movedRecords[i];
+                let feed     = feeder.getFeedAt(i);
+
+                for (let u in movedMap) {
+                    if (feed) {
+                        t.expect(feed.getAt(u)).toBe(movedMap[u]);
+                    } else {
+                        t.expect(map[i].value[u]).toBe(movedMap[u]);
+                    }
+                }
+            }
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(0);
+        });
+    });
+
+
+    t.it('addRecord - D', function(t) {
+
+        let exc, e, rec, op,
+            feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec         = null,
+            lastRec        = null,
+            mapping        = [],
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.getFeedAt(3).extract(1)
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(5);
+            feeder.swapMapToFeed(6, 7);
+            feeder.getFeedAt(6).extract(1);
+            feeder.swapMapToFeed(8, 7);
+            feeder.getFeedAt(8).extract(1);
+            feeder.swapMapToFeed(9, 10);
+            feeder.getFeedAt(9).extract(1);
+            feeder.swapMapToFeed(12, 11);
+            feeder.getFeedAt(12).extract(1);
+
+            t.expect(feeder.prepareForAction(3, ADD)).toEqual([
+                [3], [6, 8], [9, 12]
+            ]);
+
+            let feed3Rec = prop(777, "777");
+            let newFeed3Rec = feeder.getFeedAt(3).getAt(23);
+            t.expect(newFeed3Rec).toBeTruthy();
+            feeder.getFeedAt(3).fill([feed3Rec]);
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(3).getAt(24)).toBe(newFeed3Rec);
+            let prevFeed3Rec = feeder.getFeedAt(3).getAt(23);
+            t.expect(feeder.getFeedAt(3).getAt(0)).toBe(feed3Rec);
+
+            let addRec = prop(999, "999");
+
+            // enforce feed structure
+            feeder.sanitizeFeedsForPage = function() {
+                return true;
+            };
+
+            let undefinedRecords = {
+                6 : [0, 1],
+                9 : [0, 1]
+            };
+
+            let movedRecords = {
+                3  : {5 : addRec},
+                7  : {0 : feeder.getFeedAt(6).getAt(24)},
+                8  : {0 : map[7].value[24]},
+                10 : {0 : feeder.getFeedAt(9).getAt(24)},
+                11 : {0 : map[10].value[24]},
+                12 : {0 : map[11].value[24]}
+            };
+
+            op = feeder.addRecord(addRec, RecordPosition.create(3, 5));
+
+            testOp(op, {
+                success : true,
+                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+            }, t);
+
+            t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
+
+            for (let i in undefinedRecords) {
+                for (let a = 0, lena = undefinedRecords[i].length; a < lena; a++) {
+                    t.expect(feeder.getFeedAt(i).getAt(undefinedRecords[i][a])).toBeUndefined();
+                }
+            }
+
+            for (let i in movedRecords) {
+                let movedMap = movedRecords[i];
+                let feed     = feeder.getFeedAt(i);
+
+                for (let u in movedMap) {
+                    if (feed) {
+                        t.expect(feed.getAt(u)).toBe(movedMap[u]);
+                    } else {
+                        t.expect(map[i].value[u]).toBe(movedMap[u]);
+                    }
+                }
+            }
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBe(0);
+            t.expect(feeder.getFeedAt(8).getFreeSpace()).toBe(0);
+        });
+
+    });
 
 
 })})})});

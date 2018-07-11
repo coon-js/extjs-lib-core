@@ -218,12 +218,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         let insertIndex = index,
-            internalId;
+            internalId, previousPage;
 
         Ext.Array.each(feedIndexes, function(range) {
 
             let currentPage = range[0],
-                end         = range[1];
+                end         = range.length === 1 ? range[0] : range[1];
 
             while (currentPage <= end) {
 
@@ -241,13 +241,24 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                     maintainRanges.push(currentPage);
                     records = map[currentPage].value.splice(pageSize, 1);
                 } else {
-                    internalId = records.length ? records[0].internalId : null;
-                    records = feed.insertAt(records, insertIndex, !!feed.getNext());
+                    if (previousPage && me.getFeedAt(previousPage) &&
+                        !me.canServeFromFeed(previousPage, currentPage)) {
+                        records = [];
+                    }
+                    if (records.length) {
+                        // spill from before
+                        internalId = records[0].internalId;
+                        records = feed.insertAt(records, insertIndex, !!feed.getNext());
+                    } else {
+                        // simply extract
+                        records = feed.extract(1);
+                    }
                     if (internalId) {
                         delete pageMap.indexMap[internalId];
                     }
                 }
 
+                previousPage = currentPage;
                 currentPage++;
             }
         });
@@ -527,7 +538,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         for (i = 0, len = range.length; i < len; i++) {
             index = range[i];
 
-            if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)) {
+            if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)
+                && !me.hasPreviousFeed(index) && !me.hasNextFeed(index)) {
                 pageMap.removeAtKey(index);
             }
         }
@@ -763,10 +775,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
 
             if (range.indexOf(page) !== -1) {
-                if (isAdd &&
-                    range.indexOf(page) === end &&
-                    !me.getFeedAt(page)) {
-                    indexes.push([page + 1]);
+                if (isAdd && range.indexOf(page) === end) {
+                    if (!me.getFeedAt(page)) {
+                        indexes.push([page + 1]);
+                    } else if (range.length === 1) {
+                        indexes.push([page]);
+                    }
                 }
             } else {
                 grp.push(
@@ -1162,8 +1176,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 }
                 me.createFeedAt(at, targetPage);
             },
-            targetPage, length, end;
-
+            length, end;
 
         Ext.Array.each(feedIndexes, function(range, feedIndex) {
             Ext.Array.each(range, function(currentPage, rangeIndex) {
@@ -1290,7 +1303,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * neighbour page(!).
      * This method is usually needed when the API needs to check if two
      * independent Feeds can serve one another to make one Feed a page again.
-     *
+     * Returns false if the specified page numbers are no direct neighbours.
      *
      * @param {Number} fromIndex
      * @param {Number} toIndex
@@ -1318,6 +1331,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 msg       : "The Feed at 'fromIndex' " + fromIndex + " does not exist.",
                 fromIndex : fromIndex
             });
+        }
+
+        if (Math.abs(fromIndex - toIndex) !== 1) {
+            return false;
         }
 
         if (pageMap.peekPage(toIndex) && feed.getFreeSpace() < feed.getSize()) {
