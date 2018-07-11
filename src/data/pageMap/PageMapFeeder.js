@@ -149,6 +149,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     moveRecord : function(from, to) {
 
+        // we expect the ranges to be used to compute from/to index, so we
+        // must make sure they stay as expected
+        // suspendSanitizer
+        //remRec
+        //addRec
+        // resuleSanitizer
 
     },
 
@@ -1071,20 +1077,61 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * be determined
      *
      * @private
+     *
+     * #see #groupWithFeeds
      */
     groupWithFeedsForPage : function(page) {
 
+        const me = this;
+
+        return me.groupWithFeeds(page);
+    },
+
+
+    /**
+     * Returns page ranges depending on the feeds and pages available.
+     * Feeds will be treated as regular pages and considered accordingly when
+     * ranges get computed.
+     * If a page is specified, only the right side ranges of this page, including
+     * the page itself, are considered.
+     *
+     *  @example
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(1)
+     *          // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(3)
+     *          // -> [3] [4, 5, 6] [8, 9 10]
+     *
+     *          // [1, 2] (3:2) (4:5)[5](6:5) [8, 9] (10:9)
+     *          // groupWithFeedsForPage(7)
+     *          // -> null
+     *
+     * @param {Number} page
+     *
+     * @returns {Array|null} an array of ranges or null if no range could
+     * be determined
+     *
+     * @private
+     */
+    groupWithFeeds : function(page = 0) {
+
         const me      = this,
-              pageMap = me.getPageMap(),
-              range   = [],
-              found   = [],
-              current = [];
+            pageMap = me.getPageMap(),
+            range   = [],
+            found   = [],
+            current = [];
 
-        page = me.filterPageValue(page);
+        if (page !== 0) {
+            page = me.filterPageValue(page);
 
-        if (!pageMap.peekPage(page) && !me.getFeedAt(page)) {
-            return null;
+            if (!pageMap.peekPage(page) && !me.getFeedAt(page)) {
+                return null;
+            }
         }
+
 
         for (var i in pageMap.map) {
             i = parseInt(i, 10);
@@ -1110,12 +1157,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         for (var i = 0, len = range.length; i < len; i++) {
             let feed        = me.getFeedAt(range[i]),
                 currentPage = range[i];
-
-            if (currentPage === page) {
-              //  found.push([page]);
-              //  continue;
-            }
-
 
             if (i === len - 1 || (feed && feed.getPrevious()) ||
                 (range[i + 1] - 1 !== currentPage) ||

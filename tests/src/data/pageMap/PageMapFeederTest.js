@@ -468,6 +468,142 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
+    t.it('groupWithFeeds() - A', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+            feeder.createFeedAt(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
+
+            t.expect(feeder.groupWithFeeds()).toEqual([[1, 2, 3], [4, 5, 6], [8, 9, 10]]);
+        });
+    });
+
+
+    t.it('groupWithFeeds() - B', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+            feeder.createFeedAt(3, 2);
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
+
+            t.expect(feeder.groupWithFeeds()).toEqual([[1, 2, 3], [4, 5, 6], [8, 9, 10]]);
+        });
+    });
+
+
+    t.it('groupWithFeeds() - C', function(t) {
+
+        // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
+        //         // groupWithFeedsForPage(1)
+        //         // -> [1, 2, 3] [4, 5, 6] [8, 9 10]
+        //
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            feeder.getPageMap().removeAtKey(3);
+            feeder.getPageMap().removeAtKey(4);
+            feeder.getPageMap().removeAtKey(6);
+            feeder.getPageMap().removeAtKey(7);
+            feeder.getPageMap().removeAtKey(10);
+            feeder.getPageMap().removeAtKey(11);
+            feeder.getPageMap().removeAtKey(12);
+
+
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(6, 5);
+            feeder.createFeedAt(10, 9);
+
+            t.expect(feeder.groupWithFeeds()).toEqual([[1, 2], [4, 5, 6], [8, 9, 10]]);
+        });
+
+
+    });
+
+
+
+    t.it("groupWithFeeds() - D", function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            pageMap   = feeder.getPageMap(),
+            pageSize  = pageMap.getPageSize(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            pageMap.removeAtKey(4);
+            pageMap.removeAtKey(9);
+
+            feeder.createFeedAt(4, 5);
+            feeder.createFeedAt(9, 10);
+
+            t.expect(feeder.getFeedAt(4).getNext()).toBe(5);
+            t.expect(feeder.getFeedAt(9).getNext()).toBe(10);
+
+
+            feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+            feeder.getFeedAt(9).fill(propsMax(pageSize - 1));
+
+
+            t.expect(feeder.groupWithFeeds()).toEqual([
+                [1, 2, 3], [4, 5, 6, 7, 8], [9, 10, 11, 12]
+            ]);
+
+        });
+
+
+    });
+
+
+
     t.it('groupWithFeedsForPage() - A', function(t) {
 
         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
