@@ -22,7 +22,7 @@
 
 describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
 
-    var createPageMap = function() {
+    var createFeeder = function() {
             var store;
 
             store = Ext.create('Ext.data.BufferedStore', {
@@ -39,7 +39,9 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
                 }
             });
 
-            return store.getData();
+            return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+                pageMap: store.getData()
+            });
         },
         prop = function(testProperty) {
             return Ext.create('Ext.data.Model', {
@@ -75,7 +77,9 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
             });
 
             conf = {
-                pageMap : store.getData()
+                pageMapFeeder : Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+                    pageMap : store.getData()
+                })
             };
 
             if (cfg.compareFunction) {
@@ -97,19 +101,26 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('is required');
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', {pageMap : null})} catch (e) {exc = e;}
+        try {Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', {pageMapFeeder : null})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
 
+        let pm = Ext.create('Ext.data.PageMap');
         ls = Ext.create('conjoon.cn_core.data.pageMap.IndexLookup', {
-            pageMap : Ext.create('Ext.data.PageMap')
+            pageMapFeeder : Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+                pageMap : pm
+            })
         });
 
         t.expect(ls instanceof conjoon.cn_core.data.pageMap.IndexLookup).toBe(true);
 
-        try {ls.setPageMap(null);} catch (e) {exc = e;}
+        try {ls.setPageMapFeeder(null);} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('already set');
+
+        t.expect(ls.getPageMap()).toBe(pm);
+        t.expect(ls.getPageMap()).toBe(ls.getPageMapFeeder().getPageMap());
+
     });
 
 
@@ -389,6 +400,50 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
     });
 
+
+    t.it("scanRangeForIndex() - feed - A", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            feeder    = sorter.getPageMapFeeder(),
+            pageMap   = sorter.getPageMap(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+
+            pageMap.removeAtKey(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(
+                    //21      22        23       24
+                [prop(47), prop(48), prop(49), prop(50)]
+            );
+
+            let complete = [];
+
+            for (let i = 0; i < 25; i++) {
+                complete.push(prop(25 + i));
+            }
+
+            t.expect(sorter.scanRangeForIndex(3, 3, 48.5, property, 'ASC', cmp)).toEqual([3, 22]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 46, property, 'ASC', cmp)).toBe(-1);
+
+            // 25 26
+            feeder.removeFeedAt(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(complete);
+            t.expect(sorter.scanRangeForIndex(3, 3, 25.5, property, 'ASC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 25, property, 'ASC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 26, property, 'ASC', cmp)).toEqual([3, 1]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 24, property, 'ASC', cmp)).toBe(-1);
+
+        });
+    });
+
+
+
     t.it("findInsertIndex() - exception", function(t) {
 
         var sorter = createSorter({
@@ -485,6 +540,8 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
 
     });
+
+
 
 
 
