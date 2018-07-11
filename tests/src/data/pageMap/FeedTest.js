@@ -766,4 +766,26 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
     });
 
 
+    t.it("insertAt() - A", function(t) {
+
+        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            props   = [prop(47), prop(48), prop(49), prop(50)],
+            newProp = prop(48.5);
+
+        feedNext.fill(props);
+
+            t.expect(feedNext.insertAt([newProp], 22)).toEqual([]);
+
+            t.expect(feedNext.getAt(24)).toBe(props[3]);
+            t.expect(feedNext.getAt(23)).toBe(props[2]);
+            t.expect(feedNext.getAt(22)).toBe(newProp);
+            t.expect(feedNext.getAt(21)).toBe(props[1]);
+            t.expect(feedNext.getAt(20)).toBe(props[0]);
+
+    });
+
+
 })});

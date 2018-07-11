@@ -279,6 +279,16 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
      * the data will be appended/prepended to the Feed.
      * The default behavior for this method is, that records fall out at the side
      * which is not serving a page, until reverseDirection is set to true
+     * NOTE:
+     * A feed that serves a next page grows to the left.
+     *
+     *  feed.getNext() === 2
+     *  [23, 24, 25, 26]
+     *    A   B   C   D
+     *  feed.insertAt(24, X)
+     *  [22, 23, 24, 25, 26]
+     *   A   B   X   C   D
+     *
      *
      * @param {Array} an array of {Ext.data.Model}  to insert
      * @param {Number} index The position in Feed where the entries should be added
