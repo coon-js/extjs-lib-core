@@ -214,7 +214,27 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * of the record. This implementation will return min/max bounds if the record
      * can be inserted at the beginning or the very end of the PageRanges, and the
      * available PageRange represents the start/end of the available data.
+     * Feed indexes will only be considered if the record could fit in a current
+     * range of records in a feed. If the record's position would be at the end
+     * or beginning of a Feed, -1 or 1 wil be returned.
      *
+     *      *  @example
+     *      // pageMap : {2    : [3, 4, 5],
+     *      //           (3:2 ): [6, 7, 8]}
+     *      // findInsertIndexInPagesForRecord(5.5)
+     *      // returns 0
+
+     *      // pageMap : {(1 : 2) : [   4, 5],
+     *      //            2       : [6, 7, 8]}
+     *      // findInsertIndexInPagesForRecord(3)
+     *      // returns -1
+     *      //
+     *      //
+     *      // pageMap : {(1   : [3, 4, 5],
+     *      //            (2:1) : [6, 7, 8]}
+     *      // findInsertIndexInPagesForRecord(9)
+     *      // returns 1
+
      *
      * @throws if more than one sorter was configured
      */
@@ -268,7 +288,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
             if (index === -1) {
                 if (first === 1) {
-                    return [1, 0];
+                    let feed = pageMapFeeder.getFeedAt(first);
+                    return feed
+                           ? - 1
+                           : [1, 0];
                 }
 
                 if (previousIndex === 1) {
@@ -278,7 +301,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
             if (index === 1) {
                 if (last === lastPage) {
-                    return [lastPage, pageMap.getPageSize() - 1];
+                    feed = pageMapFeeder.getFeedAt(last);
+                    return feed
+                           ? 1
+                        : [lastPage, pageMap.getPageSize() - 1];
                 }
             }
 

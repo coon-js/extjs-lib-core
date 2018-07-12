@@ -676,4 +676,161 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         });
     });
 
+
+    t.it("findInsertIndex() - Feeder - A", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            feeder  = sorter.getPageMapFeeder(),
+            pageMap = sorter.getPageMap();
+
+        t.waitForMs(550, function() {
+
+            pageMap.removeAtKey(2);
+            feeder.swapMapToFeed(3, 4);
+            t.expect(sorter.getPageMap().map[1]).toBeDefined();
+            t.expect(sorter.getPageMap().map[2]).not.toBeDefined();
+            t.expect(sorter.getPageMap().map[3]).not.toBeDefined();
+            t.expect(feeder.getFeedAt(3)).toBeTruthy();
+
+            t.expect(sorter.findInsertIndex(prop(476))).toEqual([1, 24]);
+            t.expect(sorter.findInsertIndex(prop(475))).toBe(0);
+            t.expect(sorter.findInsertIndex(prop(450))).toEqual([3, 0]);
+            t.expect(sorter.findInsertIndex(prop(451))).toBe(0);
+
+        });
+    });
+
+
+    t.it("findInsertIndex() - Feeder - B", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function() {
+
+            sorter.getPageMap().getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+                feeder.swapMapToFeed(20, 19);
+                t.expect(sorter.getPageMap().map[20]).not.toBeDefined();
+                t.expect(sorter.findInsertIndex(prop(0))).toEqual(1);
+            });
+        });
+
+    });
+
+
+    t.it("findInsertIndex() - Feeder - C", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function() {
+
+            feeder.swapMapToFeed(3, 2);
+
+            feeder.getFeedAt(3).removeAt(24);
+
+            t.expect(feeder.getFeedAt(3).getAt(24)).toBeUndefined();
+            t.expect(feeder.getFeedAt(3).getAt(0).get('testPropForIndexLookup')).toBe(51);
+            t.expect(feeder.getFeedAt(3).getAt(23).get('testPropForIndexLookup')).toBe(74);
+
+            t.expect(sorter.findInsertIndex(prop(75))).toBe(0);
+            t.expect(sorter.findInsertIndex(prop(74))).toEqual([3, 23]);
+
+        });
+    });
+
+
+    t.it("findInsertIndex() - Feeder - D", function(t) {
+
+        var sorter = createSorter({
+                sorters: [{property: 'testPropForIndexLookup', direction: 'ASC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function () {
+
+            feeder.swapMapToFeed(1, 2);
+            t.expect(sorter.findInsertIndex(prop(-1))).toBe(-1);
+
+        });
+
+    });
+
+
+    t.it("findInsertIndex() - Feeder - E", function(t) {
+
+        var sorter = createSorter({
+                sorters: [{property: 'testPropForIndexLookup', direction: 'ASC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function () {
+
+            feeder.swapMapToFeed(1, 2);
+            feeder.getFeedAt(1).removeAt(0);
+            feeder.getFeedAt(1).removeAt(0);
+
+            t.expect(sorter.findInsertIndex(prop(-1))).toBe(-1);
+
+        });
+
+    });
+
+
+    t.it("findInsertIndex() - Feeder - F", function(t) {
+
+        var sorter = createSorter({
+                sorters: [{property: 'testPropForIndexLookup', direction: 'ASC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function() {
+
+            sorter.getPageMap().getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+                feeder.swapMapToFeed(20, 19);
+                t.expect(sorter.getPageMap().map[21]).not.toBeDefined();
+
+                t.expect(sorter.findInsertIndex(prop(99990))).toBe(1);
+            });
+        });
+
+    });
+
+
+
+    t.it("findInsertIndex() - Feeder - G", function(t) {
+
+        var sorter = createSorter({
+                sorters: [{property: 'testPropForIndexLookup', direction: 'ASC'}]
+            }),
+            feeder = sorter.getPageMapFeeder();
+
+        t.waitForMs(250, function() {
+
+            sorter.getPageMap().getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+                feeder.swapMapToFeed(20, 19);
+                feeder.getFeedAt(20).removeAt(24);
+                t.expect(feeder.getFeedAt(20).getAt(24)).toBeUndefined();
+
+                t.expect(sorter.getPageMap().map[21]).not.toBeDefined();
+                t.expect(sorter.findInsertIndex(prop(99990))).toBe(1);
+            });
+        });
+
+    });
+
+
+
 })});
