@@ -401,49 +401,6 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
-    t.it("scanRangeForIndex() - feed - A", function(t) {
-
-        var sorter = createSorter({
-                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
-            }),
-            cmp       = sorter.getCompareFunction(),
-            feeder    = sorter.getPageMapFeeder(),
-            pageMap   = sorter.getPageMap(),
-            property  = 'testPropForIndexLookup';
-
-        t.waitForMs(550, function() {
-
-
-            pageMap.removeAtKey(3);
-            feeder.createFeedAt(3, 4);
-            feeder.getFeedAt(3).fill(
-                    //21      22        23       24
-                [prop(47), prop(48), prop(49), prop(50)]
-            );
-
-            let complete = [];
-
-            for (let i = 0; i < 25; i++) {
-                complete.push(prop(25 + i));
-            }
-
-            t.expect(sorter.scanRangeForIndex(3, 3, 48.5, property, 'ASC', cmp)).toEqual([3, 22]);
-            t.expect(sorter.scanRangeForIndex(3, 3, 46, property, 'ASC', cmp)).toBe(-1);
-
-            // 25 26
-            feeder.removeFeedAt(3);
-            feeder.createFeedAt(3, 4);
-            feeder.getFeedAt(3).fill(complete);
-            t.expect(sorter.scanRangeForIndex(3, 3, 25.5, property, 'ASC', cmp)).toEqual([3, 0]);
-            t.expect(sorter.scanRangeForIndex(3, 3, 25, property, 'ASC', cmp)).toEqual([3, 0]);
-            t.expect(sorter.scanRangeForIndex(3, 3, 26, property, 'ASC', cmp)).toEqual([3, 1]);
-            t.expect(sorter.scanRangeForIndex(3, 3, 24, property, 'ASC', cmp)).toBe(-1);
-
-        });
-    });
-
-
-
     t.it("findInsertIndex() - exception", function(t) {
 
         var sorter = createSorter({
@@ -542,7 +499,181 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
+    t.it("scanRangeForIndex() - feed (ASC) - A", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            feeder    = sorter.getPageMapFeeder(),
+            pageMap   = sorter.getPageMap(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
 
 
+            pageMap.removeAtKey(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(
+                //21      22        23       24
+                [prop(47), prop(48), prop(49), prop(50)]
+            );
+
+            let complete = [];
+
+            for (let i = 0; i < 25; i++) {
+                complete.push(prop(25 + i));
+            }
+
+            t.expect(sorter.scanRangeForIndex(3, 3, 48.5, property, 'ASC', cmp)).toEqual([3, 22]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 46, property, 'ASC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 50, property, 'ASC', cmp)).toEqual([3,24]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 51, property, 'ASC', cmp)).toBe(1);
+
+            // 25 26
+            feeder.removeFeedAt(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(complete);
+            t.expect(sorter.scanRangeForIndex(3, 3, 25.5, property, 'ASC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 25, property, 'ASC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 26, property, 'ASC', cmp)).toEqual([3, 1]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 24, property, 'ASC', cmp)).toBe(-1);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - feed (ASC)  - B", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'ASC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            feeder    = sorter.getPageMapFeeder(),
+            pageMap   = sorter.getPageMap(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+
+            pageMap.removeAtKey(3);
+            feeder.createFeedAt(3, 2);
+            feeder.getFeedAt(3).fill(
+                //21      22        23       24
+                [prop(25), prop(26), prop(27), prop(28)]
+            );
+
+            let complete = [];
+
+            for (let i = 0; i < 25; i++) {
+                complete.push(prop(25 + i));
+            }
+
+            t.expect(sorter.scanRangeForIndex(3, 3, 24, property, 'ASC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 24.5, property, 'ASC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 25, property, 'ASC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 28, property, 'ASC', cmp)).toEqual([3, 3]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 27.5, property, 'ASC', cmp)).toEqual([3, 3]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 29, property, 'ASC', cmp)).toBe(1);
+
+            // 25 26
+            feeder.removeFeedAt(3);
+            feeder.createFeedAt(3, 2);
+            feeder.getFeedAt(3).fill(complete);
+            t.expect(sorter.scanRangeForIndex(3, 3, 49, property, 'ASC', cmp)).toEqual([3, 24]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 50, property, 'ASC', cmp)).toBe(1);
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - feed (DESC) - C", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            feeder    = sorter.getPageMapFeeder(),
+            pageMap   = sorter.getPageMap(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+
+
+            pageMap.removeAtKey(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(
+                //   21         22         23         24
+                [prop(429), prop(428), prop(427), prop(426)]
+            );
+
+            let complete = [];
+
+            for (let i = 0; i < 25; i++) {
+                complete.push(prop(450 - i));
+            }
+
+            t.expect(sorter.scanRangeForIndex(3, 3, 428.5, property, 'DESC', cmp)).toEqual([3, 22]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 430, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 426, property, 'DESC', cmp)).toEqual([3, 24]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 427, property, 'DESC', cmp)).toEqual([3, 23]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 425, property, 'DESC', cmp)).toBe(1);
+
+            // 25 26
+            feeder.removeFeedAt(3);
+            feeder.createFeedAt(3, 4);
+            feeder.getFeedAt(3).fill(complete);
+            t.expect(sorter.scanRangeForIndex(3, 3, 451, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 450, property, 'DESC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 449.5, property, 'DESC', cmp)).toEqual([3, 1]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 415, property, 'DESC', cmp)).toBe(1);
+
+        });
+    });
+
+
+    t.it("scanRangeForIndex() - feed (DESC) - D", function(t) {
+
+        var sorter = createSorter({
+                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
+            }),
+            cmp       = sorter.getCompareFunction(),
+            feeder    = sorter.getPageMapFeeder(),
+            pageMap   = sorter.getPageMap(),
+            property  = 'testPropForIndexLookup';
+
+        t.waitForMs(550, function() {
+
+
+            pageMap.removeAtKey(3);
+            feeder.createFeedAt(3, 2);
+            feeder.getFeedAt(3).fill(
+                //   0        1         2         3
+                [prop(450), prop(449), prop(448), prop(447)]
+            );
+
+            let complete = [];
+
+            for (let i = 0; i < 25; i++) {
+                complete.push(prop(450 - i));
+            }
+
+            t.expect(sorter.scanRangeForIndex(3, 3, 449, property, 'DESC', cmp)).toEqual([3, 1]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 430, property, 'DESC', cmp)).toBe(1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 450, property, 'DESC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 451, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 446.5, property, 'DESC', cmp)).toBe(1);
+
+            // 25 26
+            feeder.removeFeedAt(3);
+            feeder.createFeedAt(3, 2);
+            feeder.getFeedAt(3).fill(complete);
+            t.expect(sorter.scanRangeForIndex(3, 3, 451, property, 'DESC', cmp)).toBe(-1);
+            t.expect(sorter.scanRangeForIndex(3, 3, 450, property, 'DESC', cmp)).toEqual([3, 0]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 449.5, property, 'DESC', cmp)).toEqual([3, 1]);
+            t.expect(sorter.scanRangeForIndex(3, 3, 446.5, property, 'DESC', cmp)).toEqual([3, 4]);
+
+        });
+    });
 
 })});

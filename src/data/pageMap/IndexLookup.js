@@ -369,8 +369,9 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
                         } else if (cmp === -1) {
 
                             if (a === 0 ||
-                                // it is an left hand feed with a next page, and the
-                                // value is less than the first found index
+                                // it is an left hand feed with a
+                                // next page, and the  value is less than the
+                                // first found index
                                 // also, return -1 if we have no place in the feed
                                 (hasNext && feed.getFreeSpace() === a)
                                 ) {
@@ -387,7 +388,8 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
                         if (cmp === 0) {
                             return [pageIterate, a];
                         } else if (cmp === 1) {
-                            if (a === 0 && pageIterate === start) {
+                            if (a === 0 && pageIterate === start ||
+                                (hasNext && feed.getFreeSpace() === a)) {
                                 return -1;
                             }
                             return [pageIterate, a];
