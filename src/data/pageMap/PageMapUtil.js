@@ -134,6 +134,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * position. The positions must be within the same PageRange.
      * This method will maintain indexes so that indexOf-of the PageMap
      * continues to work.
+     * If pageMapOrFeeder is an instance of conjoon.cn_core.data.pageMap.PageMapFeeder,
+     * moving a record will also work in a PageRange that has Feeds.
+     *
      *
      *       @example
      *       // map:  1 : ['a', 'b' , 'c', 'd']
@@ -172,7 +175,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
-     * @param {Ext.data.PageMap} pageMap
+     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      *
      * @return {Boolean} true if the record was successfully moved, otherwise
      * false
@@ -182,7 +185,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * are not within the same PageRange or any of the source or target records could not
      * be found
      */
-    moveRecord : function(from, to, pageMap) {
+    moveRecord : function(from, to, pageMapOrFeeder) {
 
         const me = this;
 
@@ -191,33 +194,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             fromRange,
             toRange,
             map,
-            toPage, fromPage;
+            toPage, fromPage, pageMap, feeder, fromIndex, toIndex;
 
-        if (!(from instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
-            Ext.raise({
-                msg  : '\'from\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
-                from : from
-            });
-        }
-
-        if (!(to instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
-            Ext.raise({
-                msg : '\'to\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
-                to  : to
-            });
-        }
-
-        pageMap = me.filterPageMapValue(pageMap);
+        from            = me.filterRecordPositionValue(from);
+        to              = me.filterRecordPositionValue(to);
+        pageMapOrFeeder = me.filterPageMapOrFeederValue(pageMapOrFeeder);
 
         // if from and to are equal we do no further checks and return true
         if (from.equalTo(to)) {
             return true;
         }
 
-        fromRecord = me.getRecordAt(from, pageMap);
-        toRecord   = me.getRecordAt(to, pageMap);
-        fromRange  = fromRecord ? me.getPageRangeForRecord(fromRecord, pageMap) : null;
-        toRange    = toRecord   ? me.getPageRangeForRecord(toRecord, pageMap) : null;
+        fromRecord = me.getRecordAt(from, pageMapOrFeeder);
+        toRecord   = me.getRecordAt(to, pageMapOrFeeder);
+        fromRange  = fromRecord ? me.getPageRangeForRecord(fromRecord, pageMapOrFeeder) : null;
+        toRange    = toRecord   ? me.getPageRangeForRecord(toRecord, pageMapOrFeeder) : null;
 
         if (!fromRange || !toRange) {
             Ext.raise({
@@ -235,34 +226,90 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        map      = pageMap.map;
-        toPage   = to.getPage();
-        fromPage = from.getPage();
+        toPage    = to.getPage();
+        fromPage  = from.getPage();
+        fromIndex = from.getIndex();
+        toIndex   = to.getIndex();
 
-        map[toPage].value.splice(to.getIndex(), 0, fromRecord);
+        pageMap = pageMapOrFeeder instanceof Ext.data.PageMap
+                  ? pageMapOrFeeder
+                  : pageMapOrFeeder.getPageMap();
 
-        if (toPage === fromPage && from.getIndex() > to.getIndex()) {
-            map[fromPage].value.splice(from.getIndex() + 1, 1);
+        feeder = pageMapOrFeeder instanceof Ext.data.PageMap
+                 ? null
+                 : pageMapOrFeeder;
+
+        map = pageMap.map;
+
+        let fromFeed      = feeder ? feeder.getFeedAt(fromPage) : null,
+            toFeed        = feeder ? feeder.getFeedAt(toPage)   : null,
+            maintainPages = [];
+
+        // remove first from feeds / pages
+        if (fromFeed) {
+            fromFeed.removeAt(fromIndex);
         } else {
-            map[fromPage].value.splice(from.getIndex(), 1);
+            map[fromPage].value.splice(fromIndex, 1);
+            maintainPages.push(fromPage);
         }
 
-        // if toPage is less or greater than fromPage, we have to unshift/push
-        // records to neighbour pages
-        if (toPage < fromPage) {
-            for (var i = toPage; i < fromPage; i++) {
-                map[i + 1].value.unshift(map[i].value.pop());
+        // in case toPage was greater than fromPage (e.g. 4 -> 7)
+        for (let i = toPage; i > fromPage; i--) {
+            let feed = feeder ? feeder.getFeedAt(i) : null,
+                pop  = feed ? feed.extract(1) : map[i].value.shift();
+
+            pop = feed ? pop[0] : pop;
+
+            if (!feed) {
+                maintainPages.push(i);
             }
-        } else if (toPage > fromPage){ // toPage > fromPage
-            for (var i = toPage; i > fromPage; i--) {
-                map[i - 1].value.push(map[i].value.shift());
+
+            let targetFeed = feeder ? feeder.getFeedAt(i - 1) : null,
+                targetPage = !targetFeed ? map[i - 1].value : null;
+
+            if (pop) {
+                targetFeed ? targetFeed.fill([pop]) : targetPage.push(pop);
             }
         }
 
-        me.maintainIndexMap(conjoon.cn_core.data.pageMap.PageRange.createFor(
-            Math.min(fromPage, toPage),
-            Math.max(fromPage, toPage)
-        ), pageMap);
+        // ... else (e.g. 5 -> 2) 2, 3, 4, 5
+        for (let i = toPage; i < fromPage; i++) {
+            let feed = feeder ? feeder.getFeedAt(i) : null,
+                pop  = feed ? feed.extract(1) : map[i].value.pop();
+
+            pop = feed ? pop[0] : pop;
+
+            if (!feed) {
+                maintainPages.push(i);
+            }
+
+            let targetFeed = feeder ? feeder.getFeedAt(i + 1) : null,
+                targetPage = !targetFeed ? map[i + 1].value : null;
+
+            if (pop) {
+                targetFeed ? targetFeed.fill([pop]) : targetPage.unshift(pop);
+            }
+        }
+
+        if (toFeed) {
+            toFeed.insertAt([fromRecord], toIndex);
+        } else {
+
+            if ((fromPage == toPage && fromIndex < toIndex) || fromPage < toPage) {
+                toIndex--;
+            }
+
+            map[toPage].value.splice(Math.max(0, toIndex), 0, fromRecord);
+        }
+
+        if (maintainPages.length) {
+            me.maintainIndexMap(conjoon.cn_core.data.pageMap.PageRange.createFor(
+                Math.min(...maintainPages),
+                Math.max(...maintainPages)
+            ), pageMap);
+
+        }
+
         return true;
     },
 
@@ -323,60 +370,69 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     /**
      * Returns the record found at the specified position in the specified
-     * pageMap. Returns null if not found.
+     * pageMap or feeder. Returns null if not found.
      *
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
-     * @param {Ext.data.PageMap} pageMap
+     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      *
      * @return {Ext.data.Model}
      *
      * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
-     * or if pageMap is not an instance of {Ext.data.PageMap}
+     * or if pageMap is not an instance of {Ext.data.PageMap} and not an instance of
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
      */
-    getRecordAt : function(position, pageMap) {
+    getRecordAt : function(position, pageMapOrFeeder) {
 
         const me = this;
 
         let map, page, index;
 
-        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
-            Ext.raise({
-                msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
-                position : position
-            });
-        }
+        position        = me.filterRecordPositionValue(position);
+        pageMapOrFeeder = me.filterPageMapOrFeederValue(pageMapOrFeeder);
 
-        pageMap = me.filterPageMapValue(pageMap);
-
-        map   = pageMap.map;
         page  = position.getPage();
         index = position.getIndex();
 
-        return map[page] && map[page].value[index]
-               ? map[page].value[index]
-               : null;
+        if (pageMapOrFeeder instanceof Ext.data.PageMap) {
+            map = pageMapOrFeeder.map;
+
+            return map[page] && map[page].value[index]
+                ? map[page].value[index]
+                : null;
+        }
+
+        // dont catch exception for index, instead check here directly
+        // (performance)
+        if (index >= pageMapOrFeeder.getPageMap().getPageSize()) {
+            return null;
+        }
+        return pageMapOrFeeder.getRecordAt(page, index) || null;
     },
 
 
     /**
      * Returns the list of pages which are direct neighbours for the page the
-     * record is found in.
+     * record is found in. If the second argument is an instance of PageMapFeeder,
+     * Feeds will be considered when looking the position of the record up.
      *
      * @param {Ext.data.Model} record
-     * @param {Ext.data.PageMap} pageMap
+     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMap
      *
      * @return {conjoon.cn_core.data.pageMap.PageRange}
      *
-     * @see conjoon.cn_core.Util.listNeighbours
      *
-     * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if record
-     * is not an instance of {Ext.data.Model}, or if record is not found in the
-     * pageMap.
+     * @throws if pageMap is not an instance of {Ext.data.PageMap} or
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or if record is not an
+     * instance of {Ext.data.Model}, or if the record cannot be found in the
+     * current data set
+     *
+     * @see conjoon.cn_core.Util.listNeighbours
+     * @see #getRangeForRecord
      */
-    getPageRangeForRecord : function(record, pageMap) {
+    getPageRangeForRecord : function(record, pageMapOrFeeder) {
 
         return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
-            pages : this.getRangeForRecord(record, pageMap)
+            pages : this.getRangeForRecord(record, pageMapOrFeeder)
         });
 
     },
@@ -417,11 +473,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @private
      */
-    getRangeForRecord : function(record, pageMap) {
+    getRangeForRecord : function(record, pageMapOrFeeder) {
 
-        const me = this;
+        const me             = this,
+              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
 
-        let page, pages;
+        let page, pages, index, position, pageMap, feeder;
 
         if (!(record instanceof Ext.data.Model)) {
             Ext.raise({
@@ -430,26 +487,41 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        pageMap = me.filterPageMapValue(pageMap);
+        pageMapOrFeeder = me.filterPageMapOrFeederValue(pageMapOrFeeder);
 
-        if (pageMap.indexOf(record) == -1) {
+        pages = [];
+
+        if (pageMapOrFeeder instanceof Ext.data.PageMap) {
+            pageMap = pageMapOrFeeder;
+            feeder  = { feed : {}};
+            index   = pageMapOrFeeder.indexOf(record);
+            if (index !== -1) {
+                page  = pageMapOrFeeder.getPageFromRecordIndex(pageMapOrFeeder.indexOf(record));
+                position = RecordPosition.create(page, index);
+            }
+        } else {
+            pageMap = pageMapOrFeeder.getPageMap();
+            feeder  = pageMapOrFeeder;
+            position = me.findRecord(record, feeder);
+        }
+
+        if (!position) {
             Ext.raise({
-                msg     : '\'record\' seems not to be a member of \'pageMap\'',
-                record  : record,
-                pageMap : pageMap
+                msg             : "'record' cannot be found in current data sets",
+                record          : record,
+                pageMapOrFeeder : pageMapOrFeeder
             });
         }
 
-        page  = pageMap.getPageFromRecordIndex(pageMap.indexOf(record));
-        pages = [];
-
-        for (var i in pageMap.map) {
+        for (let i in pageMap.map) {
             pages.push(i);
         }
 
-        return conjoon.cn_core.Util.listNeighbours(pages, page);
+        for (let i in feeder.feed) {
+            pages.push(i);
+        }
 
-
+        return conjoon.cn_core.Util.listNeighbours(pages, position.getPage());
     },
 
     /**
@@ -749,6 +821,35 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             start : start,
             end   : end
         });
+    },
+
+
+    /**
+     * Tries to find the specified record in the specified feeder, considering
+     * Feeds. Returns the conjoon.cn_core.data.pageMap.RecordPosition if found,
+     * otherwise null.
+     *
+     * @param {Ext.data.Model} record
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} feeder
+     *
+     * @return {conjoon.cn_core.data.pageMap.RecordPosition|null} Returns the
+     * position of the record as a RecordPosition-object, otherwise false
+     */
+    findRecord : function(record, feeder) {
+
+        const me = this;
+
+        record = me.filterRecordValue(record);
+        feeder = me.filterFeederValue(feeder);
+
+        let pageMap = feeder.getPageMap(),
+            index   = feeder.getPageMap().indexOf(record);
+
+        if (index !== -1) {
+            return me.storeIndexToPosition(index, feeder.getPageMap());
+        }
+
+        return feeder.findInFeeds(record);
     }
 
 });

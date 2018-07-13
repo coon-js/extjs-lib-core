@@ -27,15 +27,15 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         var store;
 
         store = Ext.create('Ext.data.BufferedStore', {
-            autoLoad : true,
-            pageSize : 25,
-            fields : ['id', 'testProp'],
-            proxy : {
-                type : 'rest',
-                url  : 'cn_core/fixtures/PageMapItems',
-                reader : {
-                    type         : 'json',
-                    rootProperty : 'data'
+            autoLoad: true,
+            pageSize: 25,
+            fields: ['id', 'testProp'],
+            proxy: {
+                type: 'rest',
+                url: 'cn_core/fixtures/PageMapItems',
+                reader: {
+                    type: 'json',
+                    rootProperty: 'data'
                 }
             }
         });
@@ -43,6 +43,11 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
         return store.getData();
 
+    },
+    prop = function(id) {
+        return Ext.create('Ext.data.Model', {
+            id : id + "" || Ext.id()
+        });
     },
     createFeeder = function() {
 
@@ -130,6 +135,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
     t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     t.requireOk('conjoon.cn_core.data.pageMap.PageMapUtil', function() {
+    t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function() {
 
 
         t.it('positionToStoreIndex()', function(t) {
@@ -292,7 +298,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             }
 
             t.expect(exc).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('seems not to be a member');
+            t.expect(exc.msg.toLowerCase()).toContain('cannot be found');
 
         });
 
@@ -545,12 +551,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 try {PageMapUtil.moveRecord(null, targetPosition, pageMap);} catch (e) {exc = e;}
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-                t.expect(exc.msg.toLowerCase()).toContain('from');
+                t.expect(exc.msg.toLowerCase()).toContain('position');
 
                 try {PageMapUtil.moveRecord(sourcePosition, null, pageMap);} catch (e) {exc = e;}
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-                t.expect(exc.msg.toLowerCase()).toContain('to');
+                t.expect(exc.msg.toLowerCase()).toContain('position');
 
                 try {PageMapUtil.moveRecord(sourcePosition, targetPosition, null);} catch (e) {exc = e;}
                 t.expect(exc).toBeDefined();
@@ -1208,5 +1214,460 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it("findRecord()", function(t){
 
-    })})});
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                range, pos;
+
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(2, 1);
+                pageMap.removeAtKey(3);
+
+                t.expect(PageMapUtil.findRecord(prop(3), feeder)).toBe(null);
+
+                pos = PageMapUtil.findRecord(pageMap.map[5].value[18] , feeder);
+                t.expect(pos).not.toBe(null);
+                t.expect(pos.getPage()).toBe(5);
+                t.expect(pos.getIndex()).toBe(18);
+
+                pos = PageMapUtil.findRecord(feeder.getFeedAt(2).getAt(2), feeder);
+                t.expect(pos).not.toBe(null);
+                t.expect(pos.getPage()).toBe(2);
+                t.expect(pos.getIndex()).toBe(2);
+                t.expect(feeder.getFeedAt(2)).toBeTruthy();
+
+            });
+        });
+
+
+        t.it("getRangeForRecord() - consider Feeds", function(t){
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                range;
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(3);
+
+                feeder.createFeedAt(2, 1);
+
+                range = PageMapUtil.getRangeForRecord(pageMap.map[1].value[2], pageMap);
+                t.expect(range).toEqual([1]);
+
+                range = PageMapUtil.getRangeForRecord(pageMap.map[1].value[2], feeder);
+                t.expect(range).toEqual([1, 2]);
+
+
+            });
+        });
+
+
+        t.it("getPageRangeForRecord() - consider Feeds", function(t){
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                range;
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(3);
+
+                feeder.createFeedAt(2, 1);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[1].value[2], pageMap);
+                t.expect(range.toArray()).toEqual([1]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[1].value[2], feeder);
+                t.expect(range.toArray()).toEqual([1, 2]);
+            });
+
+
+        })
+
+        t.it('getRecordAt() - Feeds', function(t) {
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 4,
+                    index : 5
+                }),
+                impossiblePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 244424,
+                    index : 524555
+                }), exc, e;
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                t.expect(PageMapUtil.getRecordAt(sourcePosition, feeder)).toBe(feeder.getFeedAt(4).getAt(5));
+
+                t.expect(PageMapUtil.getRecordAt(impossiblePosition, feeder)).toBe(null);
+            })
+        });
+
+        t.it("moveRecord() - Feed - A", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                let feed = feeder.getFeedAt(4);
+
+                let rec1  = feed.getAt(3),
+                    rec3  = feed.getAt(4),
+                    rec24 = feed.getAt(24);
+
+
+                let from = RecordPosition.create(4, 3),
+                    to   = RecordPosition.create(4, 17);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed.getAt(17)).toBe(rec1);
+                t.expect(feed.getAt(3)).toBe(rec3);
+                t.expect(feed.getAt(24)).toBe(rec24);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed - B", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 5);
+
+                let feed = feeder.getFeedAt(4);
+
+                let rec1  = feed.getAt(3),
+                    rec3  = feed.getAt(4),
+                    rec24 = feed.getAt(24);
+
+
+                let from = RecordPosition.create(4, 3),
+                    to   = RecordPosition.create(4, 17);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed.getAt(17)).toBe(rec1);
+                t.expect(feed.getAt(3)).toBe(rec3);
+                t.expect(feed.getAt(24)).toBe(rec24);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (f === f) - C", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 5);
+
+                let feed = feeder.getFeedAt(4);
+
+                let rec1  = feed.getAt(17),
+                    rec3  = feed.getAt(18),
+                    rec24 = feed.getAt(24);
+
+
+                let from = RecordPosition.create(4, 17),
+                    to   = RecordPosition.create(4, 3);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed.getAt(3)).toBe(rec1);
+                t.expect(feed.getAt(18)).toBe(rec3);
+                t.expect(feed.getAt(24)).toBe(rec24);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (p < f) - D", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                let feed = feeder.getFeedAt(4);
+
+                let rec1  = map[2].value[15],
+                    rec0  = feed.getAt(1),
+                    rec24 = feed.getAt(24),
+                    rec2_24 = map[3].value[0];
+
+
+                let from = RecordPosition.create(2, 15),
+                    to   = RecordPosition.create(4, 3);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed.getAt(3)).toBe(rec1);
+                t.expect(feed.getAt(24)).toBe(rec24);
+                t.expect(feed.getAt(0)).toBe(rec0);
+                t.expect(map[2].value[24]).toBe(rec2_24);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (f < f) - E", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                feeder.swapMapToFeed(2, 3);
+                let feed = feeder.getFeedAt(4),
+                    feed2 = feeder.getFeedAt(2);
+
+                let rec1  = feed2.getAt(15),
+                    rec0  = feed.getAt(1),
+                    rec24 = feed.getAt(24),
+                    rec2_24 = map[3].value[0];
+
+
+                let from = RecordPosition.create(2, 15),
+                    to   = RecordPosition.create(4, 3);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed.getAt(3)).toBe(rec1);
+                t.expect(feed.getAt(24)).toBe(rec24);
+                t.expect(feed.getAt(0)).toBe(rec0);
+                t.expect(feed2.getAt(24)).toBe(rec2_24);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (f > f) - F", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+                feeder.swapMapToFeed(2, 3);
+
+                let feed4 = feeder.getFeedAt(4),
+                    feed2 = feeder.getFeedAt(2);
+
+                let rec1    = feed4.getAt(3),
+                    rec3_0  = feed2.getAt(24),
+                    rec3_24 = map[3].value[23],
+                    rec4_0 = map[3].value[24];
+
+                let from = RecordPosition.create(4, 3),
+                    to   = RecordPosition.create(2, 15);
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(feed2.getAt(15)).toBe(rec1);
+                t.expect(feed4.getAt(0)).toBe(rec4_0);
+                t.expect(map[3].value[24]).toBe(rec3_24);
+                t.expect(map[3].value[0]).toBe(rec3_0);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (p > p) - G", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                let rec1    = map[4].value[3],
+                    rec4_0  = map[3].value[24],
+                    rec3_0  = map[2].value[24];
+
+
+                let from = RecordPosition.create(4, 3),
+                    to   = RecordPosition.create(2, 15);
+
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+                t.expect(map[2].value[15]).toBe(rec1);
+                t.expect(map[4].value[0]).toBe(rec4_0);
+                t.expect(map[3].value[0]).toBe(rec3_0);
+            })
+        });
+
+
+        t.it("moveRecord() - Feed (p > p) - H", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                let rec1    = map[4].value[15],
+                    rec4_0  = map[3].value[24],
+                    rec3_0  = map[2].value[24];
+
+
+                let from = RecordPosition.create(4, 15),
+                    to   = RecordPosition.create(2, 3);
+
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+                t.expect(map[2].value[3]).toBe(rec1);
+                t.expect(map[4].value[0]).toBe(rec4_0);
+                t.expect(map[3].value[0]).toBe(rec3_0);
+
+            })
+        });
+
+
+        t.it("moveRecord() - Feed (p > f) - I", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                let feed = feeder.getFeedAt(4);
+
+                let rec1    = feed.getAt(3),
+                    rec4_0  = map[3].value[24],
+                    rec3_0  = map[2].value[24];
+
+
+                let from = RecordPosition.create(4, 3),
+                    to   = RecordPosition.create(2, 15);
+
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(map[2].value[15]).toBe(rec1);
+                t.expect(feed.getAt(0)).toBe(rec4_0);
+                t.expect(map[3].value[0]).toBe(rec3_0);
+
+            })
+
+        });
+
+
+        t.it("moveRecord() - Feed (p < p) - J", function(t) {
+
+            var feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                mapping = [];
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+
+                let rec1 = map[2].value[15];
+
+
+                let from     = RecordPosition.create(2, 15),
+                    to       = RecordPosition.create(4, 0),
+                    rec3_24  = map[4].value[0],
+                    rec2_24  = map[3].value[0],
+                    rec2_15  = map[2].value[16];
+
+
+                t.expect(PageMapUtil.moveRecord(from, to, feeder)).toBe(true);
+
+                t.expect(map[4].value[0]).toBe(rec1);
+                t.expect(map[3].value[24]).toBe(rec3_24);
+                t.expect(map[2].value[24]).toBe(rec2_24);
+                t.expect(map[2].value[15]).toBe(rec2_15);
+
+            })
+
+        });
+
+
+    })})})});
