@@ -85,6 +85,54 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
     /**
      * Throws an exception if the passed argument is not an instance of
+     * {Ext.data.PageMap} or {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     *
+     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} value
+     *
+     * @return {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder}
+     *
+     * @throws if if the passed argument is not an instance of
+     * {Ext.data.PageMap} and not an instance of {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     */
+    filterPageMapOrFeederValue : function(value) {
+
+        if (!(value instanceof Ext.data.PageMap) && !(value instanceof conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+            Ext.raise({
+                msg   : "'value' must be an instance of Ext.data.PageMap or conjoon.cn_core.data.pageMap.PageMapFeeder",
+                value : value
+            });
+        }
+
+        return value;
+    },
+
+
+    /**
+     * Throws an exception if the passed argument is not an instance of
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     *
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} value
+     *
+     * @return {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     *
+     * @throws if if the passed argument is not an instance of
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     */
+    filterFeederValue : function(feeder) {
+
+        if (!(feeder instanceof conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+            Ext.raise({
+                msg    : "'value' must be an instance of conjoon.cn_core.data.pageMap.PageMapFeeder",
+                feeder : feeder
+            });
+        }
+
+        return feeder;
+    },
+
+
+    /**
+     * Throws an exception if the passed argument is not an instance of
      * {Ext.data.Model}
      *
      * @param {Ext.data.Model} record
@@ -128,7 +176,7 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
         if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg      : "'to' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition",
+                msg      : "'position' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition",
                 position : position
             });
         }

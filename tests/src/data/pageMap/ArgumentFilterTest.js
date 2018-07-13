@@ -26,7 +26,7 @@ describe('conjoon.cn_core.data.pageMap.ArgumentFilterTest', function(t) {
 // +----------------------------------------------------------------------------
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
-
+t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
 
     /**
      * filterPageValue
@@ -157,41 +157,41 @@ describe('conjoon.cn_core.data.pageMap.ArgumentFilterTest', function(t) {
     /**
      * filterRecordValue
      */
-     t.it('filterIndexValue()', function(t) {
-         let exc, e, arg,
-             filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
-         try{filter.filterIndexValue();}catch (e) {exc = e};
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
-         t.expect(exc.msg.toLowerCase()).toContain("index");
-         exc = undefined;
+    t.it('filterIndexValue()', function(t) {
+        let exc, e, arg,
+            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+        try{filter.filterIndexValue();}catch (e) {exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
+        t.expect(exc.msg.toLowerCase()).toContain("index");
+        exc = undefined;
 
-         try{filter.filterIndexValue(3, 'B');}catch (e) {exc = e};
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain("must be a number");
-         t.expect(exc.msg.toLowerCase()).toContain("size");
-         exc = undefined;
+        try{filter.filterIndexValue(3, 'B');}catch (e) {exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
+        t.expect(exc.msg.toLowerCase()).toContain("size");
+        exc = undefined;
 
-         try{filter.filterIndexValue(4, 4);}catch (e) {exc = e};
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
-         t.expect(exc.msg.toLowerCase()).toContain("size");
-         exc = undefined;
-
-
-         arg = [3, 0];
-         t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
-
-         arg = [3, 100000];
-         t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+        try{filter.filterIndexValue(4, 4);}catch (e) {exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
+        t.expect(exc.msg.toLowerCase()).toContain("size");
+        exc = undefined;
 
 
-         arg = [3, 4];
-         t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
-     });
+        arg = [3, 0];
+        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+
+        arg = [3, 100000];
+        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+
+
+        arg = [3, 4];
+        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+    });
 
 
     /**
@@ -224,9 +224,56 @@ describe('conjoon.cn_core.data.pageMap.ArgumentFilterTest', function(t) {
 
         arg = [Ext.create('Ext.data.Model')];
         t.expect(filter.filterRecordsArray(arg)).toBe(arg);
-
-
-
     });
+
+
+    /**
+     * filterPageMapOrFeederValue
+     */
+    t.it('filterPageMapOrFeederValue()', function (t) {
+        let exc, e, pageMap,
+            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+
+        try {filter.filterPageMapOrFeederValue();} catch (e) {exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+        t.expect(exc.msg.toLowerCase()).toContain("value");
+        exc = undefined;
+
+        pageMap = Ext.create('Ext.data.PageMap');
+        t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
+
+        let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+            pageMap : pageMap
+        });
+        t.expect(filter.filterPageMapOrFeederValue(feeder)).toBe(feeder);
+    });
+
+
+    /**
+     * filterFeederValue
+     */
+    t.it('filterFeederValue()', function (t) {
+        let exc, e, pageMap,
+            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+
+        try {filter.filterFeederValue();} catch (e) {exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+        t.expect(exc.msg.toLowerCase()).toContain("feeder");
+        exc = undefined;
+
+        pageMap = Ext.create('Ext.data.PageMap');
+        let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+            pageMap : pageMap
+        });
+        t.expect(filter.filterFeederValue(feeder)).toBe(feeder);
+    });
+
+});
+
+
 
 });
