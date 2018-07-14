@@ -1294,7 +1294,6 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(range.toArray()).toEqual([1, 2]);
             });
 
-
         })
 
         t.it('getRecordAt() - Feeds', function(t) {
@@ -1668,6 +1667,98 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             })
 
         });
+
+
+        t.it("getRangeForRecord() - consider Feeds (fix)", function(t){
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                range;
+
+            t.waitForMs(250, function() {
+
+
+                // [1, 2] (3:2) (4:5) [5, 6] ....
+
+                feeder.swapMapToFeed(3, 2);
+                feeder.getFeedAt(3).extract(1);
+                feeder.swapMapToFeed(4, 5);
+                feeder.getFeedAt(4).extract(1);
+
+                feeder.swapMapToFeed(7, 6);
+                feeder.getFeedAt(7).extract(1);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[1].value[2], feeder);
+                t.expect(range.toArray()).toEqual([1, 2, 3]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(3).getAt(22), feeder);
+                t.expect(range.toArray()).toEqual([1, 2, 3]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[5].value[2], feeder);
+                t.expect(range.toArray()).toEqual([4, 5, 6, 7]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(4).getAt(2), feeder);
+                t.expect(range.toArray()).toEqual([4, 5, 6, 7]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(7).getAt(2), feeder);
+                t.expect(range.toArray()).toEqual([4, 5, 6, 7]);
+
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[12].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[8].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[10].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                feeder.swapMapToFeed(8, 9);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[12].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(8).getAt(12), feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[10].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+
+                feeder.swapMapToFeed(12, 11);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(12).getAt(12), feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(8).getAt(12), feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[10].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+
+                feeder.swapFeedToMap(8);
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(12).getAt(12), feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[8].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+                range = PageMapUtil.getPageRangeForRecord(pageMap.map[10].value[12], feeder);
+                t.expect(range.toArray()).toEqual([8, 9, 10, 11, 12]);
+
+
+                feeder.swapMapToFeed(1, 2);
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(1).getAt(2), feeder);
+                t.expect(range.toArray()).toEqual([1, 2, 3]);
+
+                range = PageMapUtil.getPageRangeForRecord(feeder.getFeedAt(3).getAt(22), feeder);
+                t.expect(range.toArray()).toEqual([1, 2, 3]);
+
+            });
+        })
 
 
     })})})});

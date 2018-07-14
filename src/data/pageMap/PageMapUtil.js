@@ -493,7 +493,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         if (pageMapOrFeeder instanceof Ext.data.PageMap) {
             pageMap = pageMapOrFeeder;
-            feeder  = { feed : {}};
             index   = pageMapOrFeeder.indexOf(record);
             if (index !== -1) {
                 page  = pageMapOrFeeder.getPageFromRecordIndex(pageMapOrFeeder.indexOf(record));
@@ -513,13 +512,74 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
+
         for (let i in pageMap.map) {
             pages.push(i);
         }
 
-        for (let i in feeder.feed) {
-            pages.push(i);
+        if (feeder) {
+
+            for (let i in feeder.feed) {
+                pages.push(i);
+            }
+
+            let toPage     = position.getPage(),
+                tmpPages   = conjoon.cn_core.Util.listNeighbours(pages, toPage),
+                finalPages = [], feed, prev, next, curr;
+
+            for (let i = tmpPages.indexOf(toPage), len = pages.length; i < len; i++) {
+                curr = tmpPages[i];
+                feed = feeder.getFeedAt(curr);
+
+                if (feed) {
+                    if (feed.getNext() === toPage + 1) {
+                        finalPages.push(curr);
+                        continue;
+                    }
+
+                    if (feed.getPrevious() >= toPage - 1) {
+                        finalPages.push(curr);
+                        break;
+                    }
+                }
+
+                finalPages.push(curr);
+            }
+
+
+            for (let i = tmpPages.indexOf(toPage); i >= 0; i--) {
+                curr = tmpPages[i];
+                feed = feeder.getFeedAt(curr);
+
+                if (feed) {
+                    next = feed.getNext();
+                    prev = feed.getPrevious();
+
+                    if (next === toPage + 1) {
+                        break;
+                    }
+
+                    if (tmpPages[i] !== toPage && prev < toPage ) {
+                        break;
+                    }
+
+                    if (prev === toPage - 1) {
+                        finalPages.push(curr);
+                        continue;
+                    }
+
+                    if (next <= toPage + 1) {
+                        finalPages.push(curr);
+                        break;
+                    }
+                }
+
+                finalPages.push(curr);
+            }
+
+            pages = finalPages;
         }
+
 
         return conjoon.cn_core.Util.listNeighbours(pages, position.getPage());
     },
