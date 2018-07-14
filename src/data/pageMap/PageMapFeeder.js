@@ -75,6 +75,13 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     feed : null,
 
+
+    /**
+     * Flag for suspending sanitizing of Feeds and Pages
+     * @type {Boolean}
+     */
+    sanitizerSuspended : false,
+
     /**
      * Creates a new instance.
      *
@@ -138,24 +145,75 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * Moves the record from the specified from-position to the specified to
      * position. The result of this operation is encapsulated in the returning
      * conjoon.cn_core.data.pageMap.Operation-object.
-     * Feeds will be considered if either from or to do not exist in the actual
-     * PageMap's map: if from and to can be found in current pages swapped to the
-     * feed, this positions will be used if they are safe to use.
+     * Feeds will be considered in this implementation. If the record positions
+     * can be found in the same page range, PageMapUtil's moveRecord will
+     * be called.
      *
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
      *
      * @return {conjoon.cn_core.data.pageMap.Operation}
+     *
+     * @throws if record is not part of the PageMap of this Feeder, of if the
+     * record is not part of any Feed.
+     *
+     * @see conjoon.cn_core.data.pageMap.PageMapUtil#moveRecord
      */
-    moveRecord : function(from, to) {
+    moveRecord : function(record, to) {
 
-        // we expect the ranges to be used to compute from/to index, so we
-        // must make sure they stay as expected
-        // suspendSanitizer
-        //remRec
-        //addRec
-        // resuleSanitizer
+        const me             = this,
+              pageMap        = me.getPageMap(),
+              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+              PageRange      = conjoon.cn_core.data.pageMap.PageRange,
+              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
 
+        to = me.filterRecordPositionValue(to, pageMap.getPageSize());
+
+        // check if record is part of PageMap or Feeds
+        let from = PageMapUtil.findRecord(record, me);
+
+        if (!from) {
+            Ext.raise({
+                msg    : "'record' cannot be found in PageMap and cannot be found in Feeds",
+                record : record
+            });
+        }
+
+        let targetPage  = to.getPage(),
+            targetIndex = to.getIndex();
+
+        if (!pageMap.peekPage(targetPage) && !me.getFeedAt(targetPage)) {
+            Ext.raise({
+                msg : "the page of the requested position does not exist; page: " + targetPage,
+                to  : to
+            });
+        }
+
+        let pageRangeFrom = PageMapUtil.getPageRangeForRecord(record, me);
+
+        if (pageRangeFrom.contains(to)) {
+            return PageMapUtil.moveRecord(from, to, me);
+        }
+
+
+        // suspend sanitizer
+        me.sanitizerSuspended = true;
+
+        let tmp = Ext.create('Ext.data.Model');
+        pageMap.map[from.getPage()].value[from.getIndex()] = tmp;
+        pageMap.indexMap[tmp.internalId] = pageMap.indexMap[record.internalId];
+        delete pageMap.indexMap[record.internalId];
+
+        // insert dummy record so we dont have to work on recomputing indexes
+        // due to missing original record  - replaceWith()-method?
+        me.addRecord(record, to);
+        me.removeRecord(tmp);
+
+        me.sanitizerSuspended = false;
+
+        me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()));
+
+        return true;
     },
 
 
@@ -506,6 +564,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               pageMap     = me.getPageMap(),
               PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
               feeds       = me.feed;
+
+        if (me.sanitizerSuspended === true) {
+            return false;
+        }
 
         page = me.filterPageValue(page);
 
@@ -1256,12 +1318,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         const me    = this,
               feeds = me.feed;
 
-        if (!(record instanceof Ext.data.Model)) {
-            Ext.raise({
-               msg    : "'record' must be an instance of Ext.data.Model",
-               record : record
-            });
-        }
+        record = me.filterRecordValue(record);
 
         let feed, index;
 

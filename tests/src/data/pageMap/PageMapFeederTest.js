@@ -3203,5 +3203,109 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
     });
 
+    t.it('sanitizerSuspended', function(t) {
+
+        let feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+            feeder.sanitizerSuspended = true;
+            t.expect(feeder.sanitizeFeedsForPage(1)).toBe(false);
+            feeder.sanitizerSuspended = false;
+            t.expect(feeder.sanitizeFeedsForPage(1)).toBe(true);
+        });
+
+    });
+
+
+    t.it('moveRecord - A', function(t) {
+
+        let exc, e, rec, op,
+            feeder = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            map = pageMap.map,
+            pageSize = pageMap.getPageSize(),
+            ADD = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec = null,
+            lastRec = null,
+            mapping = [],
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            try {feeder.moveRecord(prop(34), RecordPosition.create(5, 10));}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("cannot be found");
+
+            pageMap.removeAtKey(1);
+            try {feeder.moveRecord(map[2].value[3], RecordPosition.create(1, 10));}catch(e){exc=e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("does not exist");
+
+            feeder.createFeedAt(1, 2);
+            feeder.getFeedAt(1).fill(propsMax(20));
+            t.isCalled('moveRecord', PageMapUtil);
+
+            t.expect(feeder.moveRecord(map[2].value[3], RecordPosition.create(4, 8))).toBe(true);
+            t.expect(feeder.moveRecord(feeder.getFeedAt(1).getAt(17), RecordPosition.create(1, 24))).toBe(true);
+
+
+        });
+
+    });
+
+
+    t.it('moveRecord - B', function(t) {
+
+        let feeder = createFeeder(),
+            pageMap = feeder.getPageMap(),
+            map = pageMap.map,
+            pageSize = pageMap.getPageSize(),
+            ADD = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            addRec = null,
+            lastRec = null,
+            mapping = [],
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;;
+
+        t.waitForMs(250, function() {
+
+            // [1, 2] (3:2) (4:5) [5, 6] ....
+
+            feeder.swapMapToFeed(3, 2);
+            feeder.getFeedAt(3).extract(1);
+            feeder.swapMapToFeed(4, 5);
+            feeder.getFeedAt(4).extract(1);
+
+            feeder.swapMapToFeed(7, 6);
+            feeder.getFeedAt(7).extract(1);
+
+            let rec      = map[1].value[4],
+                recLeft  = map[6].value[1],
+                recRight = map[6].value[2],
+                to       = RecordPosition.create(6, 2);
+
+            t.expect(feeder.moveRecord(rec, to)).toBe(true);
+
+            let found = PageMapUtil.findRecord(rec, feeder);
+            t.expect(found).toBeTruthy();
+            t.expect(found.equalTo(RecordPosition.create(to.getPage(), to.getIndex() - 1))).toBe(true);
+
+            t.expect(map[6].value[0]).toBe(recLeft);
+            t.expect(map[6].value[1]).toBe(rec);
+            t.expect(map[6].value[2]).toBe(recRight);
+
+
+
+
+
+
+        });
+
+    });
+
+
 
 })})})});
