@@ -289,4 +289,28 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
     });
 
+
+        t.it('contains()', function(t) {
+
+
+            var PageRange      = conjoon.cn_core.data.pageMap.PageRange,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                exc, e, range, pos,
+                tests = [
+                    {range : [1, 2],  pos :  [1, 19], exp : true},
+                    {range : [1, 2],  pos :  [2, 22], exp : true},
+                    {range : [5, 12], pos :  [1, 3], exp : false},
+                    {range : [4, 9],  pos :  [6, 5], exp : true}
+                ];
+
+
+            // with arguments as args
+            for (var i = 0, len = tests.length; i < len; i++) {
+                range = PageRange.createFor.apply(null, tests[i].range);
+                pos   = RecordPosition.create(tests[i].pos);
+                t.expect(range.contains(pos)).toBe(tests[i].exp);
+            }
+
+        });
+
 })});

@@ -59,7 +59,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
 
 
     requires : [
-        'conjoon.cn_core.Util'
+        'conjoon.cn_core.Util',
+        'conjoon.cn_core.data.pageMap.RecordPosition'
     ],
 
 
@@ -172,14 +173,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
             Ext.raise({
                 msg   : '\'pages\' was already defined',
                 pages : me.getPages()
-            })
+            });
         }
 
         if (!Ext.isArray(pages)) {
             Ext.raise({
                 msg   : '\'pages\' must be an array',
                 pages : pages
-            })
+            });
         }
 
         pages = pages.map(function(v){
@@ -204,7 +205,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
                     msg   : '\'pages\' was converted to a numeric list but it ' +
                             'seems to be not an ordered list of numeric data',
                     pages : pages
-                })
+                });
             }
         }
 
@@ -261,7 +262,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
             Ext.raise({
                 msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.PageRange',
                 target : target
-            })
+            });
         }
 
         tF = target.getPages();
@@ -271,6 +272,32 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
                this.getPages().filter(function(v, index) {
                     return tF[index] && tF[index] === v;
                }).length === tL;
+
+    },
+
+
+    /**
+     * Returns true if this page range contains the specified position, otherwise
+     * false.
+     * This method will return true if the position's page is part of this page
+     * range.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     *
+     * @return {Boolean}
+     */
+    contains : function(position) {
+
+        const me = this;
+
+        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+            Ext.raise({
+                msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                position : position
+            });
+        }
+
+        return me.toArray().indexOf(position.getPage()) !== -1;
 
     },
 
