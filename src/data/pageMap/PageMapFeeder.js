@@ -200,12 +200,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         me.sanitizerSuspended = true;
 
         let tmp = Ext.create('Ext.data.Model');
-        pageMap.map[from.getPage()].value[from.getIndex()] = tmp;
-        pageMap.indexMap[tmp.internalId] = pageMap.indexMap[record.internalId];
-        delete pageMap.indexMap[record.internalId];
-
         // insert dummy record so we dont have to work on recomputing indexes
-        // due to missing original record  - replaceWith()-method?
+        // due to missing original record  - replaceWith()
+        me.replaceWith(from, tmp);
         me.addRecord(record, to);
         me.removeRecord(tmp);
 
