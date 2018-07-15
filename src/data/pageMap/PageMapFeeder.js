@@ -109,6 +109,18 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
+     * Resets this feeder to a reusable state.
+     *
+     * @private
+     */
+    reset : function() {
+        const me = this;
+
+        me.feed               = {};
+        me.sanitizerSuspended = false;
+    },
+
+    /**
      * Applies the pageMap to this instance
      *
      * @param {Ext.data.PageMap} PageMap

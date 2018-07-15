@@ -3246,4 +3246,20 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     })
 
 
+    t.it("reset()", function(t) {
+
+        let feeder = createFeeder();
+
+        feeder.sanitizerSuspended = true;
+        feeder.feed               = {1 : 2};
+
+        feeder.reset();
+
+        t.expect(feeder.sanitizerSuspended).toBe(false);
+        t.expect(feeder.feed).toEqual({});
+
+
+    });
+
+
 })})})});
