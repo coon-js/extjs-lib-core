@@ -1452,7 +1452,53 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         return false;
-    }
+    },
+
+
+    /**
+     * Replaces the record at the specified position with the specified record.
+     * This method considers feeds. If the record was found in the PageMap,
+     * the indexMap's entry for the replaced record will be updated, too.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {Ext.data.Model} record
+     *
+     * @return {Ext.data.Model} The record that was replaced
+     *
+     * @throws if the position does not represent an existing record
+     */
+    replaceWith : function(position, record) {
+
+        const me      = this,
+              pageMap = me.getPageMap(),
+              map     = pageMap.map;
+
+        position  = me.filterRecordPositionValue(position, pageMap.getPageSize());
+        record    = me.filterRecordValue(record);
+
+        let page  = position.getPage(),
+            index = position.getIndex(),
+            feed  = me.getFeedAt(page);
+
+        if (!map[page] && !feed) {
+            Ext.raise({
+                msg      : "the requested position's page does not exist in the " +
+                           "PageMAp and does not exist in Feeds",
+                position : position
+            });
+        }
+
+        if (feed) {
+            return feed.replaceWith(index, record);
+        }
+
+        let old = map[page].value[index];
+        map[page].value[index] = record;
+        pageMap.indexMap[record.internalId] = pageMap.indexMap[old.internalId];
+        delete pageMap.indexMap[old.internalId];
+
+        return old;
+    },
 
 
 });

@@ -3296,16 +3296,51 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             t.expect(map[6].value[0]).toBe(recLeft);
             t.expect(map[6].value[1]).toBe(rec);
             t.expect(map[6].value[2]).toBe(recRight);
-
-
-
-
-
-
         });
 
     });
 
+
+
+    t.it("replaceWith()", function(t) {
+
+        let feeder         = createFeeder(),
+            pageMap        = feeder.getPageMap(),
+            map            = pageMap.map,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            exc, e, newProp, oldProp, oldINdex;
+
+
+        t.waitForMs(250, function() {
+
+            newProp        = prop(2113);
+            newPropForFeed = prop(2113);
+
+            try{feeder.replaceWith(RecordPosition.create(14, 1), newProp)}catch(e){exc = e};
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain('does not exist');
+
+            oldProp  = map[2].value[5];
+            oldIndex = pageMap.indexOf(oldProp);
+
+            t.expect(feeder.replaceWith(RecordPosition.create(2, 5), newProp)).toBe(oldProp);
+
+            t.expect(pageMap.indexOf(oldProp)).toBe(-1);
+            t.expect(pageMap.indexOf(newProp)).toBe(oldIndex);
+
+            feeder.swapMapToFeed(2, 1);
+
+            t.expect(pageMap.indexOf(newProp)).toBe(-1);
+
+            t.isCalledNTimes('replaceWith', feeder.getFeedAt(2), 1);
+            t.expect(feeder.replaceWith(RecordPosition.create(2, 5), newPropForFeed)).toBe(newProp);
+
+            feeder.swapFeedToMap(2);
+
+            t.expect(pageMap.indexOf(newPropForFeed)).toBe(oldIndex);
+        });
+    })
 
 
 })})})});
