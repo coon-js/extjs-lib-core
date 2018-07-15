@@ -87,16 +87,11 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
         },
         testOp = function(op, expected, t) {
 
-            var Operation = conjoon.cn_core.data.pageMap.operation;
-            t.expect(op instanceof Operation.Operation).toBe(true);
-            t.expect(op.getRequest() instanceof Operation.Request).toBe(true);
-            t.expect(op.getResult() instanceof Operation.Result).toBe(true);
+            var Operation = conjoon.cn_core.data.pageMap.Operation;
+            t.expect(op instanceof Operation).toBe(true);
+            t.expect(Ext.isObject(op.getResult())).toBe(true);
 
-            t.expect(op.getResult().getSuccess()).toBe(expected.success);
-
-            if (expected.reason) {
-                t.expect(op.getResult().getReason()).toBe(expected.reason);
-            }
+            t.expect(op.getResult().success).toBe(expected.success);
 
 
         },
@@ -2026,8 +2021,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
 
                 testOp(op, {
-                    success : false,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND
+                    success : false
                 }, t);
             });
 
@@ -2047,8 +2041,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 var op = feeder.removeRecord(pageMap.map[1].value[0]);
 
                 testOp(op, {
-                    success : false,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE
+                    success : false
                 }, t);
             });
 
@@ -2109,8 +2102,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
 
                 testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                    success : true
                 }, t);
 
             });
@@ -2270,8 +2262,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 op = feeder.removeRecord(rec);
 
                 testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                    success : true
                 }, t);
 
                 t.expect(feeder.getFeedAt(4).getFreeSpace()).toBe(1);
@@ -2347,8 +2338,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(rec);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(map[2].value[24].getId()).toBe(recNextId);
@@ -2458,8 +2448,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(map[2].value[12]);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(feeder.prepareForAction(2, REMOVE)).toEqual([
@@ -2519,8 +2508,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(map[2].value[12]);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             // 9 is 25, it is NOW allowed to shift to 8, since 8 has enough room to get filled up
@@ -2600,8 +2588,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(map[2].value[12]);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             // although 9 is 25, it is not allowed to shift to 8
@@ -2677,8 +2664,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             let remMe = function(page, value) {
                 op = feeder.removeRecord(map[page].value[value]);
                 testOp(op, {
-                    success : true,
-                    reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                    success : true
                 }, t);
             };
 
@@ -2751,8 +2737,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(map[2].value[12]);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             // feed at 3 gone, cant serve
@@ -2806,8 +2791,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.removeRecord(map[2].value[12]);
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(feeder.getFeedAt(9)).toBeNull();
@@ -2889,8 +2873,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.addRecord(addRec, RecordPosition.create(1, 0));
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(feeder.getFeedAt(13)).not.toBeNull();
@@ -2973,8 +2956,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             for (let i in undefinedRecords) {
@@ -3074,8 +3056,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
@@ -3173,8 +3154,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             op = feeder.addRecord(addRec, RecordPosition.create(3, 5));
 
             testOp(op, {
-                success : true,
-                reason  : conjoon.cn_core.data.pageMap.operation.ResultReason.OK
+                success : true
             }, t);
 
             t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
@@ -3248,8 +3228,20 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
             feeder.getFeedAt(1).fill(propsMax(20));
             t.isCalled('moveRecord', PageMapUtil);
 
-            t.expect(feeder.moveRecord(map[2].value[3], RecordPosition.create(4, 8))).toBe(true);
-            t.expect(feeder.moveRecord(feeder.getFeedAt(1).getAt(17), RecordPosition.create(1, 24))).toBe(true);
+            op = feeder.moveRecord(map[2].value[3], RecordPosition.create(4, 8));
+            t.expect(op).toBeTruthy();
+            t.expect(op.getResult().success).toBe(true);
+            t.expect(op.getResult().to).toBeTruthy();
+            t.expect(op.getResult().from).toBeTruthy();
+            t.expect(op.getResult().record).toBeTruthy();
+
+
+            op = feeder.moveRecord(feeder.getFeedAt(1).getAt(17), RecordPosition.create(1, 24));
+            t.expect(op).toBeTruthy();
+            t.expect(op.getResult().success).toBe(true);
+            t.expect(op.getResult().to).toBeTruthy();
+            t.expect(op.getResult().from).toBeTruthy();
+            t.expect(op.getResult().record).toBeTruthy();
 
 
         });
@@ -3259,7 +3251,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 
     t.it('moveRecord - B', function(t) {
 
-        let feeder = createFeeder(),
+        let op, feeder = createFeeder(),
             pageMap = feeder.getPageMap(),
             map = pageMap.map,
             pageSize = pageMap.getPageSize(),
@@ -3287,7 +3279,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 recRight = map[6].value[2],
                 to       = RecordPosition.create(6, 2);
 
-            t.expect(feeder.moveRecord(rec, to)).toBe(true);
+            op = feeder.moveRecord(rec, to);
+            t.expect(op).toBeTruthy();
+            t.expect(op.getResult().success).toBe(true);
+            t.expect(op.getResult().to).toBe(to);
+            t.expect(op.getResult().from).toBeTruthy();
+            t.expect(op.getResult().record).toBe(rec);
 
             let found = PageMapUtil.findRecord(rec, feeder);
             t.expect(found).toBeTruthy();

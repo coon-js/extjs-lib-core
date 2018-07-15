@@ -38,9 +38,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         'conjoon.cn_core.data.pageMap.PageRange',
         'conjoon.cn_core.data.pageMap.PageMapUtil',
         'conjoon.cn_core.Util',
-        'conjoon.cn_core.data.pageMap.operation.Operation',
-        'conjoon.cn_core.data.pageMap.operation.RemoveRequest',
-        'conjoon.cn_core.data.pageMap.operation.ResultReason'
+        'conjoon.cn_core.data.pageMap.Operation'
     ],
 
     mixins  : [
@@ -161,13 +159,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     moveRecord : function(record, to) {
 
-        const me             = this,
-              pageMap        = me.getPageMap(),
-              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-              PageRange      = conjoon.cn_core.data.pageMap.PageRange,
-              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+        const me          = this,
+              pageMap     = me.getPageMap(),
+              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+              Operation   = conjoon.cn_core.data.pageMap.Operation,
+              op          = Ext.create(Operation, {
+                  type : Operation.MOVE
+              }),
+              result = {};
 
-        to = me.filterRecordPositionValue(to, pageMap.getPageSize());
+        to        = me.filterRecordPositionValue(to, pageMap.getPageSize());
+        result.to = to;
 
         // check if record is part of PageMap or Feeds
         let from = PageMapUtil.findRecord(record, me);
@@ -179,8 +181,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        let targetPage  = to.getPage(),
-            targetIndex = to.getIndex();
+        result.from   = from;
+        result.record = record;
+
+        let targetPage  = to.getPage();
 
         if (!pageMap.peekPage(targetPage) && !me.getFeedAt(targetPage)) {
             Ext.raise({
@@ -192,9 +196,16 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         let pageRangeFrom = PageMapUtil.getPageRangeForRecord(record, me);
 
         if (pageRangeFrom.contains(to)) {
-            return PageMapUtil.moveRecord(from, to, me);
-        }
+            if (PageMapUtil.moveRecord(from, to, me)) {
+                result.success = true;
+            } else {
+                result.success = false;
+            }
 
+            op.setResult(result);
+
+            return op;
+        }
 
         // suspend sanitizer
         me.sanitizerSuspended = true;
@@ -210,7 +221,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()));
 
-        return true;
+        result.success = true;
+        op.setResult(result);
+        return op;
     },
 
 
@@ -235,21 +248,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             pageMap      = me.getPageMap(),
             map          = pageMap.map,
             ADD          = me.statics().ACTION_ADD,
-            op           = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
-                request : Ext.create('conjoon.cn_core.data.pageMap.operation.AddRequest')
+            op           = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
+                type : conjoon.cn_core.data.pageMap.Operation.ADD
             }),
             pageSize       = pageMap.getPageSize(),
             Util           = conjoon.cn_core.Util,
             PageRange      = conjoon.cn_core.data.pageMap.PageRange,
             PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-            ResultReason   = conjoon.cn_core.data.pageMap.operation.ResultReason,
             RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
             maintainRanges = [],
             createResult = function(cfg) {
-                op.setResult(Ext.create(
-                    'conjoon.cn_core.data.pageMap.operation.Result',
-                    cfg
-                ));
+                op.setResult(cfg);
                 return op;
             };
 
@@ -338,7 +347,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return createResult({
             success : true,
-            reason  : ResultReason.OK
+            record  : record,
+            to      : to
         });
 
     },
@@ -365,7 +375,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
-     * @return {conjoon.cn_core.data.pageMap.operation.Operation}
+     * @return {conjoon.cn_core.data.pageMap.Operation}
      *
      * @throws if the target page does not exist,
      *
@@ -377,19 +387,15 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               pageMap      = me.getPageMap(),
               map          = pageMap.map,
               REMOVE       = me.statics().ACTION_REMOVE,
-              op           = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
-                  request : Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest')
+              op           = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
+                  type : conjoon.cn_core.data.pageMap.Operation.REMOVE
               }),
               Util           = conjoon.cn_core.Util,
               PageRange      = conjoon.cn_core.data.pageMap.PageRange,
               PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-              ResultReason   = conjoon.cn_core.data.pageMap.operation.ResultReason,
               maintainRanges = [],
               createResult = function(cfg) {
-                  op.setResult(Ext.create(
-                      'conjoon.cn_core.data.pageMap.operation.Result',
-                      cfg
-                  ));
+                  op.setResult(cfg);
                   return op;
               },
               shiftToLeft = function(currentPage, currentRecords, recordsAreFromPage) {
@@ -457,7 +463,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         if (!position) {
             return createResult({
                 success : false,
-                reason  : ResultReason.RECORD_NOT_FOUND
+                record  : record
             });
         }
 
@@ -468,7 +474,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         if (feedIndexes === null) {
             return createResult({
                 success : false,
-                reason  : ResultReason.FEED_INDEXES_NOT_AVAILABLE
+                record  : record,
+                from    : position
             });
         }
 
@@ -535,7 +542,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return createResult({
             success : true,
-            reason  : ResultReason.OK
+            record  : record,
+            from    : position
         });
     },
 
