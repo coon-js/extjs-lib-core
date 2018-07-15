@@ -63,7 +63,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 
             return data;
 
-        };
+        },
         createFeeder = function() {
 
             return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
@@ -2106,55 +2106,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
                 }, t);
 
             });
-        });
-
-
-        t.it('findInFeeds()', function(t){
-
-            let exc, e, rec, op,
-                feeder    = createFeeder(),
-                pageMap   = feeder.getPageMap(),
-                map       = pageMap.map,
-                pageSize  = pageMap.getPageSize();
-
-            t.waitForMs(250, function() {
-
-                try{feeder.findInFeeds(3);}catch(e){exc=e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain("instance of");
-                exc = undefined;
-
-                pageMap.removeAtKey(4);
-                pageMap.removeAtKey(5);
-                pageMap.removeAtKey(6);
-
-                feeder.createFeedAt(4, 3);
-                feeder.createFeedAt(6, 7);
-
-
-                feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
-                feeder.getFeedAt(6).fill(propsMax(pageSize - 1));
-
-                t.expect(feeder.findInFeeds(Ext.create('Ext.data.Model'))).toBe(null);
-
-                let rec1 = feeder.getFeedAt(4).getAt(17);
-                let rec2 = feeder.getFeedAt(6).getAt(9);
-
-                t.expect(rec1).toBeTruthy();
-                t.expect(rec2).toBeTruthy();
-
-                let pos1 = feeder.findInFeeds(rec1);
-                t.expect(pos1 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
-                t.expect(pos1.getPage()).toBe(4);
-                t.expect(pos1.getIndex()).toBe(17);
-
-                let pos2 = feeder.findInFeeds(rec2);
-                t.expect(pos2 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
-                t.expect(pos2.getPage()).toBe(6);
-                t.expect(pos2.getIndex()).toBe(9);
-            });
-
         });
 
 

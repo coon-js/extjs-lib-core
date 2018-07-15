@@ -126,7 +126,21 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         }
 
         return pm;
-    };
+    },
+    propsMax  = function(length, startId) {
+
+            let data = [];
+
+            for (var i = 0;  i < length; i++) {
+                data.push(prop(
+                    startId ? startId + i : undefined,
+                    startId ? startId + i : undefined
+                ));
+            }
+
+            return data;
+
+        };
 
 
 // +----------------------------------------------------------------------------
@@ -1214,7 +1228,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
-        t.it("findRecord()", function(t){
+        t.it("findRecord() - A", function(t){
 
             var exc, e,
                 PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
@@ -1241,6 +1255,50 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(feeder.getFeedAt(2)).toBeTruthy();
 
             });
+        });
+
+
+        t.it("findRecord() - B", function(t){
+
+            let exc, e, rec, op,
+                feeder      = createFeeder(),
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap     = feeder.getPageMap(),
+                map         = pageMap.map,
+                pageSize    = pageMap.getPageSize();
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(5);
+                pageMap.removeAtKey(6);
+
+                feeder.createFeedAt(4, 3);
+                feeder.createFeedAt(6, 7);
+
+                feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+                feeder.getFeedAt(6).fill(propsMax(pageSize - 1));
+
+                t.expect(PageMapUtil.findRecord(Ext.create('Ext.data.Model'), feeder)).toBe(null);
+
+                let rec1 = feeder.getFeedAt(4).getAt(17);
+                let rec2 = feeder.getFeedAt(6).getAt(9);
+
+                t.expect(rec1).toBeTruthy();
+                t.expect(rec2).toBeTruthy();
+
+                let pos1 = PageMapUtil.findRecord(rec1, feeder);
+                t.expect(pos1 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
+                t.expect(pos1.getPage()).toBe(4);
+                t.expect(pos1.getIndex()).toBe(17);
+
+                let pos2 = PageMapUtil.findRecord(rec2, feeder);
+                t.expect(pos2 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
+                t.expect(pos2.getPage()).toBe(6);
+                t.expect(pos2.getIndex()).toBe(9);
+            });
+
+
         });
 
 

@@ -903,13 +903,28 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         feeder = me.filterFeederValue(feeder);
 
         let pageMap = feeder.getPageMap(),
-            index   = feeder.getPageMap().indexOf(record);
+            index   = pageMap.indexOf(record);
 
         if (index !== -1) {
-            return me.storeIndexToPosition(index, feeder.getPageMap());
+            return me.storeIndexToPosition(index, pageMap);
         }
 
-        return feeder.findInFeeds(record);
+        const feeds = feeder.feed;
+
+        let feed;
+
+        for (feed in feeds) {
+            index = feeds[feed].indexOf(record);
+
+            if (index !== -1) {
+                return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : feed,
+                    index : index
+                });
+            }
+        }
+
+        return null;
     }
 
 });

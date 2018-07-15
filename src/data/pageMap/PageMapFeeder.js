@@ -453,12 +453,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               };
 
 
-        let recordIndex = pageMap.indexOf(record),
-            position    = recordIndex !== -1 ? PageMapUtil.storeIndexToPosition(recordIndex, pageMap) : null;
-            position    = position
-                          ? position
-                            // look in feeds
-                          : me.findInFeeds(record);
+        let position = PageMapUtil.findRecord(record, me);
 
         if (!position) {
             return createResult({
@@ -1303,42 +1298,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         });
 
         return feedIndexes;
-    },
-
-
-    /**
-     * Tries to look up the record in the available Feeds and returns the
-     * RecordPosition if found, otherwise null.
-     *
-     * @param {Ext.data.Model} record
-     *
-     * @return {conjoon.cn_core.data.pageMap.RecordPosition|null}
-     *
-     * @see conjoon.cn_core.data.pageMap.Feed#indexOf
-     *
-     * @throws if record is not an instance of {Ext.data.Model}
-     */
-    findInFeeds : function(record) {
-
-        const me    = this,
-              feeds = me.feed;
-
-        record = me.filterRecordValue(record);
-
-        let feed, index;
-
-        for (feed in feeds) {
-            index = feeds[feed].indexOf(record);
-
-            if (index !== -1) {
-                return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
-                    page  : feed,
-                    index : index
-                });
-            }
-        }
-
-        return null;
     },
 
 
