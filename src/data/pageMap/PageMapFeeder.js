@@ -483,7 +483,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         // for which an action was requested. However, the pagemap *MIGHT*
         // have been updated from an HttpRequest (Prefetch BufferedStore),
         // or from any other hostile API
-        if (me.getRecordAt(page, index) !== record) {
+        if (PageMapUtil.getRecordAt(position, me) !== record) {
 
             Ext.raise({
                 msg    : Ext.String.format(
@@ -1298,56 +1298,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         });
 
         return feedIndexes;
-    },
-
-
-    /**
-     * Returns the record found at the specified page and the specified index.
-     * The record is searched in the PageMap and in the existing Feeds, and
-     * returned if found.
-     *
-     * @param {Number} page The page in the PageMap or the Feeds to query
-     * @param {Number} index The index where the record should be retrieved from
-     *
-     * @return {Ext.data.Model|undefined} Returns the record found at the position,
-     * otherwise undefined if either record or position do not exist.
-     *
-     * @private
-     *
-     * @throws if page or index are not valid
-     */
-    getRecordAt : function(page, index) {
-
-        const me          = this,
-              pageMap     = me.getPageMap(),
-              map         = pageMap.map;
-
-        page  = me.filterPageValue(page);
-        index = parseInt(index, 10);
-
-        if (index < 0 || index > pageMap.getPageSize()) {
-            Ext.raise({
-                msg   : Ext.String.format("'index' {0} is out of bounds"),
-                index : index
-            });
-        }
-
-        let pageAt = map[page];
-
-        // look in page
-        if (pageAt && pageAt.value[index]) {
-            return pageAt.value[index];
-        }
-
-        // ... and not found. So s.ok in feed
-
-        let feed = me.getFeedAt(page);
-
-        if (feed && feed.getAt(index)) {
-            return feed.getAt(index);
-        }
-
-        return undefined;
     },
 
 

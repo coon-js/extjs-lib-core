@@ -2109,51 +2109,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
         });
 
 
-        t.it('getRecordAt()', function(t) {
-
-            let exc, e, rec, op,
-                feeder    = createFeeder(),
-                pageMap   = feeder.getPageMap(),
-                map       = pageMap.map,
-                pageSize  = pageMap.getPageSize();
-
-            t.waitForMs(250, function() {
-
-                try{feeder.getRecordAt(3, 29);}catch(e){exc=e;}
-                t.expect(exc).toBeDefined();
-                t.expect(exc.msg).toBeDefined();
-                t.expect(exc.msg.toLowerCase()).toContain("bounds");
-                exc = undefined;
-
-                pageMap.removeAtKey(4);
-                pageMap.removeAtKey(5);
-
-                feeder.createFeedAt(4, 3);
-                let rec_0 = map[6].value[24];
-                // swap the feeds and maps to make sure we test for references
-                feeder.swapMapToFeed(6, 7);
-                feeder.swapFeedToMap(6);
-                feeder.swapMapToFeed(6, 7);
-
-                feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
-
-                t.expect(feeder.getRecordAt(14, 1)).toBeUndefined();
-
-                let rec1 = feeder.getFeedAt(4).getAt(17);
-                let rec2 = feeder.getFeedAt(6).getAt(9);
-                let rec3 = map[1].value[24];
-
-                t.expect(feeder.getRecordAt(6, 24)).toBe(rec_0);
-                t.expect(feeder.getRecordAt(4, 17)).toBe(rec1);
-                t.expect(feeder.getRecordAt(6, 9)).toBe(rec2);
-                t.expect(feeder.getRecordAt(1, 24)).toBe(rec3);
-            });
-
-
-        });
-
-
-
         t.it('removeRecord() - found in feed', function(t) {
 
             let exc, e, rec, op,

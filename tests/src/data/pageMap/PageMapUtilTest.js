@@ -369,7 +369,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
-        t.it('getRecordAt()', function(t) {
+        t.it('getRecordAt() - A', function(t) {
             var pageMap        = createPageMap(),
                 map            = pageMap.map,
                 PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
@@ -404,8 +404,66 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             t.waitForMs(250, function() {
                 t.expect(PageMapUtil.getRecordAt(sourcePosition, pageMap)).toBe(map[4].value[5]);
 
-                t.expect(PageMapUtil.getRecordAt(impossiblePosition, pageMap)).toBe(null);
+                try {PageMapUtil.getRecordAt(impossiblePosition, pageMap);}catch(e){exc=e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("bounds");
+                exc = undefined;
+
             })
+        });
+
+
+        t.it("getRecordAt() - B", function(t) {
+
+            let exc, e, rec, op,
+                feeder         = createFeeder(),
+                pageMap        = feeder.getPageMap(),
+                map            = pageMap.map,
+                pageSize       = pageMap.getPageSize(),
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+
+            t.waitForMs(250, function() {
+
+                try{PageMapUtil.getRecordAt(
+                    RecordPosition.create(3, 29), feeder);}catch(e){exc=e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("bounds");
+                exc = undefined;
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(5);
+
+                feeder.createFeedAt(4, 3);
+                let rec_0 = map[6].value[24];
+                // swap the feeds and maps to make sure we test for references
+                feeder.swapMapToFeed(6, 7);
+                feeder.swapFeedToMap(6);
+                feeder.swapMapToFeed(6, 7);
+
+                feeder.getFeedAt(4).fill(propsMax(pageSize - 1));
+
+                t.expect(PageMapUtil.getRecordAt(
+                    RecordPosition.create(14, 1), feeder)).toBeUndefined();
+
+                let rec1 = feeder.getFeedAt(4).getAt(17);
+                let rec2 = feeder.getFeedAt(6).getAt(9);
+                let rec3 = map[1].value[24];
+
+                t.expect(PageMapUtil.getRecordAt(
+                    RecordPosition.create(6, 24), feeder)).toBe(rec_0);
+                t.expect(PageMapUtil.getRecordAt(
+                    RecordPosition.create(4, 17), feeder)).toBe(rec1);
+                t.expect(PageMapUtil.getRecordAt(
+                    RecordPosition.create(6, 9), feeder)).toBe(rec2);
+                t.expect(PageMapUtil.getRecordAt(
+                    RecordPosition.create(1, 24), feeder)).toBe(rec3);
+            });
+
+
+
         });
 
 
@@ -1352,7 +1410,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(range.toArray()).toEqual([1, 2]);
             });
 
-        })
+        });
+
 
         t.it('getRecordAt() - Feeds', function(t) {
             var feeder         = createFeeder(),
@@ -1375,9 +1434,14 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
                 t.expect(PageMapUtil.getRecordAt(sourcePosition, feeder)).toBe(feeder.getFeedAt(4).getAt(5));
 
-                t.expect(PageMapUtil.getRecordAt(impossiblePosition, feeder)).toBe(null);
+                try {PageMapUtil.getRecordAt(impossiblePosition, feeder);}catch(e){exc=e;}
+                t.expect(exc).toBeDefined();
+                t.expect(exc.msg).toBeDefined();
+                t.expect(exc.msg.toLowerCase()).toContain("bounds");
+                exc = undefined;
             })
         });
+
 
         t.it("moveRecord() - Feed - A", function(t) {
 

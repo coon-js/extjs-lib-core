@@ -370,43 +370,57 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     /**
      * Returns the record found at the specified position in the specified
-     * pageMap or feeder. Returns null if not found.
+     * pageMap or feeder. Returns undefined if not found.
      *
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
      * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      *
-     * @return {Ext.data.Model}
+     * @return {Ext.data.Model|undefined}
      *
      * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
      * or if pageMap is not an instance of {Ext.data.PageMap} and not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or of the index of the specified
+     * position is out of bounds
      */
     getRecordAt : function(position, pageMapOrFeeder) {
 
         const me = this;
 
-        let map, page, index;
+        let map, page, index, isPageMap, pageSize;
 
-        position        = me.filterRecordPositionValue(position);
         pageMapOrFeeder = me.filterPageMapOrFeederValue(pageMapOrFeeder);
 
-        page  = position.getPage();
-        index = position.getIndex();
+        isPageMap = pageMapOrFeeder instanceof Ext.data.PageMap;
 
-        if (pageMapOrFeeder instanceof Ext.data.PageMap) {
+        pageSize = (isPageMap)
+                   ? pageMapOrFeeder.getPageSize()
+                   : pageMapOrFeeder.getPageMap().getPageSize();
+
+        position = me.filterRecordPositionValue(position, pageSize);
+        page     = position.getPage();
+        index    = position.getIndex();
+
+        if (isPageMap) {
             map = pageMapOrFeeder.map;
-
-            return map[page] && map[page].value[index]
-                ? map[page].value[index]
-                : null;
+        } else {
+            map = pageMapOrFeeder.getPageMap().map;
         }
 
-        // dont catch exception for index, instead check here directly
-        // (performance)
-        if (index >= pageMapOrFeeder.getPageMap().getPageSize()) {
-            return null;
+        if (map[page] && map[page].value[index]) {
+            return map[page].value[index];
         }
-        return pageMapOrFeeder.getRecordAt(page, index) || null;
+        if (isPageMap) {
+            return undefined;
+        }
+
+        // look in feeder
+        let feed = pageMapOrFeeder.getFeedAt(page);
+
+        if (feed && feed.getAt(index)) {
+            return feed.getAt(index);
+        }
+
+        return undefined;
     },
 
 
