@@ -272,6 +272,44 @@ Ext.define('conjoon.cn_core.data.pageMap.Feed', {
 
 
     /**
+     * Replaces the record at the specified index with the specified record.
+     *
+     * @param {Number} index
+     * @param {Ext.data.Model} record
+     *
+     * @return {Ext.data.Model} The record that was replaced
+     *
+     * @throws if the given index is not set in this target Feed
+     */
+    replaceWith : function(index, record) {
+
+        const me     = this,
+            size    = me.getSize(),
+            isStart = !me.getPrevious();
+
+        index  = me.filterIndexValue(index, size);
+        record = me.filterRecordValue(record);
+
+        if (isStart) {
+            index = index  - (size - me.data.length);
+        }
+
+        if (!me.data[index]) {
+            Ext.raise({
+                msg   : "no record to replace at target index " + index,
+                index : index
+            });
+        }
+
+        let old = me.data[index];
+
+        me.data[index] = record;
+
+        return old;
+    },
+
+    
+    /**
      * Inserts the specified records at the specified index, and returns any
      * records that are pushed out of the Feed. The Feed's bounds are denoted by
      * #size.

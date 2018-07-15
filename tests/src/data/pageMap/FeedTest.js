@@ -777,15 +777,57 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         feedNext.fill(props);
 
-            t.expect(feedNext.insertAt([newProp], 22)).toEqual([]);
+        t.expect(feedNext.insertAt([newProp], 22)).toEqual([]);
 
-            t.expect(feedNext.getAt(24)).toBe(props[3]);
-            t.expect(feedNext.getAt(23)).toBe(props[2]);
-            t.expect(feedNext.getAt(22)).toBe(newProp);
-            t.expect(feedNext.getAt(21)).toBe(props[1]);
-            t.expect(feedNext.getAt(20)).toBe(props[0]);
+        t.expect(feedNext.getAt(24)).toBe(props[3]);
+        t.expect(feedNext.getAt(23)).toBe(props[2]);
+        t.expect(feedNext.getAt(22)).toBe(newProp);
+        t.expect(feedNext.getAt(21)).toBe(props[1]);
+        t.expect(feedNext.getAt(20)).toBe(props[0]);
 
     });
+
+
+    t.it("replaceWith()", function(t) {
+
+        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size : 25,
+                next : 2
+            }),
+            props   = [prop(47), prop(48), prop(49), prop(50)],
+            newProp = prop(48.5);
+
+        feedNext.fill(props);
+
+        feedNext.extract(2);
+
+        try{feedNext.replaceWith(22, newProp)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('no record');
+
+        t.expect(feedNext.replaceWith(23, newProp)).toBe(props[0]);
+
+
+        let feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+                size     : 25,
+                previous : 4
+            });
+
+        props   = [prop(47), prop(48), prop(49), prop(50)];
+        newProp = prop(48.5);
+        feedPrev.fill(props);
+
+        feedPrev.extract(2);
+
+        try{feedPrev.replaceWith(2, newProp)}catch(e){exc = e};
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('no record');
+
+        t.expect(feedPrev.replaceWith(1, newProp)).toBe(props[3]);
+
+    })
 
 
 })});
