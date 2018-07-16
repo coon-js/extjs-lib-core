@@ -323,6 +323,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * for which re-computing the index map should occur
      * @param {Ext.data.PageMap}  the PageMap which indexMap should be updated
      *
+     * @return {Boolean} true
+     *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if pageRange
      * is not an instance of {conjoon.cn_core.data.pageMap.PageRange}, or if any
      * map in the specified pageRange does not exist
@@ -360,10 +362,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             }
 
             values = page.value;
-            for (var a = 0, lena = pageSize; a < lena; a++) {
+            // go for values.length instead of PageSize since pages might no be
+            // completely filled (e.g. last page, first page growing etc.)
+            for (var a = 0, lena = values.length; a < lena; a++) {
                 indexMap[values[a].internalId] = storeIndex++;
             }
         }
+
+        return true;
 
     },
 
@@ -714,7 +720,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         const me = this;
 
-        let ranges       = [],
+        let ranges     = [],
             pageRanges = [];
 
         if (!(pageMapFeeder instanceof  conjoon.cn_core.data.pageMap.PageMapFeeder)) {
@@ -725,7 +731,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
         ranges = pageMapFeeder.groupWithFeeds();
-        for (var i = 0, len = ranges.length; i < len; i++) {
+
+        for (var i = 0, len = ranges ? ranges.length : -1; i < len; i++) {
             pageRanges.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
                 pages : ranges[i]
             }))
@@ -812,7 +819,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
               pageSize   = pageMap.getPageSize(),
               lastPage   = pageRanges[pageRanges.length - 1].getLast();
 
-        return (pageSize * lastPage) === store.getTotalCount();
+        return (pageSize * lastPage) >= store.getTotalCount();
     },
 
 
@@ -837,7 +844,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         store    = pageMap.getStore();
         pageSize = pageMap.getPageSize();
 
-        return Math.floor(store.getTotalCount() / pageSize);
+        return Math.ceil(store.getTotalCount() / pageSize);
     },
 
 

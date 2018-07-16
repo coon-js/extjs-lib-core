@@ -22,7 +22,9 @@
 
 describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
-    var createPageMap = function() {
+    var createPageMap = function(cfg) {
+
+        cfg = cfg || {};
 
         var store;
 
@@ -32,6 +34,9 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             fields: ['id', 'testProp'],
             proxy: {
                 type: 'rest',
+                extraParams : {
+                    empty : cfg.empty
+                },
                 url: 'cn_core/fixtures/PageMapItems',
                 reader: {
                     type: 'json',
@@ -49,10 +54,9 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             id : id + "" || Ext.id()
         });
     },
-    createFeeder = function() {
-
+    createFeeder = function(empty) {
         return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
-            pageMap : createPageMap()
+            pageMap : createPageMap({empty : empty})
         });
     },
     getExpectedId = function(pos, pageMap) {
@@ -1881,6 +1885,115 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
             });
         })
+
+
+        t.it('getAvailableRanges() - empty store', function(t) {
+
+            var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                feeder      = createFeeder(true);
+
+            t.waitForMs(250, function() {
+                t.expect(PageMapUtil.getAvailableRanges(feeder)).toEqual([]);
+            });
+
+        });
+
+
+        t.it("maintainIndexMap() - page not completely filled", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap(),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+                range = [4, 5, 6];
+
+                pageMap.removeAtKey(1);
+                pageMap.removeAtKey(2);
+                pageMap.removeAtKey(3);
+
+                t.expect(pageMap.map[5].value.length).toBe(25)
+                pageMap.map[5].value.splice(10, 5);
+                t.expect(pageMap.map[5].value.length).toBe(20);
+
+                t.expect(PageMapUtil.maintainIndexMap(PageRange.create(range), pageMap)).toBe(true);
+
+            });
+
+        });
+
+
+        t.it("isLastPageLoaded() - one page, one record", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap({empty : true}),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.addPage(1, [prop(1)]);
+                pageMap.getStore().totalCount = 1;
+
+                t.expect(map[1].value.length).toBe(1);
+
+                t.expect(PageMapUtil.isLastPageLoaded(pageMap)).toBe(true);
+            });
+
+        });
+
+
+        t.it("getLastPossiblePageNumber() - one page, one record", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap({empty : true}),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.addPage(1, [prop(1)]);
+                pageMap.getStore().totalCount = 1;
+
+                t.expect(map[1].value.length).toBe(1);
+
+                t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(1);
+            });
+
+        });
+
+
+        t.it("getLastPossiblePageNumber() - two pages, one record", function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                pageMap     = createPageMap({empty : true}),
+                map         = pageMap.map,
+                range, fakeIndex;
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.addPage(1, [prop(1)]);
+                pageMap.addPage(2, [prop(1)]);
+                pageMap.getStore().totalCount = 26;
+
+                t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(2);
+            });
+
+        });
+
 
 
     })})})});
