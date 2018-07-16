@@ -24,7 +24,7 @@
 
 /**
  * Base implementation for a strategy for looking up indices in PageMaps
- * accross page ranges, including Feeds of PagemapFeeder's.
+ * accross page ranges, including Feeds of PageMapFeeder's.
  *
  * Note:
  * For the best possible usage it is important that the compare function
@@ -36,124 +36,8 @@
 Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.PageMapUtil',
-        'conjoon.cn_core.data.pageMap.PageMapFeeder'
+        'conjoon.cn_core.data.pageMap.PageMapUtil'
     ],
-
-    config : {
-
-        /**
-         * @cfg {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
-         * The PageMap Feeder this lookup operates with.
-         */
-        pageMapFeeder : null,
-
-        /**
-         * @cfg {Function} cmpFunc The compare-function that will be used
-         * for comparing record-values when looking for an insert index.
-         * This method will be used if no compare-function is defined for the
-         * field of the value that's being compared.
-         * The compare function takes three arguments:
-         * @param {Mixed} val1 the value of the current record being iterated
-         * through in the PageNMap
-         * @param {Mixed} val2 the value of the record for which an index is looked
-         * up
-         * @param {String} The name of the field that is compared
-         */
-        compareFunction : function (val1, val2, field) {
-            return val1 < val2
-                   ? -1
-                   : val1 === val2
-                     ? 0
-                     : 1;
-        }
-    },
-
-
-    /**
-     * Creates a new instance.
-     *
-     * @param {Object} cfg
-     * @param {Ext.data.PageMap} cfg.pageMap The PageMap this instance will
-     * operate on.
-     *
-     * @throws if cfg.pageMap is not set
-     */
-    constructor : function(cfg) {
-
-        cfg = cfg || {};
-
-        if (!cfg.hasOwnProperty('pageMapFeeder')) {
-            Ext.raise({
-                msg : '\'pageMapFeeder\' is required for this class',
-                cfg : cfg
-            });
-        }
-
-        this.initConfig(cfg);
-
-    },
-
-
-    /**
-     * Applies the pageMapFeeder to this instance
-     *
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} ageMapFeeder
-     *
-     * @throws if pageMapFeeder was already set, or if pageMapFeeder is not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
-     */
-    applyPageMapFeeder : function(pageMapFeeder) {
-
-        const me = this;
-
-        if (me.getPageMapFeeder()) {
-            Ext.raise({
-                msg           : '\'pageMapFeeder\' is already set',
-                pageMapFeeder : me.getPageMapFeeder()
-            });
-        }
-
-        if (!(pageMapFeeder instanceof conjoon.cn_core.data.pageMap.PageMapFeeder)) {
-            Ext.raise({
-                msg           : '\'pageMapFeeder\' must be an instance of conjoon.cn_core.data.pageMap.PageMapFeeder',
-                pageMapFeeder : pageMapFeeder
-            });
-        }
-
-        return pageMapFeeder;
-    },
-
-
-    /**
-     * The compare function that should be used for comparing values if no
-     * compare function is defined for the record-field that is being compared.
-     *
-     * @param {Function} fn
-     *
-     * @throws if fn is not a function, or if the function was already set for
-     * this instance
-     */
-    applyCompareFunction : function(fn) {
-
-        var me = this;
-
-        if (!Ext.isFunction(fn)) {
-            Ext.raise({
-                msg : 'the argument is not a function',
-                fn  : fn
-            });
-        }
-
-        if (me.getCompareFunction()) {
-            Ext.raise({
-                msg             : '\'compareFunction\' was already set',
-                compareFunction : me.getCompareFunction()
-            });
-        }
-
-        return fn;
-    },
 
 
     /**
@@ -171,10 +55,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * If the record currently does not belong to the PageMap, an insert index
      * is looked up. Classes using the return value are advised to properly
      * process it and add the record only if applicable.
-     *
-     * This implementation will use the compare fuction configured with this
-     * instance. Presedence will be given to compare-function defined directly
-     * in the data model of the records.
+
      *
      *  @example
      *      // -1 is returned if the insert index is assumed to be
@@ -207,6 +88,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      *      // pages
      *
      * @param record
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
      *
      * @return {Mixed} A number if no concrete assumption about the insert index
      * can be made (-1 insert somewhere before available PageRanges, 1 somewhere
@@ -216,7 +98,9 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * available PageRange represents the start/end of the available data.
      * Feed indexes will only be considered if the record could fit in a current
      * range of records in a feed. If the record's position would be at the end
-     * or beginning of a Feed, -1 or 1 wil be returned.
+     * or beginning of a Feed, -1 or 1 wil be returned. If there is no data in
+     * the PageMap, 1 will be returned. Calling APIs are advised to check for
+     * PageMap data and add data accordingly.
      *
      *      *  @example
      *      // pageMap : {2    : [3, 4, 5],
@@ -238,11 +122,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      *
      * @throws if more than one sorter was configured
      */
-    findInsertIndex : function(record) {
+    findInsertIndex : function(record, pageMapFeeder) {
 
         var me            = this,
-            pageMap       = me.getPageMap(),
-            pageMapFeeder = me.getPageMapFeeder(),
+            pageMap       = pageMapFeeder.getPageMap(),
             PageMapUtil   = conjoon.cn_core.data.pageMap.PageMapUtil,
             sorters       = pageMap.getStore().getSorters(),
             ranges        = PageMapUtil.getAvailableRanges(pageMapFeeder),
@@ -250,22 +133,30 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
             range, cmpFunc, property, dir, index, ignoreId, first, last,
             previousIndex;
 
-        if (sorters.length > 1) {
+        if (sorters.length != 1) {
             Ext.raise({
-                msg     : 'there may only be one sorter currently configured for the PageMap\'s store',
+                msg     : 'there must be one sorter configured for the PageMap\'s store',
                 sorters : sorters
             });
+        }
+
+        // no ranges -> no data.
+        if (!ranges.length) {
+            return 1;
         }
 
         property = sorters.getAt(0).getProperty();
         dir      = sorters.getAt(0).getDirection();
 
-        cmpFunc = record.getField(property)
-                  ? record.getField(property).compare
-                  : me.getCompareFunction();
+        if (!record.getField(property)) {
+            Ext.raise({
+                msg : "Unexpected missing field definition for record"
+            });
+        }
 
-        ignoreId = pageMap.indexOf(record) >= 0 ||
-                   pageMapFeeder.findInFeeds(record) !== null
+        cmpFunc = record.getField(property).compare;
+
+        ignoreId = PageMapUtil.findRecord(record, pageMapFeeder)
                    ? record.getId()
                    : undefined;
 
@@ -279,7 +170,8 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
             // returns -1, 0 or 1
             index = me.scanRangeForIndex(
                 first, last, record.get(property),
-                property, dir, cmpFunc, ignoreId
+                property, dir, cmpFunc, ignoreId,
+                pageMapFeeder
             );
 
             if (Ext.isArray(index)) {
@@ -300,11 +192,32 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
             }
 
             if (index === 1) {
+
                 if (last === lastPage) {
                     feed = pageMapFeeder.getFeedAt(last);
-                    return feed
-                           ? 1
-                        : [lastPage, pageMap.getPageSize() - 1];
+
+                    // check if we can add to a feed, but only if ignoreId is
+                    // undefined, which means the lookup is not part of an
+                    // update-lookup (data is shifted due to remove record first,
+                    // then a new position can be computed without having to consider
+                    // the existing record's id
+                    if (ignoreId === undefined) {
+                        if ((feed && feed.getFreeSpace() === 0) ||
+                            (pageMap.map[last] && pageMap.map[last].value.length === pageMap.getPageSize())) {
+                            return [last + 1, 0];
+                        }
+                    }
+
+                    if ((feed && feed.getFreeSpace() > 0) ||
+                        (pageMap.map[last] && pageMap.map[last].value.length < pageMap.getPageSize())) {
+                        return [
+                            last,
+                            feed ? feed.getSize() - feed.getFreeSpace()
+                                : pageMap.map[last].value.length
+                        ];
+                    }
+
+
                 }
             }
 
@@ -337,6 +250,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * @param {String} ignoreId the id of the record to ignore, if any. This is
      * useful when the compared record is already part of the PageMap and needs
      * to be moved to another position due to changes to some of its data
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
      *
      * @returns {Mixed}
      *
@@ -345,12 +259,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * @throws if start or end or anything in between is not available as a page
      * in the queried PageMap
      */
-    scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId) {
+    scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder) {
 
-        var me            = this,
-            pageMapFeeder = me.getPageMapFeeder(),
-            map           = me.getPageMap().map,
-            isOwnCmp      = (cmpFunc === me.getCompareFunction()),
+        var me  = this,
+            map = pageMapFeeder.getPageMap().map,
             compareArgs, pageIterate, values, cmpRecord, cmp;
 
         for (var i = start; i <= end; i++) {
@@ -381,11 +293,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
                     continue;
                 }
 
-                compareArgs =  isOwnCmp
-                               ? [value, cmpRecord.get(property), property]
-                               : [value, cmpRecord.get(property)];
-
-                cmp = cmpFunc.apply(null, compareArgs);
+                cmp = cmpFunc.apply(null, [value, cmpRecord.get(property)]);
 
                 switch (direction) {
                     // aufsteigend
@@ -426,20 +334,6 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
         }
 
         return 1;
-    },
-
-
-    /**
-     * Returns the PageMap the PageMapFeeder of this Lookup is configured with
-     * @return {Ext.data.PageMap}
-     *
-     * @private
-     */
-    getPageMap : function() {
-        const me = this;
-
-        return me.getPageMapFeeder().getPageMap();
     }
-
 
 });
