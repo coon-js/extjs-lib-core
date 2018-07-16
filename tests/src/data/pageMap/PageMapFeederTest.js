@@ -3443,6 +3443,47 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
+    t.it("add() - E", function(t) {
+
+        let feeder   = createFeeder({empty : true, sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+            t.expect(pageMap.map).toEqual({});
+            t.expect(pageMap.getStore().getTotalCount()).toBe(0);
+
+            for (var i = 0; i < size; i++) {
+                rec = prop(0 - i);
+                op  = feeder.add(rec);
+
+                t.expect(op.getResult().success).toBe(true);
+                t.expect(op.getResult().to.getPage()).toBe(1);
+                t.expect(op.getResult().to.getIndex()).toBe(0);
+            }
+
+            t.expect(pageMap.map[1]).toBeDefined();
+            t.expect(feeder.getFeedAt(2)).toBeDefined();
+
+            for (var i = size; i < 2 * size; i++) {
+                rec = prop(0 - i);
+                op  = feeder.add(rec);
+
+                t.expect(op.getResult().success).toBe(true);
+                t.expect(op.getResult().to.getPage()).toBe(1);
+                t.expect(op.getResult().to.getIndex()).toBe(0);
+            }
+
+            t.expect(pageMap.map[2]).toBeDefined();
+            t.expect(feeder.getFeedAt(3)).toBeDefined();
+
+            t.expect(pageMap.getStore().getTotalCount()).toBe(2 * size);
+        });
+    });
+
+
     t.it("remove()", function(t) {
 
         let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
