@@ -51,7 +51,8 @@ Ext.define('conjoon.cn_core.fixtures.sim.ItemSim', {
 
             var idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
-                id
+                empty   = ctx.params.empty
+                id;
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
@@ -64,7 +65,9 @@ Ext.define('conjoon.cn_core.fixtures.sim.ItemSim', {
             } else if (filters) {
                 Ext.raise('no filter supported');
             } else {
-
+                if (empty) {
+                    return [];
+                }
                 return items;
             }
         }
