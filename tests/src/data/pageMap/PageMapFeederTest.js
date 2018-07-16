@@ -22,16 +22,29 @@
 
 describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 
-    var createPageMap = function() {
+    Ext.define('MockModel', {
+        extend : 'Ext.data.Model',
+        fields : [{
+            name : 'testPropForIndexLookup',
+            type : 'int'
+        }]
+    });
+
+    var createPageMap = function(cfg) {
             var store;
 
             store = Ext.create('Ext.data.BufferedStore', {
+                model : 'MockModel',
                 autoLoad : true,
+                sorters : cfg.sorters,
                 pageSize : 25,
                 fields : ['id', 'testProp'],
                 proxy : {
                     type : 'rest',
                     url  : 'cn_core/fixtures/PageMapItems',
+                    extraParams : {
+                        empty : cfg.empty
+                    },
                     reader : {
                         type         : 'json',
                         rootProperty : 'data'
@@ -48,7 +61,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
             if (id) {
                 cfg.id = "" + id;
             }
-            return Ext.create('Ext.data.Model', cfg);
+            return Ext.create('MockModel', cfg);
         },
         propsMax  = function(length, startId) {
 
@@ -64,10 +77,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
             return data;
 
         },
-        createFeeder = function() {
+        createFeeder = function(cfg) {
+
+            cfg = cfg || {};
 
             return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
-                pageMap : createPageMap()
+                pageMap : createPageMap(cfg)
             });
         },
         createFeed = function(cfg) {
@@ -129,6 +144,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
 t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
+t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
     const Feed = conjoon.cn_core.data.pageMap.Feed;
     const PageMapFeeder = conjoon.cn_core.data.pageMap.PageMapFeeder;
@@ -3262,4 +3278,249 @@ t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
     });
 
 
-})})})});
+    t.it("addRecord() - total count", function(t) {
+
+        let feeder         = createFeeder(),
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+
+        t.waitForMs(250, function() {
+
+            let oldCount = feeder.getPageMap().getStore().getTotalCount();
+
+            feeder.addRecord(prop(4), RecordPosition.create(1, 2));
+
+            t.expect(feeder.getPageMap().getStore().getTotalCount()).toBe(
+                oldCount + 1
+            );
+        });
+    });
+
+
+    t.it("removeRecord() - total count", function(t) {
+
+        let feeder = createFeeder();
+
+        t.waitForMs(250, function() {
+
+            let rec      = prop(1),
+                oldCount = feeder.getPageMap().getStore().getTotalCount();
+
+            feeder.removeRecord(feeder.getPageMap().map[1].value[2]);
+
+            t.expect(feeder.getPageMap().getStore().getTotalCount()).toBe(
+                oldCount - 1
+            );
+
+
+
+        });
+    });
+
+
+    t.it("getIndexLookup()", function(t) {
+
+        let feeder = createFeeder();
+
+        t.expect(feeder.indexLookup).toBeFalsy();
+
+        t.expect(feeder.getIndexLookup()).toBe(feeder.indexLookup);
+
+        t.expect(feeder.indexLookup instanceof conjoon.cn_core.data.pageMap.IndexLookup);
+    });
+
+
+    t.it("add() - A", function(t) {
+
+        let feeder  = createFeeder({empty : true, sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+
+            t.expect(pageMap.map).toEqual({});
+            t.expect(pageMap.getStore().getTotalCount()).toBe(0);
+
+            let rec = prop(1),
+                op  = feeder.add(rec);
+
+            t.expect(op.getResult().success).toBe(true);
+
+            t.expect(op.getResult().to.getPage()).toBe(1);
+            t.expect(op.getResult().to.getIndex()).toBe(0);
+
+
+            t.expect(pageMap.map[1]).toBeDefined();
+            t.expect(pageMap.getStore().getTotalCount()).toBe(1);
+
+
+        });
+    });
+
+
+    t.it("add() - B", function(t) {
+
+        let feeder   = createFeeder({empty : true, sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+
+            t.expect(pageMap.map).toEqual({});
+            t.expect(pageMap.getStore().getTotalCount()).toBe(0);
+
+            for (var i = 0; i < size; i++) {
+                rec = prop(i + 1);
+                op  = feeder.add(rec);
+
+                t.expect(op.getResult().success).toBe(true);
+                t.expect(op.getResult().to.getPage()).toBe(Math.floor(i / pageSize) + 1);
+                t.expect(op.getResult().to.getIndex()).toBe(i % pageSize);
+            }
+
+            t.expect(pageMap.map[1]).toBeDefined();
+            t.expect(pageMap.map[2]).toBeDefined();
+
+            t.expect(pageMap.getStore().getTotalCount()).toBe(size);
+
+
+        });
+    });
+
+
+    t.it("add() - C", function(t) {
+
+        let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+            let totalCount = pageMap.getStore().getTotalCount();
+
+            let rec = prop(68586588686);
+            let op  = feeder.add(rec);
+
+            t.expect(op.getResult().success).toBe(false);
+
+            t.expect(pageMap.getStore().getTotalCount()).toBe(totalCount + 1);
+
+        });
+    });
+
+
+    t.it("add() - D", function(t) {
+
+        let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+            pageMap.getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+
+                let totalCount = pageMap.getStore().getTotalCount();
+
+                let rec = prop(1323523532),
+                    op  = feeder.add(rec);
+
+                t.expect(op.getResult().success).toBe(true);
+
+                t.expect(op.getResult().to.getPage()).toBe(21);
+                t.expect(op.getResult().to.getIndex()).toBe(0);
+
+
+                t.expect(pageMap.map[1]).toBeDefined();
+                t.expect(pageMap.getStore().getTotalCount()).toBe(totalCount + 1);
+
+            });
+        });
+    });
+
+
+    t.it("remove()", function(t) {
+
+        let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+            t.isCalled('removeRecord', feeder);
+            t.expect(feeder.remove(pageMap.map[1].value[2])).toBeTruthy();
+
+        });
+    });
+
+
+    t.it("update() - A", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageMap     = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+
+            let totalCount = pageMap.getStore().getTotalCount();
+            let rec = pageMap.map[1].value[0];
+
+            rec.set('testPropForIndexLookup', 898979878);
+
+            let op = feeder.update(rec);
+
+            t.expect(op.getResult().success).toBe(false);
+            t.expect(op.getResult().to).toBeUndefined();
+            t.expect(op.getResult().from.getPage()).toBe(1);
+            t.expect(op.getResult().from.getIndex()).toBe(0);
+
+            // record was moved out of the cached data
+            t.expect(PageMapUtil.findRecord(rec, feeder)).toBe(null);
+
+            t.expect(pageMap.getStore().getTotalCount()).toBe(totalCount);
+
+
+        });
+    });
+
+
+    t.it("update() - B", function(t) {
+
+        let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+            pageMap.getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+
+                let totalCount = pageMap.getStore().getTotalCount();
+
+                let rec = pageMap.map[1].value[0];
+                rec.set('testPropForIndexLookup', 898979878);
+
+                let op  = feeder.update(rec);
+
+                t.expect(op.getResult().success).toBe(true);
+
+                t.expect(op.getResult().to.getPage()).toBe(20);
+                t.expect(op.getResult().to.getIndex()).toBe(24);
+
+                t.expect(pageMap.peekPage(20)).toBeTruthy();
+                t.expect(feeder.getFeedAt(20)).toBeFalsy();
+
+
+            });
+        });
+    });
+
+
+})})})})});

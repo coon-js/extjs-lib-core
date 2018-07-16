@@ -38,7 +38,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         'conjoon.cn_core.data.pageMap.PageRange',
         'conjoon.cn_core.data.pageMap.PageMapUtil',
         'conjoon.cn_core.Util',
-        'conjoon.cn_core.data.pageMap.Operation'
+        'conjoon.cn_core.data.pageMap.Operation',
+        'conjoon.cn_core.data.pageMap.IndexLookup'
     ],
 
     mixins  : [
@@ -65,6 +66,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
          */
         pageMap : null
     },
+
+    /**
+     * @type {conjoon.cn_core.data.pageMap.IndexLookup} lookup
+     * @private
+     */
+    indexLookup : null,
 
 
     /**
@@ -104,7 +111,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         me.initConfig(cfg);
 
-        me.feed = {};
+        me.reset();
     },
 
 
@@ -152,6 +159,143 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
 
     /**
+     * Makes sure the specified record is moved to a new position after an
+     * update operation. The record must already belong to this Feeder's
+     * PageMap or Feeds.
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @return {conjoon.cn_core.data.pageMap.Operation}
+     */
+    update : function(record) {
+
+        const me             = this,
+              pageMap        = me.getPageMap(),
+              lookup         = me.getIndexLookup(),
+              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+              op             = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
+                  type : conjoon.cn_core.data.pageMap.Operation.MOVE
+              }),
+              createResult = function(cfg) {
+                  cfg.record = record;
+                  op.setResult(cfg);
+                  return op;
+              },
+              updateTotalCount = function() {
+                  let store = pageMap.getStore();
+                  store.totalCount = store.getTotalCount() + 1;
+              };
+
+        me.filterRecordValue(record);
+
+        // check first if  indexLookup returns an array. We do not have to
+        // recompute anything then and can call directly the move-operation
+        let pos = lookup.findInsertIndex(record, me);
+        if (Ext.isArray(pos)) {
+            return me.moveRecord(record, RecordPosition.create(pos));
+        }
+
+        let remFirst = me.removeRecord(record);
+        if (!remFirst.getResult().success) {
+            updateTotalCount();
+            return createResult({success : false});
+        }
+
+        let from  = remFirst.getResult().from,
+            index = lookup.findInsertIndex(record, me);
+
+        if (Ext.isArray(index)) {
+            pos = RecordPosition.create(index);
+        } else {
+            updateTotalCount();
+            return createResult({success : false, from : from});
+        }
+
+
+        return me.addRecord(record, pos);
+    },
+
+
+    /**
+     * Removes the specified record.
+     * Alias for #removeRecord
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @returns {*|conjoon.cn_core.data.pageMap.Operation|Object}
+     */
+    remove : function(record) {
+        const me = this;
+
+        return me.removeRecord(record);
+    },
+
+
+    /**
+     * Adds the specified record sorted into the PageMap or Feeds.
+     * Makes sure any pages are created if needed.
+     *
+     * @param {Ext.data.Model} record
+     *
+     * @return {conjoon.cn_core.data.pageMap.Operation}
+     */
+    add : function(record) {
+
+        const me             = this,
+              pageMap        = me.getPageMap(),
+              map            = pageMap.map,
+              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+              lookup         = me.getIndexLookup(),
+              lastPossPage   = PageMapUtil.getLastPossiblePageNumber(pageMap),
+              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+              op             = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
+                  type : conjoon.cn_core.data.pageMap.Operation.ADD
+              }),
+              createResult = function(cfg) {
+                  op.setResult(cfg);
+                  return op;
+              };
+
+        me.filterRecordValue(record);
+
+        let index      = lookup.findInsertIndex(record, me),
+            pos        = null,
+            createPage = false;
+
+        if (Ext.isArray(index)) {
+            pos = RecordPosition.create(index);
+
+            if (lastPossPage === pos.getPage() - 1 && !map[pos.getPage()]) {
+                createPage = true;
+            }
+
+        } else if (index === 1) {
+            if (pageMap.getCount() === 0) {
+                createPage = true;
+                pos        = RecordPosition.create(1, 0);
+            } else {
+
+                // would be normally done by addRecord, but we do not enter
+                // this method
+                let store = pageMap.getStore();
+                store.totalCount = store.getTotalCount() + 1;
+
+                return createResult({
+                    success : false,
+                    record  : record
+                })
+            }
+        }
+
+        if (createPage) {
+            pageMap.add(pos.getPage(), []);
+        }
+
+        return me.addRecord(record, pos);
+    },
+
+
+    /**
      * Moves the record from the specified from-position to the specified to
      * position. The result of this operation is encapsulated in the returning
      * conjoon.cn_core.data.pageMap.Operation-object.
@@ -168,6 +312,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * record is not part of any Feed.
      *
      * @see conjoon.cn_core.data.pageMap.PageMapUtil#moveRecord
+     *
+     * @private
      */
     moveRecord : function(record, to) {
 
@@ -245,6 +391,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * This implementation considers feeds and will shift data to it if
      * applicable.
      * The position may be a position in the map itself or in an existing Feed.
+     * Calling this method will automatically update the totalCount of the PageMap.
      *
      * @param {Ext.data.Model} record
      * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
@@ -253,6 +400,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * result, which hints to the state of this PageMap.
      *
      * @throws if the requested page or the requested Feed does not exist
+     *
+     * @private
      */
     addRecord : function(record, to) {
 
@@ -348,7 +497,6 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         Ext.Array.each(Util.groupIndices(maintainRanges),
             function(range) {
-
                 PageMapUtil.maintainIndexMap(
                     PageRange.createFor(range[0], range[range.length - 1]), pageMap
                 );
@@ -356,6 +504,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         );
 
         me.sanitizeFeedsForPage(page);
+
+        let store = pageMap.getStore();
+        store.totalCount = store.getTotalCount() + 1;
 
         return createResult({
             success : true,
@@ -374,6 +525,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * This implementation will take care of creating feeds until the demands
      * of the target page can be satisfied, which means that this method will
      * create feeds or move existing ones to the recycle bin in necessary.
+     * This method will automatically update the PageMap's totalCount, even if
+     * the record to remove was not found.
      *
      * Note:
      * Calling APIs should consider the totalCount change of a BufferedStore
@@ -462,12 +615,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                   }
 
                   return tmp;
+              },
+              updateStoreCount = function() {
+                  let store = pageMap.getStore();
+                  store.totalCount = store.getTotalCount() - 1;
               };
 
 
         let position = PageMapUtil.findRecord(record, me);
 
         if (!position) {
+            updateStoreCount();
             return createResult({
                 success : false,
                 record  : record
@@ -479,6 +637,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             feedIndexes = me.prepareForAction(page, REMOVE);
 
         if (feedIndexes === null) {
+            updateStoreCount();
             return createResult({
                 success : false,
                 record  : record,
@@ -546,6 +705,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         );
 
         me.sanitizeFeedsForPage(page);
+
+        updateStoreCount();
 
         return createResult({
             success : true,
@@ -1425,6 +1586,25 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         return old;
     },
+
+
+    /**
+     * Returns the IndexLookup to use with this PageMapFeeder.
+     * Creates an instance of {conjoon.cn_core.data.pageMap.IndexLookup} if
+     * the IndexLookup is not otherwise already set.
+     *
+     * @return {conjoon.cn_core.data.pageMap.IndexLookup}
+     */
+    getIndexLookup : function() {
+
+        const me = this;
+
+        if (!me.indexLookup) {
+            me.indexLookup = Ext.create('conjoon.cn_core.data.pageMap.IndexLookup');
+        }
+
+        return me.indexLookup;
+    }
 
 
 });
