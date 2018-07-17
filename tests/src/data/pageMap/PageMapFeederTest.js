@@ -165,8 +165,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
 
+        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', { pageMap : Ext.create('Ext.data.PageMap')})} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('valid store');
+
         ls = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
-            pageMap : Ext.create('Ext.data.PageMap')
+            pageMap : Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')})
         });
 
         t.expect(ls instanceof conjoon.cn_core.data.pageMap.PageMapFeeder).toBe(true);

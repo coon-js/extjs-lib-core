@@ -158,7 +158,15 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         // since onPageMapClear in BufferedStores calls  data.clearListeners();,
         // which would remove our listener for the clear event of the PageMap
         // (ExtJS 6.2.0)
-        pageMap.getStore().on('clear', me.reset, me);
+        let store = pageMap.getStore();
+        if (!store) {
+            Ext.raise({
+                msg     : "'pageMap' must be configured with a valid store",
+                pageMap : pageMap
+            });
+        }
+
+        store.on('clear', me.reset, me);
 
         return pageMap;
     },
