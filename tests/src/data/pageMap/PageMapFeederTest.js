@@ -3564,4 +3564,25 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
+    t.it("reset-callback", function(t) {
+
+
+        t.isCalledNTimes('reset', conjoon.cn_core.data.pageMap.PageMapFeeder.prototype, 1);
+
+        let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            pageSize = pageMap.getPageSize(),
+            size     = 32, rec, op;
+
+        t.waitForMs(250, function() {
+
+            // force clear to work
+            pageMap.generation = 89;
+            pageMap.clear();
+
+
+        });
+    });
+
+
 })})})})});

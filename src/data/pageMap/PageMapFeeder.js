@@ -111,7 +111,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         me.initConfig(cfg);
 
-        me.reset();
+        me.feed = {};
     },
 
 
@@ -128,7 +128,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     },
 
     /**
-     * Applies the pageMap to this instance
+     * Applies the pageMap to this instance. Installs #reset as callback
+     * for the clear-event of the PageMap.
      *
      * @param {Ext.data.PageMap} PageMap
      *
@@ -153,6 +154,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
+        pageMap.on('clear', me.reset, me);
 
         return pageMap;
     },
