@@ -138,7 +138,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     applyPageMap : function(pageMap) {
 
-        var me = this;
+        const me = this;
 
         if (me.getPageMap()) {
             Ext.raise({
@@ -154,9 +154,27 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        pageMap.on('clear', me.reset, me);
+        // we need to register the listener for the store's clear event,
+        // since onPageMapClear in BufferedStores calls  data.clearListeners();,
+        // which would remove our listener for the clear event of the PageMap
+        // (ExtJS 6.2.0)
+        pageMap.getStore().on('clear', me.reset, me);
 
         return pageMap;
+    },
+
+
+    /**
+     * Overridden to detach callback for PageMap's store "clear" event.
+     * @inheritdoc
+     */
+    destroy :  function() {
+
+        const me = this;
+
+        me.getPageMap().getStore().un('clear', me.reset, me);
+
+        me.callParent(arguments);
     },
 
 

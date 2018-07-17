@@ -3566,9 +3566,6 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
     t.it("reset-callback", function(t) {
 
-
-        t.isCalledNTimes('reset', conjoon.cn_core.data.pageMap.PageMapFeeder.prototype, 1);
-
         let feeder   = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap  = feeder.getPageMap(),
             pageSize = pageMap.getPageSize(),
@@ -3576,9 +3573,19 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         t.waitForMs(250, function() {
 
-            // force clear to work
+            feeder.feed = {1:2};
+
             pageMap.generation = 89;
-            pageMap.clear();
+            pageMap.clear(false);
+            t.expect(feeder.feed).toEqual({});
+
+
+            feeder.destroy();
+            feeder = null;
+
+            pageMap.addPage(1, [])
+            pageMap.generation = 8322;
+            pageMap.clear(false);
 
 
         });
