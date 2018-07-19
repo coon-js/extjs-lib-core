@@ -52,6 +52,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      * @param {Number} position
      * @param {Ext.data.PageMap} pageMap
+     * @param {Boolean} ignoreTotalCount true to not check whether any index exceeds
+     * the current totalCount of the underlying store
      *
      * @return {conjoon.cn_core.data.pageMap.RecordPosition}
      *
@@ -59,7 +61,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * {Ext.data.PageMap} or if index is greater than the total count of the
      * PageMap's store
      */
-    storeIndexToPosition : function(index, pageMap) {
+    storeIndexToPosition : function(index, pageMap, ignoreTotalCount = false) {
 
         const me = this;
 
@@ -74,7 +76,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         pageMap = me.filterPageMapValue(pageMap);
 
-        if (index >= pageMap.getStore().getTotalCount()) {
+        if (!ignoreTotalCount && index >= pageMap.getStore().getTotalCount()) {
             Ext.raise({
                 msg        : '\'index\' of position exceeds the total count of the PageMap\'s store',
                 totalCount : pageMap.getStore().getTotalCount(),
@@ -547,7 +549,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
                 tmpPages   = conjoon.cn_core.Util.listNeighbours(pages, toPage),
                 finalPages = [], feed, prev, next, curr;
 
-            for (let i = tmpPages.indexOf(toPage), len = pages.length; i < len; i++) {
+            for (let i = tmpPages.indexOf(toPage), len = tmpPages.length; i < len; i++) {
                 curr = tmpPages[i];
                 feed = feeder.getFeedAt(curr);
 
@@ -855,6 +857,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Number} start
      * @param {Number} end
      * @param {Ext.data.PageMap} pageMap
+     * @param {Boolean} ignoreTotalCount true to not check whether any index exceeds
+     * the current totalCount of the underlying store
      *
      * @return {conjoon.cn_core.data.pageMap.IndexRange}
      *
@@ -863,7 +867,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * or any other exception thrown by #storeIndexToPosition, or by the
      * constructor of IndexRange
      */
-    storeIndexToRange : function(start, end, pageMap) {
+    storeIndexToRange : function(start, end, pageMap, ignoreTotalCount = false) {
 
         const me = this;
 
@@ -895,8 +899,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             })
         }
 
-        start = me.storeIndexToPosition(start, pageMap);
-        end   = me.storeIndexToPosition(end, pageMap);
+        start = me.storeIndexToPosition(start, pageMap, ignoreTotalCount);
+        end   = me.storeIndexToPosition(end, pageMap, ignoreTotalCount);
 
         return Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
             start : start,

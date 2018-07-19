@@ -1995,5 +1995,72 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it('storeIndexToPosition() - ignore total count', function(t) {
 
-    })})})});
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap = createPageMap(),
+                invalid  = 1000000000;
+
+
+
+            t.waitForMs(250, function() {
+
+                let pos = PageMapUtil.storeIndexToPosition(invalid, pageMap, true);
+                t.expect(pos.getPage()).toBe(40000001);
+                t.expect(pos.getIndex()).toBe(0);
+            });
+
+        });
+
+        t.it('storeIndexToRange() - ignore total count', function(t) {
+
+            var exc, e,
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                pageMap = createPageMap(),
+                invalid  = 1000000000;
+
+
+
+            t.waitForMs(250, function() {
+
+                let start, end,
+                    range = PageMapUtil.storeIndexToRange(invalid, invalid + 1, pageMap, true);
+
+                t.expect(range.getStart().getPage()).toBe(40000001);
+                t.expect(range.getStart().getIndex()).toBe(0);
+
+                t.expect(range.getEnd().getPage()).toBe(40000001);
+                t.expect(range.getEnd().getIndex()).toBe(1);
+            });
+
+        });
+
+
+
+        t.it('getRangeForRecord() - works with proper pages array', function(t) {
+
+            let exc, e,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(4);
+                pageMap.removeAtKey(5);
+
+                t.expect(pageMap).toBe(feeder.getPageMap());
+
+                rec = pageMap.map[3].value[1];
+
+                let range = PageMapUtil.getRangeForRecord(rec, feeder);
+
+                t.expect(range).toEqual([1, 2, 3]);
+            });
+
+        });
+
+
+
+})})})});
