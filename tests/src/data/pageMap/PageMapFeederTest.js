@@ -3771,5 +3771,31 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
+    t.it("removePageAt()", function(t) {
+
+        let exc, e,
+            feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            t.expect(pageMap.map[1]).toBeDefined();
+            feeder.removePageAt(1);
+            t.expect(pageMap.map[1]).toBeUndefined();
+
+            pageMap.getStore().on('beforepageremove', function(){return false;});
+
+            try{feeder.removePageAt(2);}catch(e){exc = e};
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("unexpectedly vetoed");
+            t.expect(exc.msg.toLowerCase()).toContain("page");
+
+            t.expect(pageMap.map[2]).toBeDefined();
+
+
+        });
+    });
+
 
 })})})})});

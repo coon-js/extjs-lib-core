@@ -822,7 +822,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
             if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)
                 && !me.hasPreviousFeed(index) && !me.hasNextFeed(index)) {
-                pageMap.removeAtKey(index);
+                me.removePageAt(index);
             }
         }
 
@@ -832,7 +832,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             // remove empty pages
             if (!me.hasPreviousFeed(page) && !me.hasNextFeed(page) &&
                 pageMap.peekPage(page) && !pageMap.peekPage(page).value.length) {
-                pageMap.removeAtKey(page);
+                me.removePageAt(page);
             }
         }
 
@@ -978,7 +978,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         // removeAtKey should clear the indexMap for the registered records and
         // their internalIds
-        pageMap.removeAtKey(page);
+        me.removePageAt(page);
+
 
         feed = me.createFeedAt(page, targetPage);
         feed.fill(feedData);
@@ -1665,6 +1666,31 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         return me.indexLookup;
+    },
+
+
+    /**
+     * Wraps calls to Ext.data.PageMap#removeAtKey and throws an exception if
+     * any beforepageremove-listener vetoed removing the page.
+     *
+     * @param {Number} page
+     *
+     * @throws if the page could not be removed.
+     */
+    removePageAt : function(page) {
+
+        const me      = this,
+              pageMap = me.getPageMap();
+
+
+        pageMap.removeAtKey(page);
+
+        if (pageMap.peekPage(page)) {
+            Ext.raise({
+                msg  : "someone unexpectedly vetoed removing the page at " + page,
+                page : page
+            })
+        }
     }
 
 
