@@ -3596,4 +3596,180 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
+    t.it("removeRecord() - last page", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize    = pageMap.getPageSize(),
+            size        = 32, rec, op, lastPage;
+
+        t.waitForMs(250, function() {
+
+            let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
+            pageMap.getStore().loadPage(lastPage);
+
+            t.waitForMs(250, function() {
+
+                let remRec = pageMap.map[lastPage].value[2],
+                    op     = feeder.removeRecord(remRec);
+
+                t.expect(op).toBeTruthy();
+                t.expect(op.getResult().success).toBe(true);
+                t.expect(op.getResult().record).toBe(remRec);
+
+                t.expect(pageMap.map[lastPage]).toBeDefined();
+                t.expect(feeder.getFeedAt(lastPage)).toBe(null);
+                t.expect(pageMap.map[lastPage + 1]).toBeUndefined();
+                t.expect(feeder.getFeedAt(lastPage + 1)).toBe(null);
+
+                t.expect(pageMap.indexOf(remRec)).toBe(-1);
+            });
+
+        });
+
+    });
+
+
+    t.it("isPageCandidate() - feed as highest possible page number", function(t) {
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize    = pageMap.getPageSize(),
+            size        = 32, rec, op, lastPage;
+
+        t.waitForMs(250, function() {
+
+            let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
+            pageMap.getStore().loadPage(lastPage);
+
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(lastPage, lastPage - 1);
+
+                t.expect(feeder.isPageCandidate(lastPage)).toBe(true);
+                feeder.getFeedAt(lastPage).removeAt(5);
+                feeder.getFeedAt(lastPage).removeAt(1);
+                t.expect(feeder.isPageCandidate(lastPage)).toBe(true);
+            });
+
+        });
+    });
+
+    t.it("removeRecord() - feeder", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize    = pageMap.getPageSize(),
+            size        = 32, rec, op, lastPage;
+
+        t.waitForMs(250, function() {
+
+            let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
+            pageMap.getStore().loadPage(lastPage);
+
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(lastPage, lastPage - 1);
+
+                let feed   = feeder.getFeedAt(lastPage),
+                    remRec = feed.getAt(2);
+
+                feed.removeAt(24);
+
+                let op = feeder.removeRecord(remRec);
+
+                t.expect(PageMapUtil.findRecord(remRec, feeder)).toBe(null);
+                t.expect(feeder.getFeedAt(lastPage)).toBe(null);
+
+
+                t.expect(op).toBeTruthy();
+                t.expect(op.getResult().success).toBe(true);
+                t.expect(op.getResult().record).toBe(remRec);
+
+                t.expect(pageMap.map[lastPage]).toBeDefined();
+                t.expect(feeder.getFeedAt(lastPage)).toBe(null);
+                t.expect(pageMap.map[lastPage + 1]).toBeUndefined();
+                t.expect(feeder.getFeedAt(lastPage + 1)).toBe(null);
+
+                t.expect(pageMap.indexOf(remRec)).toBe(-1);
+                t.expect(pageMap.map[lastPage].value.length).toBe(pageSize - 2);
+
+            });
+
+        });
+
+    });
+
+
+    t.it("sanitizeFeedsForPage() - finalizing", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            pageMap.map[3].value = [];
+
+            t.expect(feeder.sanitizeFeedsForPage(3)).toBe(true);
+
+            t.expect(pageMap.map[3]).toBeDefined();
+            t.expect(pageMap.map[3].value).toEqual([]);
+
+            t.expect(feeder.sanitizeFeedsForPage(3, true)).toBe(true);
+
+            t.expect(pageMap.map[3]).toBeUndefined();
+
+            feeder.swapMapToFeed(5, 6);
+            feeder.getFeedAt(5).extract(1);
+            pageMap.map[6].value = [];
+            feeder.swapMapToFeed(7, 6);
+            feeder.getFeedAt(7).extract(1);
+
+            t.expect(feeder.sanitizeFeedsForPage(6, true)).toBe(true);
+            t.expect(pageMap.map[6]).toBeDefined();
+
+        });
+    });
+
+
+    t.it("swapMapToFeed() - consider value length instead of pageSize", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            pageSize    = pageMap.getPageSize(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+        t.waitForMs(250, function() {
+
+            t.expect(pageMap.map[3].value.length).toBe(pageSize);
+            pageMap.map[3].value.splice(3, 2);
+            t.expect(pageMap.map[3].value.length).not.toBe(pageSize);
+
+            t.expect(feeder.swapMapToFeed(3, 4)).toBeTruthy();
+            t.expect(feeder.getFeedAt(3).getFreeSpace()).toBeGreaterThan(0);
+
+            t.expect(feeder.getFeedAt(3).getAt(0)).toBeUndefined();
+            t.expect(feeder.getFeedAt(3).getAt(1)).toBeUndefined();
+            t.expect(feeder.getFeedAt(3).getAt(2)).toBeDefined();
+        });
+    });
+
+
+    t.it("hasPreviousFeed() - page 1 does not cause errors due to check for data at page '0'", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            pageSize    = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            t.expect(feeder.hasPreviousFeed(1)).toBe(false);
+        });
+    });
+
+
+
 })})})})});

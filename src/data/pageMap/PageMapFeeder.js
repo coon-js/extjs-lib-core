@@ -405,7 +405,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         me.sanitizerSuspended = false;
 
-        me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()));
+        me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()), true);
 
         result.success = true;
         op.setResult(result);
@@ -531,7 +531,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
         );
 
-        me.sanitizeFeedsForPage(page);
+        me.sanitizeFeedsForPage(page, true);
 
         let store = pageMap.getStore();
         store.totalCount = store.getTotalCount() + 1;
@@ -664,7 +664,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             index       = position.getIndex(),
             feedIndexes = me.prepareForAction(page, REMOVE);
 
-        if (feedIndexes === null) {
+        if (feedIndexes === null && page !== PageMapUtil.getLastPossiblePageNumber(pageMap)) {
             updateStoreCount();
             return createResult({
                 success : false,
@@ -692,35 +692,42 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        let lower   = feedIndexes[0][0],
-            records = null;
+        // do the shift. we're not on th last page here
+        let records = null;
+        if (feedIndexes) {
+            let lower   = feedIndexes[0][0];
 
-        // fill up range before targetPage
-        if (page + 1 < lower) {
-            feedIndexes[0].unshift(page + 1);
+            // fill up range before targetPage
+            if (page + 1 < lower) {
+                feedIndexes[0].unshift(page + 1);
+            }
+
+            // start at last range and walk down in reverse ordder
+            Ext.Array.each(feedIndexes.reverse(), function(range) {
+                let start = range[0],
+                    end   = range[range.length - 1];
+
+                do {
+                    records = shiftToLeft(end, records, end + 1 ? end + 1 : -1);
+                } while (end-- > start);
+            });
         }
-
-        // start at last range and walk down in reverse ordder
-        Ext.Array.each(feedIndexes.reverse(), function(range) {
-            let start = range[0],
-                end   = range[range.length - 1];
-
-            do {
-                records = shiftToLeft(end, records, end + 1 ? end + 1 : -1);
-            } while (end-- > start);
-        });
 
         // change Feed or page, depending where the record was found
         let feed = me.getFeedAt(page),
             remRec;
         if (!feed) {
-            remRec = map[page].value.splice(index, 1)
-            map[page].value.push(records[0]);
+            remRec = map[page].value.splice(index, 1);
+            if (records) {
+                map[page].value.push(records[0]);
+            }
             delete pageMap.indexMap[remRec[0].internalId];
             maintainRanges.push(page);
         } else {
-            remRec = feed.removeAt(index);
-            feed.fill(records);
+            feed.removeAt(index);
+            if (records) {
+                feed.fill(records);
+            }
         }
 
         Ext.Array.each(Util.groupIndices(maintainRanges),
@@ -732,7 +739,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
         );
 
-        me.sanitizeFeedsForPage(page);
+        me.sanitizeFeedsForPage(page, true);
 
         updateStoreCount();
 
@@ -752,14 +759,20 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * have one ( [10] (11:12) [12]) are removed
      * - feeds that don't have a neighbour page are removed,
      *
+     * This method does not remove explicitely empty pages if the method is not
+     * called during the finalizing process of sanitizing.
+     *
+     *
      * @param {Number} page
+     * @param {Boolean} finalizing Whether this call is at the end of an
+     * add/update/remove operation
      *
      * @return {Boolean} true when sanitizing processed, otherwise false, e.g.
      * if no Feed and no page exist at the specified position
      *
      * @private
      */
-    sanitizeFeedsForPage : function(page) {
+    sanitizeFeedsForPage : function(page, finalizing = false) {
 
         const me          = this,
               pageMap     = me.getPageMap(),
@@ -812,6 +825,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 pageMap.removeAtKey(index);
             }
         }
+
+        // if this sanitizing was called as part of a finalizing process,
+        // we remove any empty page if applicable
+        if (finalizing === true) {
+            // remove empty pages
+            if (!me.hasPreviousFeed(page) && !me.hasNextFeed(page) &&
+                pageMap.peekPage(page) && !pageMap.peekPage(page).value.length) {
+                pageMap.removeAtKey(page);
+            }
+        }
+
 
         return true;
     },
@@ -945,7 +969,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         data = pageMap.peekPage(page).value;
 
         // mirror the data
-        for (var i = 0, len = pageMap.getPageSize(); i < len; i++) {
+        // we have to re-use the data length in case we are
+        // swapping from a page that was the last page and which is currently
+        // being emptied
+        for (var i = 0, len = data.length; i < len; i++) {
             feedData.push(data[i]);
         }
 
@@ -1232,7 +1259,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
     /**
      * Returns true if the feed at the specified index is a candidate for a page,
-     * i.e. all data indices are filled with data.
+     * i.e. all data indices are filled with data, or the page is a feed with the
+     * (assumed) last possible page number.
      *
      * @param {Number} page
      *
@@ -1243,13 +1271,16 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      */
     isPageCandidate : function(page) {
 
-        const me = this;
+        const me          = this,
+              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
         let feed;
 
         page = me.filterPageValue(page);
         feed = me.getFeedAt(page);
 
-        if (feed && !feed.hasUndefined()) {
+        if (feed && (!feed.hasUndefined()
+            || page === PageMapUtil.getLastPossiblePageNumber(me.getPageMap()))) {
             return true;
         }
 
@@ -1291,7 +1322,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         page = me.filterPageValue(page);
 
-        return (me.getFeedAt(page - 1) !== null &&
+        return page > 1 && (me.getFeedAt(page - 1) !== null &&
                me.getFeedAt(page - 1).getNext() === page);
     },
 
@@ -1467,7 +1498,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        me.sanitizeFeedsForPage(page, action);
+        me.sanitizeFeedsForPage(page);
+
+
         let feedIndexes = me.findFeedIndexesForActionAtPage(page, action);
 
         if (feedIndexes === null) {
