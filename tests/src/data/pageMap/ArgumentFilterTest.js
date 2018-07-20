@@ -241,7 +241,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         t.expect(exc.msg.toLowerCase()).toContain("value");
         exc = undefined;
 
-        pageMap = Ext.create('Ext.data.PageMap');
+        pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
         t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
 
         let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
@@ -265,7 +265,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         t.expect(exc.msg.toLowerCase()).toContain("feeder");
         exc = undefined;
 
-        pageMap = Ext.create('Ext.data.PageMap');
+        pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
         let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             pageMap : pageMap
         });

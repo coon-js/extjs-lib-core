@@ -169,6 +169,11 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('valid store');
 
+        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', { pageMap :
+          Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.Store')})})} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain('valid store');
+
         ls = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             pageMap : Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')})
         });
