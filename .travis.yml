@@ -9,7 +9,7 @@
 # workspace, adds this package and tries to build it.
 language: node_js
 env:
-  - CN_PACKAGE="lib-cn_core" CN_SENCHA_EXT_VERSION="6.2.0" CN_SENCHA_CMD_VERSION="6.5.0.180" CN_WORKSPACE="/tmp/conjoon"
+  - CN_PACKAGE="lib-cn_core" CN_SENCHA_EXT_VERSION="6.2.0" CN_SENCHA_CMD_VERSION="6.5.3.6" CN_WORKSPACE="/tmp/conjoon"
 
 install:
   - gem install jsduck
