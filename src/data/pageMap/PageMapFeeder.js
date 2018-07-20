@@ -43,8 +43,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     ],
 
     mixins  : [
-        'conjoon.cn_core.data.pageMap.ArgumentFilter'
+        'conjoon.cn_core.data.pageMap.ArgumentFilter',
+        'Ext.mixin.Observable'
     ],
+
+
+    /**
+     * @event cn_core-pagemapfeeder-pageremoveveto
+     * This event is triggered if any beforepageremove-listener returned false
+     * and vetoed the removal of a page. This is only processed, when this
+     * PageMapFeeder's #removePageAt()-method is used for removing pages.
+     * If no listener for this event is registered, an exception will be thrown,
+     * raising the issue that unexpectedly the removal of a page was vetoed.
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} this
+     * @param {Number} page
+     */
 
     statics : {
         /**
@@ -110,6 +123,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         }
 
         me.initConfig(cfg);
+
+        me.mixins.observable.constructor.call(this);
 
         me.feed = {};
     },
@@ -1671,7 +1686,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
     /**
      * Wraps calls to Ext.data.PageMap#removeAtKey and throws an exception if
-     * any beforepageremove-listener vetoed removing the page.
+     * any beforepageremove-listener vetoed removing the page, and no callback
+     * for #cn_core-pagemapfeeder-pageremoveveto was found. Otherwise, the event
+     * is triggered.
      *
      * @param {Number} page
      *
@@ -1686,10 +1703,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         pageMap.removeAtKey(page);
 
         if (pageMap.peekPage(page)) {
-            Ext.raise({
-                msg  : "someone unexpectedly vetoed removing the page at " + page,
-                page : page
-            })
+
+            if (!me.hasListener('cn_core-pagemapfeeder-pageremoveveto')) {
+                Ext.raise({
+                    msg  : "someone unexpectedly vetoed removing the page at " + page +
+                           ", and no listener is registered for handling this.",
+                    page : page
+                })
+            } else {
+                me.fireEvent('cn_core-pagemapfeeder-pageremoveveto', me, page);
+            }
+
         }
     }
 

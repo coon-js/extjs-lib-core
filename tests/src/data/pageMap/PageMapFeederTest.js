@@ -3771,7 +3771,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
-    t.it("removePageAt()", function(t) {
+    t.it("removePageAt() - no listener", function(t) {
 
         let exc, e,
             feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
@@ -3793,6 +3793,94 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
             t.expect(pageMap.map[2]).toBeDefined();
 
+
+        });
+    });
+
+
+    t.it("removePageAt() - listener", function(t) {
+
+        let exc, e,
+            feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap();
+
+        t.waitForMs(250, function() {
+
+            t.expect(pageMap.map[1]).toBeDefined();
+            feeder.removePageAt(1);
+            t.expect(pageMap.map[1]).toBeUndefined();
+
+            pageMap.getStore().on('beforepageremove', function(){return false;});
+
+            let VETO = 0;
+            feeder.on('cn_core-pagemapfeeder-pageremoveveto', function() {VETO++;})
+            t.expect(VETO).toBe(0);
+            feeder.removePageAt(2);
+            t.expect(VETO).toBe(1);
+            t.expect(pageMap.map[2]).toBeDefined();
+
+
+        });
+    });
+
+
+    t.it("add() - first and last page available", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            store       = pageMap.getStore(),
+            pageSize    = pageMap.getPageSize(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            size        = 32, rec, op,
+            cmps = [];
+
+        t.waitForMs(250, function() {
+
+            t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(20);
+
+            pageMap.getStore().loadPage(20);
+
+            t.waitForMs(250, function() {
+
+                t.expect(pageMap.map[1]).toBeDefined();
+                t.expect(pageMap.map[20]).toBeDefined();
+
+                for (var i = 4; i < 20; i++) {
+                    feeder.removePageAt(i);
+                }
+
+                for (let i = 0; i < pageSize; i++) {
+                    cmps.push(pageMap.map[20].value[i]);
+                }
+
+                t.expect(pageMap.map[1]).toBeDefined();
+                t.expect(pageMap.map[2]).toBeDefined();
+                t.expect(pageMap.map[3]).toBeDefined();
+                t.expect(pageMap.map[20]).toBeDefined();
+
+                let VETOED = 0;
+                store.on('beforepageremove', function() {
+                    return false;
+                });
+                feeder.on('cn_core-pagemapfeeder-pageremoveveto', function(feeder, pageNumber) {
+                    VETOED = pageNumber;
+                });
+
+                let op = feeder.add(prop(0));
+                t.expect(VETOED).toBe(20);
+
+                t.expect(feeder.getFeedAt(21)).toBe(null);
+                t.expect(feeder.getFeedAt(4)).not.toBe(null);
+
+                t.expect(pageMap.map[20]).toBeDefined();
+                t.expect(pageMap.map[20].value.length).toBe(pageSize);
+                for (let i = 0; i < pageSize; i++) {
+                    t.expect(pageMap.map[20].value[i]).toBe(cmps[i]);
+                }
+
+                t.expect(op.getResult().success).toBe(true);
+
+            });
 
         });
     });
