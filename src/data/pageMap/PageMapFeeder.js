@@ -1080,7 +1080,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             grp = [];
             end = range.length - 1;
 
-            if (!isAdd && foundIndex === found.length - 1) {
+            if (!isAdd && range[end - 1] && foundIndex === found.length - 1) {
                 if (me.getFeedAt(range[end - 1])) {
                     return;
                 }

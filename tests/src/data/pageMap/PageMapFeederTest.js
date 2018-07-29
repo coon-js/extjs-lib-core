@@ -1245,6 +1245,45 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     });
 
 
+    t.it('findFeedIndexesForActionAtPage() - N', function(t) {
+
+        var exc, e,
+            feeder    = createFeeder(),
+            ADD       = PageMapFeeder.ACTION_ADD,
+            REMOVE    = PageMapFeeder.ACTION_REMOVE,
+            pageMap   = feeder.getPageMap(),
+            pageSize  = pageMap.getPageSize();
+
+        t.waitForMs(250, function() {
+
+            // 1 2 3 4 5 6 7 8 9 12
+            t.expect(pageMap.peekPage(1)).toBeTruthy();
+            t.expect(pageMap.peekPage(2)).toBeTruthy();
+            t.expect(pageMap.peekPage(3)).toBeTruthy();
+            t.expect(pageMap.peekPage(4)).toBeTruthy();
+            t.expect(pageMap.peekPage(5)).toBeTruthy();
+            t.expect(pageMap.peekPage(6)).toBeTruthy();
+            t.expect(pageMap.peekPage(7)).toBeTruthy();
+            t.expect(pageMap.peekPage(8)).toBeTruthy();
+            t.expect(pageMap.peekPage(9)).toBeTruthy();
+
+            pageMap.removeAtKey(10);
+            pageMap.removeAtKey(11);
+
+            t.expect(pageMap.peekPage(12)).toBeTruthy();
+
+            t.expect(pageMap.peekPage(13)).toBeFalsy();
+            t.expect(pageMap.peekPage(14)).toBeFalsy();
+
+            feeder.sanitizeFeedsForPage(2, REMOVE);
+            t.expect(feeder.findFeedIndexesForActionAtPage(6, REMOVE)).toEqual([
+                [9]
+            ]);
+
+            t.expect(pageMap.peekPage(12)).toBeFalsy();
+
+        });
+    });
 
 
     t.it('removeFeedAt()', function(t) {
