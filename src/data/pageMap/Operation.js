@@ -87,7 +87,7 @@ Ext.define('conjoon.cn_core.data.pageMap.Operation', {
 
         if (!cfg.hasOwnProperty('type')) {
             Ext.raise({
-                msg : "'type' is required for configuring this isntance",
+                msg : "'type' is required for configuring this instance",
                 cfg : cfg
             });
         }
