@@ -420,7 +420,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         me.sanitizerSuspended = false;
 
-        me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()), true);
+        me.sanitizeFeedsForPage(Math.min(to.getPage(), from.getPage()), null, true);
 
         result.success = true;
         op.setResult(result);
@@ -515,8 +515,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                     maintainRanges.push(currentPage);
                     records = map[currentPage].value.splice(pageSize, 1);
                 } else {
-                    if (previousPage && me.getFeedAt(previousPage) &&
-                        !me.canServeFromFeed(previousPage, currentPage)) {
+                    if (previousPage &&
+                        ((me.getFeedAt(previousPage) && !me.canServeFromFeed(previousPage, currentPage)) ||
+                        (feed.getPrevious() !== previousPage))) {
                         records = [];
                     }
                     if (records.length) {
@@ -546,7 +547,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
         );
 
-        me.sanitizeFeedsForPage(page, true);
+        me.sanitizeFeedsForPage(page, me.statics().ACTION_ADD, true);
 
         let store = pageMap.getStore();
         store.totalCount = store.getTotalCount() + 1;
@@ -652,7 +653,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                           }
                       }
 
-                      if (currentRecords && currentRecords.length) {
+                      // there migt be edge cases where a page right next to the
+                      // feed is not used for this feeder!
+                      if (page.getNext(recordsAreFromPage) && currentRecords && currentRecords.length) {
                           page.fill(currentRecords);
                       }
                   }
@@ -754,7 +757,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             }
         );
 
-        me.sanitizeFeedsForPage(page, true);
+        me.sanitizeFeedsForPage(page, me.statics().ACTION_REMOVE, true);
 
         updateStoreCount();
 
@@ -787,15 +790,24 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @private
      */
-    sanitizeFeedsForPage : function(page, finalizing = false) {
+    sanitizeFeedsForPage : function(page, action = null, finalizing = false) {
 
         const me          = this,
               pageMap     = me.getPageMap(),
               PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-              feeds       = me.feed;
+              feeds       = me.feed,
+              ADD         = me.statics().ACTION_ADD,
+              REMOVE      = me.statics().ACTION_REMOVE;
 
         if (me.sanitizerSuspended === true) {
             return false;
+        }
+
+        if (finalizing !== true && [ADD, REMOVE].indexOf(action) === -1) {
+            Ext.raise({
+                msg    : '\'action\' must be any of ACTION_ADD or ACTION_REMOVE when finalizing',
+                action : action
+            });
         }
 
         page = me.filterPageValue(page);
@@ -835,6 +847,27 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         for (i = 0, len = range.length; i < len; i++) {
             index = range[i];
 
+            // [..13] (14:13) [15] (16 : 17)
+            // 15 remove two pages close to each other
+            if (action === ADD) {
+                if (!pageMap.peekPage(index - 1) &&
+                    me.getFeedAt(index + 1) &&
+                    (!me.getFeedAt(index - 1) || me.getFeedAt(index - 1).getNext() !== index) &&
+                    me.getFeedAt(index + 1).getPrevious() === index){
+                    me.removePageAt(index);
+                    me.removeFeedAt(i + 1);
+                }
+            } else if (action === REMOVE) {
+                if (!pageMap.peekPage(index + 1) &&
+                    me.getFeedAt(index - 1) &&
+                    (!me.getFeedAt(index + 1) || me.getFeedAt(index + 1).getPrevious() !== index) &&
+                    me.getFeedAt(index - 1).getNext() === index) {
+                    me.removePageAt(index);
+                    me.removeFeedAt(i - 1);
+                }
+            }
+
+            // remove single pages
             if (!pageMap.peekPage(index - 1) && !pageMap.peekPage(index + 1)
                 && !me.hasPreviousFeed(index) && !me.hasNextFeed(index)) {
                 me.removePageAt(index);
@@ -1106,8 +1139,10 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 return;
             }
 
+            // we may only create the upper bounds with range[end] +1 if there
+            // is no page following immediately
             grp.push(
-                isAdd && !me.getFeedAt(range[end])
+                isAdd && !me.getFeedAt(range[end]) && (!found[foundIndex + 1] || found[foundIndex + 1][0] !== range[end] + 1)
                     ? range[end] + 1
                     : range[end]
             );
@@ -1514,7 +1549,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             });
         }
 
-        me.sanitizeFeedsForPage(page);
+        me.sanitizeFeedsForPage(page, action);
 
 
         let feedIndexes = me.findFeedIndexesForActionAtPage(page, action);
@@ -1533,12 +1568,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         Ext.Array.each(feedIndexes, function(range, feedIndex) {
             Ext.Array.each(range, function(currentPage, rangeIndex) {
+
                 length = range.length,
                 end    = range[range.length - 1];
 
                 if (length > 1) {
-                    createAndSwap(range[0], range[0] + 1);
-                    createAndSwap(range[1], range[1] - 1);
+                    if (Math.abs(range[1] - range[0]) === 1) {
+                        if (!isAdd) {
+                            createAndSwap(range[1], range[0]);
+                        } else {
+                            createAndSwap(range[0], range[1]);
+                        }
+                    } else {
+                        createAndSwap(range[0], range[0] + 1);
+                        createAndSwap(range[1], range[1] - 1);
+                    }
                 } else {
                     // one page, the next Feed following must serve it
                     createAndSwap(range[0], range[0] - 1);

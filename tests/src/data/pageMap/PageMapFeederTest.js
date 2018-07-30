@@ -146,8 +146,11 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
 t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
 t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
-    const Feed = conjoon.cn_core.data.pageMap.Feed;
-    const PageMapFeeder = conjoon.cn_core.data.pageMap.PageMapFeeder;
+    const Feed          = conjoon.cn_core.data.pageMap.Feed,
+          PageMapFeeder = conjoon.cn_core.data.pageMap.PageMapFeeder,
+          ADD           = PageMapFeeder.ACTION_ADD,
+          REMOVE        = PageMapFeeder.ACTION_REMOVE;
+
 
     t.it("prerequisites", function(t) {
 
@@ -3159,9 +3162,9 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         t.waitForMs(250, function() {
             feeder.sanitizerSuspended = true;
-            t.expect(feeder.sanitizeFeedsForPage(1)).toBe(false);
+            t.expect(feeder.sanitizeFeedsForPage(1, ADD)).toBe(false);
             feeder.sanitizerSuspended = false;
-            t.expect(feeder.sanitizeFeedsForPage(1)).toBe(true);
+            t.expect(feeder.sanitizeFeedsForPage(1, ADD)).toBe(true);
         });
 
     });
@@ -3757,12 +3760,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
             pageMap.map[3].value = [];
 
-            t.expect(feeder.sanitizeFeedsForPage(3)).toBe(true);
+            t.expect(feeder.sanitizeFeedsForPage(3, ADD)).toBe(true);
 
             t.expect(pageMap.map[3]).toBeDefined();
             t.expect(pageMap.map[3].value).toEqual([]);
 
-            t.expect(feeder.sanitizeFeedsForPage(3, true)).toBe(true);
+            t.expect(feeder.sanitizeFeedsForPage(3, null, true)).toBe(true);
 
             t.expect(pageMap.map[3]).toBeUndefined();
 
@@ -3772,7 +3775,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             feeder.swapMapToFeed(7, 6);
             feeder.getFeedAt(7).extract(1);
 
-            t.expect(feeder.sanitizeFeedsForPage(6, true)).toBe(true);
+            t.expect(feeder.sanitizeFeedsForPage(6, null, true)).toBe(true);
             t.expect(pageMap.map[6]).toBeDefined();
 
         });
@@ -3929,5 +3932,257 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         });
     });
 
+
+    t.it("removeRecord() - issue (A)", function(t) {
+
+        let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap     = feeder.getPageMap(),
+            map         =  pageMap.map,
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize    = pageMap.getPageSize(),
+            ADD         = PageMapFeeder.ACTION_ADD,
+            REMOVE      = PageMapFeeder.ACTION_REMOVE;
+
+        t.waitForMs(250, function() {
+
+            pageMap.getStore().loadPage(13);
+            pageMap.getStore().loadPage(14);
+            pageMap.getStore().loadPage(15);
+            pageMap.getStore().loadPage(16);
+
+            t.waitForMs(250, function() {
+
+                pageMap.removeAtKey(17);
+                pageMap.removeAtKey(18);
+                pageMap.removeAtKey(19);
+                pageMap.removeAtKey(20);
+
+                t.waitForMs(250, function() {
+
+                    feeder.swapMapToFeed(10, 9);
+                    feeder.swapMapToFeed(14, 13);
+
+                    t.expect(pageMap.peekPage(1)).toBeTruthy();
+                    t.expect(pageMap.peekPage(2)).toBeTruthy();
+                    t.expect(pageMap.peekPage(3)).toBeTruthy();
+                    t.expect(pageMap.peekPage(4)).toBeTruthy();
+                    t.expect(pageMap.peekPage(5)).toBeTruthy();
+                    t.expect(pageMap.peekPage(6)).toBeTruthy();
+                    t.expect(pageMap.peekPage(7)).toBeTruthy();
+                    t.expect(pageMap.peekPage(8)).toBeTruthy();
+                    t.expect(pageMap.peekPage(9)).toBeTruthy();
+                    t.expect(pageMap.peekPage(10)).toBeFalsy();
+                    t.expect(pageMap.peekPage(11)).toBeTruthy();
+                    t.expect(pageMap.peekPage(12)).toBeTruthy();
+
+                    t.expect(pageMap.peekPage(13)).toBeTruthy();
+                    t.expect(pageMap.peekPage(14)).toBeFalsy();
+                    t.expect(pageMap.peekPage(15)).toBeTruthy();
+                    t.expect(pageMap.peekPage(16)).toBeTruthy();
+
+                    t.expect(pageMap.peekPage(17)).toBeFalsy();
+                    t.expect(pageMap.peekPage(18)).toBeFalsy();
+                    t.expect(pageMap.peekPage(19)).toBeFalsy();
+                    t.expect(pageMap.peekPage(20)).toBeFalsy();
+
+                    t.expect(pageMap.peekPage(21)).toBeFalsy();
+                    t.expect(pageMap.peekPage(22)).toBeFalsy();
+                    t.expect(pageMap.peekPage(23)).toBeFalsy();
+                    t.expect(pageMap.peekPage(24)).toBeFalsy();
+                    t.expect(pageMap.peekPage(25)).toBeFalsy();
+
+                    feeder.getFeedAt(10).extract(1);
+                    feeder.getFeedAt(14).extract(1);
+
+                    t.expect(feeder.sanitizeFeedsForPage(8, REMOVE)).toBe(true);
+
+                    let coll = [];
+                    for (let i in feeder.feed) {
+                        coll.push(i)
+                    }
+                    t.expect(coll).toEqual(["10", "14"])
+
+                    // that's okay, we serve from 15 and drop records out of 16
+                    // without adding to a new target
+
+                    // this must be tested if there exists as Feed (17:18)
+                    t.expect(feeder.prepareForAction(8, ADD)).toEqual([
+                        [10], [11, 14], [15, 17]
+                    ]);
+
+                    t.expect(feeder.prepareForAction(8, REMOVE)).toEqual([
+                        [10], [11, 14], [15, 16]
+                    ]);
+
+                    t.expect(feeder.getFeedAt(14).getAt(24)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(23)).toBeDefined();
+
+                    t.expect(feeder.getFeedAt(16)).toBeDefined();
+                    t.expect(feeder.getFeedAt(15)).toBe(null);
+                    t.expect(pageMap.map[15]).toBeDefined();
+
+                    let old14_0 = feeder.getFeedAt(14).getAt(0),
+                        feedRec = feeder.getFeedAt(14).getAt(23),
+                        newRec  = pageMap.map[15].value[1],
+                        lostRec = pageMap.map[15].value[0];
+
+                    t.expect(feedRec).toBeTruthy();
+
+                    feeder.removeRecord(pageMap.map[8].value[20]);
+                    t.expect(pageMap.map[13].value[24]).toBe(old14_0);
+                    t.expect(pageMap.map[15].value[0]).toBe(newRec);
+
+                    t.expect(feeder.getFeedAt(14).getAt(24)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(0)).not.toBe(lostRec);
+                    t.expect(feeder.getFeedAt(14).getAt(23)).not.toBe(lostRec);
+                    t.expect(feeder.getFeedAt(14).getAt(23)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(22)).toBe(feedRec);
+
+                    t.expect(feeder.prepareForAction(8, ADD)).toEqual([
+                        [10], [11, 14]
+                    ]);
+
+                });
+            });
+
+
+
+        });
+
+    });
+
+
+    t.it("removeRecord() - issue (B)", function(t) {
+
+        let feeder         = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap        = feeder.getPageMap(),
+            map            =  pageMap.map,
+            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+            pageSize       = pageMap.getPageSize(),
+            ADD            = PageMapFeeder.ACTION_ADD,
+            REMOVE         = PageMapFeeder.ACTION_REMOVE,
+            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+
+        t.waitForMs(250, function() {
+
+            pageMap.getStore().loadPage(13);
+            pageMap.getStore().loadPage(14);
+            pageMap.getStore().loadPage(15);
+            pageMap.getStore().loadPage(16);
+
+            t.waitForMs(250, function() {
+
+
+                pageMap.removeAtKey(19);
+                pageMap.removeAtKey(20);
+
+                t.waitForMs(250, function() {
+
+                    feeder.swapMapToFeed(10, 9);
+                    feeder.swapMapToFeed(14, 13);
+                    feeder.swapMapToFeed(17, 18);
+
+                    t.expect(pageMap.peekPage(1)).toBeTruthy();
+                    t.expect(pageMap.peekPage(2)).toBeTruthy();
+                    t.expect(pageMap.peekPage(3)).toBeTruthy();
+                    t.expect(pageMap.peekPage(4)).toBeTruthy();
+                    t.expect(pageMap.peekPage(5)).toBeTruthy();
+                    t.expect(pageMap.peekPage(6)).toBeTruthy();
+                    t.expect(pageMap.peekPage(7)).toBeTruthy();
+                    t.expect(pageMap.peekPage(8)).toBeTruthy();
+                    t.expect(pageMap.peekPage(9)).toBeTruthy();
+                    t.expect(pageMap.peekPage(10)).toBeFalsy();
+                    t.expect(pageMap.peekPage(11)).toBeTruthy();
+                    t.expect(pageMap.peekPage(12)).toBeTruthy();
+
+                    t.expect(pageMap.peekPage(13)).toBeTruthy();
+                    t.expect(pageMap.peekPage(14)).toBeFalsy();
+                    t.expect(pageMap.peekPage(15)).toBeTruthy();
+                    t.expect(pageMap.peekPage(16)).toBeTruthy();
+
+                    t.expect(pageMap.peekPage(17)).toBeFalsy();
+                    t.expect(pageMap.peekPage(18)).toBeTruthy();
+                    t.expect(pageMap.peekPage(19)).toBeFalsy();
+                    t.expect(pageMap.peekPage(20)).toBeFalsy();
+
+                    t.expect(pageMap.peekPage(21)).toBeFalsy();
+                    t.expect(pageMap.peekPage(22)).toBeFalsy();
+                    t.expect(pageMap.peekPage(23)).toBeFalsy();
+                    t.expect(pageMap.peekPage(24)).toBeFalsy();
+                    t.expect(pageMap.peekPage(25)).toBeFalsy();
+
+                    feeder.getFeedAt(10).extract(1);
+                    feeder.getFeedAt(14).extract(1);
+                    feeder.getFeedAt(17).extract(1);
+
+
+                    // that's okay, we serve from 15 and drop records out of 16
+                    // without adding to a new target
+
+                    // this must be tested if there exists as Feed (17:18)
+
+
+                    t.expect(feeder.prepareForAction(8, ADD)).toEqual([
+                        [10], [11, 14], [15, 16], [17, 19]
+                    ]);
+
+                    t.expect(feeder.getFeedAt(15)).toBeTruthy();
+                    t.expect(feeder.getFeedAt(17).getAt(0)).toBeUndefined();
+
+                    let rec16_24 = pageMap.map[16].value[24],
+                        rec16_23 = pageMap.map[16].value[23],
+                        rec17_01 = feeder.getFeedAt(17).getAt(1);
+
+                    feeder.addRecord(prop(19988, 189768), RecordPosition.create(8, 12));
+
+                    t.expect(pageMap.map[16].value[24]).toBe(rec16_23);
+
+                    t.expect(feeder.getFeedAt(17).getAt(0)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(17).getAt(1)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(17).getAt(2)).toBe(rec17_01);
+                    t.expect(feeder.getFeedAt(17).getAt(24)).not.toBe(rec16_24);
+
+
+                    /*t.expect(feeder.getFeedAt(14).getAt(24)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(23)).toBeDefined();
+
+                    let old14_0 = feeder.getFeedAt(14).getAt(0),
+                        feedRec = feeder.getFeedAt(14).getAt(23),
+                        newRec  = pageMap.map[15].value[1],
+                        lostRec = pageMap.map[15].value[0];
+
+                    t.expect(feedRec).toBeTruthy();
+
+                    feeder.removeRecord(pageMap.map[8].value[20]);
+                    t.expect(pageMap.map[13].value[24]).toBe(old14_0);
+                    t.expect(pageMap.map[15].value[0]).toBe(newRec);
+
+                    t.expect(feeder.getFeedAt(14).getAt(24)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(0)).not.toBe(lostRec);
+                    t.expect(feeder.getFeedAt(14).getAt(23)).not.toBe(lostRec);
+                    t.expect(feeder.getFeedAt(14).getAt(23)).toBeUndefined();
+                    t.expect(feeder.getFeedAt(14).getAt(22)).toBe(feedRec);*/
+
+                    //feeder.getFeedAt(19).extract(1);
+
+                    t.expect(feeder.prepareForAction(8, ADD)).toEqual([
+                        [10], [11, 14], [15, 16], [17, 19]
+                    ]);
+
+                    t.expect(feeder.getFeedAt(15)).toBeDefined();
+                    t.expect(pageMap.map[16]).toBeDefined();
+
+                    t.expect(feeder.prepareForAction(8, REMOVE)).toEqual([
+                        [10], [11, 14], [17, 19]
+                    ]);
+
+                });
+            });
+
+
+
+        });
+
+    });
 
 })})})})});
