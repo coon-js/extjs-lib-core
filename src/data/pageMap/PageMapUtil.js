@@ -909,6 +909,57 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
     },
 
 
+
+    /**
+     * Tries to find the record specified by the id in the specified feeder, considering
+     * Feeds. Returns the Ext.data.Model if found,
+     * otherwise null.
+     *
+     * @param {String} id
+     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} feeder
+     *
+     * @return {Ext.data.Model} Returns the found record if available in the
+     * PageMap or the Feeds, otherwise null
+     */
+    getRecordById : function(id, feeder) {
+
+        const me = this;
+
+        feeder = me.filterFeederValue(feeder);
+
+        let pageMap = feeder.getPageMap(),
+            map     = pageMap.map,
+            record, page, a, i;
+
+        for (i in map) {
+            page = map[i].value;
+
+            for (a = 0, lena = page.length; a < lena; a++) {
+                if (page[a].getId() === id) {
+                    return page[a];
+                }
+            }
+        }
+
+        const feeds = feeder.feed;
+
+        let feed;
+
+        for (feed in feeds) {
+            page = feeds[feed].data;
+
+            for (i = 0, len = page.length; i < len; i++) {
+                if (page[i].getId() === id) {
+                    return page[i];
+                }
+            }
+        }
+
+        return null;
+
+    },
+
+
     /**
      * Tries to find the specified record in the specified feeder, considering
      * Feeds. Returns the conjoon.cn_core.data.pageMap.RecordPosition if found,

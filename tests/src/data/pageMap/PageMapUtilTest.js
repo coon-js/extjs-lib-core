@@ -2062,5 +2062,40 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it('getRecordById()', function(t) {
+
+            let exc, e,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                let tests = [{
+                    args : [pageMap.map[1].value[4].getId(), feeder],
+                    exp  : pageMap.map[1].value[4]
+                }, {
+                    args : [pageMap.map[10].value[21].getId(), feeder],
+                    exp  : pageMap.map[10].value[21]
+                }, {
+                    args : [feeder.getFeedAt(4).getAt(9).getId(), feeder],
+                    exp  : feeder.getFeedAt(4).getAt(9)
+                }, {
+                    args : ['foo', feeder],
+                    exp  : null
+                }];
+
+                for (let i = 0, len = tests.length; i < len; i++) {
+                    t.expect(PageMapUtil.getRecordById.apply(PageMapUtil, tests[i].args))
+                        .toBe(tests[i].exp);
+                }
+
+            });
+
+        });
+
+
 
 })})})});
