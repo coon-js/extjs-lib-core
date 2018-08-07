@@ -150,7 +150,8 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
         if (!record.getField(property)) {
             Ext.raise({
-                msg : "Unexpected missing field definition for record"
+                msg      : "Unexpected missing field definition: \""+property+"\"",
+                property : property
             });
         }
 
