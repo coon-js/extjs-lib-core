@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,10 @@
  * during the create action with one request due to the fact that the post data
  * of associated file uploads would grow to fast,  use a {@link conjoon.cn_core.data.Session}
  * configured with a {@link conjoon.cn_core.data.session.SplitBatchVisitor}.
+ *
+ * The proxy's purpose is to create data, not to edit/delete it. If this feature is ever
+ * needed, make sure "sendRequest()" gets overriden in a way that it checks the action
+ * of the request, and calls the parent implementation if applicable.
  *
  * The class used for establishing connections is {@link conjoon.cn_core.data.AjaxForm},
  * an extended implementation of Ext.Ajax.
@@ -74,7 +78,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
         var me = this,
             config;
 
-        request = me.callParent([operation]);
+        request = me.callParent(arguments);
 
         if (operation.getAction() == 'create') {
 
@@ -111,6 +115,11 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
      * @private
      */
     sendRequest: function(request) {
+
+        if (!request.getAction() || request.getAction() != 'create') {
+            Ext.raise("Proxy does not support any other action than \"create\"");
+        }
+
         request.setRawRequest(
             conjoon.cn_core.data.AjaxForm.request(
                 request.getCurrentConfig())

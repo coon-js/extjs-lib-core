@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,12 +70,21 @@ describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
 
 
     t.it('Test sendRequest()', function(t) {
-        var proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
-            url :'foo'
-        });
+        let proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
+                url :'foo'
+            }),
+            exc, e,
+            req = Ext.create('conjoon.cn_core.data.FormDataRequest', {url : 'foo'});
 
-        var req = Ext.create('conjoon.cn_core.data.FormDataRequest', {url : 'foo'}),
-            ret = proxy.sendRequest(req);
+
+        try{proxy.sendRequest(req);}catch(e){exc=e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.message).toContain("does not support");
+        exc = undefined;
+
+        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+            action : 'create', url : 'foo'});
+        ret = proxy.sendRequest(req);
 
         t.expect(ret).toBe(req);
 
