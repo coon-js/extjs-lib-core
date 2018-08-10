@@ -72,21 +72,33 @@ describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
     t.it('Test sendRequest()', function(t) {
         let proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
                 url :'foo'
-            }),
-            exc, e,
-            req = Ext.create('conjoon.cn_core.data.FormDataRequest', {url : 'foo'});
-
-
-        try{proxy.sendRequest(req);}catch(e){exc=e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.message).toContain("does not support");
-        exc = undefined;
+            });
 
         req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
-            action : 'create', url : 'foo'});
+            action : 'create', url : 'CREATE'});
         ret = proxy.sendRequest(req);
-
+        t.isInstanceOf(ret.getRawRequest(), 'conjoon.cn_core.data.request.FormData');
         t.expect(ret).toBe(req);
+
+        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+            url : 'NIL'});
+        ret = proxy.sendRequest(req);
+        t.expect(ret).toBe(req);
+        t.isInstanceOf(ret.getRawRequest(), 'Ext.data.request.Ajax');
+
+
+        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+            action : 'read', url : 'READ'});
+        ret = proxy.sendRequest(req);
+        t.expect(ret).toBe(req);
+        t.isInstanceOf(ret.getRawRequest(), 'Ext.data.request.Ajax');
+
+        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+            action : 'destroy', url : 'DESTROY'});
+
+        ret = proxy.sendRequest(req);
+        t.expect(ret).toBe(req);
+        t.isInstanceOf(ret.getRawRequest(), 'Ext.data.request.Ajax');
 
     });
 

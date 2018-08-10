@@ -32,10 +32,6 @@
  * of associated file uploads would grow to fast,  use a {@link conjoon.cn_core.data.Session}
  * configured with a {@link conjoon.cn_core.data.session.SplitBatchVisitor}.
  *
- * The proxy's purpose is to create data, not to edit/delete it. If this feature is ever
- * needed, make sure "sendRequest()" gets overriden in a way that it checks the action
- * of the request, and calls the parent implementation if applicable.
- *
  * The class used for establishing connections is {@link conjoon.cn_core.data.AjaxForm},
  * an extended implementation of Ext.Ajax.
  */
@@ -116,8 +112,10 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
      */
     sendRequest: function(request) {
 
-        if (!request.getAction() || request.getAction() != 'create') {
-            Ext.raise("Proxy does not support any other action than \"create\"");
+        const me = this;
+
+        if (request.getAction() != 'create') {
+            return me.callParent(arguments);
         }
 
         request.setRawRequest(
@@ -125,7 +123,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
                 request.getCurrentConfig())
         );
 
-        this.lastRequest = request;
+        me.lastRequest = request;
 
         return request;
     },
