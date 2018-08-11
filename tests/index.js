@@ -117,5 +117,6 @@ harness.start({
 }, {
     group : 'util',
     items : [
+        'src/util/DateTest.js',
         'src/util/MimeTest.js'
     ]});
