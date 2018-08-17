@@ -56,6 +56,7 @@ harness.start({
             group : 'field',
             items : [
                 'src/data/field/BlobTest.js',
+                'src/data/field/CompoundKeyFieldTest.js',
                 'src/data/field/EmailAddressTest.js',
                 'src/data/field/EmailAddressCollectionTest.js',
                 'src/data/field/FileSizeTest.js'
