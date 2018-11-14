@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ Ext.define('conjoon.cn_core.data.Session', {
      */
     getSaveBatch: function (sort) {
         var me      = this,
+            // reusing the same batch visitor leads to issues!)
             visitor = me.createVisitor();
 
         this.visitData(visitor);
