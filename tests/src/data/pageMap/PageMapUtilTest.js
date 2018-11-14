@@ -2097,5 +2097,43 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
 
 
+        t.it('getRecordBy()', function(t) {
+
+            let exc, e,
+                feeder      = createFeeder(),
+                pageMap     = feeder.getPageMap(),
+                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+
+            try{PageMapUtil.getRecordBy('3');}catch(e){exc=e;}
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be a function");
+            exc = e = undefined;
+
+            t.waitForMs(250, function() {
+
+                feeder.swapMapToFeed(4, 3);
+
+                let tests = [{
+                    args : [function(rec) {if (rec.getId() === pageMap.map[1].value[4].getId()){return true;}}, feeder],
+                    exp  : pageMap.map[1].value[4]
+                }, {
+                    args : [function(rec) {if (rec.getId() === pageMap.map[10].value[21].getId()){return true;}}, feeder],
+                    exp  : pageMap.map[10].value[21]
+                }, {
+                    args : [function(rec) {if (rec.getId() === feeder.getFeedAt(4).getAt(9).getId()){return true;}}, feeder],
+                    exp  : feeder.getFeedAt(4).getAt(9)
+                }, {
+                    args : [function(rec) {return false;}, feeder],
+                    exp  : null
+                }];
+
+                for (let i = 0, len = tests.length; i < len; i++) {
+                    t.expect(PageMapUtil.getRecordBy.apply(PageMapUtil, tests[i].args))
+                        .toBe(tests[i].exp);
+                }
+
+            });
+
+        });
 
 })})})});
