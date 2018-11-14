@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2018 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,5 +94,28 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
 
 
     });
+
+
+    t.it('createVisitor() not returning same instance', function(t) {
+
+        Ext.define('MockBatchVisitor', {
+            extend : 'Ext.data.session.BatchVisitor',
+
+            getBatch : function() {
+                return 'foo';
+            }
+        }, function() {
+
+            var c = Ext.create('conjoon.cn_core.data.Session', {
+                batchVisitorClassName : 'MockBatchVisitor'
+            });
+
+            t.expect(c.createVisitor()).not.toBe(c.createVisitor());
+
+        });
+
+
+    });
+
 
 });

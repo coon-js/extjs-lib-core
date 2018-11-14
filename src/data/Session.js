@@ -59,7 +59,8 @@ Ext.define('conjoon.cn_core.data.Session', {
 
         /**
          * Creates and returns an instance of the class name specified
-         * in #batchVisitorClassName.
+         * in #batchVisitorClassName. This method will always create and return
+         * a new instance of #batchVisitorClassName
          *
          * @return Ext.data.session.BatchVisitor
          *
