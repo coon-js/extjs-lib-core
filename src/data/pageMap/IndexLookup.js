@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,14 +124,15 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      */
     findInsertIndex : function(record, pageMapFeeder) {
 
-        var me            = this,
-            pageMap       = pageMapFeeder.getPageMap(),
-            PageMapUtil   = conjoon.cn_core.data.pageMap.PageMapUtil,
-            sorters       = pageMap.getStore().getSorters(),
-            ranges        = PageMapUtil.getAvailableRanges(pageMapFeeder),
-            lastPage      = PageMapUtil.getLastPossiblePageNumber(pageMap),
-            range, cmpFunc, property, dir, index, ignoreId, first, last,
-            previousIndex;
+        const me        = this,
+            pageMap     = pageMapFeeder.getPageMap(),
+            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            sorters     = pageMap.getStore().getSorters(),
+            ranges      = PageMapUtil.getAvailableRanges(pageMapFeeder),
+            lastPage    = PageMapUtil.getLastPossiblePageNumber(pageMap);
+
+        let range, cmpFunc, property, dir, index, ignoreId, first, last,
+            previousIndex, recordPosition;
 
         if (sorters.length != 1) {
             Ext.raise({
@@ -157,9 +158,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
         cmpFunc = record.getField(property).compare;
 
-        ignoreId = PageMapUtil.findRecord(record, pageMapFeeder)
-                   ? record.getId()
-                   : undefined;
+        recordPosition = PageMapUtil.findRecord(record, pageMapFeeder);
+        ignoreId       = recordPosition
+                         ? record.getId()
+                         : undefined;
 
 
         for (var i = 0, len = ranges.length; i < len; i++) {
@@ -172,7 +174,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
             index = me.scanRangeForIndex(
                 first, last, record.get(property),
                 property, dir, cmpFunc, ignoreId,
-                pageMapFeeder
+                pageMapFeeder, recordPosition
             );
 
             if (Ext.isArray(index)) {
@@ -252,6 +254,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * useful when the compared record is already part of the PageMap and needs
      * to be moved to another position due to changes to some of its data
      * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} recordPosition if available, the position of the
+     * existing record (see ignoreId) that will be used for comparing neighbour records before determining
+     * if moving a record should happen (which must not necessarily happen if two sibling records
+     * share the same value)
      *
      * @returns {Mixed}
      *
@@ -260,11 +266,13 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * @throws if start or end or anything in between is not available as a page
      * in the queried PageMap
      */
-    scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder) {
+    scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
 
         var me  = this,
             map = pageMapFeeder.getPageMap().map,
-            compareArgs, pageIterate, values, cmpRecord, cmp;
+            compareArgs, pageIterate, values, cmpRecord, cmp,
+            recordIndex = recordPosition && recordPosition.getIndex(),
+            recordPage = recordPosition && recordPosition.getPage();
 
         for (var i = start; i <= end; i++) {
             if (!map.hasOwnProperty(i) && !pageMapFeeder.getFeedAt(i)) {
@@ -300,6 +308,22 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
                     // aufsteigend
                     case 'ASC':
                         if (cmp === 0) {
+                            // if we are looking for an index in ASCENDING order,
+                            // we check first if the compouted a-1 index equals to the
+                            // recordIndex. If the compare function returns 0, that means
+                            // that we have a record found with the same value.
+                            //
+                            //  0:  1 (u)  ->  2       2 (u)
+                            //  1:  2 (v)          =>  2 (v)
+                            //  2:  3 (w)              3 (w)
+                            //
+                            // without this check, we would unneccessary change the order
+                            // to v, u, w
+                            //
+                            // the same check applies for DESCENDING order
+                            if (recordPage == pageIterate && recordIndex == a - 1) {
+                                return [pageIterate, recordIndex];
+                            }
                             return [pageIterate, a];
                         } else if (cmp === -1) {
 
@@ -321,6 +345,9 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
                     default:
 
                         if (cmp === 0) {
+                            if (recordPage == pageIterate && recordIndex == a + 1) {
+                                return [pageIterate, recordIndex];
+                            }
                             return [pageIterate, a];
                         } else if (cmp === 1) {
                             if (a === 0 && pageIterate === start ||
