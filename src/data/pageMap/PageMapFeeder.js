@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,7 +235,11 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
         // recompute anything then and can call directly the move-operation
         let pos = lookup.findInsertIndex(record, me);
         if (Ext.isArray(pos)) {
-            return me.moveRecord(record, RecordPosition.create(pos));
+            let recPos = RecordPosition.create(pos);
+            if (pos[0] === pos[1]) {
+                return createResult({success : true, from : recPos, to : recPos});
+            }
+            return me.moveRecord(record, recPos);
         }
 
         let remFirst = me.removeRecord(record);

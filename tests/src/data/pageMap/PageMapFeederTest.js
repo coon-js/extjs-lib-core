@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
             type : 'int'
         }]
     });
+
+    const TIMEOUT = 1250;
 
     var createPageMap = function(cfg) {
             var store;
@@ -4184,5 +4186,30 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         });
 
     });
+
+
+
+    t.it("lib-cn_core#4", function(t) {
+
+        let feeder   = createFeeder({empty : true, sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
+            pageMap  = feeder.getPageMap(),
+            rec;
+
+        t.waitForMs(TIMEOUT, function() {
+
+            t.expect(pageMap.getStore().getTotalCount()).toBe(0);
+
+            rec = prop(1);
+            feeder.add(rec);
+
+            let op  = feeder.update(rec);
+
+            t.expect(op.getResult().success).toBe(true);
+
+            t.expect(op.getResult().from).toBe(op.getResult().to);
+        });
+    });
+
+
 
 })})})})});
