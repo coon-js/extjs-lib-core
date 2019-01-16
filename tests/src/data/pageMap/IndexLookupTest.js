@@ -842,62 +842,30 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
     });
 
 
-    t.it("lib-cn_core#4 - ASC", function(t) {
+    t.it("lib-cn_core#4", function(t) {
 
-        // we check the following for an insertindex:
-        //
-        // 0:   A: 500
-        // 1:   B :500
-        //
-        // A Gets updated to 500. looking up an insert index in this case
-        // should leave A at its position of 0 since it shares the SAME
-        // value as B and thus should not be moved around.
-        //
         var sorter = createSorter(), feeder = createFeeder({
                 sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
             }),
             cmp       = compareFunction,
             pageMap   = feeder.getPageMap(),
+            pageSize = feeder.getPageMap().getPageSize(),
             property  = 'testPropForIndexLookup';
 
         t.waitForMs(250, function() {
 
-            let pos = conjoon.cn_core.data.pageMap.RecordPosition.create(1, 0);
+            let pos = conjoon.cn_core.data.pageMap.RecordPosition.create(1, 4);
 
             pageMap.map[1].value[1].set('testPropForIndexLookup', 500);
+            pageMap.map[1].value[2].set('testPropForIndexLookup', 500);
+            pageMap.map[1].value[3].set('testPropForIndexLookup', 500);
 
-            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'ASC', cmp, "500", feeder, pos)).toEqual([1, 0]);
+            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'ASC', cmp, "500", feeder, pos)).toEqual([1, 4]);
+
+            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'DESC', cmp, "500", feeder, pos)).toEqual([1, 4]);
         });
     });
 
-
-    t.it("lib-cn_core#4 - DESC", function(t) {
-
-        // we check the following for an insertindex:
-        //
-        // 0:   A: 500
-        // 1:   B :500
-        //
-        // B Gets updated to 500. looking up an insert index in this case
-        // should leave B at its position of 1 since it shares the SAME
-        // value as A and thus should not be moved around.
-        //
-        var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
-            }),
-            cmp       = compareFunction,
-            pageMap   = feeder.getPageMap(),
-            property  = 'testPropForIndexLookup';
-
-        t.waitForMs(250, function() {
-
-            let pos = conjoon.cn_core.data.pageMap.RecordPosition.create(1, 1);
-
-            pageMap.map[1].value[1].set('testPropForIndexLookup', 500);
-
-            t.expect(sorter.scanRangeForIndex(1, 1, 500, property, 'DESC', cmp, "499", feeder, pos)).toEqual([1, 1]);
-        });
-    });
 
 
 })});

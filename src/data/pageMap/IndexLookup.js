@@ -268,11 +268,13 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      */
     scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
 
-        var me  = this,
-            map = pageMapFeeder.getPageMap().map,
-            compareArgs, pageIterate, values, cmpRecord, cmp,
-            recordIndex = recordPosition && recordPosition.getIndex(),
-            recordPage = recordPosition && recordPosition.getPage();
+        const me  = this,
+              map = pageMapFeeder.getPageMap().map,
+              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+
+        let pageIterate, cmpRecord, cmp,
+            targetPosition, neighbour;
 
         for (var i = start; i <= end; i++) {
             if (!map.hasOwnProperty(i) && !pageMapFeeder.getFeedAt(i)) {
@@ -304,60 +306,78 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
                 cmp = cmpFunc.apply(null, [value, cmpRecord.get(property)]);
 
-                switch (direction) {
-                    // aufsteigend
-                    case 'ASC':
-                        if (cmp === 0) {
-                            // if we are looking for an index in ASCENDING order,
-                            // we check first if the compouted a-1 index equals to the
-                            // recordIndex. If the compare function returns 0, that means
-                            // that we have a record found with the same value.
-                            //
-                            //  0:  1 (u)  ->  2       2 (u)
-                            //  1:  2 (v)          =>  2 (v)
-                            //  2:  3 (w)              3 (w)
-                            //
-                            // without this check, we would unneccessary change the order
-                            // to v, u, w
-                            //
-                            // the same check applies for DESCENDING order
-                            if (recordPage == pageIterate && recordIndex == a - 1) {
-                                return [pageIterate, recordIndex];
-                            }
-                            return [pageIterate, a];
-                        } else if (cmp === -1) {
+                switch (true) {
 
-                            if (a === 0 ||
-                                // it is an left hand feed with a
-                                // next page, and the  value is less than the
-                                // first found index
-                                // also, return -1 if we have no place in the feed
-                                (hasNext && feed.getFreeSpace() === a)
-                                ) {
-                                return -1;
+                    case (cmp === 0):
+                        // if we are looking for an index and compare tells us that the source
+                        // value is treated equal with the target value, we will check if
+                        // the NEXT neighbour (left or right, depending on the computed target position)
+                        // is equal to the value of the source record.
+                        // since we assume that the data we are browing is already ordered,
+                        // we then assume that we do not need to move the record to a new
+                        // position, since moving it would not actually change the
+                        // requested order of values.
+
+                        //  0:  1 (u)  ->  2       2 (u)
+                        //  1:  2 (v)          =>  2 (v)
+                        //  2:  3 (w)              3 (w)
+                        //
+                        // without this check, we would unneccessary change the order
+                        // to v, u, w
+                        //
+                        // the same check applies for DESCENDING order
+                        if (recordPosition) {
+                            targetPosition = RecordPosition.create(pageIterate, a);
+
+                            if (targetPosition.lessThan(recordPosition)) {
+                                neighbour = PageMapUtil.getNeighbour(
+                                    RecordPosition.create(
+                                        recordPosition.getPage(), recordPosition.getIndex()),
+                                    pageMapFeeder, true
+                                );
+                            } else if (targetPosition.greaterThan(recordPosition)) {
+                                neighbour = PageMapUtil.getNeighbour(
+                                    RecordPosition.create(
+                                        recordPosition.getPage(), recordPosition.getIndex()),
+                                    pageMapFeeder, false
+                                );
                             }
 
-                            // next always grows to left!
-                            return [pageIterate, a - (hasNext ? 1 : 0)];
+                            if (neighbour && cmpFunc.apply(null, [value, neighbour.get(property)]) === 0) {
+                                return [
+                                    recordPosition.getPage(),
+                                    recordPosition.getIndex()];
+                            }
                         }
+
+                        return [pageIterate, a];
                         break;
-                        // absteigend
-                    default:
 
-                        if (cmp === 0) {
-                            if (recordPage == pageIterate && recordIndex == a + 1) {
-                                return [pageIterate, recordIndex];
-                            }
-                            return [pageIterate, a];
-                        } else if (cmp === 1) {
-                            if (a === 0 && pageIterate === start ||
-                                (hasNext && feed.getFreeSpace() === a)) {
-                                return -1;
-                            }
-                            return [pageIterate, a];
+                    case (direction === 'ASC' && cmp === -1):
+
+                        if (a === 0 ||
+                            // it is an left hand feed with a
+                            // next page, and the  value is less than the
+                            // first found index
+                            // also, return -1 if we have no place in the feed
+                            (hasNext && feed.getFreeSpace() === a)
+                        ) {
+                            return -1;
                         }
+
+                        // next always grows to left!
+                        return [pageIterate, a - (hasNext ? 1 : 0)];
+                        break;
+
+                    case (direction === 'DESC' && cmp === 1):
+                        if (a === 0 && pageIterate === start ||
+                            (hasNext && feed.getFreeSpace() === a)) {
+                            return -1;
+                        }
+                        return [pageIterate, a];
                         break;
                 }
+
             }
         }
 

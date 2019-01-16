@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2135,5 +2135,41 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             });
 
         });
+
+
+
+        t.it('getNeighbour()', function(t) {
+            var pageMap        = createPageMap(),
+                map            = pageMap.map,
+                pageSize       = pageMap.getPageSize(),
+                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 4,
+                    index : 5
+                }),
+                positionLower = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 4,
+                    index : 0
+                }),
+                positionUpper = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    page  : 3,
+                    index : pageSize - 1
+                });
+
+
+            // wait for storeload
+            t.waitForMs(250, function() {
+                t.expect(PageMapUtil.getRecordAt(sourcePosition, pageMap)).toBe(map[4].value[5]);
+
+                t.expect(PageMapUtil.getNeighbour(sourcePosition, pageMap, true)).toBe(map[4].value[4]);
+
+                t.expect(PageMapUtil.getNeighbour(sourcePosition, pageMap, false)).toBe(map[4].value[6]);
+
+                t.expect(PageMapUtil.getNeighbour(positionLower, pageMap, true)).toBe(map[3].value[pageSize - 1]);
+
+                t.expect(PageMapUtil.getNeighbour(positionUpper, pageMap, false)).toBe(map[4].value[0]);
+            })
+        });
+
 
 })})})});

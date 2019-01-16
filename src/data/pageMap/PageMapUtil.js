@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2018 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2018 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -373,6 +373,55 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         return true;
 
+    },
+
+
+    /**
+     * Returns the direct neighbour left to the record at the specified position.
+     * Returns null if there is no neighbour record available.
+     *
+     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
+     * @param {Boolean} left true to return the left neighbour, false to return the
+     * right neighbour
+     *
+     * @return {Ext.data.Model|undefined}
+     *
+     * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * or if pageMap is not an instance of {Ext.data.PageMap} and not an instance of
+     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or of the index of the specified
+     * position is out of bounds
+     */
+    getNeighbour : function(position, pageMapOrFeeder, left = true) {
+
+        const me = this;
+
+        let neighbourIndex, neighbourPage,
+            page, index, isPageMap, pageSize;
+
+        pageMapOrFeeder = me.filterPageMapOrFeederValue(pageMapOrFeeder);
+
+        isPageMap = pageMapOrFeeder instanceof Ext.data.PageMap;
+
+        pageSize = (isPageMap)
+                   ? pageMapOrFeeder.getPageSize()
+                   : pageMapOrFeeder.getPageMap().getPageSize();
+
+        position = me.filterRecordPositionValue(position, pageSize);
+        page     = position.getPage();
+        index    = position.getIndex();
+
+        if (left) {
+            neighbourIndex = index - 1 >= 0 ? index - 1 : pageSize - 1;
+            neighbourPage  = index - 1 >= 0 ? page  : page - 1;
+        } else {
+            neighbourIndex = index + 1 < pageSize ? index + 1 : 0;
+            neighbourPage  = index + 1 < pageSize ? page : page + 1;
+        }
+
+        return me.getRecordAt(
+            conjoon.cn_core.data.pageMap.RecordPosition.create(
+            neighbourPage, neighbourIndex), pageMapOrFeeder);
     },
 
 
