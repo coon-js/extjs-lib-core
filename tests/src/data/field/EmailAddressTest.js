@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,18 +109,24 @@ describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
 
             t.expect(field.compare(null, 'foo')).toBe(0);
 
-            t.expect(field.compare({}, {})).toBe(-1);
+            t.expect(field.compare({}, {})).toBe(0);
 
             t.expect(field.compare(null, {address : 'a'})).toBe(-1);
             t.expect(field.compare({address : 'a'}, {address : 'a'})).toBe(0);
             t.expect(field.compare({address : 'a'}, null)).toBe(1);
 
-            t.expect(field.compare({address : 'a'}, {address : 'a', name: 'b'})).toBe(0);
-            t.expect(field.compare({address : 'b'}, {address : 'a', name: 'b'})).not.toBe(0);
+            t.expect(field.compare({address : 'a'}, {address : 'a', name: 'b'})).toBe(-1);
+            t.expect(field.compare({address : 'b'}, {address : 'a', name: 'b'})).toBe(-1);
+
+            t.expect(field.compare({address : 'b', name : 'c'}, {address : 'b'})).toBe(1);
 
             t.expect(field.compare(
-                {address : 'a'}, {address : 'a', name : 'foo'}
-            )).toBe(0);
+                {address : 'a', name : 'A'}, {address : 'a', name : 'foo'}
+            )).toBe(1);
+
+            t.expect(field.compare(
+                {address : 'a', name : 'A'}, {address : 'A', name : 'FoO'}
+            )).toBe(1);
 
         });
 

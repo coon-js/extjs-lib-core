@@ -1,10 +1,10 @@
 /**
  * conjoon
- * (c) 2007-2017 conjoon.org
+ * (c) 2007-2019 conjoon.org
  * licensing@conjoon.org
  *
  * lib-cn_core
- * Copyright (C) 2017 Thorsten Suckow-Homberg/conjoon.org
+ * Copyright (C) 2019 Thorsten Suckow-Homberg/conjoon.org
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * properties; "name" is not mandatory, if omitted, "address" will be
  * used to set the value for name.
  * It is also okay to just specify a string instead of an object with an address-
- * and a name-property it will then be automatically
+ * and a name-property; it will then be automatically
  * converted to an appropriate object, where the passed string will be used for
  * the "address"- and "name"-property.
  *
@@ -136,16 +136,18 @@ Ext.define('conjoon.cn_core.data.field.EmailAddress', {
      *
      * Compares both values and returns 0 if, and only if value1 and value2
      * are both an object, have the same number of elements, and each
-     * "address" property appears both in value1 and value2 with the same value.
+     * "address" property appears both in value1 and value2 with the same value,
+     * and each "name" property appears both in value1 and value2 with the
+     * same value. Strings are lowercased for comparision.
      *
      *      @example
      *      //The following values are considered equal:
      *
      *      //value1
-     *      {name : 'Peter', address :'peterParker@dailyNews.com'}
+     *      {name : 'Peter', address :'peterparker@dailyNews.com'}
      *
      *      //value2:
-     *      {name : '', address :'peterparker@dailynews.com'}
+     *      {name : 'peter', address :'peterparker@dailynews.com'}
      */
     compare : function(value1, value2) {
 
@@ -153,24 +155,35 @@ Ext.define('conjoon.cn_core.data.field.EmailAddress', {
             return 0;
         }
 
+        if (Ext.Object.isEmpty(value1) && Ext.Object.isEmpty(value2)) {
+            return 0;
+        }
+
         if (!Ext.isObject(value1) || !Ext.isObject(value2)) {
             return !Ext.isObject(value1) ? -1 : 1;
         }
 
-        if (!value1.hasOwnProperty('address')) {
+
+
+        if (!value1.hasOwnProperty('address') &&
+            value2.hasOwnProperty('address')) {
             return -1;
         }
 
-        if (!value2.hasOwnProperty('address')) {
+        if (!value1.hasOwnProperty('name') &&
+            value2.hasOwnProperty('name')) {
             return -1;
         }
+
         if ((value1['address'] + '').toLowerCase() ===
-            (value2['address'] + '').toLowerCase()) {
+            (value2['address'] + '').toLowerCase() &&
+            (value1['name'] + '').toLowerCase() ===
+            (value2['name'] + '').toLowerCase()) {
             return 0;
         }
 
 
-        return -1;
+        return 1;
     }
 
 
