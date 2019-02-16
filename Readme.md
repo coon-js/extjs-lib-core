@@ -14,7 +14,8 @@ The following naming conventions apply:
 `lib-cn_core`
 #### Shorthand to be used with providing aliases
 `cn_core`
-#### Example 
+
+**Example:**
 Class `coon.core.data.proxy.RestForm` has the alias `proxy.cn_core-dataproxyrestform`
 
 
