@@ -2,7 +2,7 @@
 
 lib-cn_core uses [Siesta](http://bryntum.com) for Unit/UI testing.
 
-##Configuration
+## Configuration
 
 Make sure you download Siesta and set the paths to the resources properly 
 in the files *index.html.template* and *tests.config.js.template*, then 
