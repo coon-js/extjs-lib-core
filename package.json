@@ -45,7 +45,7 @@
     /**
      * A detailed description of this package.
      */
-    "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects which are not directly related to view components. This makes the package useable in other projects as well.",
+    "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
 
     /**
      * The package version.
