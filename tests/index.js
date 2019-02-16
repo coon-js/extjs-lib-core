@@ -5,7 +5,7 @@ harness.configure({
     disableCaching : true,
     loaderPath     : {
 
-        'coon.core.overrides.cn_core' : '../overrides',
+        'coon.core.overrides.core' : '../overrides',
 
         /**
          * ux
