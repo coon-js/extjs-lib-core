@@ -27,7 +27,7 @@
  * Session class which lets you configure an individual BatchVisitor to use for
  * creating batches.
  */
-Ext.define('conjoon.cn_core.data.Session', {
+Ext.define('coon.core.data.Session', {
 
     extend : 'Ext.data.Session',
 

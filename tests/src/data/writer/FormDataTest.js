@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
+describe('coon.core.data.writer.FormDataTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it('Sanitize the writer', function(t) {
-        var writer = Ext.create('conjoon.cn_core.data.writer.FormData');
+        var writer = Ext.create('coon.core.data.writer.FormData');
 
         t.expect(writer instanceof Ext.data.writer.Json).toBe(true);
         t.expect(writer.alias).toContain('writer.cn_core-datawriterformdata');
@@ -39,7 +39,7 @@ describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
 
     t.it('Test writeRecords()', function(t) {
         var jsonwr = Ext.create('Ext.data.writer.Json'),
-            writer = Ext.create('conjoon.cn_core.data.writer.FormData'),
+            writer = Ext.create('coon.core.data.writer.FormData'),
             b1     = new Blob(["foo"], {type : 'text/plain'}),
             b2     = new Blob(["bar"], {type : 'text/plain'}),
             data   = [{
@@ -50,7 +50,7 @@ describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
                 blob     : b2
             }],
             regularRequest  = Ext.create('Ext.data.Request'),
-            formDataRequest = Ext.create('conjoon.cn_core.data.FormDataRequest');
+            formDataRequest = Ext.create('coon.core.data.FormDataRequest');
 
         regularRequest.setAction('update');
         formDataRequest.setAction('update');
@@ -77,7 +77,7 @@ describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
 
         formData.set('data[0][fileName]', 'snafu');
 
-        formDataRequest = Ext.create('conjoon.cn_core.data.FormDataRequest');
+        formDataRequest = Ext.create('coon.core.data.FormDataRequest');
         formDataRequest.setAction('create');
         formDataRequest.setFormData(formData);
         t.expect(formDataRequest.getFormData().get(keyCompare)).toBe('snafu');
@@ -90,7 +90,7 @@ describe('conjoon.cn_core.data.writer.FormDataTest', function(t) {
 
         // +++++
         // check that blobs are properly set
-        formDataRequest = Ext.create('conjoon.cn_core.data.FormDataRequest');
+        formDataRequest = Ext.create('coon.core.data.FormDataRequest');
         formDataRequest.setAction('create');
         retForm = writer.writeRecords(formDataRequest, data);
 

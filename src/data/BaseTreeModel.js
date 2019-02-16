@@ -26,7 +26,7 @@
 /**
  * Base tree model class for lib-cn_core.
  */
-Ext.define('conjoon.cn_core.data.BaseTreeModel', {
+Ext.define('coon.core.data.BaseTreeModel', {
 
     extend : 'Ext.data.TreeModel'
 

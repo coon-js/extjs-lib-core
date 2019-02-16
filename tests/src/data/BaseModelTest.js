@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.BaseModelTest', function(t) {
+describe('coon.core.data.BaseModelTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.BaseModelTest', function(t) {
 
     t.it('Sanitize the base model', function(t) {
 
-        var rec = Ext.create('conjoon.cn_core.data.BaseModel');
+        var rec = Ext.create('coon.core.data.BaseModel');
 
         t.expect(rec instanceof Ext.data.Model).toBeTruthy();
 

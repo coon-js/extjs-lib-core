@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe('conjoon.cn_core.app.ApplicationTest', function(t) {
+describe('coon.core.app.ApplicationTest', function(t) {
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
@@ -41,10 +41,10 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
 
     t.it('Should create the mainView of an extended class properly by using applicationViewClassName', function(t) {
 
-        var w = Ext.create('conjoon.test.app.mock.ApplicationMock2', {
+        var w = Ext.create('coon.test.app.mock.ApplicationMock2', {
             name        : 'test',
             controllers : [
-                'conjoon.test.app.mock.PackageControllerMock'
+                'coon.test.app.mock.PackageControllerMock'
             ]
         });
 
@@ -59,10 +59,10 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
         var exc = undefined;
 
         try {
-            var w = Ext.create('conjoon.test.app.mock.ApplicationMock', {
+            var w = Ext.create('coon.test.app.mock.ApplicationMock', {
                 name        : 'test',
                 controllers : [
-                    'conjoon.test.app.mock.PackageControllerMock'
+                    'coon.test.app.mock.PackageControllerMock'
                 ]
             });
         } catch(e) {
@@ -73,7 +73,7 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
     });
 
     t.it('postLaunchHookProcess should be Ext.emptyFn', function(t) {
-        var w = Ext.create('conjoon.cn_core.app.Application', {
+        var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
             mainView    : 'Ext.Panel'
         });
@@ -82,16 +82,16 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
     });
 
     t.it('applicationViewClassName should be null', function(t) {
-        t.expect(conjoon.cn_core.app.Application.prototype.applicationViewClassName).toBeNull();
+        t.expect(coon.core.app.Application.prototype.applicationViewClassName).toBeNull();
     });
 
 
     t.it('Should not create the mainView at first, then call launch() to make sure it is created', function(t) {
-        var w = Ext.create('conjoon.cn_core.app.Application', {
+        var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
             mainView    : 'Ext.Panel',
             controllers : [
-                'conjoon.test.app.mock.PackageControllerMock'
+                'coon.test.app.mock.PackageControllerMock'
             ]
         });
         t.expect(w.getMainView()).toBeFalsy();
@@ -101,11 +101,11 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
 
 
     t.it('Should not create the mainView with controllers', function(t) {
-        var w = Ext.create('conjoon.cn_core.app.Application', {
+        var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
             mainView    : 'Ext.Panel',
             controllers : [
-                'conjoon.test.app.mock.PackageControllerMock'
+                'coon.test.app.mock.PackageControllerMock'
             ]
         });
         t.expect(w.getMainView()).toBeFalsy();
@@ -114,11 +114,11 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
 
     t.it('Should create the mainView with controllers', function(t) {
 
-        var w = Ext.create('conjoon.cn_core.app.Application', {
+        var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
             mainView    : 'Ext.Panel',
             controllers : [
-                'conjoon.cn_core.app.PackageController'
+                'coon.core.app.PackageController'
             ]
         });
 
@@ -126,11 +126,11 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
     });
 
     t.it('Should throw an error when preLaunchHookProcess is triggered when mainView was created.', function(t) {
-        var w = Ext.create('conjoon.cn_core.app.Application', {
+        var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
             mainView    : 'Ext.Panel',
             controllers : [
-                'conjoon.cn_core.app.PackageController'
+                'coon.core.app.PackageController'
             ]
         });
 
@@ -153,7 +153,7 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
         var exc = undefined;
 
         try {
-            Ext.create('conjoon.cn_core.app.Application', {
+            Ext.create('coon.core.app.Application', {
                 name  : 'test'
            });
 
@@ -167,7 +167,7 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
         var exc = undefined;
 
         try {
-            Ext.create('conjoon.cn_core.app.Application', {
+            Ext.create('coon.core.app.Application', {
                 name  : 'test',
                 mainView : {}
             });
@@ -183,9 +183,9 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
         var exc = undefined;
 
         try {
-            Ext.create('conjoon.cn_core.app.Application', {
+            Ext.create('coon.core.app.Application', {
                 name  : 'test',
-                mainView : 'conjoon.fictionalClass'
+                mainView : 'coon.fictionalClass'
             });
 
         } catch(e) {exc = e;}
@@ -199,11 +199,11 @@ describe('conjoon.cn_core.app.ApplicationTest', function(t) {
      */
     t.it('Test changes regarding lib-cn_core/issues/1', function(t) {
 
-        var app = Ext.create('conjoon.cn_core.app.Application', {
+        var app = Ext.create('coon.core.app.Application', {
                 name     : 'test',
                 mainView : 'Ext.Panel',
                 controllers : [
-                    'conjoon.test.app.mock.PackageControllerMock'
+                    'coon.test.app.mock.PackageControllerMock'
                 ]
             }),
             stack,

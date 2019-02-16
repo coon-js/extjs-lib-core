@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
+describe('coon.core.data.proxy.RestFormTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -31,18 +31,18 @@ describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it('Make sure class definition is as expected', function(t) {
-        var proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm');
+        var proxy = Ext.create('coon.core.data.proxy.RestForm');
 
         // sanitize
         t.expect(proxy instanceof Ext.data.proxy.Rest).toBe(true);
         t.expect(proxy.alias).toContain('proxy.cn_core-dataproxyrestform');
-        t.expect(proxy.getWriter() instanceof conjoon.cn_core.data.writer.FormData).toBe(true);
+        t.expect(proxy.getWriter() instanceof coon.core.data.writer.FormData).toBe(true);
 
     });
 
 
     t.it('Test buildRequest() with invalid operation type', function(t) {
-        var proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
+        var proxy = Ext.create('coon.core.data.proxy.RestForm',{
             url :'foo'
         });
 
@@ -61,42 +61,42 @@ describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
 
 
     t.it('Test buildRequest() with valid operation type', function(t) {
-        var proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
+        var proxy = Ext.create('coon.core.data.proxy.RestForm',{
             url :'foo'
         });
 
-        var ret = proxy.buildRequest(Ext.create('conjoon.cn_core.data.operation.Upload'));
+        var ret = proxy.buildRequest(Ext.create('coon.core.data.operation.Upload'));
 
-        t.expect(ret instanceof conjoon.cn_core.data.FormDataRequest).toBe(true);
+        t.expect(ret instanceof coon.core.data.FormDataRequest).toBe(true);
 
     });
 
 
     t.it('Test sendRequest()', function(t) {
-        let proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
+        let proxy = Ext.create('coon.core.data.proxy.RestForm',{
                 url :'foo'
             });
 
-        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+        req = Ext.create('coon.core.data.FormDataRequest', {
             action : 'create', url : 'CREATE'});
         ret = proxy.sendRequest(req);
-        t.isInstanceOf(ret.getRawRequest(), 'conjoon.cn_core.data.request.FormData');
+        t.isInstanceOf(ret.getRawRequest(), 'coon.core.data.request.FormData');
         t.expect(ret).toBe(req);
 
-        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+        req = Ext.create('coon.core.data.FormDataRequest', {
             url : 'NIL'});
         ret = proxy.sendRequest(req);
         t.expect(ret).toBe(req);
         t.isInstanceOf(ret.getRawRequest(), 'Ext.data.request.Ajax');
 
 
-        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+        req = Ext.create('coon.core.data.FormDataRequest', {
             action : 'read', url : 'READ'});
         ret = proxy.sendRequest(req);
         t.expect(ret).toBe(req);
         t.isInstanceOf(ret.getRawRequest(), 'Ext.data.request.Ajax');
 
-        req = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+        req = Ext.create('coon.core.data.FormDataRequest', {
             action : 'destroy', url : 'DESTROY'});
 
         ret = proxy.sendRequest(req);
@@ -107,13 +107,13 @@ describe('conjoon.cn_core.data.proxy.RestFormTest', function(t) {
 
 
     t.it('Test createOperation()', function(t) {
-        var proxy = Ext.create('conjoon.cn_core.data.proxy.RestForm',{
+        var proxy = Ext.create('coon.core.data.proxy.RestForm',{
             url :'foo'
         });
 
         var ret = proxy.createOperation('create');
 
-        t.expect(ret instanceof conjoon.cn_core.data.operation.Upload).toBe(true);
+        t.expect(ret instanceof coon.core.data.operation.Upload).toBe(true);
 
     });
 });

@@ -29,10 +29,10 @@
  *
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.Operation', {
+Ext.define('coon.core.data.pageMap.Operation', {
 
    requires : [
-       'conjoon.cn_core.data.pageMap.RecordPosition'
+       'coon.core.data.pageMap.RecordPosition'
    ],
 
 
@@ -177,16 +177,16 @@ Ext.define('conjoon.cn_core.data.pageMap.Operation', {
             });
         }
 
-        if (result.hasOwnProperty('to') && !(result.to instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (result.hasOwnProperty('to') && !(result.to instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg : "'to' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition",
+                msg : "'to' must be an instance of coon.core.data.pageMap.RecordPosition",
                 to  : result.to
             });
         }
 
-        if (result.hasOwnProperty('from') && !(result.from instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (result.hasOwnProperty('from') && !(result.from instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg  : "'from' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition",
+                msg  : "'from' must be an instance of coon.core.data.pageMap.RecordPosition",
                 from : result.from
             });
         }

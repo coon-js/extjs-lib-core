@@ -1,6 +1,7 @@
 <!DOCTYPE html>
  <html>
   <head>
+    <title>lib-cn_core</title>
 
     <!-- Siesta CSS e.g. siesta-all.css-->
     <link rel="stylesheet" type="text/css" href="[PATH_TO_SIESTA_ALL.CSS]">

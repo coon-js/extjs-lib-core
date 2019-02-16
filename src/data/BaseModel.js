@@ -26,7 +26,7 @@
 /**
  * Base model class for lib-cn_core.
  */
-Ext.define('conjoon.cn_core.data.BaseModel', {
+Ext.define('coon.core.data.BaseModel', {
 
     extend : 'Ext.data.Model'
 

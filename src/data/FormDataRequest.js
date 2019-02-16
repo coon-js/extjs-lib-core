@@ -26,12 +26,12 @@
 /**
  * A implementation of Ext.data.Request which makes sure that progressCallback,
  * progressScope and formData are configurable when using
- * {@link conjoon.cn_core.data.AjaxForm}.
+ * {@link coon.core.data.AjaxForm}.
  *
- * See {@link conjoon.cn_core.data.request.FormData}
- * See {@link conjoon.cn_core.data.AjaxForm}
+ * See {@link coon.core.data.request.FormData}
+ * See {@link coon.core.data.AjaxForm}
  */
-Ext.define('conjoon.cn_core.data.FormDataRequest', {
+Ext.define('coon.core.data.FormDataRequest', {
 
     extend: 'Ext.data.Request',
 

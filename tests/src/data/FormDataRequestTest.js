@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.FormDataRequestTest', function(t) {
+describe('coon.core.data.FormDataRequestTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ describe('conjoon.cn_core.data.FormDataRequestTest', function(t) {
 
     t.it('Sanitize the FormDataRequest class', function(t) {
 
-        var c = Ext.create('conjoon.cn_core.data.FormDataRequest', {
+        var c = Ext.create('coon.core.data.FormDataRequest', {
             progressCallback : 'foo',
 
             progressScope : 'bar',

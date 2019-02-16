@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.util.MimeTest', function(t) {
+describe('coon.core.util.MimeTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.util.Mime', function(){
+    t.requireOk('coon.core.util.Mime', function(){
 
         t.it('Test isImage()', function(t) {
 
@@ -53,7 +53,7 @@ describe('conjoon.cn_core.util.MimeTest', function(t) {
 
             for (var i = 0, len = testData.length; i < len; i++) {
                 t.expect(
-                    conjoon.cn_core.util.Mime.isImage(testData[i].value)
+                    coon.core.util.Mime.isImage(testData[i].value)
                 ).toBe(testData[i].expected);
 
             }

@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
+describe('coon.core.data.pageMap.PageRangeTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.data.pageMap.PageRange', function() {
+    t.requireOk('coon.core.data.pageMap.PageRange', function() {
 
 
 
@@ -38,13 +38,13 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
         var exc, e;
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.PageRange');} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.PageRange');} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be specified');
 
         t.expect(
-            Ext.create('conjoon.cn_core.data.pageMap.PageRange', {pages:[1]})
-            instanceof conjoon.cn_core.data.pageMap.PageRange
+            Ext.create('coon.core.data.pageMap.PageRange', {pages:[1]})
+            instanceof coon.core.data.pageMap.PageRange
         ).toBe(true);
 
 
@@ -55,7 +55,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         var exc, e;
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [1, 2, 5]
             });
         } catch (e) {
@@ -66,7 +66,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [0, 1, 2]
             });
         } catch (e) {
@@ -77,7 +77,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : 'somestuff'
             });
         } catch (e) {
@@ -87,7 +87,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('must be an array');
 
 
-        var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        var range = Ext.create('coon.core.data.pageMap.PageRange', {
             pages : [1, 2, 3]
         });
 
@@ -104,7 +104,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
     t.it('getter', function(t) {
 
-        var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        var range = Ext.create('coon.core.data.pageMap.PageRange', {
               pages : [3, 4, 5]
         });
 
@@ -117,16 +117,16 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
     t.it('equalTo()', function(t) {
 
-        var rangeLeft = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        var rangeLeft = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [3, 4, 5]
             }),
-            rangeRight = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeRight = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [3, 4, 5]
             }),
-            rangeNope_1 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeNope_1 = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [1]
             }),
-            rangeNope_2 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeNope_2 = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [4, 5, 6]
             }), exc, e;
 
@@ -153,16 +153,16 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
     t.it('equalTo() - (2)', function(t) {
 
-        var rangeLeft = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        var rangeLeft = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [3]
             }),
-            rangeRight = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeRight = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [3]
             }),
-            rangeNope_1 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeNope_1 = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [5]
             }),
-            rangeNope_2 = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            rangeNope_2 = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [6]
             }), exc, e;
 
@@ -179,7 +179,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
     t.it('toArray()', function(t) {
 
-        var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        var range = Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : [3, 4, 5]
             }),
             arr;
@@ -192,7 +192,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         t.expect(range.getFirst()).toBe(3);
 
 
-        range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        range = Ext.create('coon.core.data.pageMap.PageRange', {
             pages : [3]
         });
 
@@ -208,9 +208,9 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
 
 
 
-    t.it('conjoon.cn_core.data.pageMap.PageRange.create()', function(t) {
+    t.it('coon.core.data.pageMap.PageRange.create()', function(t) {
 
-        var PageRange = conjoon.cn_core.data.pageMap.PageRange,
+        var PageRange = coon.core.data.pageMap.PageRange,
             exc, e, range,
             tests = [
                 [4],
@@ -258,25 +258,25 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         // with array as arg
         for (var i = 0, len = tests.length; i < len; i++) {
             range = PageRange.create.call(null, tests[i]);
-            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
             t.expect(range.toArray()).toEqual(tests[i]);
         }
 
         // with arguments as args
         for (var i = 0, len = tests.length; i < len; i++) {
             range = PageRange.create.apply(null, tests[i]);
-            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
             t.expect(range.toArray()).toEqual(tests[i]);
         }
 
     });
 
 
-    t.it('conjoon.cn_core.data.pageMap.PageRange.createFor()', function(t) {
+    t.it('coon.core.data.pageMap.PageRange.createFor()', function(t) {
 
-        t.isCalledNTimes('createRange', conjoon.cn_core.Util, 2);
+        t.isCalledNTimes('createRange', coon.core.Util, 2);
 
-        var PageRange = conjoon.cn_core.data.pageMap.PageRange,
+        var PageRange = coon.core.data.pageMap.PageRange,
             exc, e, range,
             tests = [
                 [1, 2],
@@ -287,7 +287,7 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         // with arguments as args
         for (var i = 0, len = tests.length; i < len; i++) {
             range = PageRange.createFor.apply(null, tests[i]);
-            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
         }
 
     });
@@ -296,8 +296,8 @@ describe('conjoon.cn_core.data.pageMap.PageRangeTest', function(t) {
         t.it('contains()', function(t) {
 
 
-            var PageRange      = conjoon.cn_core.data.pageMap.PageRange,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            var PageRange      = coon.core.data.pageMap.PageRange,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 exc, e, range, pos,
                 tests = [
                     {range : [1, 2],  pos :  [1, 19], exp : true},

@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
+describe('coon.core.data.pageMap.OperationTest', function(t) {
 
 
 
@@ -32,13 +32,13 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.data.pageMap.Operation', function() {
+    t.requireOk('coon.core.data.pageMap.Operation', function() {
 
         t.it("prerequisites", function(t) {
 
             var op, exc, e, req, res,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
-                Operation = conjoon.cn_core.data.pageMap.Operation,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
+                Operation = coon.core.data.pageMap.Operation,
                 MOVE      = Operation.MOVE,
                 ADD       = Operation.ADD,
                 REMOVE    = Operation.REMOVE,
@@ -47,14 +47,14 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
                 record    = Ext.create('Ext.data.Model');
 
 
-            try {Ext.create('conjoon.cn_core.data.pageMap.Operation')} catch (e) {exc = e;}
+            try {Ext.create('coon.core.data.pageMap.Operation')} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain('is required');
             t.expect(exc.msg.toLowerCase()).toContain('type');
             exc = undefined;
 
-            try {Ext.create('conjoon.cn_core.data.pageMap.Operation', {type : 'foo'})} catch (e) {exc = e;}
+            try {Ext.create('coon.core.data.pageMap.Operation', {type : 'foo'})} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain('invalid value');
@@ -62,7 +62,7 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
             exc = undefined;
 
             // MOVE
-            op = Ext.create('conjoon.cn_core.data.pageMap.Operation', {type : MOVE});
+            op = Ext.create('coon.core.data.pageMap.Operation', {type : MOVE});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(MOVE);
 
@@ -131,7 +131,7 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
 
 
             // REMOVE
-            op = Ext.create('conjoon.cn_core.data.pageMap.Operation', {type : REMOVE});
+            op = Ext.create('coon.core.data.pageMap.Operation', {type : REMOVE});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(REMOVE);
 
@@ -156,7 +156,7 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
 
 
             // ADD
-            op = Ext.create('conjoon.cn_core.data.pageMap.Operation', {type : ADD});
+            op = Ext.create('coon.core.data.pageMap.Operation', {type : ADD});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(ADD);
 
@@ -180,7 +180,7 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
             });
 
 
-            op = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
+            op = Ext.create('coon.core.data.pageMap.Operation', {
                 type   : MOVE,
                 result : {
                     success : false, from : from, to : to, record : record
@@ -195,7 +195,7 @@ describe('conjoon.cn_core.data.pageMap.OperationTest', function(t) {
 
 
             // ADD - example for false and to not available
-            op = Ext.create('conjoon.cn_core.data.pageMap.Operation', {type : ADD});
+            op = Ext.create('coon.core.data.pageMap.Operation', {type : ADD});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(ADD);
 

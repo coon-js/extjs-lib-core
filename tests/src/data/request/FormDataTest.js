@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
+describe('coon.core.data.request.FormDataTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
 // +----------------------------------------------------------------------------
 
     t.it('Make sure class definition is as expected', function(t) {
-        var request = Ext.create('conjoon.cn_core.data.request.FormData', {});
+        var request = Ext.create('coon.core.data.request.FormData', {});
 
         // sanitize
         t.expect(request instanceof Ext.data.request.Ajax).toBe(true);
@@ -40,7 +40,7 @@ describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
 
 
     t.it('test openRequest() without FormData', function(t) {
-        var request = Ext.create('conjoon.cn_core.data.request.FormData', {
+        var request = Ext.create('coon.core.data.request.FormData', {
                 options : {
                     headers : {
                         'Content-Type' : 'foo'
@@ -61,7 +61,7 @@ describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
 
 
     t.it('test openRequest() with FormData', function(t) {
-        var request = Ext.create('conjoon.cn_core.data.request.FormData', {
+        var request = Ext.create('coon.core.data.request.FormData', {
                 options : {
                     headers : {
                         'Content-Type' : 'foo'
@@ -98,7 +98,7 @@ describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
 
 
     t.it('test onProgress() undefined', function(t) {
-        var request = Ext.create('conjoon.cn_core.data.request.FormData', {
+        var request = Ext.create('coon.core.data.request.FormData', {
                 options : {
                     progressCallback : undefined
                 }
@@ -117,7 +117,7 @@ describe('conjoon.cn_core.data.request.FormDataTest', function(t) {
 
     t.it('test onProgress() defined', function(t) {
         var progressScope = {},
-            request        = Ext.create('conjoon.cn_core.data.request.FormData', {
+            request        = Ext.create('coon.core.data.request.FormData', {
             options : {
                 progressCallback : function(evt, options) {
                     this['foo'] = evt;

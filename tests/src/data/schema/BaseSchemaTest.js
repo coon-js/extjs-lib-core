@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.schema.BaseSchemaTest', function(t) {
+describe('coon.core.data.schema.BaseSchemaTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ describe('conjoon.cn_core.data.schema.BaseSchemaTest', function(t) {
         var exc;
 
         try {
-            Ext.create('conjoon.cn_core.data.schema.BaseSchema', {
+            Ext.create('coon.core.data.schema.BaseSchema', {
                 namespace : 'mynamespace'
             });
         } catch (e) {
@@ -53,7 +53,7 @@ describe('conjoon.cn_core.data.schema.BaseSchemaTest', function(t) {
         var exc;
 
         try {
-            Ext.create('conjoon.cn_core.data.schema.BaseSchema', {
+            Ext.create('coon.core.data.schema.BaseSchema', {
                 id        : 'default',
                 namespace : 'mynamespace'
             });
@@ -71,7 +71,7 @@ describe('conjoon.cn_core.data.schema.BaseSchemaTest', function(t) {
         var exc;
 
         try {
-            Ext.create('conjoon.cn_core.data.schema.BaseSchema', {
+            Ext.create('coon.core.data.schema.BaseSchema', {
                 id : 'myId'
             });
         } catch (e) {
@@ -87,14 +87,14 @@ describe('conjoon.cn_core.data.schema.BaseSchemaTest', function(t) {
     /**
      * Test create
      */
-    t.it('Should create an instance of conjoon.cn_core.data.schema.BaseSchema', function(t) {
+    t.it('Should create an instance of coon.core.data.schema.BaseSchema', function(t) {
 
-        var schema = Ext.create('conjoon.cn_core.data.schema.BaseSchema', {
+        var schema = Ext.create('coon.core.data.schema.BaseSchema', {
             id        : 'myId',
             namespace : 'myNamespace'
         });
 
-        t.expect(schema instanceof conjoon.cn_core.data.schema.BaseSchema).toBeTruthy();
+        t.expect(schema instanceof coon.core.data.schema.BaseSchema).toBeTruthy();
 
         t.expect(schema.id).toBe('myId');
         t.expect(schema.getNamespace()).toBe('myNamespace.');

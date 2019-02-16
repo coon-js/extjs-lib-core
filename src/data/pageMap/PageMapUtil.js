@@ -32,19 +32,19 @@
  * attached view.
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
+Ext.define('coon.core.data.pageMap.PageMapUtil', {
 
     singleton : true,
 
     mixins : [
-        'conjoon.cn_core.data.pageMap.ArgumentFilter'
+        'coon.core.data.pageMap.ArgumentFilter'
     ],
 
     requires : [
-        'conjoon.cn_core.Util',
-        'conjoon.cn_core.data.pageMap.RecordPosition',
-        'conjoon.cn_core.data.pageMap.PageRange',
-        'conjoon.cn_core.data.pageMap.IndexRange'
+        'coon.core.Util',
+        'coon.core.data.pageMap.RecordPosition',
+        'coon.core.data.pageMap.PageRange',
+        'coon.core.data.pageMap.IndexRange'
     ],
 
 
@@ -57,7 +57,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Boolean} ignoreTotalCount true to not check whether any index exceeds
      * the current totalCount of the underlying store
      *
-     * @return {conjoon.cn_core.data.pageMap.RecordPosition}
+     * @return {coon.core.data.pageMap.RecordPosition}
      *
      * @throws if position less than 0, or if pageMap is not an instance of
      * {Ext.data.PageMap} or if index is greater than the total count of the
@@ -86,7 +86,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             });
         }
 
-        return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        return Ext.create('coon.core.data.pageMap.RecordPosition', {
             page  : Math.floor(index /  pageMap.getPageSize()) + 1,
             index : index % pageMap.getPageSize()
         });
@@ -98,12 +98,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * Computes the expected store index of the record represented by position.
      * The index is not guaranteed to hold a record.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {coon.core.data.pageMap.RecordPosition} position
      * @param {Ext.data.PageMap} pageMap
      *
      * @return {Number}
      *
-     * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * @throws if position is not an instance of {coon.core.data.pageMap.RecordPosition},
      * or if pageMap is not an instance of {Ext.data.PageMap}, or if the index in
      * exceeds the pageSize - 1
      */
@@ -111,9 +111,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         const me = this;
 
-        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(position instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                msg      : '\'position\' must be an instance of coon.core.data.pageMap.RecordPosition',
                 position : position
             });
         }
@@ -138,7 +138,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * position. The positions must be within the same PageRange.
      * This method will maintain indexes so that indexOf-of the PageMap
      * continues to work.
-     * If pageMapOrFeeder is an instance of conjoon.cn_core.data.pageMap.PageMapFeeder,
+     * If pageMapOrFeeder is an instance of coon.core.data.pageMap.PageMapFeeder,
      * moving a record will also work in a PageRange that has Feeds.
      *
      *
@@ -177,14 +177,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      *
      *
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
-     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
+     * @param {coon.core.data.pageMap.RecordPosition} from
+     * @param {coon.core.data.pageMap.RecordPosition} to
+     * @param {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      *
      * @return {Boolean} true if the record was successfully moved, otherwise
      * false
      *
-     * @throws if from or to are no instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * @throws if from or to are no instance of {coon.core.data.pageMap.RecordPosition},
      * if pageMap is not an instance of {Ext.data.PageMap} or if from and to
      * are not within the same PageRange or any of the source or target records could not
      * be found
@@ -307,7 +307,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
         if (maintainPages.length) {
-            me.maintainIndexMap(conjoon.cn_core.data.pageMap.PageRange.createFor(
+            me.maintainIndexMap(coon.core.data.pageMap.PageRange.createFor(
                 Math.min(...maintainPages),
                 Math.max(...maintainPages)
             ), pageMap);
@@ -323,14 +323,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * able to properly reference records once the position of data has
      * been changed due to moving / removing data.
      *
-     * @param {conjoon.cn_core.data.pageMap.PageRange} pageRange the page range
+     * @param {coon.core.data.pageMap.PageRange} pageRange the page range
      * for which re-computing the index map should occur
      * @param {Ext.data.PageMap}  the PageMap which indexMap should be updated
      *
      * @return {Boolean} true
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if pageRange
-     * is not an instance of {conjoon.cn_core.data.pageMap.PageRange}, or if any
+     * is not an instance of {coon.core.data.pageMap.PageRange}, or if any
      * map in the specified pageRange does not exist
      */
     maintainIndexMap : function(pageRange, pageMap){
@@ -339,9 +339,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
         let pageSize, storeIndex, start, end, indexMap,values, page;
 
-        if (!(pageRange instanceof conjoon.cn_core.data.pageMap.PageRange)) {
+        if (!(pageRange instanceof coon.core.data.pageMap.PageRange)) {
             Ext.raise({
-                msg       : '\'pageRange\' must be an instance of conjoon.cn_core.data.pageMap.PageRange',
+                msg       : '\'pageRange\' must be an instance of coon.core.data.pageMap.PageRange',
                 pageRange : pageRange
             });
         }
@@ -382,16 +382,16 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * Returns the direct neighbour left to the record at the specified position.
      * Returns null if there is no neighbour record available.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
-     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
+     * @param {coon.core.data.pageMap.RecordPosition} position
+     * @param {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      * @param {Boolean} left true to return the left neighbour, false to return the
      * right neighbour
      *
      * @return {Ext.data.Model|undefined}
      *
-     * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * @throws if position is not an instance of {coon.core.data.pageMap.RecordPosition},
      * or if pageMap is not an instance of {Ext.data.PageMap} and not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or of the index of the specified
+     * {coon.core.data.pageMap.PageMapFeeder}, or of the index of the specified
      * position is out of bounds
      */
     getNeighbour : function(position, pageMapOrFeeder, left = true) {
@@ -422,7 +422,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
         return me.getRecordAt(
-            conjoon.cn_core.data.pageMap.RecordPosition.create(
+            coon.core.data.pageMap.RecordPosition.create(
             neighbourPage, neighbourIndex), pageMapOrFeeder);
     },
 
@@ -431,14 +431,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * Returns the record found at the specified position in the specified
      * pageMap or feeder. Returns undefined if not found.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
-     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapOrFeeder
+     * @param {coon.core.data.pageMap.RecordPosition} position
+     * @param {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder} pageMapOrFeeder
      *
      * @return {Ext.data.Model|undefined}
      *
-     * @throws if position is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition},
+     * @throws if position is not an instance of {coon.core.data.pageMap.RecordPosition},
      * or if pageMap is not an instance of {Ext.data.PageMap} and not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or of the index of the specified
+     * {coon.core.data.pageMap.PageMapFeeder}, or of the index of the specified
      * position is out of bounds
      */
     getRecordAt : function(position, pageMapOrFeeder) {
@@ -489,22 +489,22 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * Feeds will be considered when looking the position of the record up.
      *
      * @param {Ext.data.Model} record
-     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} pageMap
+     * @param {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder} pageMap
      *
-     * @return {conjoon.cn_core.data.pageMap.PageRange}
+     * @return {coon.core.data.pageMap.PageRange}
      *
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap} or
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}, or if record is not an
+     * {coon.core.data.pageMap.PageMapFeeder}, or if record is not an
      * instance of {Ext.data.Model}, or if the record cannot be found in the
      * current data set
      *
-     * @see conjoon.cn_core.Util.listNeighbours
+     * @see coon.core.Util.listNeighbours
      * @see #getRangeForRecord
      */
     getPageRangeForRecord : function(record, pageMapOrFeeder) {
 
-        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        return Ext.create('coon.core.data.pageMap.PageRange', {
             pages : this.getRangeForRecord(record, pageMapOrFeeder)
         });
 
@@ -518,9 +518,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Ext.data.Model} record
      * @param {Ext.data.PageMap} pageMap
      *
-     * @return {conjoon.cn_core.data.pageMap.PageRange}
+     * @return {coon.core.data.pageMap.PageRange}
      *
-     * @see conjoon.cn_core.Util.listNeighbours
+     * @see coon.core.Util.listNeighbours
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if record
      * is not an instance of {Ext.data.Model}, or if record is not found in the
@@ -535,7 +535,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
                           return value >= pagePos;
                       };
 
-        return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+        return Ext.create('coon.core.data.pageMap.PageRange', {
             pages: range.filter(filter)
         });
     },
@@ -549,7 +549,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
     getRangeForRecord : function(record, pageMapOrFeeder) {
 
         const me             = this,
-              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+              RecordPosition = coon.core.data.pageMap.RecordPosition;
 
         let page, pages, index, position, pageMap, feeder;
 
@@ -597,7 +597,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             }
 
             let toPage     = position.getPage(),
-                tmpPages   = conjoon.cn_core.Util.listNeighbours(pages, toPage),
+                tmpPages   = coon.core.Util.listNeighbours(pages, toPage),
                 finalPages = [], feed, prev, next, curr;
 
             for (let i = tmpPages.indexOf(toPage), len = tmpPages.length; i < len; i++) {
@@ -654,7 +654,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
 
-        return conjoon.cn_core.Util.listNeighbours(pages, position.getPage());
+        return coon.core.Util.listNeighbours(pages, position.getPage());
     },
 
     /**
@@ -666,7 +666,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Boolean=false} flat true to return the range as an ungrouped,
      * flat array in ascending order
      *
-     * @return {conjoon.cn_core.data.pageMap.PageRange|Array}
+     * @return {coon.core.data.pageMap.PageRange|Array}
      */
     getRightSidePageRangeForPage : function(page, pageMap, flat = false) {
 
@@ -684,7 +684,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
             if (fill === true) {
                 if (flat !== true) {
-                    found.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                    found.push(Ext.create('coon.core.data.pageMap.PageRange', {
                         pages : tmp
                     }));
                 } else {
@@ -713,7 +713,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Boolean=false} flat true to return the range as an ungrouped,
      * flat array in ascending order
      *
-     * @return {conjoon.cn_core.data.pageMap.PageRange|Array}
+     * @return {coon.core.data.pageMap.PageRange|Array}
      *
      * @throws if page is not a number, or if pageMap is not an instance of
      * {Ext.data.PageMap}, or if multiple ranges where found
@@ -749,7 +749,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         }
 
         return flat !== true
-                    ? Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+                    ? Ext.create('coon.core.data.pageMap.PageRange', {
                           pages : found[0]
                       })
                     : found[0];
@@ -757,17 +757,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
 
     /**
-     * Returns an array of {conjoon.cn_core.data.pageMap.PageRange}s currently
+     * Returns an array of {coon.core.data.pageMap.PageRange}s currently
      * loaded in the pageMap while considering the available Feeds in the passed
      * PageMapFeeder.
      *
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
+     * @param {coon.core.data.pageMap.PageMapFeeder} pageMapFeeder
      *
-     * @return {Array} An array which entries consists of {conjoon.cn_core.data.pageMap.PageRange}
+     * @return {Array} An array which entries consists of {coon.core.data.pageMap.PageRange}
      * entries, ordered from lowest to highest pageRange.
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if pageMapFeeder
-     * is not an instance of {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * is not an instance of {coon.core.data.pageMap.PageMapFeeder}
      */
     getAvailableRanges : function(pageMapFeeder) {
 
@@ -776,9 +776,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         let ranges     = [],
             pageRanges = [];
 
-        if (!(pageMapFeeder instanceof  conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+        if (!(pageMapFeeder instanceof  coon.core.data.pageMap.PageMapFeeder)) {
             Ext.raise({
-                msg           : "'pageMapFeeder' must be an instance of conjoon.cn_core.data.pageMap.PageMapFeeder",
+                msg           : "'pageMapFeeder' must be an instance of coon.core.data.pageMap.PageMapFeeder",
                 pageMapFeeder : pageMapFeeder
             });
         }
@@ -786,7 +786,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         ranges = pageMapFeeder.groupWithFeeds();
 
         for (var i = 0, len = ranges ? ranges.length : -1; i < len; i++) {
-            pageRanges.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pageRanges.push(Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : ranges[i]
             }))
         };
@@ -797,12 +797,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
 
     /**
-     * Returns an array of {conjoon.cn_core.data.pageMap.PageRange}s currently
+     * Returns an array of {coon.core.data.pageMap.PageRange}s currently
      * loaded in the pageMap.
      *
      * @param {Ext.data.PageMap} pageMap
      *
-     * @return {Array} An array which entries consists of {conjoon.cn_core.data.pageMap.PageRange}
+     * @return {Array} An array which entries consists of {coon.core.data.pageMap.PageRange}
      * entries, ordered from lowest to highest pageRange.
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}
@@ -820,9 +820,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             ranges.push(i);
         }
 
-        ranges = conjoon.cn_core.Util.groupIndices(ranges);
+        ranges = coon.core.Util.groupIndices(ranges);
         for (var i = 0, len = ranges.length; i < len; i++) {
-            pageRanges.push(Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            pageRanges.push(Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : ranges[i]
             }))
         };
@@ -902,7 +902,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
 
     /**
-     * Returns the conjoon.cn_core.data.pageMap.IndexRange representing start
+     * Returns the coon.core.data.pageMap.IndexRange representing start
      * and end.
      *
      * @param {Number} start
@@ -911,7 +911,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * @param {Boolean} ignoreTotalCount true to not check whether any index exceeds
      * the current totalCount of the underlying store
      *
-     * @return {conjoon.cn_core.data.pageMap.IndexRange}
+     * @return {coon.core.data.pageMap.IndexRange}
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, if start
      * or end are less than 0 or not a number, if start is less than end
@@ -953,7 +953,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
         start = me.storeIndexToPosition(start, pageMap, ignoreTotalCount);
         end   = me.storeIndexToPosition(end, pageMap, ignoreTotalCount);
 
-        return Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
+        return Ext.create('coon.core.data.pageMap.IndexRange', {
             start : start,
             end   : end
         });
@@ -967,7 +967,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * Returns the Ext.data.Model if found, otherwise null.
      *
      * @param {Function} func
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} feeder
+     * @param {coon.core.data.pageMap.PageMapFeeder} feeder
      *
      * @return {Ext.data.Model} Returns the found record if available in the
      * PageMap or the Feeds, otherwise null
@@ -1026,7 +1026,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
      * otherwise null.
      *
      * @param {String} id
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} feeder
+     * @param {coon.core.data.pageMap.PageMapFeeder} feeder
      *
      * @return {Ext.data.Model} Returns the found record if available in the
      * PageMap or the Feeds, otherwise null
@@ -1049,13 +1049,13 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
 
     /**
      * Tries to find the specified record in the specified feeder, considering
-     * Feeds. Returns the conjoon.cn_core.data.pageMap.RecordPosition if found,
+     * Feeds. Returns the coon.core.data.pageMap.RecordPosition if found,
      * otherwise null.
      *
      * @param {Ext.data.Model} record
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} feeder
+     * @param {coon.core.data.pageMap.PageMapFeeder} feeder
      *
-     * @return {conjoon.cn_core.data.pageMap.RecordPosition|null} Returns the
+     * @return {coon.core.data.pageMap.RecordPosition|null} Returns the
      * position of the record as a RecordPosition-object, otherwise false
      */
     findRecord : function(record, feeder) {
@@ -1080,7 +1080,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapUtil', {
             index = feeds[feed].indexOf(record);
 
             if (index !== -1) {
-                return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                return Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : feed,
                     index : index
                 });

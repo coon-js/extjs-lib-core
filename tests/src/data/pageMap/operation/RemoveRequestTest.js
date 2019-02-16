@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.operation.RemoveRequestTest', function(t) {
+describe('coon.core.data.pageMap.operation.RemoveRequestTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -35,10 +35,10 @@ describe('conjoon.cn_core.data.pageMap.operation.RemoveRequestTest', function(t)
 
         var rr, exc, e;
 
-        rr = Ext.create('conjoon.cn_core.data.pageMap.operation.RemoveRequest');
+        rr = Ext.create('coon.core.data.pageMap.operation.RemoveRequest');
 
-        t.expect(rr instanceof conjoon.cn_core.data.pageMap.operation.RemoveRequest).toBe(true);
-        t.expect(rr instanceof conjoon.cn_core.data.pageMap.operation.Request).toBe(true);
+        t.expect(rr instanceof coon.core.data.pageMap.operation.RemoveRequest).toBe(true);
+        t.expect(rr instanceof coon.core.data.pageMap.operation.Request).toBe(true);
 
     });
 

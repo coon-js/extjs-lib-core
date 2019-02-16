@@ -23,12 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.app.PackageControllerTest', function(t) {
+describe('coon.core.app.PackageControllerTest', function(t) {
 
     var controller;
 
     t.beforeEach(function() {
-        controller = Ext.create('conjoon.cn_core.app.PackageController');
+        controller = Ext.create('coon.core.app.PackageController');
     });
 
 // +----------------------------------------------------------------------------
@@ -38,8 +38,8 @@ describe('conjoon.cn_core.app.PackageControllerTest', function(t) {
     /**
      * Test create
      */
-    t.it('Should create an instance of conjoon.cn_core.app.PackageController', function(t) {
-        t.expect(controller instanceof conjoon.cn_core.app.PackageController).toBeTruthy();
+    t.it('Should create an instance of coon.core.app.PackageController', function(t) {
+        t.expect(controller instanceof coon.core.app.PackageController).toBeTruthy();
     });
 
     /**
@@ -162,7 +162,7 @@ describe('conjoon.cn_core.app.PackageControllerTest', function(t) {
         //                  TESTS  WITH APP
         //_____________________________________________________
         Ext.define('Issue1.nomainview.PackageController', {
-            extend : 'conjoon.cn_core.app.PackageController',
+            extend : 'coon.core.app.PackageController',
             mockApp : null,
             getApplication : function() {
                 if (!this.mockApp) {

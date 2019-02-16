@@ -29,7 +29,7 @@
  * The array may also be empty is allowEmpty is set to true.
  *
  */
-Ext.define('conjoon.cn_core.data.validator.EmailAddressCollection', {
+Ext.define('coon.core.data.validator.EmailAddressCollection', {
 
     extend : 'Ext.data.validator.Validator',
 

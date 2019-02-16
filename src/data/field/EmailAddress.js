@@ -79,7 +79,7 @@
  * The default value of this field is null
  *
  */
-Ext.define('conjoon.cn_core.data.field.EmailAddress', {
+Ext.define('coon.core.data.field.EmailAddress', {
 
     extend : 'Ext.data.field.Field',
 

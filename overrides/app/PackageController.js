@@ -26,9 +26,9 @@
 /**
  * Fix for https://www.sencha.com/forum/showthread.php?339006-Sencha-6-2-GPL-Commercial-auto-generated-id-of-App-Controller-is-NOT-FQN-of-class&p=1178063#post1178063
  */
-Ext.define('conjoon.cn_core.overrides.cn_core.app.PackageController', {
+Ext.define('coon.core.overrides.core.app.PackageController', {
 
-    override : 'conjoon.cn_core.app.PackageController',
+    override : 'coon.core.app.PackageController',
 
     applyId : function(id) {
         return id ||

@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
+describe('coon.core.data.pageMap.IndexLookupTest', function(t) {
 
     Ext.define("TespropMock", {
         extend : 'Ext.data.Model',
@@ -49,7 +49,7 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
         },
         createFeeder = function(cfg) {
 
-            return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+            return Ext.create('coon.core.data.pageMap.PageMapFeeder', {
                 pageMap : createPageMap(cfg)
             });
         },
@@ -78,7 +78,7 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
             return store.getData();
         },
         createSorter = function(cfg) {
-            return Ext.create('conjoon.cn_core.data.pageMap.IndexLookup');
+            return Ext.create('coon.core.data.pageMap.IndexLookup');
         },
         compareFunction = function (val1, val2) {
             return val1 < val2
@@ -88,7 +88,7 @@ describe('conjoon.cn_core.data.pageMap.IndexLookupTest', function(t) {
                     : 1;
         };
 
-t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
+t.requireOk('coon.core.fixtures.sim.ItemSim', function(){
 
 
     t.it("prerequisites", function(t) {
@@ -96,9 +96,9 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
         var ls, exc, e;
 
         let pm = Ext.create('Ext.data.PageMap');
-        ls = Ext.create('conjoon.cn_core.data.pageMap.IndexLookup');
+        ls = Ext.create('coon.core.data.pageMap.IndexLookup');
 
-        t.expect(ls instanceof conjoon.cn_core.data.pageMap.IndexLookup).toBe(true);
+        t.expect(ls instanceof coon.core.data.pageMap.IndexLookup).toBe(true);
 
     });
 
@@ -857,7 +857,7 @@ t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
 
         t.waitForMs(250, function() {
 
-            let pos = conjoon.cn_core.data.pageMap.RecordPosition.create(1, 4);
+            let pos = coon.core.data.pageMap.RecordPosition.create(1, 4);
 
             pageMap.map[1].value[1].set('testPropForIndexLookup', 500);
             pageMap.map[1].value[2].set('testPropForIndexLookup', 500);

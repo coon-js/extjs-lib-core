@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('conjoon.test.app.mock.ApplicationMock', {
+Ext.define('coon.test.app.mock.ApplicationMock', {
 
-    extend : 'conjoon.cn_core.app.Application',
+    extend : 'coon.core.app.Application',
 
     mainView: 'Ext.Panel'
 

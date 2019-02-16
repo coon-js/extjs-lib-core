@@ -23,20 +23,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.ArgumentFilterTest', function(t) {
+describe('coon.core.data.pageMap.ArgumentFilterTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
-t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
+t.requireOk('coon.core.data.pageMap.PageMapFeeder', function(){
 
     /**
      * filterPageValue
      */
     t.it('filterPageValue()', function (t) {
         let exc, e,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try {
             filter.filterPageValue();
         } catch (e) {
@@ -60,7 +60,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterPageMapValue()', function (t) {
         let exc, e, pageMap,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try {
             filter.filterPageMapValue();
         } catch (e) {
@@ -84,7 +84,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterRecordValue()', function (t) {
         let exc, e, arg,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try {
             filter.filterRecordValue();
         } catch (e) {
@@ -108,7 +108,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterRecordPositionValue()', function (t) {
         let exc, e, arg,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try {
             filter.filterRecordPositionValue();
         } catch (e) {
@@ -122,7 +122,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         exc = undefined;
 
         try {
-            filter.filterRecordPositionValue(conjoon.cn_core.data.pageMap.RecordPosition.create(3, 4), 'B');
+            filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), 'B');
         } catch (e) {
             exc = e
         }
@@ -134,7 +134,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         exc = undefined;
 
         try {
-            filter.filterRecordPositionValue(conjoon.cn_core.data.pageMap.RecordPosition.create(3, 4), 4);
+            filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), 4);
         } catch (e) {
             exc = e
         }
@@ -146,13 +146,13 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         exc = undefined;
 
 
-        arg = conjoon.cn_core.data.pageMap.RecordPosition.create(3, 1000000);
+        arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
         t.expect(filter.filterRecordPositionValue(arg, 0)).toBe(arg);
 
-        arg = conjoon.cn_core.data.pageMap.RecordPosition.create(3, 1000000);
+        arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
         t.expect(filter.filterRecordPositionValue(arg)).toBe(arg);
 
-        arg = conjoon.cn_core.data.pageMap.RecordPosition.create(3, 4);
+        arg = coon.core.data.pageMap.RecordPosition.create(3, 4);
         t.expect(filter.filterRecordPositionValue(arg, 25)).toBe(arg);
     });
 
@@ -162,7 +162,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterIndexValue()', function(t) {
         let exc, e, arg,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try{filter.filterIndexValue();}catch (e) {exc = e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
@@ -202,7 +202,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterRecordsArray()', function(t) {
         let exc, e, arg,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
         try{filter.filterRecordsArray();}catch (e) {exc = e};
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
@@ -235,7 +235,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterPageMapOrFeederValue()', function (t) {
         let exc, e, pageMap,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
 
         try {filter.filterPageMapOrFeederValue();} catch (e) {exc = e};
         t.expect(exc).toBeDefined();
@@ -247,7 +247,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
         t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
 
-        let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+        let feeder = Ext.create('coon.core.data.pageMap.PageMapFeeder', {
             pageMap : pageMap
         });
         t.expect(filter.filterPageMapOrFeederValue(feeder)).toBe(feeder);
@@ -259,7 +259,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
      */
     t.it('filterFeederValue()', function (t) {
         let exc, e, pageMap,
-            filter = Ext.create('conjoon.cn_core.data.pageMap.ArgumentFilter');
+            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
 
         try {filter.filterFeederValue();} catch (e) {exc = e};
         t.expect(exc).toBeDefined();
@@ -269,7 +269,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
         exc = undefined;
 
         pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
-        let feeder = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+        let feeder = Ext.create('coon.core.data.pageMap.PageMapFeeder', {
             pageMap : pageMap
         });
         t.expect(filter.filterFeederValue(feeder)).toBe(feeder);

@@ -47,7 +47,7 @@
  *      console.log(f.get('size')); // outputs 9.8KB
  *
  */
-Ext.define('conjoon.cn_core.data.field.FileSize', {
+Ext.define('coon.core.data.field.FileSize', {
 
     extend : 'Ext.data.field.Field',
 

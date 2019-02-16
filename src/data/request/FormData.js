@@ -31,7 +31,7 @@
  * fires this event.
  * This request class is implemented to send {FormData} to the attached backend.
  */
-Ext.define('conjoon.cn_core.data.request.FormData', {
+Ext.define('coon.core.data.request.FormData', {
 
     extend : 'Ext.data.request.Ajax',
 

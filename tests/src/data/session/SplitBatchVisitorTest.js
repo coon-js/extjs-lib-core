@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.session.SplitBatchVisitorTest', function(t) {
+describe('coon.core.data.session.SplitBatchVisitorTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.session.SplitBatchVisitorTest', function(t) {
 
     t.it('Should successfully test class', function(t) {
 
-        var visitor = Ext.create('conjoon.cn_core.data.session.SplitBatchVisitor');
+        var visitor = Ext.create('coon.core.data.session.SplitBatchVisitor');
 
         t.expect(visitor instanceof Ext.data.session.BatchVisitor).toBe(true);
     });
@@ -53,7 +53,7 @@ describe('conjoon.cn_core.data.session.SplitBatchVisitorTest', function(t) {
         visitor.onDirtyRecord(operations[2]);
         t.expect(visitor.getBatch().getOperations().length).toBe(1);
 
-        visitor = Ext.create('conjoon.cn_core.data.session.SplitBatchVisitor');
+        visitor = Ext.create('coon.core.data.session.SplitBatchVisitor');
         operations = [
             Ext.create('Ext.data.Model'),
             Ext.create('Ext.data.Model'),

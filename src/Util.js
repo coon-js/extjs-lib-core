@@ -26,7 +26,7 @@
 /**
  * Utility class.
  */
-Ext.define('conjoon.cn_core.Util', {
+Ext.define('coon.core.Util', {
 
 
     singleton : true,
@@ -39,7 +39,7 @@ Ext.define('conjoon.cn_core.Util', {
      *      @example
      *      var foo = { 1 : { 2 : { 3 : { 4 : 'bar'}}}};
      *
-     *      conjoon.cn_core.Util.unchain('1.2.3.4', foo); // 'bar'
+     *      coon.core.Util.unchain('1.2.3.4', foo); // 'bar'
      *
      * @param {String} chain The object chain to resolve
      * @param {Object=Window} scope The scope where the chain is assumed. Defaults
@@ -78,7 +78,7 @@ Ext.define('conjoon.cn_core.Util', {
      *      var list   = ['4', 5, '1', '3', 6, '8'];
      *      var target = 5;
      *
-     *      conjoon.cn_core.Util.listNeighbours(list, target); // [3, 4, 5, 6]
+     *      coon.core.Util.listNeighbours(list, target); // [3, 4, 5, 6]
      *
      * @param {Array} list The list of values to return the neighbours from
      * @param {Number} target The initial value to look up its neighbours for
@@ -133,10 +133,10 @@ Ext.define('conjoon.cn_core.Util', {
      * lowest to highest. Dublicate items will be removed.
      *
      *      var list   = ['4', 5, '1', '3', 6, '8'];
-     *      conjoon.cn_core.Util.groupIndices(list); // [[1], [3, 4, 5], [6]]
+     *      coon.core.Util.groupIndices(list); // [[1], [3, 4, 5], [6]]
      *
      *      var list   = ['1', 2, '3'];
-     *      conjoon.cn_core.Util.groupIndices(list); // [[1, 2, 3]]
+     *      coon.core.Util.groupIndices(list); // [[1, 2, 3]]
      *
      * @param {Array} list The list of values to return the grouped indices from
      *

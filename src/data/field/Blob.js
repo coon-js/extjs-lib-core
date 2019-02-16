@@ -57,7 +57,7 @@
  * Data set to this field will always be a reference to the original Blob, not
  * a copy. Keep this in mind when using this field in your Data Models.
  */
-Ext.define('conjoon.cn_core.data.field.Blob', {
+Ext.define('coon.core.data.field.Blob', {
 
     extend : 'Ext.data.field.Field',
 

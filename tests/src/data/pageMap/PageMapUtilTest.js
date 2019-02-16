@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
+describe('coon.core.data.pageMap.PageMapUtilTest', function(t) {
 
     var createPageMap = function(cfg) {
 
@@ -58,7 +58,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         });
     },
     createFeeder = function(empty) {
-        return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+        return Ext.create('coon.core.data.pageMap.PageMapFeeder', {
             pageMap : createPageMap({empty : empty})
         });
     },
@@ -70,18 +70,18 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
     },
     checkMaintainedIndex = function(sourcePosition, targetPosition, sourceRecord, pageMap, t) {
 
-        var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+        var PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             tp = targetPosition;
 
         if (sourcePosition.getPage() < targetPosition.getPage()) {
             // records being shifted down
-            tp = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            tp = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : targetPosition.getPage(),
                 index : targetPosition.getIndex() - 1
             })
         } else if (sourcePosition.getPage() === targetPosition.getPage() &&
             sourcePosition.getIndex() < targetPosition.getIndex()) {
-            tp = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            tp = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : targetPosition.getPage(),
                 index : targetPosition.getIndex() - 1
             })
@@ -120,7 +120,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
     },
     createPos = function(page, index) {
-        return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        return Ext.create('coon.core.data.pageMap.RecordPosition', {
             page  : page,
             index : index
         })
@@ -154,36 +154,36 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
-    t.requireOk('conjoon.cn_core.data.pageMap.PageMapUtil', function() {
-    t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function() {
+    t.requireOk('coon.core.fixtures.sim.ItemSim', function(){
+    t.requireOk('coon.core.data.pageMap.PageMapUtil', function() {
+    t.requireOk('coon.core.data.pageMap.PageMapFeeder', function() {
 
 
         t.it('positionToStoreIndex()', function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap = Ext.create('Ext.data.PageMap', {
                     pageSize : 25
                 }),
-                invalid  = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                invalid  = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 25
                 }),
                 expected = [{
-                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    pos : Ext.create('coon.core.data.pageMap.RecordPosition', {
                         page  : 4,
                         index : 5
                     }),
                     result : 80
                 }, {
-                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    pos : Ext.create('coon.core.data.pageMap.RecordPosition', {
                         page  : 1,
                         index : 0
                     }),
                     result : 0
                 }, {
-                    pos : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                    pos : Ext.create('coon.core.data.pageMap.RecordPosition', {
                         page  : 1,
                         index : 24
                     }),
@@ -218,7 +218,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('storeIndexToPosition()', function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap = createPageMap(),
                 invalid  = 1000000000,
                 expected = [{
@@ -279,7 +279,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var exc, e;
 
             try {
-                conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForRecord(null, new Ext.data.PageMap);
+                coon.core.data.pageMap.PageMapUtil.getPageRangeForRecord(null, new Ext.data.PageMap);
             } catch (e) {
                 exc = e;
             }
@@ -295,7 +295,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var exc, e;
 
             try {
-                conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForRecord(new Ext.data.Record, null);
+                coon.core.data.pageMap.PageMapUtil.getPageRangeForRecord(new Ext.data.Record, null);
             } catch (e) {
                 exc = e;
             }
@@ -312,7 +312,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var exc, e;
 
             try {
-                conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForRecord(
+                coon.core.data.pageMap.PageMapUtil.getPageRangeForRecord(
                     new Ext.data.Record, new Ext.data.PageMap);
             } catch (e) {
                 exc = e;
@@ -340,10 +340,10 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 return 9;
             }
 
-            range = conjoon.cn_core.data.pageMap.PageMapUtil.getPageRangeForRecord(
+            range = coon.core.data.pageMap.PageMapUtil.getPageRangeForRecord(
                 record, pageMap);
 
-            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
             t.expect(range.getPages()).toEqual([8, 9])
 
 
@@ -366,10 +366,10 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 return 10;
             }
 
-            range = conjoon.cn_core.data.pageMap.PageMapUtil.getRightSideRange(
+            range = coon.core.data.pageMap.PageMapUtil.getRightSideRange(
                 record, pageMap);
 
-            t.expect(range instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
             t.expect(range.getPages()).toEqual([10, 11])
 
 
@@ -379,12 +379,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('getRecordAt() - A', function(t) {
             var pageMap        = createPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 5
                 }),
-                impossiblePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                impossiblePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 244424,
                     index : 524555
                 }), exc, e;
@@ -428,8 +428,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
                 pageSize       = pageMap.getPageSize(),
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition;
 
             t.waitForMs(250, function() {
 
@@ -477,8 +477,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("maintainIndexMap() - exceptions", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap(),
                 range;
 
@@ -514,8 +514,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("maintainIndexMap()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap(),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -560,8 +560,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("maintainIndexMap() - after remove", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap(),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -612,16 +612,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
             var exc, e,
                 pageMap        = createPageMap(),
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 2
                 }),
-                targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 1,
                     index : 0
                 }),
-                noPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                noPosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 113,
                     index : 0
                 });
@@ -667,12 +667,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 sourceIndex    = 4,
                 targetPage     = 1,
                 targetIndex    = 4,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : sourcePage,
                     index : sourceIndex
                 }),
-                targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
                 }),
@@ -702,7 +702,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 sourceIndex     = 4,
                 targetPage      = 1,
                 targetIndex     = 0,
-                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil     = coon.core.data.pageMap.PageMapUtil,
                 sourcePosition  = createPos(sourcePage, sourceIndex),
                 targetPosition  = createPos(targetPage, targetIndex),
                 sourceRecord;// = map[12].value[4];
@@ -758,7 +758,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('moveRecord() - same page, t > s', function(t) {
 
             var pageMap         = createPageMap(),
-                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil     = coon.core.data.pageMap.PageMapUtil,
                 sourcePosition  = createPos(1, 15),
                 targetPosition  = createPos(1, 18),
                 sourceRecord, left, right;
@@ -809,7 +809,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
         t.it('moveRecord() - same page, t < s ', function(t) {
             var pageMap         = createPageMap(),
-                PageMapUtil     = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil     = coon.core.data.pageMap.PageMapUtil,
                 sourcePosition  = createPos(1, 19),
                 targetPosition  = createPos(1, 12),
                 sourceRecord, left, right;
@@ -866,16 +866,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 sourceIndex    = 14,
                 targetPage     = 2,
                 targetIndex    = 5,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : sourcePage,
                     index : sourceIndex
                 }),
-                targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
                 }),
-                targetPositionLeft = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPositionLeft = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex - 1
                 }), sourceRecord, leftRecord, rightRecord;
@@ -933,16 +933,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 sourceIndex    = 23,
                 targetPage     = 8,
                 targetIndex    = 19,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : sourcePage,
                     index : sourceIndex
                 }),
-                targetPosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex
                 }),
-                targetPositionLeft = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                targetPositionLeft = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : targetPage,
                     index : targetIndex - 1
                 }),
@@ -997,7 +997,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('getAvailablePageRanges()', function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 tests = [{
                     map      : createTmpMap(1, 5, 2, 3, 7, 8, 9, 11, 12),
                     expected : [[1, 2, 3], [5], [7, 8, 9], [11, 12]]
@@ -1028,7 +1028,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             let exc, e,
                 feeder   = createFeeder(),
                 pageMap  = feeder.getPageMap(),
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 expected = [[1, 2, 3], [5], [7, 8, 9], [11, 12]];
 
             t.waitForMs(250, function() {
@@ -1066,7 +1066,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("isFirstPageLoaded()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
             try{PageMapUtil.isFirstPageLoaded()}catch(e){exc = e;}
             t.expect(exc).toBeDefined();
@@ -1081,7 +1081,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("isLastPageLoaded()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap();
 
             try{PageMapUtil.isLastPageLoaded()}catch(e){exc = e;}
@@ -1107,7 +1107,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getLastPossiblePageNumber()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap();
 
             try{PageMapUtil.getLastPossiblePageNumber()}catch(e){exc = e;}
@@ -1127,7 +1127,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("storeIndexToRange()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap();
 
             try{PageMapUtil.storeIndexToRange(null, 9, pageMap)}catch(e){exc = e;}
@@ -1156,7 +1156,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
             t.waitForMs(250, function() {
                 t.expect(
-                    PageMapUtil.storeIndexToRange(3, 4, pageMap) instanceof conjoon.cn_core.data.pageMap.IndexRange
+                    PageMapUtil.storeIndexToRange(3, 4, pageMap) instanceof coon.core.data.pageMap.IndexRange
                 ).toBe(true);
             });
         });
@@ -1165,7 +1165,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getPageRangeForPage()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap(),
                 range;
 
@@ -1193,7 +1193,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 pageMap.removeAtKey(6);
 
                 range = PageMapUtil.getPageRangeForPage(3, pageMap);
-                t.expect(range  instanceof conjoon.cn_core.data.pageMap.PageRange).toBe(true);
+                t.expect(range  instanceof coon.core.data.pageMap.PageRange).toBe(true);
                 t.expect(range.toArray()).toEqual([3, 4, 5]);
 
                 range = PageMapUtil.getPageRangeForPage(6, pageMap);
@@ -1205,7 +1205,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getPageRangeForPage() - flat", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap(),
                 range;
 
@@ -1228,7 +1228,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getRightSidePageRangeForPage()", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap(),
                 range;
 
@@ -1264,7 +1264,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getRightSidePageRangeForPage() - flat", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = createPageMap(),
                 range;
 
@@ -1296,7 +1296,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("findRecord() - A", function(t){
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
                 range, pos;
@@ -1327,7 +1327,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
             let exc, e, rec, op,
                 feeder      = createFeeder(),
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap     = feeder.getPageMap(),
                 map         = pageMap.map,
                 pageSize    = pageMap.getPageSize();
@@ -1353,12 +1353,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
                 t.expect(rec2).toBeTruthy();
 
                 let pos1 = PageMapUtil.findRecord(rec1, feeder);
-                t.expect(pos1 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
+                t.expect(pos1 instanceof coon.core.data.pageMap.RecordPosition);
                 t.expect(pos1.getPage()).toBe(4);
                 t.expect(pos1.getIndex()).toBe(17);
 
                 let pos2 = PageMapUtil.findRecord(rec2, feeder);
-                t.expect(pos2 instanceof conjoon.cn_core.data.pageMap.RecordPosition);
+                t.expect(pos2 instanceof coon.core.data.pageMap.RecordPosition);
                 t.expect(pos2.getPage()).toBe(6);
                 t.expect(pos2.getIndex()).toBe(9);
             });
@@ -1370,7 +1370,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getRangeForRecord() - consider Feeds", function(t){
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
                 range;
@@ -1397,7 +1397,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getPageRangeForRecord() - consider Feeds", function(t){
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
                 range;
@@ -1424,12 +1424,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 5
                 }),
-                impossiblePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                impossiblePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 244424,
                     index : 524555
                 }), exc, e;
@@ -1455,8 +1455,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1490,8 +1490,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1525,8 +1525,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1560,8 +1560,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1597,8 +1597,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1636,8 +1636,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1674,8 +1674,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1703,8 +1703,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1733,8 +1733,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1769,8 +1769,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var feeder         = createFeeder(),
                 pageMap        = feeder.getPageMap(),
                 map            = pageMap.map,
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                RecordPosition = coon.core.data.pageMap.RecordPosition,
                 mapping = [];
 
             // wait for storeload
@@ -1801,7 +1801,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getRangeForRecord() - consider Feeds (fix)", function(t){
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
                 range;
@@ -1892,7 +1892,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
 
         t.it('getAvailableRanges() - empty store', function(t) {
 
-            var PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            var PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 feeder      = createFeeder(true);
 
             t.waitForMs(250, function() {
@@ -1905,8 +1905,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("maintainIndexMap() - page not completely filled", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap(),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -1933,8 +1933,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("isLastPageLoaded() - one page, one record", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap({empty : true}),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -1956,8 +1956,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getLastPossiblePageNumber() - one page, one record", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap({empty : true}),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -1979,8 +1979,8 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it("getLastPossiblePageNumber() - two pages, one record", function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-                PageRange   = conjoon.cn_core.data.pageMap.PageRange,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+                PageRange   = coon.core.data.pageMap.PageRange,
                 pageMap     = createPageMap({empty : true}),
                 map         = pageMap.map,
                 range, fakeIndex;
@@ -2001,7 +2001,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('storeIndexToPosition() - ignore total count', function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap = createPageMap(),
                 invalid  = 1000000000;
 
@@ -2019,7 +2019,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
         t.it('storeIndexToRange() - ignore total count', function(t) {
 
             var exc, e,
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                 pageMap = createPageMap(),
                 invalid  = 1000000000;
 
@@ -2046,7 +2046,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             let exc, e,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
             t.waitForMs(250, function() {
 
@@ -2070,7 +2070,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             let exc, e,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
             t.waitForMs(250, function() {
 
@@ -2105,7 +2105,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             let exc, e,
                 feeder      = createFeeder(),
                 pageMap     = feeder.getPageMap(),
-                PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+                PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
             try{PageMapUtil.getRecordBy('3');}catch(e){exc=e;}
             t.expect(exc.msg).toBeDefined();
@@ -2145,16 +2145,16 @@ describe('conjoon.cn_core.data.pageMap.PageMapUtilTest', function(t) {
             var pageMap        = createPageMap(),
                 map            = pageMap.map,
                 pageSize       = pageMap.getPageSize(),
-                PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-                sourcePosition = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+                sourcePosition = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 5
                 }),
-                positionLower = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                positionLower = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 4,
                     index : 0
                 }),
-                positionUpper = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+                positionUpper = Ext.create('coon.core.data.pageMap.RecordPosition', {
                     page  : 3,
                     index : pageSize - 1
                 });

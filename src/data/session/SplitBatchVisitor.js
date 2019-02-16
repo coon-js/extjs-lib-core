@@ -26,13 +26,13 @@
 /**
  * BatchVisitor which makes sure that multiple records associated with a single
  * CREATE operation are extracted and put into individual operations.
- * This is useful when using Sessions and {@link conjoon.cn_core.data.proxy.RestForm}
+ * This is useful when using Sessions and {@link coon.core.data.proxy.RestForm}
  * and uploding files via {FormData}. Instead of one batched request with
  * multiple files, this BatchVisitor makes sure that for each FormData object a single
  * request is created.
  *
  */
-Ext.define('conjoon.cn_core.data.session.SplitBatchVisitor', {
+Ext.define('coon.core.data.session.SplitBatchVisitor', {
 
     extend : 'Ext.data.session.BatchVisitor',
 

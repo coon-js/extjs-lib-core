@@ -23,30 +23,30 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.util.DateTest', function(t) {
+describe('coon.core.util.DateTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.util.Date', function(){
+    t.requireOk('coon.core.util.Date', function(){
 
         t.it('getHumanReadableDate()', function(t) {
 
             let dt;
 
-            t.expect(conjoon.cn_core.util.Date.getHumanReadableDate(new Date)).toBe(
+            t.expect(coon.core.util.Date.getHumanReadableDate(new Date)).toBe(
                 Ext.util.Format.date(new Date(), "H:i"));
 
             dt = Ext.Date.subtract(new Date(), Ext.Date.DAY, 1);
 
-            t.expect(conjoon.cn_core.util.Date.getHumanReadableDate(dt)).toContain(
+            t.expect(coon.core.util.Date.getHumanReadableDate(dt)).toContain(
                 Ext.util.Format.date(dt, "l"));
 
             dt = Ext.Date.subtract(new Date(), Ext.Date.DAY, 7);
 
-            t.expect(conjoon.cn_core.util.Date.getHumanReadableDate(dt)).toBe(
+            t.expect(coon.core.util.Date.getHumanReadableDate(dt)).toBe(
                 Ext.util.Format.date(dt, "d.m.Y, H:i"));
         });
 

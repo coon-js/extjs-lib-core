@@ -33,19 +33,19 @@
  *
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+Ext.define('coon.core.data.pageMap.PageMapFeeder', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.Feed',
-        'conjoon.cn_core.data.pageMap.PageRange',
-        'conjoon.cn_core.data.pageMap.PageMapUtil',
-        'conjoon.cn_core.Util',
-        'conjoon.cn_core.data.pageMap.Operation',
-        'conjoon.cn_core.data.pageMap.IndexLookup'
+        'coon.core.data.pageMap.Feed',
+        'coon.core.data.pageMap.PageRange',
+        'coon.core.data.pageMap.PageMapUtil',
+        'coon.core.Util',
+        'coon.core.data.pageMap.Operation',
+        'coon.core.data.pageMap.IndexLookup'
     ],
 
     mixins  : [
-        'conjoon.cn_core.data.pageMap.ArgumentFilter',
+        'coon.core.data.pageMap.ArgumentFilter',
         'Ext.mixin.Observable'
     ],
 
@@ -57,7 +57,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * PageMapFeeder's #removePageAt()-method is used for removing pages.
      * If no listener for this event is registered, an exception will be thrown,
      * raising the issue that unexpectedly the removal of a page was vetoed.
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} this
+     * @param {coon.core.data.pageMap.PageMapFeeder} this
      * @param {Number} page
      */
 
@@ -83,7 +83,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     },
 
     /**
-     * @type {conjoon.cn_core.data.pageMap.IndexLookup} lookup
+     * @type {coon.core.data.pageMap.IndexLookup} lookup
      * @private
      */
     indexLookup : null,
@@ -210,16 +210,16 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
-     * @return {conjoon.cn_core.data.pageMap.Operation}
+     * @return {coon.core.data.pageMap.Operation}
      */
     update : function(record) {
 
         const me             = this,
               pageMap        = me.getPageMap(),
               lookup         = me.getIndexLookup(),
-              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
-              op             = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
-                  type : conjoon.cn_core.data.pageMap.Operation.MOVE
+              RecordPosition = coon.core.data.pageMap.RecordPosition,
+              op             = Ext.create('coon.core.data.pageMap.Operation', {
+                  type : coon.core.data.pageMap.Operation.MOVE
               }),
               createResult = function(cfg) {
                   cfg.record = record;
@@ -271,7 +271,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
-     * @returns {*|conjoon.cn_core.data.pageMap.Operation|Object}
+     * @returns {*|coon.core.data.pageMap.Operation|Object}
      */
     remove : function(record) {
         const me = this;
@@ -286,19 +286,19 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
-     * @return {conjoon.cn_core.data.pageMap.Operation}
+     * @return {coon.core.data.pageMap.Operation}
      */
     add : function(record) {
 
         const me             = this,
               pageMap        = me.getPageMap(),
               map            = pageMap.map,
-              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+              PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
               lookup         = me.getIndexLookup(),
               lastPossPage   = PageMapUtil.getLastPossiblePageNumber(pageMap),
-              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
-              op             = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
-                  type : conjoon.cn_core.data.pageMap.Operation.ADD
+              RecordPosition = coon.core.data.pageMap.RecordPosition,
+              op             = Ext.create('coon.core.data.pageMap.Operation', {
+                  type : coon.core.data.pageMap.Operation.ADD
               }),
               createResult = function(cfg) {
                   op.setResult(cfg);
@@ -347,20 +347,20 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     /**
      * Moves the record from the specified from-position to the specified to
      * position. The result of this operation is encapsulated in the returning
-     * conjoon.cn_core.data.pageMap.Operation-object.
+     * coon.core.data.pageMap.Operation-object.
      * Feeds will be considered in this implementation. If the record positions
      * can be found in the same page range, PageMapUtil's moveRecord will
      * be called.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} from
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
+     * @param {coon.core.data.pageMap.RecordPosition} from
+     * @param {coon.core.data.pageMap.RecordPosition} to
      *
-     * @return {conjoon.cn_core.data.pageMap.Operation}
+     * @return {coon.core.data.pageMap.Operation}
      *
      * @throws if record is not part of the PageMap of this Feeder, of if the
      * record is not part of any Feed.
      *
-     * @see conjoon.cn_core.data.pageMap.PageMapUtil#moveRecord
+     * @see coon.core.data.pageMap.PageMapUtil#moveRecord
      *
      * @private
      */
@@ -368,8 +368,8 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         const me          = this,
               pageMap     = me.getPageMap(),
-              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-              Operation   = conjoon.cn_core.data.pageMap.Operation,
+              PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+              Operation   = coon.core.data.pageMap.Operation,
               op          = Ext.create(Operation, {
                   type : Operation.MOVE
               }),
@@ -443,9 +443,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * Calling this method will automatically update the totalCount of the PageMap.
      *
      * @param {Ext.data.Model} record
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} to
+     * @param {coon.core.data.pageMap.RecordPosition} to
      *
-     * @return {conjoon.cn_core.data.pageMap.Operation} The operation with the
+     * @return {coon.core.data.pageMap.Operation} The operation with the
      * result, which hints to the state of this PageMap.
      *
      * @throws if the requested page or the requested Feed does not exist
@@ -458,14 +458,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
             pageMap      = me.getPageMap(),
             map          = pageMap.map,
             ADD          = me.statics().ACTION_ADD,
-            op           = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
-                type : conjoon.cn_core.data.pageMap.Operation.ADD
+            op           = Ext.create('coon.core.data.pageMap.Operation', {
+                type : coon.core.data.pageMap.Operation.ADD
             }),
             pageSize       = pageMap.getPageSize(),
-            Util           = conjoon.cn_core.Util,
-            PageRange      = conjoon.cn_core.data.pageMap.PageRange,
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            Util           = coon.core.Util,
+            PageRange      = coon.core.data.pageMap.PageRange,
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             maintainRanges = [],
             createResult = function(cfg) {
                 op.setResult(cfg);
@@ -590,7 +590,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Ext.data.Model} record
      *
-     * @return {conjoon.cn_core.data.pageMap.Operation}
+     * @return {coon.core.data.pageMap.Operation}
      *
      * @throws if the target page does not exist,
      *
@@ -602,12 +602,12 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
               pageMap      = me.getPageMap(),
               map          = pageMap.map,
               REMOVE       = me.statics().ACTION_REMOVE,
-              op           = Ext.create('conjoon.cn_core.data.pageMap.Operation', {
-                  type : conjoon.cn_core.data.pageMap.Operation.REMOVE
+              op           = Ext.create('coon.core.data.pageMap.Operation', {
+                  type : coon.core.data.pageMap.Operation.REMOVE
               }),
-              Util           = conjoon.cn_core.Util,
-              PageRange      = conjoon.cn_core.data.pageMap.PageRange,
-              PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+              Util           = coon.core.Util,
+              PageRange      = coon.core.data.pageMap.PageRange,
+              PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
               maintainRanges = [],
               createResult = function(cfg) {
                   op.setResult(cfg);
@@ -800,7 +800,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
         const me          = this,
               pageMap     = me.getPageMap(),
-              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+              PageMapUtil = coon.core.data.pageMap.PageMapUtil,
               feeds       = me.feed,
               ADD         = me.statics().ACTION_ADD,
               REMOVE      = me.statics().ACTION_REMOVE;
@@ -985,7 +985,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * @param {Number} page
      * @param {Number} targetPage The next page this Feed should serve
      *
-     * @return {conjoon.cn_core.data.pageMap.Feed}
+     * @return {coon.core.data.pageMap.Feed}
      *
      * @private
      *
@@ -1072,7 +1072,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * @private
      *
      * @throws if any of the specified arguments do not satisfy the parameter
-     * conditions, or if conjoon.data.pageMap.PageMapUtil#getPageRangeForPage
+     * conditions, or if coon.core.data.pageMap.PageMapUtil#getPageRangeForPage
      * throws an exception, or if page points to a Feed
      */
     findFeedIndexesForActionAtPage : function(page, action) {
@@ -1177,9 +1177,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * a candidate for a new page. see #isPageCandidate.
      *
      * @throws if the feed does not exist, or any exception thrown by
-     * conjoon.cn_core.data.pageMap.Feed#fill
+     * coon.core.data.pageMap.Feed#fill
      *
-     * @see conjoon.cn_core.data.pageMap.Feed#fill
+     * @see coon.core.data.pageMap.Feed#fill
      */
     fillFeed : function(page, records) {
 
@@ -1305,7 +1305,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
                 cfg.previous = position[1];
             }
             Ext.apply(cfg, {})
-            feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', cfg);
+            feed = Ext.create('coon.core.data.pageMap.Feed', cfg);
 
             me.feed[page] = feed;
         }
@@ -1329,7 +1329,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
     isPageCandidate : function(page) {
 
         const me          = this,
-              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+              PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
         let feed;
 
@@ -1351,7 +1351,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      *
      * @param {Number} page
      *
-     * @return {conjoon.cn_core.data.pageMap.Feed}
+     * @return {coon.core.data.pageMap.Feed}
      *
      * @throws any exception thrown by #filterPageValue
      */
@@ -1674,7 +1674,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
      * This method considers feeds. If the record was found in the PageMap,
      * the indexMap's entry for the replaced record will be updated, too.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {coon.core.data.pageMap.RecordPosition} position
      * @param {Ext.data.Model} record
      *
      * @return {Ext.data.Model} The record that was replaced
@@ -1717,17 +1717,17 @@ Ext.define('conjoon.cn_core.data.pageMap.PageMapFeeder', {
 
     /**
      * Returns the IndexLookup to use with this PageMapFeeder.
-     * Creates an instance of {conjoon.cn_core.data.pageMap.IndexLookup} if
+     * Creates an instance of {coon.core.data.pageMap.IndexLookup} if
      * the IndexLookup is not otherwise already set.
      *
-     * @return {conjoon.cn_core.data.pageMap.IndexLookup}
+     * @return {coon.core.data.pageMap.IndexLookup}
      */
     getIndexLookup : function() {
 
         const me = this;
 
         if (!me.indexLookup) {
-            me.indexLookup = Ext.create('conjoon.cn_core.data.pageMap.IndexLookup');
+            me.indexLookup = Ext.create('coon.core.data.pageMap.IndexLookup');
         }
 
         return me.indexLookup;

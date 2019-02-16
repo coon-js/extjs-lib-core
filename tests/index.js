@@ -1,11 +1,11 @@
 var harness = new Siesta.Harness.Browser.ExtJS();
 
 harness.configure({
-    title          : 'My Tests',
+    title          : 'lib-cn_core',
     disableCaching : true,
     loaderPath     : {
 
-        'conjoon.cn_core.overrides.cn_core' : '../overrides',
+        'coon.core.overrides.cn_core' : '../overrides',
 
         /**
          * ux
@@ -15,13 +15,13 @@ harness.configure({
         /**
          * fixtures
          */
-        'conjoon.cn_core.fixtures' : './fixtures',
+        'coon.core.fixtures' : './fixtures',
 
-        'conjoon.cn_core' : '../src/',
-        'conjoon.test'    : './src'
+        'coon.core' : '../src/',
+        'coon.test' : './src'
     },
     preload        : [
-        conjoon.tests.config.paths.extjs.js.url
+        coon.tests.config.paths.extjs.js.url
     ]
 });
 

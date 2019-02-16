@@ -16,7 +16,7 @@
       * As a general rule, all classes that belong to this package should be under this namespace
       * if multiple namespaces are part of this package, set this to "".
       */
-     "namespace": "conjoon.cn_core",
+     "namespace": "coon.core",
 
     /**
      * The package type.
@@ -35,12 +35,12 @@
       * Required only if you are distributing this package through a Sencha Cmd repository,
       * in which case it should match the name you assign to your local package repository.
       */
-    "creator": "conjoon Open Source Project",
+    "creator": "coon.js",
 
     /**
      * A summarized description of this package.
      */
-    "summary": "A collection of core functionality for the conjoon Open Source Project.",
+    "summary": "Core functionality to be used with the coon.js Project",
 
     /**
      * A detailed description of this package.

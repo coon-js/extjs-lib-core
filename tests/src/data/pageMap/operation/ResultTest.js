@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.operation.ResultTest', function(t) {
+describe('coon.core.data.pageMap.operation.ResultTest', function(t) {
 
 
 
@@ -36,40 +36,40 @@ describe('conjoon.cn_core.data.pageMap.operation.ResultTest', function(t) {
 
         var op, exc, e;
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.operation.Result')} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.operation.Result')} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('is required');
         t.expect(exc.msg.toLowerCase()).toContain('success');
         exc = undefined;
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {success : true})} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : true})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('is required');
         t.expect(exc.msg.toLowerCase()).toContain('reason');
         exc = undefined;
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {success : 'o', reason : 'o'})} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : 'o', reason : 'o'})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be a boolean value');
         t.expect(exc.msg.toLowerCase()).toContain('success');
         exc = undefined;
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {success : true, reason : null})} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : true, reason : null})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must not be');
         t.expect(exc.msg.toLowerCase()).toContain('reason');
         exc = undefined;
 
-        op = Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
+        op = Ext.create('coon.core.data.pageMap.operation.Result', {
             success : true,
             reason  : 'foo'
         });
 
-        t.expect(op instanceof conjoon.cn_core.data.pageMap.operation.Result).toBe(true);
+        t.expect(op instanceof coon.core.data.pageMap.operation.Result).toBe(true);
 
         try {op.setSuccess(false);} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();

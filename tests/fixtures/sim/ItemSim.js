@@ -26,10 +26,10 @@
 /**
  * Ext.ux.ajax.SimManager hook for fixture data.
  */
-Ext.define('conjoon.cn_core.fixtures.sim.ItemSim', {
+Ext.define('coon.core.fixtures.sim.ItemSim', {
 
     requires : [
-        'conjoon.cn_core.fixtures.sim.Init'
+        'coon.core.fixtures.sim.Init'
     ]
 
 }, function() {

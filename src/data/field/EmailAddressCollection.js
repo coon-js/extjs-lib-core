@@ -89,7 +89,7 @@
  * The default value of this field is an empty Array.
  *
  */
-Ext.define('conjoon.cn_core.data.field.EmailAddressCollection', {
+Ext.define('coon.core.data.field.EmailAddressCollection', {
 
     extend : 'Ext.data.field.Field',
 

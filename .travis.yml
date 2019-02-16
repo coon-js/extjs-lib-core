@@ -1,15 +1,14 @@
-# conjoon
-# (c) 2007-2017 conjoon.org
-# licensing@conjoon.org
 #
-# conjoon / lib-cn_core
+# coon.js
+# lib-cn_core
+# Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
 #
 # This is the very basic travis configuration for the lib-cn_core
-# package of the conjoon Open Source Project. It simply creates a
+# package of the coon.js Open Source Project. It simply creates a
 # workspace, adds this package and tries to build it.
 language: node_js
 env:
-  - CN_PACKAGE="lib-cn_core" CN_SENCHA_EXT_VERSION="6.2.0" CN_SENCHA_CMD_VERSION="6.5.3.6" CN_WORKSPACE="/tmp/conjoon"
+  - CN_PACKAGE="lib-cn_core" CN_SENCHA_EXT_VERSION="6.2.0" CN_SENCHA_CMD_VERSION="6.5.3.6" CN_WORKSPACE="/tmp/coon-js"
 
 install:
   - gem install jsduck

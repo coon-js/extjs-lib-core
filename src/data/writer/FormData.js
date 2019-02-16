@@ -26,20 +26,20 @@
 /**
  * An specialized version of a Ext.data.writer.Json which is configured to create
  * FormData objects for the data being sent to the server.
- * This is useful for {@link conjoon.cn_core.data.proxy.RestForm} proxies
+ * This is useful for {@link coon.core.data.proxy.RestForm} proxies
  * which maintain stores and/or models holding fields of the type
- * {@link conjoon.cn_core.data.field.Blob} which can be uploaded by setting
+ * {@link coon.core.data.field.Blob} which can be uploaded by setting
  * them to the javascript native's FormData object.
  * Note, that a FormData object is only createdfor requests that represent the
  * "create" action. Otherwise, regular JSON encoded data will be created by
  * this writer.
  */
-Ext.define('conjoon.cn_core.data.writer.FormData', {
+Ext.define('coon.core.data.writer.FormData', {
 
     extend : 'Ext.data.writer.Json',
 
     requires : [
-        'conjoon.cn_core.data.FormDataRequest'
+        'coon.core.data.FormDataRequest'
     ],
 
     alias : 'writer.cn_core-datawriterformdata',
@@ -48,7 +48,7 @@ Ext.define('conjoon.cn_core.data.writer.FormData', {
     /**
      * Makes sure that FormData is created if, and only if the action of the
      * specified request ist set to "create" and the request is of the type
-     * {@link conjoon.cn_core.data.FormDataRequest},
+     * {@link coon.core.data.FormDataRequest},
      * otherwise the original writeRecords of the parent class will be called.
      *
      * If the request already has FormData specified, the object will be re-used
@@ -99,7 +99,7 @@ Ext.define('conjoon.cn_core.data.writer.FormData', {
             d, key, fileCount, fileKey;
 
         if (request.getAction() !== 'create' ||
-            !(request instanceof conjoon.cn_core.data.FormDataRequest)) {
+            !(request instanceof coon.core.data.FormDataRequest)) {
             return me.callParent(arguments);
         }
 

@@ -29,16 +29,16 @@
  *
  *      @example
  *          // throws, since the passed argument is not an ordered list
- *          Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+ *          Ext.create('coon.core.data.pageMap.PageRange', {
  *              pages : [1, 2, 5]
  *          });
  *
  *          // throws, since a page range must not start with 0
- *          Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+ *          Ext.create('coon.core.data.pageMap.PageRange', {
  *              pages : [0, 1, 2]
  *          });
  *
- *          var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+ *          var range = Ext.create('coon.core.data.pageMap.PageRange', {
  *              pages : [3, 4, 5]
  *          });
  *          range.getPages(); // [3, 4, 5]
@@ -49,7 +49,7 @@
  *          // throws, pages was already set
  *          range.setPages([6,7,8]);
  *
- *          var range = Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+ *          var range = Ext.create('coon.core.data.pageMap.PageRange', {
  *              pages : [3]
  *          });
  *
@@ -57,12 +57,12 @@
  *          range.getLast();  // 3
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
+Ext.define('coon.core.data.pageMap.PageRange', {
 
 
     requires : [
-        'conjoon.cn_core.Util',
-        'conjoon.cn_core.data.pageMap.RecordPosition'
+        'coon.core.Util',
+        'coon.core.data.pageMap.RecordPosition'
     ],
 
 
@@ -81,7 +81,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
          *
          * @param {Mixed} data
          *
-         * @return {conjoon.cn_core.data.pageMap.PageRange}
+         * @return {coon.core.data.pageMap.PageRange}
          *
          * @throws if the arguments could not be processed, or if any exception
          * from the class constructor is thrown.
@@ -102,7 +102,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
                 });
             }
 
-            return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
+            return Ext.create('coon.core.data.pageMap.PageRange', {
                 pages : data
             });
         },
@@ -118,14 +118,14 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
          * @param {Number} start
          * @param {Number} end
          *
-         * @return {conjoon.cn_core.data.pageMap.PageRange}
+         * @return {coon.core.data.pageMap.PageRange}
          *
-         * @throws any exception thrown by {conjoon.cn_core.Util#createRange}
+         * @throws any exception thrown by {coon.core.Util#createRange}
          * or by this class constructor
          */
         createFor : function(start, end) {
-            return Ext.create('conjoon.cn_core.data.pageMap.PageRange', {
-                pages : conjoon.cn_core.Util.createRange(start, end)
+            return Ext.create('coon.core.data.pageMap.PageRange', {
+                pages : coon.core.Util.createRange(start, end)
             });
         }
 
@@ -134,7 +134,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
 
 
     /**
-     * Creates a new instance of conjoon.cn_core.data.pageMap.PageRange.
+     * Creates a new instance of coon.core.data.pageMap.PageRange.
      *
      * @param {Object} cfg
      * @param [Array} cfg.pages An array of pages to be represented by this instance
@@ -248,21 +248,21 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
     /**
      * Checks if target's pages are the same pages from "this" PageRange.
      *
-     * @param {conjoon.cn_core.data.pageMap.PageRange} target
+     * @param {coon.core.data.pageMap.PageRange} target
      *
      * @return {Boolean} true if target represents the same PageRange as "this",
      * otherwise false
      *
-     * @throws if target is not an instance of {conjoon.cn_core.data.pageMap.PageRange}
+     * @throws if target is not an instance of {coon.core.data.pageMap.PageRange}
      */
     equalTo : function(target) {
 
         var me = this,
             tF, tL;
 
-        if (!(target instanceof conjoon.cn_core.data.pageMap.PageRange)) {
+        if (!(target instanceof coon.core.data.pageMap.PageRange)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.PageRange',
+                msg    : '\'target\' must be an instance of coon.core.data.pageMap.PageRange',
                 target : target
             });
         }
@@ -284,7 +284,7 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
      * This method will return true if the position's page is part of this page
      * range.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {coon.core.data.pageMap.RecordPosition} position
      *
      * @return {Boolean}
      */
@@ -292,9 +292,9 @@ Ext.define('conjoon.cn_core.data.pageMap.PageRange', {
 
         const me = this;
 
-        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(position instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg      : '\'position\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                msg      : '\'position\' must be an instance of coon.core.data.pageMap.RecordPosition',
                 position : position
             });
         }

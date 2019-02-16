@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
+describe('coon.core.data.pageMap.FeedTest', function(t) {
 
     const
 
         pageSize = 25,
 
         createFeed = function(cfg) {
-        return Ext.create('conjoon.cn_core.data.pageMap.Feed', cfg);
+        return Ext.create('coon.core.data.pageMap.Feed', cfg);
     },
     prop = function(id) {
         return Ext.create('Ext.data.Model', {
@@ -67,14 +67,14 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.data.pageMap.Feed', function() {
+    t.requireOk('coon.core.data.pageMap.Feed', function() {
 
-        const Feed = conjoon.cn_core.data.pageMap.Feed;
+        const Feed = coon.core.data.pageMap.Feed;
 
     t.it('constructor()', function(t) {
 
         let exc, e,
-            Feed = conjoon.cn_core.data.pageMap.Feed;
+            Feed = coon.core.data.pageMap.Feed;
 
         try{createFeed()}catch(e){exc = e};
         t.expect(exc).toBeDefined();
@@ -101,7 +101,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
             previous : 4
         });
 
-        t.expect(feed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+        t.expect(feed instanceof coon.core.data.pageMap.Feed).toBe(true);
         t.expect(feed.getSize()).toBe(pageSize);
         t.expect(feed.getPrevious()).toBe(4);
 
@@ -411,7 +411,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('extract', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
@@ -457,7 +457,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(feed.getAt(pageSize - 2).getId()).toBe('24');
         t.expect(feed.getAt(pageSize - 3).getId()).toBe('23');
 
-        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        feed = Ext.create('coon.core.data.pageMap.Feed', {
             size     : 25,
             previous : 2
         });
@@ -474,7 +474,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('extract - reverseDirection', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
@@ -491,7 +491,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('example', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
             size : 25,
             next : 2
         });
@@ -521,7 +521,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('isEmpty()', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
             size : 25,
             next : 2
         });
@@ -542,7 +542,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('indexOf()', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }), rec = Ext.create('Ext.data.Model', {id : '2'});
@@ -573,7 +573,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
         t.expect(feed.indexOf(rec)).toBe(19);
 
-        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        feed = Ext.create('coon.core.data.pageMap.Feed', {
             size     : 25,
             previous : 2
         });
@@ -588,7 +588,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it('removeAt()', function(t) {
 
-        let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feed = Ext.create('coon.core.data.pageMap.Feed', {
             size : 25,
             next : 2
         }), rec = Ext.create('Ext.data.Model', {id : '2'});
@@ -620,7 +620,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(feed.getFreeSpace()).toBe(18);
         t.expect(feed.indexOf(data[2])).toBe(-1);
 
-        feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        feed = Ext.create('coon.core.data.pageMap.Feed', {
             size     : 25,
             previous : 2
         });
@@ -638,11 +638,11 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it("insertAt()", function(t){
 
-        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedNext = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
-            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            feedPrev = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 previous : 2
             }),
@@ -690,11 +690,11 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
 
     t.it("insertAt() - undefined index", function(t){
-        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedNext = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
-            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            feedPrev = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 previous : 2
             }),
@@ -730,11 +730,11 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
 
     t.it("insertAt() - reverse direction", function(t){
-        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedNext = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
-            feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+            feedPrev = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 previous : 2
             }),
@@ -771,7 +771,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it("insertAt() - A", function(t) {
 
-        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedNext = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
@@ -793,7 +793,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
 
     t.it("replaceWith()", function(t) {
 
-        let feedNext = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedNext = Ext.create('coon.core.data.pageMap.Feed', {
                 size : 25,
                 next : 2
             }),
@@ -812,7 +812,7 @@ describe('conjoon.cn_core.data.pageMap.FeedTest', function(t) {
         t.expect(feedNext.replaceWith(23, newProp)).toBe(props[0]);
 
 
-        let feedPrev = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+        let feedPrev = Ext.create('coon.core.data.pageMap.Feed', {
                 size     : 25,
                 previous : 4
             });

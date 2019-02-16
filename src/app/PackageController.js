@@ -27,7 +27,7 @@
  * A package controller defines general behavior of packages which add
  * functionality to the user interface of a web application.
  * It provides information and configuration which gets requested by the
- * {@link conjoon.cn_core.app.Application} where the PackageController is
+ * {@link coon.core.app.Application} where the PackageController is
  * being used.
  *
  *
@@ -36,7 +36,7 @@
  * Routes not configured as objects will automatically be adjusted to register
  * a "before"-callback, which defaults to #onBeforePackageRoute.
  * This is to make sure that the last requested action for this package is saved
- * and resumed by the {@link conjoon.cn_core.app.Application} as soon as possible.
+ * and resumed by the {@link coon.core.app.Application} as soon as possible.
  * This is mainly for implementations where controller's #preLaunchHook returns
  * false and prevent the MainView to be initialized until a specific condition
  * is set (e.g. user sign in etc.)
@@ -55,21 +55,21 @@
 
  *
  */
-Ext.define('conjoon.cn_core.app.PackageController', {
+Ext.define('coon.core.app.PackageController', {
 
     extend : 'Ext.app.Controller',
 
 
     /**
-     * Gets called before the {@link conjoon.cn_core.app.Application#launch}
-     * method is being processed and the {@link conjoon.cn_core.app.Application#applicationView}
+     * Gets called before the {@link coon.core.app.Application#launch}
+     * method is being processed and the {@link coon.core.app.Application#applicationView}
      * is being rendered.
      * A preLaunchHook can return false to prevent the rendering of the
-     * {@link conjoon.cn_core.app.Application#applicationView}.
+     * {@link coon.core.app.Application#applicationView}.
      *
-     * @param {conjoon.cn_core.app.Application} app The application
+     * @param {coon.core.app.Application} app The application
      *
-     * @return {boolean} false to prevent the {@link conjoon.cn_core.app.Application#applicationView}
+     * @return {boolean} false to prevent the {@link coon.core.app.Application#applicationView}
      * from being rendered
      */
     preLaunchHook : Ext.emptyFn,
@@ -78,7 +78,7 @@ Ext.define('conjoon.cn_core.app.PackageController', {
     /**
      * Returns an object providing further information the Congroller wants to
      * provide to the Application. This can be controls or any other package
-     * information that can be used to set up the {@link conjoon.cn_core.app.Application}.
+     * information that can be used to set up the {@link coon.core.app.Application}.
      * If this method returns undefined, the API is advised to ignore the call
      * to this method and not process the "undefined" return value.
      *
@@ -175,15 +175,15 @@ Ext.define('conjoon.cn_core.app.PackageController', {
          * Callback for the before-action of a route. Checks whether the Application
          * can process a route. If that is not the case, the action
          * passed to this will be handed off to the method
-         * {@link conjoon.cn_core.app.Application}, which will stop the action
+         * {@link coon.core.app.Application}, which will stop the action
          * from being processed. Otherwise, the action will be resumed.
          * Note:
          * It is assumed the the action is passed as the last argument to this
          * method, since routing might pass url parameters in the first arguments
          * to this method.
          *
-         * @see {conjoon.cn_core.app.Application#shouldPackageRoute}
-         * @see {conjoon.cn_core.app.Application#interceptAction}
+         * @see {coon.core.app.Application#shouldPackageRoute}
+         * @see {coon.core.app.Application#interceptAction}
          *
          *
          * @throws if the controller is not being used in an application context

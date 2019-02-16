@@ -29,40 +29,40 @@
  *
  *      @example
  *          // throws, since the passed page-argument is not a number
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              page  : 'a',
  *              index : 2
  *          });
  *
  *          // throws, since the passed index-argument is not a number
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              page  : 5,
  *              index : 'e'
  *          });
  *
  *          // throws, since the page-argument is missing
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              page  : 5
  *          });
  *
  *          // throws, since the index-argument is missing
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              page  : 5
  *          });
  *
  *          // throws, since page must not be less than 1
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              pages : 0,
  *              index : 4
  *          });
  *
  *          // throws, since index must not be less than 0
- *          Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              pages : 1,
  *              index : -1
  *          });
  *
- *          var pos = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+ *          var pos = Ext.create('coon.core.data.pageMap.RecordPosition', {
  *              page  : 4,
  *              index : 2
  *          });
@@ -76,7 +76,7 @@
 
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
+Ext.define('coon.core.data.pageMap.RecordPosition', {
 
 
     config : {
@@ -95,7 +95,7 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
          *
          * @param {Mixed} data
          *
-         * @return {conjoon.cn_core.data.pageMap.RecordPosition}
+         * @return {coon.core.data.pageMap.RecordPosition}
          *
          * @throws if the arguments could not be processed, or if any exception
          * from the class constructor is thrown.
@@ -112,7 +112,7 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
                 });
             }
 
-            return Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            return Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : data[0],
                 index : data[1]
             });
@@ -231,20 +231,20 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
     /**
      * Checks if target's position info are the same as from "this" RecordPosition.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} target
+     * @param {coon.core.data.pageMap.RecordPosition} target
      *
      * @return {Boolean} true if target represents the same Positions as "this",
      * otherwise false
      *
-     * @throws if target is not an instance of {conjoon.cn_core.data.pageMap.RecordPosition}
+     * @throws if target is not an instance of {coon.core.data.pageMap.RecordPosition}
      */
     equalTo : function(target) {
 
         var me = this;
 
-        if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
                 target : target
             })
         }
@@ -259,22 +259,22 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
      * Returns true if the position represented by target is greater than this
      * position.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} target
+     * @param {coon.core.data.pageMap.RecordPosition} target
      *
      * @return {Boolean} true if target represents a position greater than this
      * position
      *
      * @throws if target is not an instance of
-     * {conjoon.cn_core.data.pageMap.RecordPosition}
+     * {coon.core.data.pageMap.RecordPosition}
      */
     lessThan : function(target) {
 
         var me = this,
             tF, tL;
 
-        if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
                 target : target
             })
         }
@@ -289,22 +289,22 @@ Ext.define('conjoon.cn_core.data.pageMap.RecordPosition', {
      * Returns true if the position represented by target is less than this
      * position.
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} target
+     * @param {coon.core.data.pageMap.RecordPosition} target
      *
      * @return {Boolean} true if target represents a position less than this
      * position
      *
      * @throws if target is not an instance of
-     * {conjoon.cn_core.data.pageMap.RecordPosition}
+     * {coon.core.data.pageMap.RecordPosition}
      */
     greaterThan : function(target) {
 
         var me = this,
             tF, tL;
 
-        if (!(target instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
                 target : target
             })
         }

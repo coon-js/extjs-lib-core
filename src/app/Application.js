@@ -28,12 +28,12 @@
  * advanced routing and launch hooks. For a reference implementation, see
  * https://github.com/conjoon.
  */
-Ext.define('conjoon.cn_core.app.Application', {
+Ext.define('coon.core.app.Application', {
 
     extend: 'Ext.app.Application',
 
     requires : [
-        'conjoon.cn_core.app.PackageController'
+        'coon.core.app.PackageController'
     ],
 
     /**
@@ -73,25 +73,25 @@ Ext.define('conjoon.cn_core.app.Application', {
 
         if (me.defaultConfig.mainView) {
             Ext.raise({
-                sourceClass              : 'conjoon.cn_core.app.Application',
+                sourceClass              : 'coon.core.app.Application',
                 'defaultConfig.mainView' : me.defaultConfig.mainView,
-                msg                      : "conjoon.cn_core.app.Application requires applicationViewClassName, not mainView to be set."
+                msg                      : "coon.core.app.Application requires applicationViewClassName, not mainView to be set."
             });
         }
 
         if (!Ext.isString(me.applicationViewClassName)) {
             Ext.raise({
-                sourceClass              : 'conjoon.cn_core.app.Application',
+                sourceClass              : 'coon.core.app.Application',
                 applicationViewClassName : me.applicationViewClassName,
-                msg                      : "conjoon.cn_core.app.Application requires applicationViewClassName as a string."
+                msg                      : "coon.core.app.Application requires applicationViewClassName as a string."
             });
         }
 
         if (!Ext.ClassManager.get(me.applicationViewClassName)) {
             Ext.raise({
-                sourceClass               : 'conjoon.cn_core.app.Application',
+                sourceClass               : 'coon.core.app.Application',
                 applicationViewClass      : Ext.ClassManager.get(me.applicationViewClassName),
-                msg                       : "conjoon.cn_core.app.Application requires applicationViewClass to be loaded."
+                msg                       : "coon.core.app.Application requires applicationViewClass to be loaded."
             });
         }
 
@@ -108,8 +108,8 @@ Ext.define('conjoon.cn_core.app.Application', {
      * This is called before the {@link #launch} method initializes this Application's
      * {@link #mainView}.
      * This method will iterate over the controllers configured for this application.
-     * If an {@link conjoon.cn_core.app.PackageController} is configured, it's
-     * {@link conjoon.cn_core.app.PackageController#preLaunchHook} method will
+     * If an {@link coon.core.app.PackageController} is configured, it's
+     * {@link coon.core.app.PackageController#preLaunchHook} method will
      * be called.
      *
      * @returns {boolean} false if the {@link #mainView} should not be
@@ -125,9 +125,9 @@ Ext.define('conjoon.cn_core.app.Application', {
 
         if (me.getMainView()) {
             Ext.raise({
-                sourceClass : 'conjoon.cn_core.app.Application',
+                sourceClass : 'coon.core.app.Application',
                 mainView    : me.getMainView(),
-                msg         : "conjoon.cn_core.app.Application#preLaunchHookProcess cannot be run since mainView was already initialized."
+                msg         : "coon.core.app.Application#preLaunchHookProcess cannot be run since mainView was already initialized."
             });
         }
 
@@ -139,7 +139,7 @@ Ext.define('conjoon.cn_core.app.Application', {
 
             ctrl = controllers[i];
 
-            if ((ctrl instanceof conjoon.cn_core.app.PackageController) &&
+            if ((ctrl instanceof coon.core.app.PackageController) &&
                 Ext.isFunction(ctrl.preLaunchHook)) {
                 res = ctrl.preLaunchHook(this);
 
@@ -218,12 +218,12 @@ Ext.define('conjoon.cn_core.app.Application', {
      * Returns true if the specified packageController can safely route
      * the action, otherwise false.
      *
-     * @param {conjoon.cn_core.app.PackageController} packageController
+     * @param {coon.core.app.PackageController} packageController
      * @param {Object} action
      *
      * @return  {Boolean}
      *
-     * @see {conjoon.cn_core.app.PackageController#isActionRoutable}
+     * @see {coon.core.app.PackageController#isActionRoutable}
      */
     shouldPackageRoute : function(packageController, action) {
         return packageController.isActionRoutable(action);

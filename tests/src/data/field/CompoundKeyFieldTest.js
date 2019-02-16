@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.field.CompoundKeyFieldTest', function(t) {
+describe('coon.core.data.field.CompoundKeyFieldTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.field.CompoundKeyFieldTest', function(t) {
 
     t.it('Make sure class definition is as expected', function(t) {
 
-        var field  = Ext.create('conjoon.cn_core.data.field.CompoundKeyField');
+        var field  = Ext.create('coon.core.data.field.CompoundKeyField');
 
         // sanitize
         t.isInstanceOf(field, 'Ext.data.field.String');
@@ -44,7 +44,7 @@ describe('conjoon.cn_core.data.field.CompoundKeyFieldTest', function(t) {
 
 
     t.it('Make sure convert() works as expected', function(t) {
-        var field  = Ext.create('conjoon.cn_core.data.field.CompoundKeyField');
+        var field  = Ext.create('coon.core.data.field.CompoundKeyField');
 
         t.expect(field.convert("")).toBeUndefined();
         t.expect(field.convert(null)).toBeUndefined();

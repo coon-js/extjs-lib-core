@@ -43,7 +43,7 @@
  *
  * @example
  *
- *      let feed = Ext.create('conjoon.cn_core.data.pageMap.Feed', {
+ *      let feed = Ext.create('coon.core.data.pageMap.Feed', {
  *          size : 25,
  *          next : 4
  *      });
@@ -67,11 +67,11 @@
  *      console.log(feed.getAt(size - 4)); // undefined
  *      console.log(feed.getAt(0)); // undefined
  */
-Ext.define('conjoon.cn_core.data.pageMap.Feed', {
+Ext.define('coon.core.data.pageMap.Feed', {
 
 
     mixins : [
-        'conjoon.cn_core.data.pageMap.ArgumentFilter'
+        'coon.core.data.pageMap.ArgumentFilter'
     ],
 
 

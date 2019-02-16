@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.field.BlobTest', function(t) {
+describe('coon.core.data.field.BlobTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.field.BlobTest', function(t) {
 
     t.it('Make sure class definition is as expected', function(t) {
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
 
         // sanitize
         t.expect(field instanceof Ext.data.field.Field).toBe(true);
@@ -48,16 +48,16 @@ describe('conjoon.cn_core.data.field.BlobTest', function(t) {
 
     t.it('Make sure constructor() work as expected', function(t) {
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob', {
+        var field  = Ext.create('coon.core.data.field.Blob', {
             defaultValue : 'a'
         });
 
         t.expect(field.getDefaultValue()).toBe('a');
 
         Ext.define('testfield', {
-            extend : 'conjoon.cn_core.data.field.Blob',
+            extend : 'coon.core.data.field.Blob',
 
             defaultValue : 'b'
         });
@@ -72,16 +72,16 @@ describe('conjoon.cn_core.data.field.BlobTest', function(t) {
 
 
     t.it('Make sure convert() works as expected', function(t) {
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
         t.expect(field.convert(null)).toEqual(null);
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
         t.expect(field.convert('a')).toEqual(null);
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
         t.expect(field.convert({})).toEqual(null);
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob'),
+        var field  = Ext.create('coon.core.data.field.Blob'),
             blob   = new Blob();
 
         t.expect(field.convert(blob)).toBe(blob);
@@ -92,7 +92,7 @@ describe('conjoon.cn_core.data.field.BlobTest', function(t) {
             b2 = new Blob(['foo'], {type: 'text/plain'}),
             b3 = new Blob(['foo'], {type: 'text/plain'});
 
-        var field  = Ext.create('conjoon.cn_core.data.field.Blob');
+        var field  = Ext.create('coon.core.data.field.Blob');
 
         t.expect(field.compare(b2, b1)).toBe(1);
 

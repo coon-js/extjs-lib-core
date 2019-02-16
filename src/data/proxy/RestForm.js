@@ -26,27 +26,27 @@
 /**
  * This class represents a  REST proxy which is capable of form uploads, by
  * extending from {@link Ext.data.proxy.Rest} and utilizing
- * {@link conjoon.cn_core.data.writer.Form}, which is being used as the default
+ * {@link coon.core.data.writer.Form}, which is being used as the default
  * writer-class.
  *
  * Note:
  * When working with sessions and if you do not want to send multiple records
  * during the create action with one request due to the fact that the post data
- * of associated file uploads would grow to fast,  use a {@link conjoon.cn_core.data.Session}
- * configured with a {@link conjoon.cn_core.data.session.SplitBatchVisitor}.
+ * of associated file uploads would grow to fast,  use a {@link coon.core.data.Session}
+ * configured with a {@link coon.core.data.session.SplitBatchVisitor}.
  *
- * The class used for establishing connections is {@link conjoon.cn_core.data.AjaxForm},
+ * The class used for establishing connections is {@link coon.core.data.AjaxForm},
  * an extended implementation of Ext.Ajax.
  */
-Ext.define('conjoon.cn_core.data.proxy.RestForm', {
+Ext.define('coon.core.data.proxy.RestForm', {
 
     extend : 'Ext.data.proxy.Rest',
 
     requires : [
-        'conjoon.cn_core.data.AjaxForm',
-        'conjoon.cn_core.data.FormDataRequest',
-        'conjoon.cn_core.data.operation.Upload',
-        'conjoon.cn_core.data.writer.FormData'
+        'coon.core.data.AjaxForm',
+        'coon.core.data.FormDataRequest',
+        'coon.core.data.operation.Upload',
+        'coon.core.data.writer.FormData'
     ],
 
     alias : 'proxy.cn_core-dataproxyrestform',
@@ -59,18 +59,18 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
     /**
      * @inheritdoc
      *
-     * Returns an instance of {@link conjoon.cn_core.data.FormDataRequest}
+     * Returns an instance of {@link coon.core.data.FormDataRequest}
      * when the operation's action is set to "create" to make sure
      * FormData as well als callbacks for upload progress can be specified.
      * The operation passed to this method for the "create"-action is of the type
-     * {@link conjoon.cn_core.data.operation.Upload}.
+     * {@link coon.core.data.operation.Upload}.
      *
-     * @return {conjoon.cn_core.data.FormDataRequest}
+     * @return {coon.core.data.FormDataRequest}
      *
      * @private
      *
      * @throws if the passed operation action is "create", but the operation itself
-     * is not of the type {@link conjoon.cn_core.data.operation.Upload}
+     * is not of the type {@link coon.core.data.operation.Upload}
      */
     buildRequest : function(operation) {
 
@@ -81,12 +81,12 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
 
         if (operation.getAction() == 'create') {
 
-            if (!(operation instanceof conjoon.cn_core.data.operation.Upload)) {
+            if (!(operation instanceof coon.core.data.operation.Upload)) {
                 Ext.raise({
                     source : Ext.getClassName(this),
                     msg    : Ext.getClassName(this) +
                             '.buildRequest() needs an operation of the type ' +
-                            'conjoon.cn_core.data.operation.Upload'
+                            'coon.core.data.operation.Upload'
                 })
             }
 
@@ -97,7 +97,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
 
             delete request;
             request = Ext.create(
-                'conjoon.cn_core.data.FormDataRequest', config
+                'coon.core.data.FormDataRequest', config
             );
         }
 
@@ -107,7 +107,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
 
     /**
      * @inheritdoc
-     * Uses {@link conjoon.cn_core.data.AjaxForm} to send requests.
+     * Uses {@link coon.core.data.AjaxForm} to send requests.
      *
      * @return {Ext.data.Request}
      *
@@ -122,7 +122,7 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
         }
 
         request.setRawRequest(
-            conjoon.cn_core.data.AjaxForm.request(
+            coon.core.data.AjaxForm.request(
                 request.getCurrentConfig())
         );
 
@@ -136,9 +136,9 @@ Ext.define('conjoon.cn_core.data.proxy.RestForm', {
      * @inheritdoc
      *
      * Overriden to make sure that the operation created for the "create"-action
-     * is {@link conjoon.cn_core.data.operation.Upload}.
+     * is {@link coon.core.data.operation.Upload}.
      *
-     * @return {conjoon.cn_core.data.operation.Upload}
+     * @return {coon.core.data.operation.Upload}
      */
     createOperation: function(action, config) {
         var me = this;

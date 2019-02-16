@@ -35,10 +35,10 @@
  * data fields in the data model of the record that are referenced by the used
  * PageMap and the records this instance operates on.
  */
-Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
+Ext.define('coon.core.data.pageMap.IndexLookup', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.PageMapUtil'
+        'coon.core.data.pageMap.PageMapUtil'
     ],
 
 
@@ -90,7 +90,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      *      // pages
      *
      * @param record
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
+     * @param {coon.core.data.pageMap.PageMapFeeder} pageMapFeeder
      *
      * @return {Mixed} A number if no concrete assumption about the insert index
      * can be made (-1 insert somewhere before available PageRanges, 1 somewhere
@@ -128,7 +128,7 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
         const me        = this,
             pageMap     = pageMapFeeder.getPageMap(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             sorters     = pageMap.getStore().getSorters(),
             ranges      = PageMapUtil.getAvailableRanges(pageMapFeeder),
             lastPage    = PageMapUtil.getLastPossiblePageNumber(pageMap);
@@ -255,8 +255,8 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
      * @param {String} ignoreId the id of the record to ignore, if any. This is
      * useful when the compared record is already part of the PageMap and needs
      * to be moved to another position due to changes to some of its data
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} pageMapFeeder
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} recordPosition if available, the position of the
+     * @param {coon.core.data.pageMap.PageMapFeeder} pageMapFeeder
+     * @param {coon.core.data.pageMap.RecordPosition} recordPosition if available, the position of the
      * existing record (see ignoreId) that will be used for comparing neighbour records before determining
      * if moving a record should happen (which must not necessarily happen if two sibling records
      * share the same value)
@@ -272,8 +272,8 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexLookup', {
 
         const me  = this,
               map = pageMapFeeder.getPageMap().map,
-              PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
-              RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+              PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+              RecordPosition = coon.core.data.pageMap.RecordPosition;
 
         let pageIterate, cmpRecord, cmp,
             targetPosition, neighbour;

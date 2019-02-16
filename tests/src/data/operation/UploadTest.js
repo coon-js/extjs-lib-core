@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.operation.UploadTest', function(t) {
+describe('coon.core.data.operation.UploadTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.operation.UploadTest', function(t) {
 
     t.it('Make sure class definition is as expected', function(t) {
 
-        var up  = Ext.create('conjoon.cn_core.data.operation.Upload');
+        var up  = Ext.create('coon.core.data.operation.Upload');
 
         // sanitize
         t.expect(up instanceof Ext.data.operation.Create).toBe(true);

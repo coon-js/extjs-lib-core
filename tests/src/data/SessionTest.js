@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.SessionTest', function(t) {
+describe('coon.core.data.SessionTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
 
 
     t.it('Sanitize the Session class', function(t) {
-        var c = Ext.create('conjoon.cn_core.data.Session');
+        var c = Ext.create('coon.core.data.Session');
 
         t.expect(c instanceof Ext.data.Session).toBe(true);
         t.expect(c.batchVisitorClassName).toBe('Ext.data.session.BatchVisitor');
@@ -40,7 +40,7 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
 
 
     t.it('Test createVisitor() with batchVisitorClassName not loaded yet.', function(t) {
-        var c = Ext.create('conjoon.cn_core.data.Session', {
+        var c = Ext.create('coon.core.data.Session', {
             batchVisitorClassName : 'foo'
         });
 
@@ -59,7 +59,7 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
 
 
     t.it('Test createVisitor() with batchVisitorClassName being the wrong type.', function(t) {
-        var c = Ext.create('conjoon.cn_core.data.Session', {
+        var c = Ext.create('coon.core.data.Session', {
             batchVisitorClassName : 'Ext.Panel'
         });
 
@@ -87,7 +87,7 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
             }
         }, function() {
 
-            var c = Ext.create('conjoon.cn_core.data.Session', {
+            var c = Ext.create('coon.core.data.Session', {
                 batchVisitorClassName : 'MockBatchVisitor'
             });
 
@@ -109,7 +109,7 @@ describe('conjoon.cn_core.data.SessionTest', function(t) {
             }
         }, function() {
 
-            var c = Ext.create('conjoon.cn_core.data.Session', {
+            var c = Ext.create('coon.core.data.Session', {
                 batchVisitorClassName : 'MockBatchVisitor'
             });
 

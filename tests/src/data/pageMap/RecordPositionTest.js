@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
+describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         var exc, e;
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition');
+            Ext.create('coon.core.data.pageMap.RecordPosition');
         } catch (e) {
             exc = e;
         }
@@ -44,7 +44,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('needs both');
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page : 2
             });
         } catch (e) {
@@ -55,7 +55,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 index : 2
             });
         } catch (e) {
@@ -71,7 +71,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         var exc, e, position;
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 'u',
                 index : 1
             });
@@ -84,7 +84,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 0,
                 index : 1
             });
@@ -96,7 +96,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('must not be less than');
 
 
-        var position = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
             page  : 2,
             index : 1
         });
@@ -118,7 +118,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         var exc, e, position;
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 index  : 'u',
                 page : 1
             });
@@ -131,7 +131,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
 
         try {
-            Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 1,
                 index : -1
             });
@@ -143,7 +143,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         t.expect(exc.msg.toLowerCase()).toContain('must not be less than');
 
 
-        var position = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
             page  : 2,
             index : 1
         });
@@ -162,7 +162,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     t.it('getter', function(t) {
 
-        var position = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
               page  : 7879,
               index : 4000
         });
@@ -175,19 +175,19 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     t.it('equalTo()', function(t) {
 
-        var posLeft = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+        var posLeft = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 3,
                 index : 2
             }),
-            posRight = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            posRight = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 3,
                 index : 2
             }),
-            posNope_1 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            posNope_1 = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 4,
                 index : 2
             }),
-            posNope_2 = Ext.create('conjoon.cn_core.data.pageMap.RecordPosition', {
+            posNope_2 = Ext.create('coon.core.data.pageMap.RecordPosition', {
                 page  : 3,
                 index : 5
             }), exc, e;
@@ -212,9 +212,9 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     });
 
-    t.it('conjoon.cn_core.data.pageMap.RecordPosition.create()', function(t) {
+    t.it('coon.core.data.pageMap.RecordPosition.create()', function(t) {
 
-        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+        var RecordPosition = coon.core.data.pageMap.RecordPosition,
             exc, e, pos,
             tests = [
                 [1, 2],
@@ -261,7 +261,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         // with array as arg
         for (var i = 0, len = tests.length; i < len; i++) {
             pos = RecordPosition.create.call(null, tests[i]);
-            t.expect(pos instanceof conjoon.cn_core.data.pageMap.RecordPosition).toBe(true);
+            t.expect(pos instanceof coon.core.data.pageMap.RecordPosition).toBe(true);
             t.expect(pos.getPage()).toBe(tests[i][0]);
             t.expect(pos.getIndex()).toBe(tests[i][1]);
         }
@@ -269,7 +269,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
         // with arguments as args
         for (var i = 0, len = tests.length; i < len; i++) {
             pos = RecordPosition.create.apply(null, tests[i]);
-            t.expect(pos instanceof conjoon.cn_core.data.pageMap.RecordPosition).toBe(true);
+            t.expect(pos instanceof coon.core.data.pageMap.RecordPosition).toBe(true);
             t.expect(pos.getPage()).toBe(tests[i][0]);
             t.expect(pos.getIndex()).toBe(tests[i][1]);
         }
@@ -279,7 +279,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     t.it('lessThan()', function(t) {
 
-        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+        var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
             tests = [{
                 left  : [1, 2],
@@ -324,7 +324,7 @@ describe('conjoon.cn_core.data.pageMap.RecordPositionTest', function(t) {
 
     t.it('greaterThan()', function(t) {
 
-        var RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+        var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
             tests = [{
                 left : [1, 2],

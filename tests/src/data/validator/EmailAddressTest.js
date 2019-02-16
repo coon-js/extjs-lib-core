@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.validator.EmailAddressTest', function(t) {
+describe('coon.core.data.validator.EmailAddressTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.validator.EmailAddressTest', function(t) {
 
     t.it('Make sure class definition is as expected', function(t) {
 
-        var vtor = Ext.create('conjoon.cn_core.data.validator.EmailAddress');
+        var vtor = Ext.create('coon.core.data.validator.EmailAddress');
 
         // sanitize
         t.expect(vtor instanceof Ext.data.validator.Validator).toBe(true);
@@ -67,7 +67,7 @@ describe('conjoon.cn_core.data.validator.EmailAddressTest', function(t) {
             var test   = tests[i],
                 config = test.config ? test.config : undefined,
                 vtor   = Ext.create(
-                    'conjoon.cn_core.data.validator.EmailAddress',
+                    'coon.core.data.validator.EmailAddress',
                     config
                 );
 

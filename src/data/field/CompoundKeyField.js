@@ -43,7 +43,7 @@
  *      ));
  *
  */
-Ext.define('conjoon.cn_core.data.field.CompoundKeyField', {
+Ext.define('coon.core.data.field.CompoundKeyField', {
 
     extend : 'Ext.data.field.String',
 

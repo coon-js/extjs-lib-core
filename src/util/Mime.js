@@ -26,7 +26,7 @@
 /**
  * Utility class for handling mime types.
  */
-Ext.define('conjoon.cn_core.util.Mime', {
+Ext.define('coon.core.util.Mime', {
 
 
     singleton : true,

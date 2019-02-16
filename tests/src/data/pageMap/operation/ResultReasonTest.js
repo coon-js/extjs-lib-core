@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.operation.ResultReasonTest', function(t) {
+describe('coon.core.data.pageMap.operation.ResultReasonTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -35,13 +35,13 @@ describe('conjoon.cn_core.data.pageMap.operation.ResultReasonTest', function(t) 
 
         t.it("prerequisites", function(t) {
 
-            t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason).toBeDefined();
+            t.expect(coon.core.data.pageMap.operation.ResultReason).toBeDefined();
 
-            t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND).toBeDefined();
+            t.expect(coon.core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND).toBeDefined();
 
-            t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason.OK).toBeDefined();
+            t.expect(coon.core.data.pageMap.operation.ResultReason.OK).toBeDefined();
 
-            t.expect(conjoon.cn_core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE).toBeDefined();
+            t.expect(coon.core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE).toBeDefined();
         });
 
 

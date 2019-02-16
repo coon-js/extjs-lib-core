@@ -23,18 +23,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
+describe('coon.core.data.field.EmailAddressTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.data.validator.EmailAddress', function() {
+    t.requireOk('coon.core.data.validator.EmailAddress', function() {
 
         t.it('Make sure class definition is as expected', function(t) {
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
 
             // sanitize
             t.expect(field instanceof Ext.data.field.Field).toBe(true);
@@ -50,21 +50,21 @@ describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
 
         t.it('Make sure constructor() work as expected', function(t) {
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
-            var field2 = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
+            var field2 = Ext.create('coon.core.data.field.EmailAddress');
 
             t.expect(field.getDefaultValue()).toEqual(null);
             t.expect(field2.getDefaultValue()).toEqual(null);
             t.expect(field.getDefaultValue() === field2.getDefaultValue()).toBe(true);
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress', {
+            var field  = Ext.create('coon.core.data.field.EmailAddress', {
                 defaultValue : 'a'
             });
 
             t.expect(field.getDefaultValue()).toBe('a');
 
             Ext.define('testfield', {
-                extend : 'conjoon.cn_core.data.field.EmailAddress',
+                extend : 'coon.core.data.field.EmailAddress',
 
                 defaultValue : 'b'
             });
@@ -78,25 +78,25 @@ describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
 
 
         t.it('Make sure convert() works as expected', function(t) {
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
             t.expect(field.convert(null)).toBe(null);
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
             t.expect(field.convert({address : 'a'})).toEqual({address : 'a', name : 'a'});
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
             t.expect(field.convert('b')).toEqual(
                 {address : 'b', name : 'b'}
             );
 
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
             t.expect(field.convert('foo')).toEqual({address : 'foo', name : 'foo'});
 
         });
 
 
         t.it('Make sure serialize() works as expected', function(t) {
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
 
             t.expect(field.serialize('foo')).toBe(null);
 
@@ -108,7 +108,7 @@ describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
 
 
         t.it('Make sure compare() works as expected', function(t) {
-            var field  = Ext.create('conjoon.cn_core.data.field.EmailAddress');
+            var field  = Ext.create('coon.core.data.field.EmailAddress');
 
             t.expect(field.compare(null, 'foo')).toBe(0);
 
@@ -166,7 +166,7 @@ describe('conjoon.cn_core.data.field.EmailAddressTest', function(t) {
                 m.isValid();
                 var vtors = m.getField('address')._validators;
                 t.expect(vtors.length).toBe(1);
-                t.expect(vtors[0] instanceof conjoon.cn_core.data.validator.EmailAddress).toBe(true);
+                t.expect(vtors[0] instanceof coon.core.data.validator.EmailAddress).toBe(true);
                 t.expect(vtors[0].getAllowEmpty()).toBe(true);
 
                 var m = Ext.create('testmodel');

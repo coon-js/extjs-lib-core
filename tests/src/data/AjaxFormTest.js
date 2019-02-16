@@ -23,29 +23,29 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.AjaxFormTest', function(t) {
+describe('coon.core.data.AjaxFormTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.data.AjaxForm', function() {
+    t.requireOk('coon.core.data.AjaxForm', function() {
 
         t.it('Sanitize the AjaxForm class', function(t) {
 
             t.expect(
-                conjoon.cn_core.data.AjaxForm instanceof Ext.data.Connection
+                coon.core.data.AjaxForm instanceof Ext.data.Connection
             ).toBe(true);
 
-            t.expect(conjoon.cn_core.data.AjaxForm.getAutoAbort()).toBe(false);
+            t.expect(coon.core.data.AjaxForm.getAutoAbort()).toBe(false);
         });
 
 
         t.it('Test setOptions()', function(t) {
 
             var formData = new FormData(),
-                ret = conjoon.cn_core.data.AjaxForm.setOptions({
+                ret = coon.core.data.AjaxForm.setOptions({
                     url      : 'foo.bar',
                     formData : formData
                 });
@@ -56,9 +56,9 @@ describe('conjoon.cn_core.data.AjaxFormTest', function(t) {
 
         t.it('Test createRequest()', function(t) {
 
-            var ret = conjoon.cn_core.data.AjaxForm.createRequest({});
+            var ret = coon.core.data.AjaxForm.createRequest({});
 
-            t.expect(ret instanceof conjoon.cn_core.data.request.FormData).toBe(true);
+            t.expect(ret instanceof coon.core.data.request.FormData).toBe(true);
         });
 
     });

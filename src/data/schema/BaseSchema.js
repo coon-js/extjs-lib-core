@@ -28,7 +28,7 @@
  * Each instance of this class needs to provide a unique id and a namespace
  * to work with.
  */
-Ext.define('conjoon.cn_core.data.schema.BaseSchema', {
+Ext.define('coon.core.data.schema.BaseSchema', {
 
     extend : 'Ext.data.schema.Schema',
 

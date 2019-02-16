@@ -23,36 +23,36 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.UtilTest', function(t) {
+describe('coon.core.UtilTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
-    t.requireOk('conjoon.cn_core.Util', function(){
+    t.requireOk('coon.core.Util', function(){
 
         t.it('unchain()', function(t) {
 
 
             var testMe = {1:{2:{3:{4:{5:'foo'}}}}};
 
-            t.expect(conjoon.cn_core.Util.unchain('1.2.3.4.5', testMe)).toBe('foo');
-            t.expect(conjoon.cn_core.Util.unchain('1.2.9.4.5', testMe)).toBeUndefined();
+            t.expect(coon.core.Util.unchain('1.2.3.4.5', testMe)).toBe('foo');
+            t.expect(coon.core.Util.unchain('1.2.9.4.5', testMe)).toBeUndefined();
 
-            t.expect(conjoon.cn_core.Util.unchain('1.2.3.4.5')).toBeUndefined();
+            t.expect(coon.core.Util.unchain('1.2.3.4.5')).toBeUndefined();
 
         });
 
 
         t.it('listNeighbours()', function(t) {
 
-            t.expect(conjoon.cn_core.Util.listNeighbours(['4', 5, '5', '1', '3', 6, '8'], 5)).toEqual([3, 4, 5, 6]);
-            t.expect(conjoon.cn_core.Util.listNeighbours([1, 2, 3], 2)).toEqual([1, 2, 3]);
+            t.expect(coon.core.Util.listNeighbours(['4', 5, '5', '1', '3', 6, '8'], 5)).toEqual([3, 4, 5, 6]);
+            t.expect(coon.core.Util.listNeighbours([1, 2, 3], 2)).toEqual([1, 2, 3]);
 
-            t.expect(conjoon.cn_core.Util.listNeighbours([3, 2, 1, 2], 1)).toEqual([1, 2, 3]);
+            t.expect(coon.core.Util.listNeighbours([3, 2, 1, 2], 1)).toEqual([1, 2, 3]);
 
-            t.expect(conjoon.cn_core.Util.listNeighbours(['4', 0, -1, 23, 1, 18, 5, '1', '3', 6, '8', '17'], 17)).toEqual([17, 18]);
+            t.expect(coon.core.Util.listNeighbours(['4', 0, -1, 23, 1, 18, 5, '1', '3', 6, '8', '17'], 17)).toEqual([17, 18]);
         });
 
 
@@ -72,7 +72,7 @@ describe('conjoon.cn_core.UtilTest', function(t) {
                 expected  : [[1, 2, 3, 4, 5, 6, 7], [9 ,10, 11], [15, 16], [99]]
             }], test, exc, e;
 
-            try{conjoon.cn_core.Util.groupIndices('foo');}catch(e){exc = e;}
+            try{coon.core.Util.groupIndices('foo');}catch(e){exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
 
@@ -80,15 +80,15 @@ describe('conjoon.cn_core.UtilTest', function(t) {
             for (var i = 0, len = tests.length; i < len; i++) {
                 test = tests[i];
 
-                t.expect(conjoon.cn_core.Util.groupIndices(test.value)).not.toBe(test.value);
-                t.expect(conjoon.cn_core.Util.groupIndices(test.value)).toEqual(test.expected);
+                t.expect(coon.core.Util.groupIndices(test.value)).not.toBe(test.value);
+                t.expect(coon.core.Util.groupIndices(test.value)).toEqual(test.expected);
             }
         });
 
 
         t.it('createRange()', function(t) {
 
-            var Util = conjoon.cn_core.Util,
+            var Util = coon.core.Util,
                 exc, e,
                 tests = [{
                     value    : ['1', 3],

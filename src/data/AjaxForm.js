@@ -30,7 +30,7 @@
  * you track the upload progress by specifying #progressCallback.
  *
  * The request class used for this kind of connection is
- * {@link conjoon.cn_core.data.request.FormData}.
+ * {@link coon.core.data.request.FormData}.
  *
  *      @example
  *      var formData = new FormData();
@@ -38,7 +38,7 @@
  *      formData.append('file', new Blob());
  *      formData.append('foo', 'bar');
  *
- *      conjoon.cn_core.data.AjaxForm.request({
+ *      coon.core.data.AjaxForm.request({
  *          url              : 'someurl.php',
  *          formData         : formData,
  *          progressCallback : function(evt, options) {
@@ -46,12 +46,12 @@
  *          }
  *      });
  */
-Ext.define('conjoon.cn_core.data.AjaxForm', {
+Ext.define('coon.core.data.AjaxForm', {
 
     extend : 'Ext.data.Connection',
 
     requires : [
-        'conjoon.cn_core.data.request.FormData'
+        'coon.core.data.request.FormData'
     ],
 
     singleton : true,
@@ -83,7 +83,7 @@ Ext.define('conjoon.cn_core.data.AjaxForm', {
 
     /**
      * Creates the request and makes sure that the "type" property of options
-     * is set to the alias of the {@link conjoon.cn_core.data.request.FormData}.
+     * is set to the alias of the {@link coon.core.data.request.FormData}.
      *
      * @param options
      * @param requestOptions

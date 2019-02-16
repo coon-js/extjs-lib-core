@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
+describe('coon.core.data.pageMap.PageMapFeederTest', function(t) {
 
     Ext.define('MockModel', {
         extend : 'Ext.data.Model',
@@ -86,12 +86,12 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 
             cfg = cfg || {};
 
-            return Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+            return Ext.create('coon.core.data.pageMap.PageMapFeeder', {
                 pageMap : createPageMap(cfg)
             });
         },
         createFeed = function(cfg) {
-            return Ext.create('conjoon.cn_core.data.pageMap.Feed', cfg);
+            return Ext.create('coon.core.data.pageMap.Feed', cfg);
         },
         createFeedFilled = function(cfg, full) {
 
@@ -107,7 +107,7 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
         },
         testOp = function(op, expected, t) {
 
-            var Operation = conjoon.cn_core.data.pageMap.Operation;
+            var Operation = coon.core.data.pageMap.Operation;
             t.expect(op instanceof Operation).toBe(true);
             t.expect(Ext.isObject(op.getResult())).toBe(true);
 
@@ -146,13 +146,13 @@ describe('conjoon.cn_core.data.pageMap.PageMapFeederTest', function(t) {
 // +----------------------------------------------------------------------------
 
 
-t.requireOk('conjoon.cn_core.fixtures.sim.ItemSim', function(){
-t.requireOk('conjoon.cn_core.data.pageMap.PageMapFeeder', function(){
-t.requireOk('conjoon.cn_core.data.pageMap.Feed', function(){
-t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
+t.requireOk('coon.core.fixtures.sim.ItemSim', function(){
+t.requireOk('coon.core.data.pageMap.PageMapFeeder', function(){
+t.requireOk('coon.core.data.pageMap.Feed', function(){
+t.requireOk('coon.core.data.pageMap.IndexLookup', function() {
 
-    const Feed          = conjoon.cn_core.data.pageMap.Feed,
-          PageMapFeeder = conjoon.cn_core.data.pageMap.PageMapFeeder,
+    const Feed          = coon.core.data.pageMap.Feed,
+          PageMapFeeder = coon.core.data.pageMap.PageMapFeeder,
           ADD           = PageMapFeeder.ACTION_ADD,
           REMOVE        = PageMapFeeder.ACTION_REMOVE;
 
@@ -165,31 +165,31 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         t.expect(PageMapFeeder.ACTION_REMOVE).toBeDefined();
         t.expect(PageMapFeeder.ACTION_REMOVE).not.toBe(PageMapFeeder.ACTION_ADD);
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder')} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.PageMapFeeder')} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('is required');
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {pageMap : null})} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.PageMapFeeder', {pageMap : null})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', { pageMap : Ext.create('Ext.data.PageMap')})} catch (e) {exc = e;}
+        try {Ext.create('coon.core.data.pageMap.PageMapFeeder', { pageMap : Ext.create('Ext.data.PageMap')})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('valid store');
 
-        try {Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', { pageMap :
+        try {Ext.create('coon.core.data.pageMap.PageMapFeeder', { pageMap :
           Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.Store')})})} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain('valid store');
 
-        ls = Ext.create('conjoon.cn_core.data.pageMap.PageMapFeeder', {
+        ls = Ext.create('coon.core.data.pageMap.PageMapFeeder', {
             pageMap : Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')})
         });
 
-        t.expect(ls instanceof conjoon.cn_core.data.pageMap.PageMapFeeder).toBe(true);
+        t.expect(ls instanceof coon.core.data.pageMap.PageMapFeeder).toBe(true);
 
         t.expect(ls.mixins).toBeDefined()
-        t.expect(ls.mixins['conjoon.cn_core.data.pageMap.ArgumentFilter']).toBeDefined();
+        t.expect(ls.mixins['coon.core.data.pageMap.ArgumentFilter']).toBeDefined();
 
         try {ls.setPageMap(null);} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
@@ -375,7 +375,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
             collect(pageMap.map[page].value);
             newFeed = feeder.swapMapToFeed(page, page - 1);
-            t.expect(newFeed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+            t.expect(newFeed instanceof coon.core.data.pageMap.Feed).toBe(true);
 
             t.expect(feeder.getPageMap().peekPage(page)).toBeFalsy();
             t.expect(feeder.getFeedAt(page)).toBeDefined();
@@ -445,7 +445,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         let exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -504,7 +504,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -536,7 +536,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -568,7 +568,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -599,7 +599,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             pageMap   = feeder.getPageMap(),
             pageSize  = pageMap.getPageSize(),
             ADD       = PageMapFeeder.ACTION_ADD,
@@ -640,7 +640,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -674,7 +674,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -706,7 +706,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         //
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -737,7 +737,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             pageMap   = feeder.getPageMap(),
             pageSize  = pageMap.getPageSize(),
             ADD       = PageMapFeeder.ACTION_ADD,
@@ -779,7 +779,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -803,7 +803,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -834,7 +834,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -870,7 +870,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -887,7 +887,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -902,7 +902,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -925,7 +925,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -949,7 +949,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -982,7 +982,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1361,7 +1361,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
             // swap to Feed
             newFeed = feeder.swapMapToFeed(page, page - 1);
-            t.expect(newFeed instanceof conjoon.cn_core.data.pageMap.Feed).toBe(true);
+            t.expect(newFeed instanceof coon.core.data.pageMap.Feed).toBe(true);
             t.expect(feeder.getPageMap().peekPage(page)).toBeFalsy();
             collect(newFeed.toArray());
 
@@ -1387,7 +1387,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         var exc, e,
             feeder    = createFeeder(),
             pageMap   = feeder.getPageMap(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1435,7 +1435,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         var exc, e,
             feeder    = createFeeder(),
             pageMap   = feeder.getPageMap(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1485,7 +1485,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1520,7 +1520,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1552,7 +1552,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1587,7 +1587,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1625,7 +1625,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -1678,7 +1678,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         var exc, e,
             feeder    = createFeeder(),
-            PageRange = conjoon.cn_core.data.pageMap.PageRange,
+            PageRange = coon.core.data.pageMap.PageRange,
             ADD       = PageMapFeeder.ACTION_ADD,
             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
@@ -2190,7 +2190,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
                 pageSize  = pageMap.getPageSize(),
                 mapping   = {},
                 indexMap  = {},
-                REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+                REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
                 removedId = null,
                 recNextId;
 
@@ -2270,7 +2270,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2390,7 +2390,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2452,7 +2452,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2511,7 +2511,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2605,7 +2605,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2684,7 +2684,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2734,7 +2734,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageSize  = pageMap.getPageSize(),
             mapping   = {},
             indexMap  = {},
-            REMOVE    = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
+            REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
             removedId = null,
             recNextId;
 
@@ -2787,8 +2787,8 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
             pageSize       = pageMap.getPageSize(),
-            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec         = null;
 
         t.waitForMs(250, function() {
@@ -2820,12 +2820,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
             pageSize       = pageMap.getPageSize(),
-            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec         = null,
             lastRec        = null,
             mapping        = [],
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -2879,12 +2879,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
             pageSize       = pageMap.getPageSize(),
-            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec         = null,
             lastRec        = null,
             mapping        = [],
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -2970,12 +2970,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
             pageSize       = pageMap.getPageSize(),
-            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec         = null,
             lastRec        = null,
             mapping        = [],
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -3070,12 +3070,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
             pageSize       = pageMap.getPageSize(),
-            ADD            = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec         = null,
             lastRec        = null,
             mapping        = [],
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -3182,12 +3182,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap = feeder.getPageMap(),
             map = pageMap.map,
             pageSize = pageMap.getPageSize(),
-            ADD = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec = null,
             lastRec = null,
             mapping = [],
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -3233,12 +3233,12 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap = feeder.getPageMap(),
             map = pageMap.map,
             pageSize = pageMap.getPageSize(),
-            ADD = conjoon.cn_core.data.pageMap.PageMapFeeder.ACTION_ADD,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            ADD = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             addRec = null,
             lastRec = null,
             mapping = [],
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;;
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil;;
 
         t.waitForMs(250, function() {
 
@@ -3282,7 +3282,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         let feeder         = createFeeder(),
             pageMap        = feeder.getPageMap(),
             map            = pageMap.map,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition,
+            RecordPosition = coon.core.data.pageMap.RecordPosition,
             exc, e, newProp, oldProp, oldINdex;
 
 
@@ -3337,7 +3337,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     t.it("addRecord() - total count", function(t) {
 
         let feeder         = createFeeder(),
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+            RecordPosition = coon.core.data.pageMap.RecordPosition;
 
         t.waitForMs(250, function() {
 
@@ -3381,7 +3381,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         t.expect(feeder.getIndexLookup()).toBe(feeder.indexLookup);
 
-        t.expect(feeder.indexLookup instanceof conjoon.cn_core.data.pageMap.IndexLookup);
+        t.expect(feeder.indexLookup instanceof coon.core.data.pageMap.IndexLookup);
     });
 
 
@@ -3558,7 +3558,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     t.it("update() - A", function(t) {
 
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             pageMap     = feeder.getPageMap();
 
         t.waitForMs(250, function() {
@@ -3652,7 +3652,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             pageSize    = pageMap.getPageSize(),
             size        = 32, rec, op, lastPage;
 
@@ -3686,7 +3686,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
     t.it("isPageCandidate() - feed as highest possible page number", function(t) {
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             pageSize    = pageMap.getPageSize(),
             size        = 32, rec, op, lastPage;
 
@@ -3712,7 +3712,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             pageSize    = pageMap.getPageSize(),
             size        = 32, rec, op, lastPage;
 
@@ -3759,7 +3759,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
 
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -3792,7 +3792,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
             pageSize    = pageMap.getPageSize(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil;
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
         t.waitForMs(250, function() {
 
@@ -3882,7 +3882,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
             pageMap     = feeder.getPageMap(),
             store       = pageMap.getStore(),
             pageSize    = pageMap.getPageSize(),
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             size        = 32, rec, op,
             cmps = [];
 
@@ -3943,7 +3943,7 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         let feeder      = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap     = feeder.getPageMap(),
             map         =  pageMap.map,
-            PageMapUtil = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             pageSize    = pageMap.getPageSize(),
             ADD         = PageMapFeeder.ACTION_ADD,
             REMOVE      = PageMapFeeder.ACTION_REMOVE;
@@ -4062,11 +4062,11 @@ t.requireOk('conjoon.cn_core.data.pageMap.IndexLookup', function() {
         let feeder         = createFeeder({sorters : [{property: 'testPropForIndexLookup', direction: 'ASC'}]}),
             pageMap        = feeder.getPageMap(),
             map            =  pageMap.map,
-            PageMapUtil    = conjoon.cn_core.data.pageMap.PageMapUtil,
+            PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
             pageSize       = pageMap.getPageSize(),
             ADD            = PageMapFeeder.ACTION_ADD,
             REMOVE         = PageMapFeeder.ACTION_REMOVE,
-            RecordPosition = conjoon.cn_core.data.pageMap.RecordPosition;
+            RecordPosition = coon.core.data.pageMap.RecordPosition;
 
         t.waitForMs(250, function() {
 

@@ -29,10 +29,10 @@
  *
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
+Ext.define('coon.core.data.pageMap.ArgumentFilter', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.RecordPosition'
+        'coon.core.data.pageMap.RecordPosition'
     ],
 
     /**
@@ -87,20 +87,20 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
     /**
      * Throws an exception if the passed argument is not an instance of
-     * {Ext.data.PageMap} or {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * {Ext.data.PageMap} or {coon.core.data.pageMap.PageMapFeeder}
      *
-     * @param {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder} value
+     * @param {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder} value
      *
-     * @return {Ext.data.PageMap|conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * @return {Ext.data.PageMap|coon.core.data.pageMap.PageMapFeeder}
      *
      * @throws if if the passed argument is not an instance of
-     * {Ext.data.PageMap} and not an instance of {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * {Ext.data.PageMap} and not an instance of {coon.core.data.pageMap.PageMapFeeder}
      */
     filterPageMapOrFeederValue : function(value) {
 
-        if (!(value instanceof Ext.data.PageMap) && !(value instanceof conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+        if (!(value instanceof Ext.data.PageMap) && !(value instanceof coon.core.data.pageMap.PageMapFeeder)) {
             Ext.raise({
-                msg   : "'value' must be an instance of Ext.data.PageMap or conjoon.cn_core.data.pageMap.PageMapFeeder",
+                msg   : "'value' must be an instance of Ext.data.PageMap or coon.core.data.pageMap.PageMapFeeder",
                 value : value
             });
         }
@@ -111,20 +111,20 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
     /**
      * Throws an exception if the passed argument is not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * {coon.core.data.pageMap.PageMapFeeder}
      *
-     * @param {conjoon.cn_core.data.pageMap.PageMapFeeder} value
+     * @param {coon.core.data.pageMap.PageMapFeeder} value
      *
-     * @return {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * @return {coon.core.data.pageMap.PageMapFeeder}
      *
      * @throws if if the passed argument is not an instance of
-     * {conjoon.cn_core.data.pageMap.PageMapFeeder}
+     * {coon.core.data.pageMap.PageMapFeeder}
      */
     filterFeederValue : function(feeder) {
 
-        if (!(feeder instanceof conjoon.cn_core.data.pageMap.PageMapFeeder)) {
+        if (!(feeder instanceof coon.core.data.pageMap.PageMapFeeder)) {
             Ext.raise({
-                msg    : "'value' must be an instance of conjoon.cn_core.data.pageMap.PageMapFeeder",
+                msg    : "'value' must be an instance of coon.core.data.pageMap.PageMapFeeder",
                 feeder : feeder
             });
         }
@@ -159,16 +159,16 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
     /**
      * Throws an exception if the passed argument is not an instance of
-     * {conjoon.cn_core.data.pageMap.RecordPosition}
+     * {coon.core.data.pageMap.RecordPosition}
      *
-     * @param {conjoon.cn_core.data.pageMap.RecordPosition} position
+     * @param {coon.core.data.pageMap.RecordPosition} position
      * @param {Number} The page size to compare the index of the position to.
      * A values less than or equal to 0 skips this check
      *
-     * @return {conjoon.cn_core.data.pageMap.RecordPosition}
+     * @return {coon.core.data.pageMap.RecordPosition}
      *
      * @throws if if the passed argument is not an instance of
-     * {conjoon.cn_core.data.pageMap.RecordPosition}, or if pageSize is not a number
+     * {coon.core.data.pageMap.RecordPosition}, or if pageSize is not a number
      *
      * @see #filterIndexValue
      */
@@ -176,9 +176,9 @@ Ext.define('conjoon.cn_core.data.pageMap.ArgumentFilter', {
 
         const me = this;
 
-        if (!(position instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+        if (!(position instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg      : "'position' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition",
+                msg      : "'position' must be an instance of coon.core.data.pageMap.RecordPosition",
                 position : position
             });
         }

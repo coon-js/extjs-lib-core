@@ -26,7 +26,7 @@
 /**
  *
  */
-Ext.define('conjoon.cn_core.fixtures.sim.Init', {
+Ext.define('coon.core.fixtures.sim.Init', {
     requires: [
         'Ext.ux.ajax.JsonSimlet',
         'Ext.ux.ajax.SimManager'

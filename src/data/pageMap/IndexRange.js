@@ -31,17 +31,17 @@
  *
  *      @example
  *          // array indices are internally transformed to record positions
- *          Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
+ *          Ext.create('coon.core.data.pageMap.IndexRange', {
  *              start : [3, 1],
  *              end   : [4, 2]
  *          });
  *
  *           // is the same as:
- *           var indexRange = Ext.create('conjoon.cn_core.data.pageMap.IndexRange', {
- *               start : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition({
+ *           var indexRange = Ext.create('coon.core.data.pageMap.IndexRange', {
+ *               start : Ext.create('coon.core.data.pageMap.RecordPosition({
  *                   page : 3, index : 2
  *               )),
- *               end : Ext.create('conjoon.cn_core.data.pageMap.RecordPosition({
+ *               end : Ext.create('coon.core.data.pageMap.RecordPosition({
  *                   page : 4, index : 2
  *               ))
  *           });
@@ -53,10 +53,10 @@
  *           start.greaterThan(end); // returns false
  *
  */
-Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
+Ext.define('coon.core.data.pageMap.IndexRange', {
 
     requires : [
-        'conjoon.cn_core.data.pageMap.RecordPosition'
+        'coon.core.data.pageMap.RecordPosition'
     ],
 
     config : {
@@ -66,18 +66,18 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
 
 
     /**
-     * Creates a new instance of conjoon.cn_core.data.pageMap.IndexRange.
+     * Creates a new instance of coon.core.data.pageMap.IndexRange.
      *
      * @param {Object} cfg
      * @param [Mixed} cfg.start A RecordPosition tat marks the start of the
      * range, or an array that will be passed to
-     * conjoon.cn_core.data.pageMap.RecordPosition#create
+     * coon.core.data.pageMap.RecordPosition#create
      * @param [Mixed} cfg.end A RecordPosition tat marks the end of the
      * range, or an array that will be passed to
-     * conjoon.cn_core.data.pageMap.RecordPosition#create
+     * coon.core.data.pageMap.RecordPosition#create
      *
      * @throws if start or end is not specified, or any exception that is
-     * thrown by conjoon.cn_core.data.pageMap.RecordPosition#create, or if
+     * thrown by coon.core.data.pageMap.RecordPosition#create, or if
      * start is not leass than or not equal to end
      */
     constructor : function(cfg) {
@@ -118,10 +118,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
      *
      * @param {Mixed} start
      *
-     * @returns {conjoon.cn_core.data.pageMap.RecordPosition}
+     * @returns {coon.core.data.pageMap.RecordPosition}
      *
      * @throws if start was already set, or any other exception thrown
-     * by conjoon.cn_core.data.pageMap.RecordPosition#create
+     * by coon.core.data.pageMap.RecordPosition#create
      */
     applyStart : function(start) {
 
@@ -134,11 +134,11 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
             })
         }
 
-        if (start instanceof conjoon.cn_core.data.pageMap.RecordPosition) {
+        if (start instanceof coon.core.data.pageMap.RecordPosition) {
             return start;
         }
 
-        return conjoon.cn_core.data.pageMap.RecordPosition.create(start);
+        return coon.core.data.pageMap.RecordPosition.create(start);
     },
 
 
@@ -148,10 +148,10 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
      *
      * @param {Mixed} end
      *
-     * @returns {conjoon.cn_core.data.pageMap.RecordPosition}
+     * @returns {coon.core.data.pageMap.RecordPosition}
      *
      * @throws if end was already set, or any other exception thrown
-     * by conjoon.cn_core.data.pageMap.RecordPosition#create
+     * by coon.core.data.pageMap.RecordPosition#create
      */
     applyEnd : function(end) {
 
@@ -164,11 +164,11 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
             })
         }
 
-        if (end instanceof conjoon.cn_core.data.pageMap.RecordPosition) {
+        if (end instanceof coon.core.data.pageMap.RecordPosition) {
             return end;
         }
 
-        return conjoon.cn_core.data.pageMap.RecordPosition.create(end);
+        return coon.core.data.pageMap.RecordPosition.create(end);
     },
 
 
@@ -177,12 +177,12 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
      * page, including start/ end points, otherwise false. If targets is an array,
      * this method will return if any of the entries are contained in this range.
      *
-     * @param {AMixed} {conjoon.cn_core.data.pageMap.RecordPosition} target
+     * @param {AMixed} {coon.core.data.pageMap.RecordPosition} target
      *
      * @returns {Boolean}
      *
      * @throws if target or the entries within is/are not an instance of
-     * conjoon.cn_core.data.pageMap.RecordPosition
+     * coon.core.data.pageMap.RecordPosition
      *
      */
     contains : function(target) {
@@ -190,9 +190,9 @@ Ext.define('conjoon.cn_core.data.pageMap.IndexRange', {
         var me = this, start, end, targets = [].concat(target);
 
         for (var i = 0, len = targets.length; i < len; i++) {
-            if (!(targets[i] instanceof conjoon.cn_core.data.pageMap.RecordPosition)) {
+            if (!(targets[i] instanceof coon.core.data.pageMap.RecordPosition)) {
                 Ext.raise({
-                    msg     : '\'target\' must be an instance of conjoon.cn_core.data.pageMap.RecordPosition',
+                    msg     : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
                     targets : targets
                 })
             }

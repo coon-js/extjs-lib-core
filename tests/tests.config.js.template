@@ -1,9 +1,9 @@
-var conjoon = conjoon || {};
-conjoon.tests = conjoon.tests || {};
-conjoon.tests.config = conjoon.tests.config || {};
+var coon = coon || {};
+coon.tests = coon.tests || {};
+coon.tests.config = coon.tests.config || {};
 
 
-conjoon.tests.config.paths = {
+coon.tests.config.paths = {
     extjs : {
         js : {
             url : "[PATH_TO_EXT_ALL.JS]" /*Your path to your ExtJS distribution (e.g. ext-all-debug.js) */

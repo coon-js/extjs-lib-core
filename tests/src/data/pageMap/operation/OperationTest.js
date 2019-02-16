@@ -23,16 +23,16 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.pageMap.operation.OperationTest', function(t) {
+describe('coon.core.data.pageMap.operation.OperationTest', function(t) {
 
     var createRequest = function() {
 
-        return Ext.create('conjoon.cn_core.data.pageMap.operation.Request');
+        return Ext.create('coon.core.data.pageMap.operation.Request');
 
     },
     createResult = function() {
 
-        return Ext.create('conjoon.cn_core.data.pageMap.operation.Result', {
+        return Ext.create('coon.core.data.pageMap.operation.Result', {
             success : true,
             reason  : -1
         });
@@ -50,14 +50,14 @@ describe('conjoon.cn_core.data.pageMap.operation.OperationTest', function(t) {
 
          var op, exc, e, req, res;
 
-         try {Ext.create('conjoon.cn_core.data.pageMap.operation.Operation')} catch (e) {exc = e;}
+         try {Ext.create('coon.core.data.pageMap.operation.Operation')} catch (e) {exc = e;}
          t.expect(exc).toBeDefined();
          t.expect(exc.msg).toBeDefined();
          t.expect(exc.msg.toLowerCase()).toContain('is required');
          t.expect(exc.msg.toLowerCase()).toContain('request');
          exc = undefined;
 
-         try {Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {request : null})} catch (e) {exc = e;}
+         try {Ext.create('coon.core.data.pageMap.operation.Operation', {request : null})} catch (e) {exc = e;}
          t.expect(exc).toBeDefined();
          t.expect(exc.msg).toBeDefined();
          t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
@@ -65,11 +65,11 @@ describe('conjoon.cn_core.data.pageMap.operation.OperationTest', function(t) {
          exc = undefined;
 
          req = createRequest();
-         op = Ext.create('conjoon.cn_core.data.pageMap.operation.Operation', {
+         op = Ext.create('coon.core.data.pageMap.operation.Operation', {
             request : req
          });
 
-         t.expect(op instanceof conjoon.cn_core.data.pageMap.operation.Operation).toBe(true);
+         t.expect(op instanceof coon.core.data.pageMap.operation.Operation).toBe(true);
 
          try {op.setRequest(createRequest());} catch (e) {exc = e;}
          t.expect(exc).toBeDefined();

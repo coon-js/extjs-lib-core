@@ -26,17 +26,17 @@
 /**
  * This class represents a specialized form of a {@link Ext.data.operation.Create}
  * and provides additional configuration options to make sure that "create"
- * operations used by {@link conjoon.cn_core.data.proxy.RestForm} properly
+ * operations used by {@link coon.core.data.proxy.RestForm} properly
  * register progressCallbacks when file uploads are involved. The progressCallback
- * is then used by {@link conjoon.cn_core.data.request.FormUploadRequest} to track
+ * is then used by {@link coon.core.data.request.FormUploadRequest} to track
  * the progress-event of an XHR2 object.
  * This class is used internally and should not be needed directly. For examples,
- * see {@link conjoon.cn_core.data.proxy.RestForm} which creates instances
+ * see {@link coon.core.data.proxy.RestForm} which creates instances
  * of this class. Note, that this class does not change the operation's action,
  * which remains "create".
  *
  */
-Ext.define('conjoon.cn_core.data.operation.Upload', {
+Ext.define('coon.core.data.operation.Upload', {
 
     extend : 'Ext.data.operation.Create',
 

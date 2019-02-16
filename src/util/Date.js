@@ -26,7 +26,7 @@
 /**
  * Utility class for shared date utility functions
  */
-Ext.define('conjoon.cn_core.util.Date', {
+Ext.define('coon.core.util.Date', {
 
 
     singleton : true,

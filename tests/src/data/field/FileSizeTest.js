@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('conjoon.cn_core.data.field.FileSizeTest', function(t) {
+describe('coon.core.data.field.FileSizeTest', function(t) {
 
 
 // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe('conjoon.cn_core.data.field.FileSizeTest', function(t) {
 
     t.it('Make sure class definition is as expected', function(t) {
 
-        var field  = Ext.create('conjoon.cn_core.data.field.FileSize');
+        var field  = Ext.create('coon.core.data.field.FileSize');
 
         // sanitize
         t.expect(field instanceof Ext.data.field.Field).toBe(true);
@@ -43,7 +43,7 @@ describe('conjoon.cn_core.data.field.FileSizeTest', function(t) {
 
 
     t.it('Make sure convert() works as expected', function(t) {
-        var field  = Ext.create('conjoon.cn_core.data.field.FileSize');
+        var field  = Ext.create('coon.core.data.field.FileSize');
         t.expect(field.convert(10000)).toEqual(Ext.util.Format.fileSize(10000));
     });
 

@@ -27,9 +27,9 @@
  * PackageControllerMock. This instance's preLaunchHook returns on the first
  * call false, after this it returns always true.
  */
-Ext.define('conjoon.test.app.mock.PackageControllerMock', {
+Ext.define('coon.test.app.mock.PackageControllerMock', {
 
-    extend : 'conjoon.cn_core.app.PackageController',
+    extend : 'coon.core.app.PackageController',
 
 
     called : 0,
