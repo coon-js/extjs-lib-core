@@ -25,6 +25,8 @@
 
 describe('coon.core.data.pageMap.IndexLookupTest', function(t) {
 
+    const TIMEOUT = 1250;
+
     Ext.define("TespropMock", {
         extend : 'Ext.data.Model',
         fields : [{
@@ -134,15 +136,15 @@ t.requireOk('coon.core.fixtures.sim.ItemSim', function(){
             property  = 'testPropForIndexLookup',
             pageMap   = feeder.getPageMap() ;
 
-        for (var i = 1; i <= 19; i++) {
-            feeder.getPageMap().getStore().loadPage(i);
-        }
+        t.waitForMs(TIMEOUT, function() {
 
+            feeder.getPageMap().getStore().loadPage(9);
 
-        t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function () {
+                t.expect(pageMap.map[9].value[0].get('testProp')).toBe(200);
+                t.expect(sorter.scanRangeForIndex(1, 19, 203, property, 'ASC', cmp, undefined, feeder)).toEqual([9, 2]);
 
-            t.expect(pageMap.map[9].value[0].get('testProp')).toBe(200);
-            t.expect(sorter.scanRangeForIndex(1, 19, 203, property, 'ASC', cmp, undefined, feeder)).toEqual([9, 2]);
+            });
 
         });
     });
@@ -415,7 +417,7 @@ t.requireOk('coon.core.fixtures.sim.ItemSim', function(){
             sorters : [{property : 'testPropForIndexLookup', direction : 'DESC'}]
         });
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
             t.expect(feeder.getPageMap().map[20]).not.toBeDefined();
 
             t.expect(sorter.findInsertIndex(prop(0), feeder)).toBe(1);

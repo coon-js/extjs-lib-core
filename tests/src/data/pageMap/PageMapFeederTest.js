@@ -33,7 +33,26 @@ describe('coon.core.data.pageMap.PageMapFeederTest', function(t) {
         }]
     });
 
-    const TIMEOUT = 1250;
+    const TIMEOUT = 1250,
+          loadPages = function(store, pages) {
+
+                store.loadPage(pages.shift(), {
+
+                    callback : function() {
+                        if (pages.length) {
+                            loadPages(store, pages);
+                        }
+                    }
+
+                });
+
+          },
+          expectPages = function(pages, pageMap, t) {
+
+              for (let i = 0; i < pages.length; i++) {
+                  t.expect(pageMap.peekPage(pages[i])).toBeTruthy();
+              }
+          };
 
     var createPageMap = function(cfg) {
             var store;
@@ -56,6 +75,7 @@ describe('coon.core.data.pageMap.PageMapFeederTest', function(t) {
                     }
                 }
             });
+
 
             return store.getData();
         },
@@ -3948,21 +3968,20 @@ t.requireOk('coon.core.data.pageMap.IndexLookup', function() {
             ADD         = PageMapFeeder.ACTION_ADD,
             REMOVE      = PageMapFeeder.ACTION_REMOVE;
 
-        t.waitForMs(250, function() {
+        t.waitForMs(TIMEOUT, function() {
 
-            pageMap.getStore().loadPage(13);
-            pageMap.getStore().loadPage(14);
-            pageMap.getStore().loadPage(15);
-            pageMap.getStore().loadPage(16);
+            loadPages(pageMap.getStore(), [13, 14, 15, 16]);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
+
+                expectPages([...Array(21).keys()].slice(1), pageMap, t);
 
                 pageMap.removeAtKey(17);
                 pageMap.removeAtKey(18);
                 pageMap.removeAtKey(19);
                 pageMap.removeAtKey(20);
 
-                t.waitForMs(250, function() {
+                t.waitForMs(TIMEOUT, function() {
 
                     feeder.swapMapToFeed(10, 9);
                     feeder.swapMapToFeed(14, 13);
@@ -4070,13 +4089,11 @@ t.requireOk('coon.core.data.pageMap.IndexLookup', function() {
 
         t.waitForMs(250, function() {
 
-            pageMap.getStore().loadPage(13);
-            pageMap.getStore().loadPage(14);
-            pageMap.getStore().loadPage(15);
-            pageMap.getStore().loadPage(16);
+            loadPages(pageMap.getStore(),[13, 14, 15, 16]);
 
-            t.waitForMs(250, function() {
+            t.waitForMs(TIMEOUT, function() {
 
+                expectPages([...Array(21).keys()].slice(1), pageMap, t);
 
                 pageMap.removeAtKey(19);
                 pageMap.removeAtKey(20);
