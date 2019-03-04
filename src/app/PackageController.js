@@ -109,9 +109,8 @@ Ext.define('coon.core.app.PackageController', {
 
 
     /**
-     * Overrides parent implementation to make sure the "before" callback for
-     * a route is called when the route is requested.
-     * It's purpose is to silently add the #onBeforePackageRoute callback
+     * Makes sure the "before" callback for a route is called when the route
+     * is requested by silently adding the #onBeforePackageRoute callback
      * to make sure a requested route is processed as soon as the MainView is
      * available. The before-callback is not added if the configured route is
      * already an object.
@@ -136,7 +135,6 @@ Ext.define('coon.core.app.PackageController', {
             }
         }
 
-        return me.callParent([routes]);
     },
 
 

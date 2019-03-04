@@ -85,8 +85,7 @@ describe('coon.core.app.PackageControllerTest', function(t) {
             },
             expected : {
                 myconfiguredurl : {
-                    action : 'someAction',
-                    before : undefined
+                    action : 'someAction'
                 }
             }
         }, {
@@ -98,8 +97,7 @@ describe('coon.core.app.PackageControllerTest', function(t) {
             },
             expected : {
                 myconfiguredurl : {
-                    action : 'someAction',
-                    before : undefined
+                    action : 'someAction'
                 },
                 myurl : {
                     action : 'someAction',
