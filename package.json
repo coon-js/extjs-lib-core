@@ -104,6 +104,7 @@
     "framework": "ext",
 
     "requires": [
-        "sencha-core"
+        "sencha-core",
+        "package-loader"
     ]
 }

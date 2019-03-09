@@ -17,6 +17,9 @@ harness.configure({
          */
         'coon.core.fixtures' : './fixtures',
 
+        'Ext.Package' : '../../../remote/package-loader/src/Package.js',
+        'Ext.package' : '../../../remote/package-loader/src/package',
+
         'coon.core' : '../src/',
         'coon.test' : './src'
     },

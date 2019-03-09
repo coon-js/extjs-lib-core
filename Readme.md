@@ -18,6 +18,11 @@ The following naming conventions apply:
 **Example:**
 Class `coon.core.data.proxy.RestForm` has the alias `proxy.cn_core-dataproxyrestform`
 
+## Requirements
+This Package needs ExtJS 6.7 for dynamic package loading. The PageMap-enhancements are
+working with ExtJS 6.2 and up.
+### Package Requirements
+This package requires the [package-loader](https://www.sencha.com/blog/create-a-smooth-loading-experience-for-large-enterprise-apps-with-sencha-cmd/) package from Sencha.
 
 ## Tests
 Tests are written with [Siesta](https://bryntum.com/siesta)

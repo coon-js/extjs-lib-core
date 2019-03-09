@@ -33,6 +33,7 @@ Ext.define('coon.core.app.Application', {
     extend: 'Ext.app.Application',
 
     requires : [
+        'Ext.Package',
         'coon.core.app.PackageController'
     ],
 
@@ -239,7 +240,112 @@ Ext.define('coon.core.app.Application', {
      * @method
      * @template
      */
-    postLaunchHookProcess : Ext.emptyFn
+    postLaunchHookProcess : Ext.emptyFn,
 
+
+    /**
+     * Overridden to make sure that all coon.js PackageControllers found in
+     * Ext.manifest are loaded before the application is initiated.
+     * Starts loading required packages by calling "handlePackage()" and
+     * returns all found packageController that are required by this app.
+     * Will also make sure that those controllers are added to THIS applications
+     * #controllers-list.
+     *
+     * @return {Object}
+     *
+     * @see findCoonJsPackageControllers
+     * @see handlePackageLoad
+     */
+    onProfilesReady : function() {
+
+        const me          = this,
+              pcs         = me.findCoonJsPackageControllers(Ext.manifest),
+              packages    = Object.keys(pcs),
+              controllers = Object.values(pcs);
+
+        if (!me.controllers) {
+            me.controllers = [];
+        }
+
+        packages.forEach(function(packageName) {
+            me.controllers.push(pcs[packageName]);
+        });
+
+        me.handlePackageLoad(packages.pop(), packages);
+
+        return pcs;
+    },
+
+
+    /**
+     * Called by overridden implementation of onProfilesReady to load all packages
+     * available in remainingPackages.
+     * The method will call itself until all entries of remainingPackages have been
+     * processed by Ex.Package#load. Once this is done, the original implementation
+     * of Ext.app.Application.onProfilesReady will be called.
+     *
+     * @param {String} packageName
+     * @param {Array} remainingPackages
+     *
+     * @private
+     *
+     */
+    handlePackageLoad : function(packageName, remainingPackages) {
+
+        const me = this;
+
+        if (!packageName) {
+            coon.core.app.Application.superclass.onProfilesReady.call(me);
+            return;
+        }
+
+        Ext.Package
+            .load(packageName)
+            .then(me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages));
+    },
+
+
+    /**
+     * Queries all available packages in Ext.manifest.packages and returns
+     * an object containing all key/value pairs in the form of
+     * [package-name] -> [packageNamespace].app.PackageController if, and only
+     * if:
+     *  - The packages was not yet loaded
+     *  - The property "included" of the package is not equal to "true"
+     *  - The package has a property named "coon-js" which is an object and
+     *    has the property "packageController" set to true
+     *
+     * @param {Object} manifest an object providing manifest information (Ext.manifest)
+     *
+     * @return {Object}
+     *
+     * @private
+     */
+    findCoonJsPackageControllers : function(manifest) {
+
+        const me          = this,
+              controllers = {},
+              mp          = manifest && manifest.packages ? manifest.packages : {},
+              keys        = Object.keys(mp);
+
+        keys.forEach(function(key) {
+
+            let entry = mp[key], ns, fqn;
+
+            if (entry.included !== true &&
+                !Ext.Package.isLoaded(key) &&
+                entry['coon-js'] &&
+                entry['coon-js']['packageController'] === true
+                ) {
+                ns  = entry.namespace;
+                fqn = ns + '.app.PackageController';
+
+                controllers[key] = fqn;
+            }
+        });
+
+
+        return controllers;
+    }
 
 });

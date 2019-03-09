@@ -35,6 +35,40 @@
  */
 describe('coon.core.app.ApplicationTest', function(t) {
 
+    const buildManifest = function() {
+
+        const manifest = {};
+
+        manifest.packages = {
+            'p_foo' : {
+                included : false,
+                isLoaded : false,
+                namespace : 'foo',
+                'coon-js' : {packageController : true}
+            },
+            'p_bar' : {
+                included : true,
+                isLoaded : false,
+                namespace : 'bar',
+                'coon-js' : {packageController : true}
+            },
+            'p_foobar' : {
+                included : false,
+                isLoaded : false,
+                namespace : 'foobar',
+                'cs' : {packageController : true}
+            },
+            't_snafu' : {
+                included : false,
+                isLoaded : false,
+                namespace : 'snafu',
+                'coon-js' : {packageController : true}
+            }
+        };
+
+        return manifest;
+    };
+
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
@@ -146,9 +180,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
     });
 
 
-    /**
-     * Test error
-     */
+    // Test error
     t.it('Should throw an error when mainView is not specified', function(t) {
         var exc = undefined;
 
@@ -194,9 +226,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(exc).toBeDefined();
     });
 
-    /**
-     * @see https://github.com/conjoon/lib-cn_core/issues/1
-     */
+    // @see https://github.com/conjoon/lib-cn_core/issues/1
     t.it('Test changes regarding lib-cn_core/issues/1', function(t) {
 
         var app = Ext.create('coon.core.app.Application', {
@@ -262,5 +292,111 @@ describe('coon.core.app.ApplicationTest', function(t) {
 
     });
 
+
+    t.it("findCoonJsPackageControllers()", function(t) {
+
+        const app = Ext.create('coon.core.app.Application', {
+                name     : 'test',
+                mainView : 'Ext.Panel',
+                controllers : [
+                    'coon.test.app.mock.PackageControllerMock'
+                ]
+            }),
+            manifest = buildManifest(),
+            expected = {
+                'p_foo'   : 'foo.app.PackageController',
+                't_snafu' : 'snafu.app.PackageController'
+            },
+            tmpFn = Ext.Package.isLoaded;
+
+
+        Ext.Package.isLoaded = function(key) {
+            return manifest.packages[key].isLoaded;
+        };
+
+        t.expect(app.findCoonJsPackageControllers(manifest)).toEqual(expected);
+        t.expect(app.findCoonJsPackageControllers({})).toEqual({});
+
+        Ext.Package.isLoaded = tmpFn;
+    });
+
+
+    t.it("onProfilesReady()", function(t) {
+
+        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady;
+
+        coon.core.app.Application.prototype.onProfilesReady = Ext.emptyFn;
+
+        const app = Ext.create('coon.core.app.Application', {
+                  name     : 'test',
+                  mainView : 'Ext.Panel',
+                  controllers : [
+                      'coon.test.app.mock.PackageControllerMock'
+                  ]
+              }),
+              tmpMani = Ext.manifest,
+              tmpFn = Ext.Package.isLoaded;
+
+        let CALLED = 0;
+        app.handlePackageLoad = function(){CALLED++;};
+
+        Ext.Package.isLoaded = function(key) {
+            return Ext.manifest.packages[key].isLoaded;
+        };
+
+        coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
+
+        Ext.manifest = buildManifest();
+
+        t.expect(app.onProfilesReady()).toEqual({
+            'p_foo'   : 'foo.app.PackageController',
+            't_snafu' : 'snafu.app.PackageController'
+        });
+        t.expect(app.controllers).toEqual([
+            'coon.test.app.mock.PackageControllerMock',
+            'foo.app.PackageController',
+            'snafu.app.PackageController'
+        ]);
+        t.expect(CALLED).toBe(1);
+
+        Ext.Package.isLoaded = tmpFn;
+        Ext.manifest = tmpMani;
+    });
+
+
+    t.it("handlePackageLoad()", function(t) {
+
+
+        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady;
+
+        let CALLED = 0;
+        coon.core.app.Application.prototype.onProfilesReady = function() {
+            CALLED++;
+        };
+
+        const app = Ext.create('coon.core.app.Application', {
+                name     : 'test',
+                mainView : 'Ext.Panel'
+            }),
+            tmpLoad = Ext.Package.load;
+
+
+        Ext.Package.load = function() {
+            return new Ext.Promise(function(resolve, reject) {
+                resolve()
+            });
+        }
+
+        let stack = ['b', 'c'];
+
+        app.handlePackageLoad('a', stack)
+
+        t.waitForMs(250, function() {
+            t.expect(stack).toEqual([]);
+            t.expect(CALLED).toBe(1);
+            Ext.Package.load = tmpLoad;
+            coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
+        });
+    });
 
 });
