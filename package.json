@@ -94,7 +94,12 @@
         /**
          * Controls the output directory.
          */
-        "output": "${package.dir}/build",
+        "output": {
+            "base" : "${package.dir}/build",
+            "js": {
+                "version": "ES6"
+            }
+        },
 
         /**
          * Indicates whether this is a locally developed package or downloaded form a repository.
