@@ -304,8 +304,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
             }),
             manifest = buildManifest(),
             expected = {
-                'p_foo'   : 'foo.app.PackageController',
-                't_snafu' : 'snafu.app.PackageController'
+                'p_foo'   : {controller : 'foo.app.PackageController', namespace : 'foo'},
+                't_snafu' : {controller : 'snafu.app.PackageController', namespace : 'snafu'}
             },
             tmpFn = Ext.Package.isLoaded;
 
@@ -349,14 +349,18 @@ describe('coon.core.app.ApplicationTest', function(t) {
         Ext.manifest = buildManifest();
 
         t.expect(app.onProfilesReady()).toEqual({
-            'p_foo'   : 'foo.app.PackageController',
-            't_snafu' : 'snafu.app.PackageController'
+            'p_foo'   : {controller : 'foo.app.PackageController', namespace : 'foo'},
+            't_snafu' : {controller : 'snafu.app.PackageController', namespace : 'snafu'}
         });
         t.expect(app.controllers).toEqual([
             'coon.test.app.mock.PackageControllerMock',
             'foo.app.PackageController',
             'snafu.app.PackageController'
         ]);
+
+        t.expect(Ext.app.namespaces['foo']).toBe(true);
+        t.expect(Ext.app.namespaces['snafu']).toBe(true);
+
         t.expect(CALLED).toBe(1);
 
         Ext.Package.isLoaded = tmpFn;

@@ -260,15 +260,15 @@ Ext.define('coon.core.app.Application', {
 
         const me          = this,
               pcs         = me.findCoonJsPackageControllers(Ext.manifest),
-              packages    = Object.keys(pcs),
-              controllers = Object.values(pcs);
-
+              packages    = Object.keys(pcs);
+4
         if (!me.controllers) {
             me.controllers = [];
         }
 
         packages.forEach(function(packageName) {
-            me.controllers.push(pcs[packageName]);
+            me.controllers.push(pcs[packageName].controller);
+            Ext.app.addNamespaces(pcs[packageName].namespace);
         });
 
         me.handlePackageLoad(packages.pop(), packages);
@@ -308,7 +308,8 @@ Ext.define('coon.core.app.Application', {
     /**
      * Queries all available packages in Ext.manifest.packages and returns
      * an object containing all key/value pairs in the form of
-     * [package-name] -> [packageNamespace].app.PackageController if, and only
+     * [package-name] -> controller: [packageNamespace].app.PackageController,
+     *                   namespace : [packageNamespace] if, and only
      * if:
      *  - The packages was not yet loaded
      *  - The property "included" of the package is not equal to "true"
@@ -340,7 +341,10 @@ Ext.define('coon.core.app.Application', {
                 ns  = entry.namespace;
                 fqn = ns + '.app.PackageController';
 
-                controllers[key] = fqn;
+                controllers[key] = {
+                    controller : fqn,
+                    namespace  : ns
+                };
             }
         });
 
