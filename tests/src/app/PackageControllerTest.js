@@ -58,8 +58,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
 
     /**
      * @see https://github.com/conjoon/lib-cn_core/issues/1
+     * @see https://github.com/coon-js/lib-cn_core/issues/5
      */
-    t.it('Test changes regarding lib-cn_core/issues/1', function(t) {
+    t.it('Test changes regarding lib-cn_core#5', function(t) {
 
         var exc, e, routes, nRoutes;
 
@@ -169,7 +170,7 @@ describe('coon.core.app.PackageControllerTest', function(t) {
                             return null;
                         },
                         shouldPackageRoute : Ext.emptyFn,
-                        interceptAction    : Ext.emptyFn
+                        interceptAction    : function() {return false;}
                     };
                 }
                 return this.mockApp;
@@ -196,9 +197,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
                 return true;
             };
             t.expect(resumed).toBe(0);
-            controller.onBeforePackageRoute({resume : function(){
+            t.expect(controller.onBeforePackageRoute({resume : function(){
                 resumed++;
-            }});
+            }})).not.toBe(false);
             t.expect(resumed).toBe(1);
 
             // +------------------------------------------------------
@@ -209,9 +210,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
                 return false;
             };
             t.expect(resumed).toBe(0);
-            controller.onBeforePackageRoute({resume : function(){
+            t.expect(controller.onBeforePackageRoute({resume : function(){
                 resumed++;
-            }});
+            }})).toBe(false);
             t.expect(resumed).toBe(0);
 
             // +---------------------------------------------

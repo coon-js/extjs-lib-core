@@ -175,6 +175,8 @@ Ext.define('coon.core.app.Application', {
     },
 
 
+
+
     /**
      * Checks whether there is any action intercepted and available on
      * the passed routeActionStack.
@@ -192,8 +194,12 @@ Ext.define('coon.core.app.Application', {
             return false;
         }
 
-        routeActionStack.pop().resume();
-        routeActionStack = [];
+        let action = routeActionStack.pop();
+        while (routeActionStack.length) {
+            routeActionStack.pop().stop();
+        }
+
+        action.resume();
         return true;
     },
 
@@ -211,7 +217,8 @@ Ext.define('coon.core.app.Application', {
         }
 
         me.routeActionStack.push(action);
-        action.stop();
+
+        return false;
     },
 
 

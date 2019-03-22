@@ -227,7 +227,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
     });
 
     // @see https://github.com/conjoon/lib-cn_core/issues/1
-    t.it('Test changes regarding lib-cn_core/issues/1', function(t) {
+    // @see https://github.com/coon-js/lib-cn_core/issues/5
+    t.it('Test changes regarding lib-cn_core#5', function(t) {
 
         var app = Ext.create('coon.core.app.Application', {
                 name     : 'test',
@@ -253,8 +254,11 @@ describe('coon.core.app.ApplicationTest', function(t) {
         // | releaseLastRouteAction() / [{}]
         // +---------------------------------------------
         resumed = 0;
-        stack   = [{resume : function(){resumed++;}}];
+        stopped = 0;
+
+        stack   = [{stop:function(){stopped++;}}, {stop:function(){stopped++;}}, {resume : function(){resumed++;}}];
         t.expect(app.releaseLastRouteAction(stack)).toBe(true);
+        t.expect(stopped).toBe(2);
         t.expect(stack).toEqual([]);
         t.expect(resumed).toBe(1);
 
@@ -262,17 +266,13 @@ describe('coon.core.app.ApplicationTest', function(t) {
         // | interceptAction()
         // +---------------------------------------------
         // with array
-        stopped = 0;
         app.routeActionStack = ['a'];
-        app.interceptAction({stop : function(){stopped++;}});
-        t.expect(app.routeActionStack).toEqual(['a', {stop : function(){stopped++;}}]);
-        t.expect(stopped).toBe(1);
+        t.expect(app.interceptAction('b')).toBe(false);
+        t.expect(app.routeActionStack).toEqual(['a', 'b']);
         // with null
         app.routeActionStack = null;
-        stopped = 0;
-        app.interceptAction({stop : function(){stopped++;}});
-        t.expect(app.routeActionStack).toEqual([{stop : function(){stopped++;}}]);
-        t.expect(stopped).toBe(1);
+        t.expect(app.interceptAction('c')).toBe(false);
+        t.expect(app.routeActionStack).toEqual(['c']);
 
         // +---------------------------------------------
         // | shouldPackageRoute()

@@ -202,8 +202,7 @@ Ext.define('coon.core.app.PackageController', {
             }
 
             if (app.shouldPackageRoute(me, action) === false) {
-                app.interceptAction(action);
-                return;
+                return app.interceptAction(action);
             }
 
             action.resume();
