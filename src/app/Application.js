@@ -27,6 +27,19 @@
  * Implementation of Ext.app.Application for creating an application providing
  * advanced routing and launch hooks. For a reference implementation, see
  * https://github.com/conjoon.
+ *
+ * NOTE:
+ * =====
+ * This Application implementation queries Ext.manifest for packages which are defined as
+ * "used" in app.json and have the "coon-js" section configured with an entry "packageController"
+ * configured:
+ * @examples
+ *    "coon-js" : {"packageController" : true}
+ *
+ * This packages will dynamically loaded by THIS application implementation, and
+ * THIS application will make sure that Ext.env.Ready is blocked until all packages
+ * where loaded, before the regular application startup pipeline is continued.
+ * We're actively overwriting onProfilesReady for this.
  */
 Ext.define('coon.core.app.Application', {
 
@@ -257,6 +270,9 @@ Ext.define('coon.core.app.Application', {
      * returns all found packageController that are required by this app.
      * Will also make sure that those controllers are added to THIS applications
      * #controllers-list.
+     * While packages are loaded, Ext.env.Ready is blocked and the original
+     * Ext.app.Application.prototype.onProfilesReady is registered with Ext.onReady.
+     * Ext.env.Ready is unblocked in #handlePackageLoad.
      *
      * @return {Object}
      *
@@ -266,19 +282,35 @@ Ext.define('coon.core.app.Application', {
     onProfilesReady : function() {
 
         const me          = this,
-              pcs         = me.findCoonJsPackageControllers(Ext.manifest),
-              packages    = Object.keys(pcs);
-4
+            pcs         = me.findCoonJsPackageControllers(Ext.manifest),
+            packages    = Object.keys(pcs);
+
         if (!me.controllers) {
             me.controllers = [];
         }
 
-        packages.forEach(function(packageName) {
-            me.controllers.push(pcs[packageName].controller);
-            Ext.app.addNamespaces(pcs[packageName].namespace);
-        });
+        if (packages.length) {
 
-        me.handlePackageLoad(packages.pop(), packages);
+            packages.forEach(function(packageName) {
+                me.controllers.push(pcs[packageName].controller);
+                Ext.app.addNamespaces(pcs[packageName].namespace);
+            });
+
+            Ext.env.Ready.block();
+
+            Ext.onReady(function() {
+                Ext.app.Application.prototype.onProfilesReady.call(me);
+            });
+
+            me.handlePackageLoad(packages.pop(), packages);
+
+
+        } else {
+
+            Ext.app.Application.prototype.onProfilesReady.call(me);
+
+        }
+
 
         return pcs;
     },
@@ -302,7 +334,7 @@ Ext.define('coon.core.app.Application', {
         const me = this;
 
         if (!packageName) {
-            coon.core.app.Application.superclass.onProfilesReady.call(me);
+            Ext.env.Ready.unblock();
             return;
         }
 
@@ -310,6 +342,7 @@ Ext.define('coon.core.app.Application', {
             .load(packageName)
             .then(me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages));
     },
+
 
 
     /**

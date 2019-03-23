@@ -321,11 +321,66 @@ describe('coon.core.app.ApplicationTest', function(t) {
     });
 
 
-    t.it("onProfilesReady()", function(t) {
+    t.it("onProfilesReady() - no coon-js packages", function(t) {
 
-        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady;
+        let PROF_CALLED = 0,
+            CALLED = 0,
+            tmpOnProf = Ext.app.Application.prototype.onProfilesReady,
+            AVOID_CONSTRUCTOR = coon.core.app.Application.prototype.onProfilesReady;
 
         coon.core.app.Application.prototype.onProfilesReady = Ext.emptyFn;
+        Ext.app.Application.prototype.onProfilesReady = function() {
+            PROF_CALLED++;
+        };
+
+        const app = Ext.create('coon.core.app.Application', {
+                name     : 'test',
+                mainView : 'Ext.Panel',
+                controllers : [
+                    'coon.test.app.mock.PackageControllerMock'
+                ]
+            }),
+            tmpMani = Ext.manifest,
+            tmpFn = Ext.Package.isLoaded;
+
+        coon.core.app.Application.prototype.onProfilesReady = AVOID_CONSTRUCTOR;
+
+        app.handlePackageLoad = function(){CALLED++;};
+
+        Ext.Package.isLoaded = function(key) {
+            return Ext.manifest.packages[key].isLoaded;
+        };
+
+        Ext.manifest = {};
+
+        t.expect(app.onProfilesReady()).toEqual({});
+        t.expect(app.controllers).toEqual(['coon.test.app.mock.PackageControllerMock']);
+        t.expect(CALLED).toBe(0);
+        t.expect(PROF_CALLED).toBe(1);
+
+        Ext.app.Application.prototype.onProfilesReady = tmpOnProf;
+        Ext.Package.isLoaded = tmpFn;
+        Ext.manifest = tmpMani;
+    });
+
+
+    t.it("onProfilesReady()", function(t) {
+
+        let PROF_CALLED = 0,
+            CALLED = 0,
+            BLOCKED = 0,
+            tmpOnProf = Ext.app.Application.prototype.onProfilesReady,
+            AVOID_CONSTRUCTOR = coon.core.app.Application.prototype.onProfilesReady,
+            EXT_ONREADY = Ext.onReady,
+            EXT_ENV_BLOCK = Ext.env.Ready.block;
+
+        Ext.onReady = function(fn) {fn.apply();};
+        Ext.env.Ready.block = function(){BLOCKED++;};
+
+        coon.core.app.Application.prototype.onProfilesReady = Ext.emptyFn;
+        Ext.app.Application.prototype.onProfilesReady = function() {
+            PROF_CALLED++;
+        };
 
         const app = Ext.create('coon.core.app.Application', {
                   name     : 'test',
@@ -337,14 +392,12 @@ describe('coon.core.app.ApplicationTest', function(t) {
               tmpMani = Ext.manifest,
               tmpFn = Ext.Package.isLoaded;
 
-        let CALLED = 0;
-        app.handlePackageLoad = function(){CALLED++;};
+        coon.core.app.Application.prototype.onProfilesReady = AVOID_CONSTRUCTOR;
 
+        app.handlePackageLoad = function(){CALLED++;};
         Ext.Package.isLoaded = function(key) {
             return Ext.manifest.packages[key].isLoaded;
         };
-
-        coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
 
         Ext.manifest = buildManifest();
 
@@ -362,7 +415,12 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(Ext.app.namespaces['snafu']).toBe(true);
 
         t.expect(CALLED).toBe(1);
+        t.expect(PROF_CALLED).toBe(1);
+        t.expect(BLOCKED).toBe(1);
 
+        Ext.onReady = EXT_ONREADY;
+        Ext.env.Ready.block = EXT_ENV_BLOCK;
+        Ext.app.Application.prototype.onProfilesReady = tmpOnProf;
         Ext.Package.isLoaded = tmpFn;
         Ext.manifest = tmpMani;
     });
@@ -371,9 +429,13 @@ describe('coon.core.app.ApplicationTest', function(t) {
     t.it("handlePackageLoad()", function(t) {
 
 
-        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady;
+        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady,
+            CALLED = 0,
+            UNBLOCKED = 0,
+            EXT_ENV_UNBLOCK = Ext.env.Ready.unblock;
 
-        let CALLED = 0;
+            Ext.env.Ready.unblock = function(){UNBLOCKED++;};
+
         coon.core.app.Application.prototype.onProfilesReady = function() {
             CALLED++;
         };
@@ -398,6 +460,9 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.waitForMs(250, function() {
             t.expect(stack).toEqual([]);
             t.expect(CALLED).toBe(1);
+            t.expect(UNBLOCKED).toBe(1);
+
+            Ext.env.Ready.unblock = EXT_ENV_UNBLOCK;
             Ext.Package.load = tmpLoad;
             coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
         });
