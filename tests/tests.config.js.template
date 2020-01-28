@@ -5,8 +5,15 @@ coon.tests.config = coon.tests.config || {};
 
 coon.tests.config.paths = {
     extjs : {
-        js : {
-            url : "[PATH_TO_EXT_ALL.JS]" /*Your path to your ExtJS distribution (e.g. ext-all-debug.js) */
+        modern : {
+            js : {
+                url : "[PATH_TO_EXT_MODERN_ALL.JS]" /*Your path to your ExtJS distribution for the modern toolkit (e.g. ext-modern-all-debug.js) */
+            }
+        },
+        modern : {
+            js : {
+                url : "[PATH_TO_EXT_ALL.JS]" /*Your path to your ExtJS distribution for the classic toolkit (e.g. ext-all-debug.js) */
+            }
         }
     }
 }
