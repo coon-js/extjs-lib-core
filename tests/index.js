@@ -1,7 +1,10 @@
 var harness = new Siesta.Harness.Browser.ExtJS();
 
+let isModern = window.location.href.indexOf("toolkit=modern") !== -1;
+
+
 harness.configure({
-    title          : 'lib-cn_core',
+    title          : 'lib-cn_core - ' + (isModern ? "modern" : "classic"),
     disableCaching : true,
     loaderPath     : {
 
@@ -23,8 +26,8 @@ harness.configure({
         'coon.core' : '../src/',
         'coon.test' : './src'
     },
-    preload        : [
-        coon.tests.config.paths.extjs.js.url
+    preload : [
+        coon.tests.config.paths.extjs[isModern ? "modern" : "classic" ].js.url
     ]
 });
 

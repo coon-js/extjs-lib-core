@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -69,11 +69,28 @@ describe('coon.core.app.ApplicationTest', function(t) {
         return manifest;
     };
 
+    t.beforeEach(function() {
+        Ext.isModern && Ext.viewport.Viewport.setup();
+    });
+
+    t.afterEach(function() {
+
+        if (Ext.isModern && Ext.Viewport) {
+            Ext.Viewport.destroy();
+            Ext.Viewport = null;
+        }
+
+
+
+
+    });
+
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
 
     t.it('Should create the mainView of an extended class properly by using applicationViewClassName', function(t) {
+
 
         var w = Ext.create('coon.test.app.mock.ApplicationMock2', {
             name        : 'test',
@@ -85,6 +102,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(w.getMainView()).toBeFalsy();
         w.launch();
         t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+        w.destroy();
+        w = null;
     });
 
 
@@ -103,8 +122,9 @@ describe('coon.core.app.ApplicationTest', function(t) {
             exc = e;
         }
 
-        t.expect(exc).toBeTruthy();
+        t.expect(exc.msg).toContain("coon.core.app.Application requires applicationViewClassName, not mainView to be set.");
     });
+
 
     t.it('postLaunchHookProcess should be Ext.emptyFn', function(t) {
         var w = Ext.create('coon.core.app.Application', {
@@ -113,7 +133,10 @@ describe('coon.core.app.ApplicationTest', function(t) {
         });
 
         t.expect(w.postLaunchHookProcess).toBe(Ext.emptyFn);
+        w.destroy();
+        w = null;
     });
+
 
     t.it('applicationViewClassName should be null', function(t) {
         t.expect(coon.core.app.Application.prototype.applicationViewClassName).toBeNull();
@@ -131,6 +154,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(w.getMainView()).toBeFalsy();
         w.launch();
         t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+        w.destroy();
+        w = null;
     });
 
 
@@ -143,6 +168,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
             ]
         });
         t.expect(w.getMainView()).toBeFalsy();
+        w.destroy();
+        w = null;
     });
 
 
@@ -157,6 +184,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
         });
 
         t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+        w.destroy();
+        w = null;
     });
 
     t.it('Should throw an error when preLaunchHookProcess is triggered when mainView was created.', function(t) {
@@ -177,6 +206,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
         }
         t.expect(exc).not.toBeNull();
         t.expect(exc).toBeDefined();
+        w.destroy();
+        w = null;
     });
 
 
@@ -192,7 +223,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
         } catch(e) {exc = e;}
 
         t.expect(exc).not.toBeNull();
-         t.expect(exc).toBeDefined();
+        t.expect(exc).toBeDefined();
+
     });
 
     t.it('Should throw an error when mainView is not specified as string', function(t) {
@@ -289,13 +321,14 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(app.routeActionStack).toEqual([]);
         t.expect(resumed).toBe(1);
 
-
+        app.destroy();
+        app = null;
     });
 
 
     t.it("findCoonJsPackageControllers()", function(t) {
 
-        const app = Ext.create('coon.core.app.Application', {
+        let app = Ext.create('coon.core.app.Application', {
                 name     : 'test',
                 mainView : 'Ext.Panel',
                 controllers : [
@@ -318,6 +351,9 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(app.findCoonJsPackageControllers({})).toEqual({});
 
         Ext.Package.isLoaded = tmpFn;
+
+        app.destroy();
+        app = null;
     });
 
 
@@ -333,7 +369,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
             PROF_CALLED++;
         };
 
-        const app = Ext.create('coon.core.app.Application', {
+        let app = Ext.create('coon.core.app.Application', {
                 name     : 'test',
                 mainView : 'Ext.Panel',
                 controllers : [
@@ -361,6 +397,15 @@ describe('coon.core.app.ApplicationTest', function(t) {
         Ext.app.Application.prototype.onProfilesReady = tmpOnProf;
         Ext.Package.isLoaded = tmpFn;
         Ext.manifest = tmpMani;
+
+
+        // destroy() requires controllers to be mixed collection
+        // we are pretty much mocking all of the behaviour in onProfilesReady
+        // to successfully run the test, this is why we have to convert to a
+        // MixedCollection before we destroy the app
+        app.controllers = new Ext.util.MixedCollection();
+        app.destroy();
+        app = null;
     });
 
 
@@ -382,7 +427,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
             PROF_CALLED++;
         };
 
-        const app = Ext.create('coon.core.app.Application', {
+        let app = Ext.create('coon.core.app.Application', {
                   name     : 'test',
                   mainView : 'Ext.Panel',
                   controllers : [
@@ -423,6 +468,14 @@ describe('coon.core.app.ApplicationTest', function(t) {
         Ext.app.Application.prototype.onProfilesReady = tmpOnProf;
         Ext.Package.isLoaded = tmpFn;
         Ext.manifest = tmpMani;
+
+        // destroy() requires controllers to be mixed collection
+        // we are pretty much mocking all of the behaviour in onProfilesReady
+        // to successfully run the test, this is why we have to convert to a
+        // MixedCollection before we destroy the app
+        app.controllers = new Ext.util.MixedCollection();
+        app.destroy();
+        app = null;
     });
 
 
@@ -440,7 +493,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
             CALLED++;
         };
 
-        const app = Ext.create('coon.core.app.Application', {
+        let app = Ext.create('coon.core.app.Application', {
                 name     : 'test',
                 mainView : 'Ext.Panel'
             }),
@@ -466,6 +519,9 @@ describe('coon.core.app.ApplicationTest', function(t) {
             Ext.Package.load = tmpLoad;
             coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
         });
+
+        app.destroy();
+        app = null;
     });
 
 });
