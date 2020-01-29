@@ -8,7 +8,6 @@
 
         "namespace": "coon.core",
         "type": "code",
-        "toolkit": "",
         "creator": "coon.js",
         "summary": "Core functionality to be used with the coon.js Project",
         "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
