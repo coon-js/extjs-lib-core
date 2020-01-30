@@ -182,6 +182,12 @@ Ext.define('coon.core.app.Application', {
 
         if (me.preLaunchHookProcess() !== false) {
             me.setMainView(me.applicationViewClassName);
+            // this is usually done by initMainView,
+            // but when the method is called, the mainview is not
+            // available
+            if (Ext.isModern) {
+                Ext.Viewport.add(me.getMainView());
+            }
             me.postLaunchHookProcess();
             me.releaseLastRouteAction(me.routeActionStack);
         }

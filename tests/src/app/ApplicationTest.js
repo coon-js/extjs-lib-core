@@ -99,8 +99,18 @@ describe('coon.core.app.ApplicationTest', function(t) {
             ]
         });
 
+        var VIEW = null;
+        if (Ext.isModern) {
+            Ext.Viewport.add = function(mainView) {
+                VIEW = mainView;
+            };
+        }
+
         t.expect(w.getMainView()).toBeFalsy();
         w.launch();
+        if (Ext.isModern) {
+            t.expect(w.getMainView()).toBe(VIEW);
+        }
         t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
         w.destroy();
         w = null;
