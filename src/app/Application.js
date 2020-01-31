@@ -88,7 +88,11 @@ Ext.define('coon.core.app.Application', {
 
         config = config || {};
 
+
+        Ext.Function.interceptAfter(me, "launch", me.runPostLaunch, me);
+
         me.launch = Ext.Function.createInterceptor(me.launch, me.launchHook, me);
+
 
         me.callParent([config]);
     },
@@ -203,7 +207,8 @@ Ext.define('coon.core.app.Application', {
      * instance gets configured.
      * Before the mainView gets initialized, the {@link #preLaunchHookProcess}
      * will be called. If this method returns anything but false, the mainView will
-     * be rendered. Additionally, the {@link #postLaunchHookProcess} will be called.
+     * be rendered. Additionally, the {@link #postLaunchHookProcess} will be called
+     * by #runPostLaunch
      *
      */
     launchHook : function() {
@@ -217,8 +222,7 @@ Ext.define('coon.core.app.Application', {
             if (Ext.isModern) {
                 Ext.Viewport.add(me.getMainView());
             }
-            me.postLaunchHookProcess();
-            me.releaseLastRouteAction(me.routeActionStack);
+
             return true;
         }
 
@@ -226,6 +230,19 @@ Ext.define('coon.core.app.Application', {
     },
 
 
+    /**
+     * Helper function being executed after the launch()-method of the application.
+     * This method gets registered at "launch()" with "interceptAfter".
+     *
+     * @private
+     */
+    runPostLaunch : function() {
+        const me = this;
+
+        me.postLaunchHookProcess();
+        me.releaseLastRouteAction(me.routeActionStack);
+
+    },
 
 
     /**

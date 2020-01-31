@@ -525,6 +525,49 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         app = null;
     });
 
+
+    t.it('Should call launch(), then postLaunchHook()', function(t) {
+        var exc = undefined;
+
+        var i = 0;
+        var LAUNCH = 0;
+        var POSTLAUNCH = 0;
+
+
+        coon.core.app.PackageController.prototype.preLaunchHook = function() {
+            return true;
+        };
+
+        coon.core.app.PackageController.prototype.postLaunchHook = function() {
+            POSTLAUNCH = ++i;
+        };
+
+        coon.core.app.Application.prototype.launch = function() {
+            LAUNCH = ++i;
+        };
+
+        var app = Ext.create('coon.core.app.Application', {
+            name        : 'test',
+            mainView    : 'Ext.Container',
+            controllers : [
+                'coon.core.app.PackageController'
+            ],
+            postLaunchHookProcess : function() {
+                this.getController('coon.core.app.PackageController').postLaunchHook();
+            }
+        });
+
+        t.expect(LAUNCH).toBe(1);
+        t.expect(POSTLAUNCH).toBe(2);
+
+        coon.core.app.PackageController.prototype.preLaunchHook = Ext.emptyFn();
+        coon.core.app.PackageController.prototype.postLaunchHook = Ext.emptyFn();
+
+        app.destroy();
+        app = null;
+    });
+
+
     t.it('Should throw an error when preLaunchHookProcess is triggered when mainView was created.', function(t) {
         var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
