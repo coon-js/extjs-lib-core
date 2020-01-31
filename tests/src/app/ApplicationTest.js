@@ -35,6 +35,9 @@
  */
 describe('coon.core.app.ApplicationTest', function(t) {
 
+    let app = null;
+
+
     const buildManifest = function() {
 
         const manifest = {};
@@ -75,21 +78,25 @@ describe('coon.core.app.ApplicationTest', function(t) {
 
     t.afterEach(function() {
 
+        if (app) {
+            app.destroy();
+            app = null;
+        }
+
         if (Ext.isModern && Ext.Viewport) {
             Ext.Viewport.destroy();
             Ext.Viewport = null;
         }
-
-
-
 
     });
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
+t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function() {
 
-    t.it('Should create the mainView of an extended class properly by using applicationViewClassName', function(t) {
+
+    t.it('Should create the mainView of an extended class properly', function(t) {
 
 
         var w = Ext.create('coon.test.app.mock.ApplicationMock2', {
@@ -117,25 +124,6 @@ describe('coon.core.app.ApplicationTest', function(t) {
     });
 
 
-    t.it('Should not create the mainView of an extended class at first, but should be available after launch() was called', function(t) {
-
-        var exc = undefined;
-
-        try {
-            var w = Ext.create('coon.test.app.mock.ApplicationMock', {
-                name        : 'test',
-                controllers : [
-                    'coon.test.app.mock.PackageControllerMock'
-                ]
-            });
-        } catch(e) {
-            exc = e;
-        }
-
-        t.expect(exc.msg).toContain("coon.core.app.Application requires applicationViewClassName, not mainView to be set.");
-    });
-
-
     t.it('postLaunchHookProcess should be Ext.emptyFn', function(t) {
         var w = Ext.create('coon.core.app.Application', {
             name        : 'test',
@@ -145,11 +133,6 @@ describe('coon.core.app.ApplicationTest', function(t) {
         t.expect(w.postLaunchHookProcess).toBe(Ext.emptyFn);
         w.destroy();
         w = null;
-    });
-
-
-    t.it('applicationViewClassName should be null', function(t) {
-        t.expect(coon.core.app.Application.prototype.applicationViewClassName).toBeNull();
     });
 
 
@@ -215,57 +198,9 @@ describe('coon.core.app.ApplicationTest', function(t) {
             exc = e;
         }
         t.expect(exc).not.toBeNull();
-        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toContain("cannot be run");
         w.destroy();
         w = null;
-    });
-
-
-    // Test error
-    t.it('Should throw an error when mainView is not specified', function(t) {
-        var exc = undefined;
-
-        try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test'
-           });
-
-        } catch(e) {exc = e;}
-
-        t.expect(exc).not.toBeNull();
-        t.expect(exc).toBeDefined();
-
-    });
-
-    t.it('Should throw an error when mainView is not specified as string', function(t) {
-        var exc = undefined;
-
-        try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test',
-                mainView : {}
-            });
-
-        } catch(e) {exc = e;}
-
-        t.expect(exc).not.toBeNull();
-        t.expect(exc).toBeDefined();
-    });
-
-
-    t.it('Should throw an error when mainView is not loaded', function(t) {
-        var exc = undefined;
-
-        try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test',
-                mainView : 'coon.fictionalClass'
-            });
-
-        } catch(e) {exc = e;}
-
-        t.expect(exc).not.toBeNull();
-        t.expect(exc).toBeDefined();
     });
 
     // @see https://github.com/conjoon/lib-cn_core/issues/1
@@ -534,4 +469,83 @@ describe('coon.core.app.ApplicationTest', function(t) {
         app = null;
     });
 
-});
+
+    t.it('Should never call launch()', function(t) {
+        var exc = undefined;
+
+        var LAUNCHCALLED = false;
+
+        coon.core.app.PackageController.prototype.preLaunchHook = function() {
+            return false;
+        };
+
+        coon.core.app.Application.prototype.launch = function() {
+            LAUNCHCALLED = true;
+        };
+
+        var app = Ext.create('coon.core.app.Application', {
+            name        : 'test',
+            mainView    : 'Ext.Container',
+            controllers : [
+                'coon.core.app.PackageController'
+            ]
+        });
+
+        t.expect(LAUNCHCALLED).toBe(false);
+
+        app.destroy();
+        app = null;
+    });
+
+
+    t.it('Should call launch()', function(t) {
+        var exc = undefined;
+
+        var LAUNCHCALLED = false;
+
+        coon.core.app.PackageController.prototype.preLaunchHook = function() {
+            return true;
+        };
+
+        coon.core.app.Application.prototype.launch = function() {
+            LAUNCHCALLED = true;
+        };
+
+        var app = Ext.create('coon.core.app.Application', {
+            name        : 'test',
+            mainView    : 'Ext.Container',
+            controllers : [
+                'coon.core.app.PackageController'
+            ]
+        });
+
+        t.expect(LAUNCHCALLED).toBe(true);
+
+        app.destroy();
+        app = null;
+    });
+
+    t.it('Should throw an error when preLaunchHookProcess is triggered when mainView was created.', function(t) {
+        var w = Ext.create('coon.core.app.Application', {
+            name        : 'test',
+            mainView    : 'Ext.Panel',
+            controllers : [
+                'coon.core.app.PackageController'
+            ]
+        });
+
+        t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+        var exc = null;
+        try {
+            w.preLaunchHookProcess();
+        } catch(e) {
+            exc = e;
+        }
+        t.expect(exc).not.toBeNull();
+        t.expect(exc.msg).toContain("cannot be run");
+        w.destroy();
+        w = null;
+    });
+
+
+});});

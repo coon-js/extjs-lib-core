@@ -27,7 +27,7 @@ Ext.define('coon.test.app.mock.ApplicationMock2', {
 
     extend : 'coon.core.app.Application',
 
-    applicationViewClassName : 'Ext.Panel'
+    mainView : 'Ext.Panel'
 
 
 });

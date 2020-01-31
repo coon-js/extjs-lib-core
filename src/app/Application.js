@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,6 +40,12 @@
  * THIS application will make sure that Ext.env.Ready is blocked until all packages
  * where loaded, before the regular application startup pipeline is continued.
  * We're actively overwriting onProfilesReady for this.
+ *
+ * Any predefined launch()-method will only be called if the preLaunchHook()-process
+ * returns true.
+ * preLaunchHook() will also take care of properly setting the mainView up if, and only
+ * if all associated PackageController will return true in their preLaunchHook().
+ *
  */
 Ext.define('coon.core.app.Application', {
 
@@ -58,15 +64,17 @@ Ext.define('coon.core.app.Application', {
     routeActionStack : null,
 
     /**
-     * @type {String} applicationViewClassName (required)
-     * The fqn of the class representing the view which will be used as
-     * the {@link #mainView}.
-     * The representing classes should have been loaded before this class
-     * gets instantiated, to prevent synchronous requests to this class.
-     * This value will be set in the constructor to the value of {@link #mainView},
-     * which is a required property.
+     * @type {Mixed} applicationView
+     * The view-config hat is being used as the {@link #mainView}.
+     * The mainview's contents will be copied to this property to
+     * make sure setting the MainView is directed by this Application
+     * implementation.
+     * See #launchHook which will take care of properly setting the mainView
+     * once all preLaunchHookProcesses have returned true.
+     *
+     * @private
      */
-    applicationViewClassName : null,
+    applicationView : null,
 
     /**
      * @inheritdocs
@@ -80,43 +88,64 @@ Ext.define('coon.core.app.Application', {
 
         config = config || {};
 
-        if (config.mainView) {
-            me.applicationViewClassName = config.mainView;
-            delete config.mainView;
-        }
-
-        if (me.defaultConfig.mainView) {
-            Ext.raise({
-                sourceClass              : 'coon.core.app.Application',
-                'defaultConfig.mainView' : me.defaultConfig.mainView,
-                msg                      : "coon.core.app.Application requires applicationViewClassName, not mainView to be set."
-            });
-        }
-
-        if (!Ext.isString(me.applicationViewClassName)) {
-            Ext.raise({
-                sourceClass              : 'coon.core.app.Application',
-                applicationViewClassName : me.applicationViewClassName,
-                msg                      : "coon.core.app.Application requires applicationViewClassName as a string."
-            });
-        }
-
-        if (!Ext.ClassManager.get(me.applicationViewClassName)) {
-            Ext.raise({
-                sourceClass               : 'coon.core.app.Application',
-                applicationViewClass      : Ext.ClassManager.get(me.applicationViewClassName),
-                msg                       : "coon.core.app.Application requires applicationViewClass to be loaded."
-            });
-        }
+        me.launch = Ext.Function.createInterceptor(me.launch, me.launchHook, me);
 
         me.callParent([config]);
     },
+
+
+    /**
+     * @inheritdoc
+     * Overridden to make sure the viewmodel of the view gets created and set to
+     * the return value of {@link #getApplicationViewModel}
+     * @param value
+     *
+     * @return {coon.comp.container.Viewport}
+     *
+     * @throws if {@link #mainView} was already set and instantiated, or if
+     * the mainView ist no instance of {@link coon.comp.container.Viewport}
+     */
+    applyMainView: function(value) {
+
+        const me = this;
+
+        if (me.getMainView()) {
+            Ext.raise({
+                msg : "mainView was already set."
+            });
+        }
+
+
+        if (!Ext.isObject(value) || value.cn_prelaunch !== true) {
+            me.applicationView = value;
+            return undefined;
+        }
+
+        let view = value.view;
+
+        if (!view || Ext.Object.isEmpty(view)) {
+            Ext.raise({
+                msg : "Unexpected empty value for view."
+            });
+        }
+
+        let delView = me.getView(view);
+
+        if (!delView) {
+            Ext.raise({
+                msg : "Could not resolve view class \"" + view + "\". Is it loaded?"
+            });
+        }
+
+        return me.createApplicationView(delView);
+    },
+
 
     /**
      * The preLaunchHookProcess is a hook for the launch process which gets called
      * before the {@link #mainView} gets rendered.
      * When this method returns false, the applications's mainView does not
-     * get rendered.
+     * get rendered, and andy predefined "launch".method won't get called.
      * This method gives controllers the chance to change the applications's behavior
      * and hook into the process of setting up the application.
      * This is called before the {@link #launch} method initializes this Application's
@@ -177,11 +206,11 @@ Ext.define('coon.core.app.Application', {
      * be rendered. Additionally, the {@link #postLaunchHookProcess} will be called.
      *
      */
-    launch : function() {
+    launchHook : function() {
         var me = this;
 
         if (me.preLaunchHookProcess() !== false) {
-            me.setMainView(me.applicationViewClassName);
+            me.setMainView({cn_prelaunch : true, view : me.applicationView});
             // this is usually done by initMainView,
             // but when the method is called, the mainview is not
             // available
@@ -190,7 +219,10 @@ Ext.define('coon.core.app.Application', {
             }
             me.postLaunchHookProcess();
             me.releaseLastRouteAction(me.routeActionStack);
+            return true;
         }
+
+        return false;
     },
 
 
@@ -396,6 +428,20 @@ Ext.define('coon.core.app.Application', {
 
 
         return controllers;
+    },
+
+
+    /**
+     * Helper fucntion for creating the MainView for this application.
+     *
+     * @param {Function} view constructor function for creating a viw
+     * @return {Ext.Container}
+     *
+     * @protected
+     */
+    createApplicationView : function(view) {
+        return view.create({
+        });
     }
 
 });

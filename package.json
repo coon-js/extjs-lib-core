@@ -1,7 +1,4 @@
 {
-    /**
-     * The name of the package.
-     */
     "name": "lib-cn_core",
 
     "sencha": {
@@ -35,7 +32,7 @@
         "example": null,
         "framework": "ext",
         "requires": [
-            "sencha-core",
+            "core",
             "package-loader"
         ]
     }
