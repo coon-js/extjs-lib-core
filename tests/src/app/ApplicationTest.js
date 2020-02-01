@@ -591,4 +591,40 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
     });
 
 
+    t.it('Should create mainView based on ObjectConfig (classic only).', function(t) {
+
+        let w;
+
+
+        try {
+            w = Ext.create('coon.core.app.Application', {
+                name        : 'test',
+                mainView    : {
+                    xtype : "panel",
+                    viewModel : {
+                        data : {
+                            myTitle : "foo"
+                        }
+                    },
+                    bind : {
+                        title : "{myTitle}"
+                    }
+                },
+                controllers : [
+                    'coon.core.app.PackageController'
+                ]
+            });
+        } catch(exc) {
+            if (Ext.isModern) {
+                t.expect(exc).toBeDefined();
+                return;
+            }
+        }
+        w.getMainView().getViewModel().notify();
+        t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+        t.expect(w.getMainView().getTitle()).toBe("foo");
+        w.destroy();
+        w = null;
+    });
+
 });});

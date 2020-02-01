@@ -133,15 +133,7 @@ Ext.define('coon.core.app.Application', {
             });
         }
 
-        let delView = me.getView(view);
-
-        if (!delView) {
-            Ext.raise({
-                msg : "Could not resolve view class \"" + view + "\". Is it loaded?"
-            });
-        }
-
-        return me.createApplicationView(delView);
+        return me.callParent([view]);
     },
 
 
@@ -445,20 +437,6 @@ Ext.define('coon.core.app.Application', {
 
 
         return controllers;
-    },
-
-
-    /**
-     * Helper fucntion for creating the MainView for this application.
-     *
-     * @param {Function} view constructor function for creating a viw
-     * @return {Ext.Container}
-     *
-     * @protected
-     */
-    createApplicationView : function(view) {
-        return view.create({
-        });
     }
 
 });
