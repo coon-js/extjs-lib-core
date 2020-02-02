@@ -424,18 +424,79 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
     });
 
 
-    t.it("handlePackageLoad()", function(t) {
+    t.it("computePackageConfigUrl()", function(t) {
+
+        let tmpResPath = Ext.getResourcePath;
+
+        Ext.getResourcePath = function(script, env, pack) {
+            return script + "" + env + "" + pack;
+        }
+
+        app = Ext.create('coon.core.app.Application', {
+            name     : 'test',
+            mainView : 'Ext.Panel'
+        });
+
+        t.expect(app.computePackageConfigUrl("PACKAGE")).toBe(
+            "coon-js/PACKAGEnull.conf.json"
+        );
+
+
+        Ext.getResourcePath = tmpResPath;
+
+    });
+
+
+    t.it("registerPackageConfig()", function(t){
+
+        app = Ext.create('coon.core.app.Application', {
+            name     : 'test',
+            mainView : 'Ext.Panel'
+        });
+
+        let left = {foo : "bar" , "a" : "b"};
+        let right = {foo : "1bar", snafu : "meh."};
+
+        app.registerPackageConfig("a", left, right);
+        t.expect(app.packageConfigs.a).toBeDefined();
+        t.expect(app.packageConfigs.a).not.toBe(left);
+        t.expect(app.packageConfigs.a).not.toBe(right);
+        t.expect(app.packageConfigs.a).toEqual( {foo : "1bar", snafu : "meh.", a : "b"});
+
+
+        left = undefined;
+        right = {foo : "1bar", snafu : "meh."};
+
+        app.registerPackageConfig("a", left, right);
+        t.expect(app.packageConfigs.a).toEqual( {foo : "1bar", snafu : "meh."});
+
+
+        left = {foo : "bar" , "a" : "b"};
+        right = null;
+
+        app.registerPackageConfig("a", left, right);
+        t.expect(app.packageConfigs.a).toEqual({foo : "bar" , "a" : "b"});
+
+    });
+
+
+    t.it("handlePackageLoad() - config loaded", function(t) {
 
 
         let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady,
+            tmpComp = coon.core.app.Application.prototype.computePackageConfigUrl,
             CALLED = 0,
             UNBLOCKED = 0,
             EXT_ENV_UNBLOCK = Ext.env.Ready.unblock;
 
-            Ext.env.Ready.unblock = function(){UNBLOCKED++;};
+        Ext.env.Ready.unblock = function(){UNBLOCKED++;};
 
         coon.core.app.Application.prototype.onProfilesReady = function() {
             CALLED++;
+        };
+
+        coon.core.app.Application.prototype.computePackageConfigUrl = function(packageName) {
+            return "src/app/mock/coon-js." + packageName + "-mock.conf.json";
         };
 
         let app = Ext.create('coon.core.app.Application', {
@@ -445,17 +506,33 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
             tmpLoad = Ext.Package.load;
 
 
-        Ext.Package.load = function() {
+        Ext.Package.load = function(conf) {
             return new Ext.Promise(function(resolve, reject) {
-                resolve()
+                resolve(conf);
             });
         }
 
-        let stack = ['b', 'c'];
+        let stack = [
+            {packageName : 'c', metadata : {"coon-js":{}}},
+            {packageName : 'b', metadata : {"coon-js":{packageConfig:{}}}},
+            {packageName : 'a', metadata : {"coon-js":{packageConfig:{"foo" : "foobar"}}}}
+        ];
 
-        app.handlePackageLoad('a', stack)
 
-        t.waitForMs(250, function() {
+        app.handlePackageLoad(stack.pop(), stack);
+
+        t.waitForMs(1250, function() {
+
+            t.expect(app.packageConfigs["a"]).toEqual({
+                "foo" : "bar",
+                snafu : true
+            });
+
+            t.expect(app.packageConfigs["b"]).toEqual({
+            });
+
+            t.expect(app.packageConfigs["c"]).toBeUndefined();
+
             t.expect(stack).toEqual([]);
             t.expect(CALLED).toBe(1);
             t.expect(UNBLOCKED).toBe(1);
@@ -463,10 +540,13 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
             Ext.env.Ready.unblock = EXT_ENV_UNBLOCK;
             Ext.Package.load = tmpLoad;
             coon.core.app.Application.prototype.onProfilesReady = tmpOnProf;
+            coon.core.app.Application.prototype.computePackageConfigUrl = tmpComp;
+
+            app.destroy();
+            app = null;
         });
 
-        app.destroy();
-        app = null;
+
     });
 
 

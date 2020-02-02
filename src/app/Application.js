@@ -76,6 +76,15 @@ Ext.define('coon.core.app.Application', {
      */
     applicationView : null,
 
+
+    /**
+     * Manages configurations for the various coon.js-packages.
+     * @see handlePackageLoad
+     *
+     * @private
+     */
+    packageConfigs : null,
+
     /**
      * @inheritdocs
      *
@@ -367,14 +376,35 @@ Ext.define('coon.core.app.Application', {
      * Called by overridden implementation of onProfilesReady to load all packages
      * available in remainingPackages.
      * The method will call itself until all entries of remainingPackages have been
-     * processed by Ex.Package#load. Once this is done, the original implementation
+     * processed by Ext.Package#load. Once this is done, the original implementation
      * of Ext.app.Application.onProfilesReady will be called.
+     *
+     * The process utilizes Promises and will also take care of additional config-files
+     * which are optional for the loaded coon.js-Package. This usually happens if the
+     * "coon-js"-section in the packages "package.json" has an entry named "packageConfig"
+     * available:
+     * @example
+     *
+     *     "coon-js" : {
+     *         "packageController" : true,
+     *         "packageConfig" : true
+     *     }
+     *
+     * Config files will be searched at the URL returned by computePackageConfigUrl().
+     * The file should be a valid JSON file. It's contents will be made available to
+     * the loaded PackageController. See @coon.core.app.PackageController.getPackageConfig()
+     * If "packageConfig" in the package.json is a configuration object, its key/value pairs
+     * will get overridden by key/value pairs by the same name in the custom config file.
+     * See #registerPackageConfig.
      *
      * @param {String} packageName
      * @param {Array} remainingPackages
      *
      * @private
      *
+     * @see loadPackageConfig
+     * @see packageConfigLoadResolved
+     * @see packageConfigLoadRejected
      */
     handlePackageLoad : function(packageName, remainingPackages) {
 
@@ -387,9 +417,15 @@ Ext.define('coon.core.app.Application', {
 
         Ext.Package
             .load(packageName)
-            .then(me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages));
-    },
+            .then(me.loadPackageConfig.bind(me))
+            .then(
+                me.packageConfigLoadResolved.bind(me),
+                me.packageConfigLoadRejected.bind(me)
+            ).finally(
+                me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
+            );
 
+    },
 
 
     /**
@@ -437,6 +473,143 @@ Ext.define('coon.core.app.Application', {
 
 
         return controllers;
+    },
+
+
+    privates : {
+
+        /**
+         * Returns a Promise responsible for loading a json-file holding
+         * configuration options for the package represented by loadedPackageEntry.
+         *
+         * @param {Ext.package.Entry} loadedPackageEntry
+         *
+         * @return {Promise}
+         *
+         * @private
+         *
+         * @see getPackageConfigUrl
+         */
+        loadPackageConfig : function(loadedPackageEntry) {
+
+            const me = this,
+                packageName   = loadedPackageEntry.packageName,
+                metaData      = loadedPackageEntry.metadata["coon-js"],
+                lookupConfig  = metaData.hasOwnProperty("packageConfig"),
+                defaultConfig = lookupConfig == false ? null : metaData.packageConfig;
+
+            if (lookupConfig) {
+
+                me.computePackageConfigUrl(packageName);
+
+                return Ext.Ajax.request({
+                    method : "GET",
+                    url: me.computePackageConfigUrl(packageName),
+                    defaultPackageConfig : defaultConfig,
+                    params : {
+                        packageName : packageName
+                    },
+                    scope : me
+                });
+            }
+
+            console.info("No default \"packageConfig\" found in package.json for \"" + packageName + "\".");
+            return Ext.Deferred.rejected(false);
+        },
+
+
+        /**
+         * Returns the url for the specified packageName for which the
+         * configuration file should be loaded, matching the
+         * following pattern:
+         * [app_name]/resources/coon-js/[package-name].conf.json
+         *
+         * @param {String} packageName
+         *
+         * @return {String}
+         */
+        computePackageConfigUrl : function(packageName) {
+            return Ext.getResourcePath("coon-js/" + packageName, null, "") + ".conf.json";
+        },
+
+
+        /**
+         * Resolver-Function for a successful request made by #loadPackageConfig
+         * Delegates to #registerPackageConfig to merge default config with
+         * custom config.
+         *
+         * @param {Object} request
+         *
+         * @see registerPackageConfig
+         */
+        packageConfigLoadResolved : function(request) {
+
+            const me = this;
+
+            let ajax = request.request,
+                packageName = ajax.params.packageName;
+
+            me.registerPackageConfig(
+                packageName,
+                ajax.defaultPackageConfig,
+                Ext.decode(request.responseText)
+            );
+        },
+
+        /**
+         * Reject-Function for a failed attempt made by #loadPackageConfig
+         * requesting a configuration file, or if there was no configuration-section
+         * available at first.
+         * If the request did not find a configuration file, registerPackageConfig
+         * will be called with the default-config and an empty object.
+         *
+         * @param {Object} request
+         *
+         * @see registerPackageConfig
+         */
+        packageConfigLoadRejected : function(request) {
+
+            const me = this;
+
+            if (request === false) {
+                return;
+            }
+
+            let ajax = request.request,
+                packageName = ajax.params.packageName;
+
+            console.warn("No custom configuration file for \"" + packageName + "\" found.");
+
+            me.registerPackageConfig(
+                packageName,
+                ajax.defaultPackageConfig,
+                {}
+            );
+        },
+
+
+        /**
+         * Will merge defaultConfig and customConfig in one configuration object and make it
+         * available for later use in the loaded PackageController`s "getPackageConfig()"
+         * @param {String} packageName
+         * @param {Object} defaultConfig
+         * @param {Object} customConfig
+         *
+         * @private
+         */
+        registerPackageConfig : function(packageName, defaultConfig, customConfig) {
+
+            const me     = this,
+                  cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
+
+            if (!me.packageConfigs) {
+                me.packageConfigs = {};
+            }
+
+            me.packageConfigs[packageName] = Ext.apply(cloned, customConfig);
+        },
+
+
     }
 
 });
