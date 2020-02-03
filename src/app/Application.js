@@ -34,7 +34,7 @@
  * "used" in app.json and have the "coon-js" section configured with an entry "packageController"
  * configured:
  * @examples
- *    "coon-js" : {"packageController" : true}
+ *    "coon-js" : {"package" : {"controller" : true}}
  *
  * This packages will dynamically loaded by THIS application implementation, and
  * THIS application will make sure that Ext.env.Ready is blocked until all packages
@@ -52,8 +52,10 @@ Ext.define('coon.core.app.Application', {
     extend: 'Ext.app.Application',
 
     requires : [
-        'Ext.Package',
-        'coon.core.app.PackageController'
+        "Ext.Package",
+        "coon.core.app.PackageController",
+        "coon.core.Util",
+        "coon.core.ConfigManager"
     ],
 
     /**
@@ -76,14 +78,6 @@ Ext.define('coon.core.app.Application', {
      */
     applicationView : null,
 
-
-    /**
-     * Manages configurations for the various coon.js-packages.
-     * @see handlePackageLoad
-     *
-     * @private
-     */
-    packageConfigs : null,
 
     /**
      * @inheritdocs
@@ -200,6 +194,7 @@ Ext.define('coon.core.app.Application', {
         return true;
     },
 
+
     /**
      * @inheritdoc
      *
@@ -272,6 +267,7 @@ Ext.define('coon.core.app.Application', {
         return true;
     },
 
+
     /**
      * Adds the specified action to the #routeActionStack and calls "stop()" on it,
      * preventing it from being processed further..
@@ -330,7 +326,8 @@ Ext.define('coon.core.app.Application', {
      * Ext.app.Application.prototype.onProfilesReady is registered with Ext.onReady.
      * Ext.env.Ready is unblocked in #handlePackageLoad.
      *
-     * @return {Object}
+     * @return {Object} all the coon-js packages that should have been marked for
+     * loading (available after Ext.onReady was called).
      *
      * @see findCoonJsPackageControllers
      * @see handlePackageLoad
@@ -338,8 +335,8 @@ Ext.define('coon.core.app.Application', {
     onProfilesReady : function() {
 
         const me          = this,
-            pcs         = me.findCoonJsPackageControllers(Ext.manifest),
-            packages    = Object.keys(pcs);
+              orgPackages = me.findCoonJsPackageControllers(Ext.manifest),
+              packages    = Ext.clone(orgPackages);
 
         if (!me.controllers) {
             me.controllers = [];
@@ -347,9 +344,9 @@ Ext.define('coon.core.app.Application', {
 
         if (packages.length) {
 
-            packages.forEach(function(packageName) {
-                me.controllers.push(pcs[packageName].controller);
-                Ext.app.addNamespaces(pcs[packageName].namespace);
+            packages.forEach(function(packageConfig) {
+                me.controllers.push(packageConfig.controller);
+                Ext.app.addNamespaces(packageConfig.namespace);
             });
 
             Ext.env.Ready.block();
@@ -362,14 +359,13 @@ Ext.define('coon.core.app.Application', {
 
 
         } else {
-
             Ext.app.Application.prototype.onProfilesReady.call(me);
-
         }
 
 
-        return pcs;
+        return orgPackages;
     },
+
 
 
     /**
@@ -381,21 +377,22 @@ Ext.define('coon.core.app.Application', {
      *
      * The process utilizes Promises and will also take care of additional config-files
      * which are optional for the loaded coon.js-Package. This usually happens if the
-     * "coon-js"-section in the packages "package.json" has an entry named "packageConfig"
+     * "coon-js"-section in the packages "package.json" has a section "config" in "package"
      * available:
      * @example
      *
      *     "coon-js" : {
-     *         "packageController" : true,
-     *         "packageConfig" : true
+     *         "package" : {"controller" : true, "config" : true}
      *     }
      *
      * Config files will be searched at the URL returned by computePackageConfigUrl().
      * The file should be a valid JSON file. It's contents will be made available to
-     * the loaded PackageController. See @coon.core.app.PackageController.getPackageConfig()
-     * If "packageConfig" in the package.json is a configuration object, its key/value pairs
+     * the coon.core.ConfigManager.
+     * If "package.config" in the package.json is a configuration object, its key/value pairs
      * will get overridden by key/value pairs by the same name in the custom config file.
      * See #registerPackageConfig.
+     * Note: The config files for each Package will be loaded BEFOE the package gets loaded,
+     * so that the packages can take advantage of already loaded configurations.
      *
      * @param {String} packageName
      * @param {Array} remainingPackages
@@ -406,49 +403,56 @@ Ext.define('coon.core.app.Application', {
      * @see packageConfigLoadResolved
      * @see packageConfigLoadRejected
      */
-    handlePackageLoad : function(packageName, remainingPackages) {
+    handlePackageLoad : function(packageConfig, remainingPackages) {
 
         const me = this;
 
-        if (!packageName) {
+        if (!packageConfig) {
             Ext.env.Ready.unblock();
             return;
         }
 
-        Ext.Package
-            .load(packageName)
-            .then(me.loadPackageConfig.bind(me))
+
+        let packageName = packageConfig.name;
+
+
+        me.loadPackageConfig(packageConfig)
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
-            ).finally(
+            ).then(
+                function(package) {
+                    return Ext.Package.load(package);
+                }
+            ).then(
                 me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
             );
-
     },
 
 
     /**
      * Queries all available packages in Ext.manifest.packages and returns
-     * an object containing all key/value pairs in the form of
-     * [package-name] -> controller: [packageNamespace].app.PackageController,
-     *                   namespace : [packageNamespace] if, and only
-     * if:
+     * an array containing objects with the following informations:
+     * name : [package-name]
+     * controller: [packageNamespace].app.PackageController,
+     * namespace : [packageNamespace]
+     * metadata : [information from the package as found in the manifest]
+     * if, and onlyif:
      *  - The packages was not yet loaded
      *  - The property "included" of the package is not equal to "true"
      *  - The package has a property named "coon-js" which is an object and
-     *    has the property "packageController" set to true
+     *    has the property "package.controller" set to true
      *
      * @param {Object} manifest an object providing manifest information (Ext.manifest)
      *
-     * @return {Object}
+     * @return {Array}
      *
      * @private
      */
     findCoonJsPackageControllers : function(manifest) {
 
         const me          = this,
-              controllers = {},
+              packages = [],
               mp          = manifest && manifest.packages ? manifest.packages : {},
               keys        = Object.keys(mp);
 
@@ -456,23 +460,22 @@ Ext.define('coon.core.app.Application', {
 
             let entry = mp[key], ns, fqn;
 
-            if (entry.included !== true &&
-                !Ext.Package.isLoaded(key) &&
-                entry['coon-js'] &&
-                entry['coon-js']['packageController'] === true
-                ) {
+            if (entry.included !== true && !Ext.Package.isLoaded(key) &&
+                coon.core.Util.unchain('coon-js.package.controller', entry) === true) {
                 ns  = entry.namespace;
                 fqn = ns + '.app.PackageController';
 
-                controllers[key] = {
+                packages.push({
+                    name     : key,
+                    metadata : entry,
                     controller : fqn,
                     namespace  : ns
-                };
+                });
             }
         });
 
 
-        return controllers;
+        return packages;
     },
 
 
@@ -482,7 +485,7 @@ Ext.define('coon.core.app.Application', {
          * Returns a Promise responsible for loading a json-file holding
          * configuration options for the package represented by loadedPackageEntry.
          *
-         * @param {Ext.package.Entry} loadedPackageEntry
+         * @param {Object} packageEntry
          *
          * @return {Promise}
          *
@@ -490,15 +493,13 @@ Ext.define('coon.core.app.Application', {
          *
          * @see getPackageConfigUrl
          */
-        loadPackageConfig : function(loadedPackageEntry) {
+        loadPackageConfig : function(packageEntry) {
 
             const me = this,
-                packageName   = loadedPackageEntry.packageName,
-                metaData      = loadedPackageEntry.metadata["coon-js"],
-                lookupConfig  = metaData.hasOwnProperty("packageConfig"),
-                defaultConfig = lookupConfig == false ? null : metaData.packageConfig;
+                packageName   = packageEntry.name,
+                defaultConfig = coon.core.Util.unchain('metadata.coon-js.package.config', packageEntry);
 
-            if (lookupConfig) {
+            if (defaultConfig !== undefined) {
 
                 me.computePackageConfigUrl(packageName);
 
@@ -554,6 +555,8 @@ Ext.define('coon.core.app.Application', {
                 ajax.defaultPackageConfig,
                 Ext.decode(request.responseText)
             );
+
+            return packageName;
         },
 
         /**
@@ -585,12 +588,14 @@ Ext.define('coon.core.app.Application', {
                 ajax.defaultPackageConfig,
                 {}
             );
+
+            return packageName;
         },
 
 
         /**
          * Will merge defaultConfig and customConfig in one configuration object and make it
-         * available for later use in the loaded PackageController`s "getPackageConfig()"
+         * available in coon.core.ConfigManager.
          * @param {String} packageName
          * @param {Object} defaultConfig
          * @param {Object} customConfig
@@ -599,14 +604,9 @@ Ext.define('coon.core.app.Application', {
          */
         registerPackageConfig : function(packageName, defaultConfig, customConfig) {
 
-            const me     = this,
-                  cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
+            const cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
 
-            if (!me.packageConfigs) {
-                me.packageConfigs = {};
-            }
-
-            me.packageConfigs[packageName] = Ext.apply(cloned, customConfig);
+            coon.core.ConfigManager.register(packageName, Ext.apply(cloned, customConfig));
         },
 
 

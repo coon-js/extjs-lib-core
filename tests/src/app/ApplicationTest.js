@@ -47,25 +47,25 @@ describe('coon.core.app.ApplicationTest', function(t) {
                 included : false,
                 isLoaded : false,
                 namespace : 'foo',
-                'coon-js' : {packageController : true}
+                'coon-js' : {package  : {controller : true}}
             },
             'p_bar' : {
                 included : true,
                 isLoaded : false,
                 namespace : 'bar',
-                'coon-js' : {packageController : true}
+                'coon-js' : {package  : {controller : true}}
             },
             'p_foobar' : {
                 included : false,
                 isLoaded : false,
                 namespace : 'foobar',
-                'cs' : {packageController : true}
+                'cs' : {package  : {controller : true}}
             },
             't_snafu' : {
                 included : false,
                 isLoaded : false,
                 namespace : 'snafu',
-                'coon-js' : {packageController : true}
+                'coon-js' : {package  : {controller : true}}
             }
         };
 
@@ -87,6 +87,8 @@ describe('coon.core.app.ApplicationTest', function(t) {
             Ext.Viewport.destroy();
             Ext.Viewport = null;
         }
+
+        coon.core.ConfigManager.configs = {};
 
     });
 
@@ -279,12 +281,13 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
                 controllers : [
                     'coon.test.app.mock.PackageControllerMock'
                 ]
-            }),
-            manifest = buildManifest(),
-            expected = {
-                'p_foo'   : {controller : 'foo.app.PackageController', namespace : 'foo'},
-                't_snafu' : {controller : 'snafu.app.PackageController', namespace : 'snafu'}
-            },
+            });
+
+        let manifest = buildManifest(),
+            expected = [
+                {name : 'p_foo', controller : 'foo.app.PackageController', namespace : 'foo', metadata : manifest.packages["p_foo"]},
+                {name : 't_snafu', controller : 'snafu.app.PackageController', namespace : 'snafu', metadata : manifest.packages["t_snafu"]}
+            ],
             tmpFn = Ext.Package.isLoaded;
 
 
@@ -293,7 +296,7 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         };
 
         t.expect(app.findCoonJsPackageControllers(manifest)).toEqual(expected);
-        t.expect(app.findCoonJsPackageControllers({})).toEqual({});
+        t.expect(app.findCoonJsPackageControllers({})).toEqual([]);
 
         Ext.Package.isLoaded = tmpFn;
 
@@ -334,7 +337,7 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
 
         Ext.manifest = {};
 
-        t.expect(app.onProfilesReady()).toEqual({});
+        t.expect(app.onProfilesReady()).toEqual([]);
         t.expect(app.controllers).toEqual(['coon.test.app.mock.PackageControllerMock']);
         t.expect(CALLED).toBe(0);
         t.expect(PROF_CALLED).toBe(1);
@@ -391,10 +394,10 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
 
         Ext.manifest = buildManifest();
 
-        t.expect(app.onProfilesReady()).toEqual({
-            'p_foo'   : {controller : 'foo.app.PackageController', namespace : 'foo'},
-            't_snafu' : {controller : 'snafu.app.PackageController', namespace : 'snafu'}
-        });
+        t.expect(app.onProfilesReady()).toEqual([
+            {name : 'p_foo', controller : 'foo.app.PackageController', namespace : 'foo', metadata : Ext.manifest.packages["p_foo"]},
+            {name : 't_snafu', controller : 'snafu.app.PackageController', namespace : 'snafu', metadata : Ext.manifest.packages["t_snafu"]}
+        ]);
         t.expect(app.controllers).toEqual([
             'coon.test.app.mock.PackageControllerMock',
             'foo.app.PackageController',
@@ -457,25 +460,27 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         let left = {foo : "bar" , "a" : "b"};
         let right = {foo : "1bar", snafu : "meh."};
 
+        let ConfigManager = coon.core.ConfigManager;
+
         app.registerPackageConfig("a", left, right);
-        t.expect(app.packageConfigs.a).toBeDefined();
-        t.expect(app.packageConfigs.a).not.toBe(left);
-        t.expect(app.packageConfigs.a).not.toBe(right);
-        t.expect(app.packageConfigs.a).toEqual( {foo : "1bar", snafu : "meh.", a : "b"});
+        t.expect(ConfigManager.get("a")).toBeDefined();
+        t.expect(ConfigManager.get("a")).not.toBe(left);
+        t.expect(ConfigManager.get("a")).not.toBe(right);
+        t.expect(ConfigManager.get("a")).toEqual( {foo : "1bar", snafu : "meh.", a : "b"});
 
 
         left = undefined;
         right = {foo : "1bar", snafu : "meh."};
 
-        app.registerPackageConfig("a", left, right);
-        t.expect(app.packageConfigs.a).toEqual( {foo : "1bar", snafu : "meh."});
+        app.registerPackageConfig("b", left, right);
+        t.expect(ConfigManager.get("b")).toEqual( {foo : "1bar", snafu : "meh."});
 
 
         left = {foo : "bar" , "a" : "b"};
         right = null;
 
-        app.registerPackageConfig("a", left, right);
-        t.expect(app.packageConfigs.a).toEqual({foo : "bar" , "a" : "b"});
+        app.registerPackageConfig("c", left, right);
+        t.expect(ConfigManager.get("c")).toEqual({foo : "bar" , "a" : "b"});
 
     });
 
@@ -483,7 +488,8 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
     t.it("handlePackageLoad() - config loaded", function(t) {
 
 
-        let tmpOnProf = coon.core.app.Application.prototype.onProfilesReady,
+        let ConfigManager = coon.core.ConfigManager,
+            tmpOnProf = coon.core.app.Application.prototype.onProfilesReady,
             tmpComp = coon.core.app.Application.prototype.computePackageConfigUrl,
             CALLED = 0,
             UNBLOCKED = 0,
@@ -513,9 +519,9 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         }
 
         let stack = [
-            {packageName : 'c', metadata : {"coon-js":{}}},
-            {packageName : 'b', metadata : {"coon-js":{packageConfig:{}}}},
-            {packageName : 'a', metadata : {"coon-js":{packageConfig:{"foo" : "foobar"}}}}
+            {name : 'c', metadata : {"coon-js":{}}},
+            {name : 'b', metadata : {"coon-js":{package:{config:{}}}}},
+            {name : 'a', metadata : {"coon-js":{package:{config:{"foo" : "foobar"}}}}}
         ];
 
 
@@ -523,15 +529,15 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
 
         t.waitForMs(1250, function() {
 
-            t.expect(app.packageConfigs["a"]).toEqual({
+            t.expect(ConfigManager.get("a")).toEqual({
                 "foo" : "bar",
                 snafu : true
             });
 
-            t.expect(app.packageConfigs["b"]).toEqual({
+            t.expect(ConfigManager.get("b")).toEqual({
             });
 
-            t.expect(app.packageConfigs["c"]).toBeUndefined();
+            t.expect(ConfigManager.get("c")).toBeUndefined();
 
             t.expect(stack).toEqual([]);
             t.expect(CALLED).toBe(1);
