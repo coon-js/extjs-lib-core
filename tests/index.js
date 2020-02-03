@@ -67,7 +67,8 @@ harness.start({
 }, {
     group : '.',
     items : [
-        'src/UtilTest.js'
+        'src/UtilTest.js',
+        'src/ConfigManagerTest.js'
     ]}, {
     group : 'app',
     items : [
