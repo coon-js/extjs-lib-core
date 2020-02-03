@@ -37,41 +37,6 @@ describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
 
     let app = null;
 
-
-    const buildManifest = function() {
-
-        const manifest = {};
-
-        manifest.packages = {
-            'p_foo' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'foo',
-                'coon-js' : {packageController : true}
-            },
-            'p_bar' : {
-                included : true,
-                isLoaded : false,
-                namespace : 'bar',
-                'coon-js' : {packageController : true}
-            },
-            'p_foobar' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'foobar',
-                'cs' : {packageController : true}
-            },
-            't_snafu' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'snafu',
-                'coon-js' : {packageController : true}
-            }
-        };
-
-        return manifest;
-    };
-
     t.beforeEach(function() {
         Ext.isModern && Ext.viewport.Viewport.setup();
     });
@@ -107,7 +72,7 @@ describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
         } catch(e) {exc = e;}
 
         t.expect(exc).not.toBeNull();
-        t.expect(exc.msg).toContain("Could not resolve");
+        t.expect(exc.message).toBe("Cannot read property 'create' of undefined");
     });
 
 
