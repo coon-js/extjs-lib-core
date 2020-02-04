@@ -377,10 +377,7 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
 
         let app = Ext.create('coon.core.app.Application', {
                   name     : 'test',
-                  mainView : 'Ext.Panel',
-                  controllers : [
-                      'coon.test.app.mock.PackageControllerMock'
-                  ]
+                  mainView : 'Ext.Panel'
               }),
               tmpMani = Ext.manifest,
               tmpFn = Ext.Package.isLoaded;
@@ -394,22 +391,49 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
 
         Ext.manifest = buildManifest();
 
+
+        Ext.manifest.packages["mock"] = {
+            "namespace" : "coon.test.app.mock",
+            "included"  : false,
+            "isLoaded"  : false,
+            "coon-js" : {package : {controller : true, config : {foo : "bar"}}}
+        };
+
+        coon.core.ConfigManager.register("mock", {foo : "bar"});
+
         t.expect(app.onProfilesReady()).toEqual([
             {name : 'p_foo', controller : 'foo.app.PackageController', namespace : 'foo', metadata : Ext.manifest.packages["p_foo"]},
-            {name : 't_snafu', controller : 'snafu.app.PackageController', namespace : 'snafu', metadata : Ext.manifest.packages["t_snafu"]}
+            {name : 't_snafu', controller : 'snafu.app.PackageController', namespace : 'snafu', metadata : Ext.manifest.packages["t_snafu"]},
+            {
+                name : 'mock',
+                controller : 'coon.test.app.mock.app.PackageController',
+                namespace : 'coon.test.app.mock',
+                metadata : Ext.manifest.packages["mock"]
+            }
         ]);
         t.expect(app.controllers).toEqual([
-            'coon.test.app.mock.PackageControllerMock',
             'foo.app.PackageController',
-            'snafu.app.PackageController'
+            'snafu.app.PackageController',
+            'coon.test.app.mock.app.PackageController'
         ]);
+
+        t.expect(
+            app.getPackageNameForController(
+                Ext.create('coon.test.app.mock.app.PackageController')
+            )).toBe("mock");
+
+        t.expect(
+            app.getPackageConfig(
+                Ext.create('coon.test.app.mock.app.PackageController')
+            )).toEqual({foo : "bar"});
+
 
         t.expect(Ext.app.namespaces['foo']).toBe(true);
         t.expect(Ext.app.namespaces['snafu']).toBe(true);
 
         t.expect(CALLED).toBe(1);
         t.expect(PROF_CALLED).toBe(1);
-        t.expect(BLOCKED).toBe(1);
+        t.expect(BLOCKED).toBe(2); // called due to loading PackageController
 
         Ext.onReady = EXT_ONREADY;
         Ext.env.Ready.block = EXT_ENV_BLOCK;
@@ -711,6 +735,66 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         t.expect(w.getMainView().getTitle()).toBe("foo");
         w.destroy();
         w = null;
+    });
+
+    t.it("getPackageNameForController()", function(t) {
+
+        app = Ext.create('coon.core.app.Application', {
+            name : "test",
+            mainView : "Ext.Panel"
+        });
+
+        app.packageMap = {'coon.test.app.mock.app.PackageController' : "mock"};
+
+        let ctrl = Ext.create('coon.test.app.mock.app.PackageController');
+
+        t.expect(app.getPackageNameForController(ctrl)).toBe("mock");
+    });
+
+
+    t.it("getPackageConfig()", function(t) {
+
+        coon.core.ConfigManager.register("mock", {foo : "bar"});
+
+        app = Ext.create('coon.core.app.Application', {
+            name : "test",
+            mainView : "Ext.Panel"
+        });
+
+        app.packageMap = {'coon.test.app.mock.app.PackageController' : "mock"};
+
+        let ctrl = Ext.create('coon.test.app.mock.app.PackageController');
+
+        t.expect(app.getPackageConfig(ctrl, "foo")).toBe("bar");
+        t.expect(app.getPackageConfig(ctrl)).toEqual({foo : "bar"});
+    });
+
+
+    t.it("findCoonJsPackageControllers() - exception", function(t) {
+
+        app = Ext.create('coon.core.app.Application', {
+            name     : 'test',
+            mainView : 'Ext.Panel'
+        });
+
+        let manifest = buildManifest();
+        manifest.packages["mock"] = manifest.packages["p_foo"];
+
+
+        Ext.Package.isLoaded = function(key) {
+            return false;
+        };
+
+        let exc, e;
+
+        try {
+            app.findCoonJsPackageControllers(manifest);
+        } catch (e) {
+            exc = e;
+        }
+
+        t.expect(exc.msg).toContain("already registered");
+
     });
 
 });});

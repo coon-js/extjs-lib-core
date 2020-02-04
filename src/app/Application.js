@@ -58,6 +58,15 @@ Ext.define('coon.core.app.Application', {
         "coon.core.ConfigManager"
     ],
 
+
+    /**
+     * Maps fqn of coon.core.app.PackageController instances
+     * to their packages they were defined in.
+     * @type {Object}
+     * @private
+     */
+    packageMap : null,
+
     /**
      * Stack for routes which were added using the method #addRouteActionToStackAndStop
      * @type {Array} routeActionStack
@@ -316,6 +325,53 @@ Ext.define('coon.core.app.Application', {
 
 
     /**
+     * Returns the configuration for the package represented by the
+     * specified controller.
+     *
+     * @param {Ext.}controller
+     * @param {String }key
+     *
+     * @see coon.core.ConfigManager#get
+     *
+     * @throws if there is no package registered with this controller in
+     * #packageMap
+     */
+    getPackageConfig : function(controller, key) {
+        const me            = this,
+              ConfigManager = coon.core.ConfigManager,
+              args          = [me.getPackageNameForController(controller)];
+
+        if (key !== undefined) {
+            args.push(key);
+        }
+        return coon.core.ConfigManager.get.apply(ConfigManager, args);
+    },
+
+
+    /**
+     * Returns the package name this controller is associated with.
+     * Returns null if no associated package was found.
+     *
+     * @param {Ext.app.Controller} controller
+     *
+     * @return {null|String}
+     *
+     * @see packageMap
+     */
+    getPackageNameForController : function(controller) {
+
+        const me  = this,
+              fqn = Ext.getClassName(controller);
+
+        if (!me.packageMap[fqn]) {
+            Ext.raise("No package registered for \"" + fqn + "\"");
+        }
+
+        return me.packageMap[fqn];
+    },
+
+
+    /**
      * Overridden to make sure that all coon.js PackageControllers found in
      * Ext.manifest are loaded before the application is initiated.
      * Starts loading required packages by calling "handlePackage()" and
@@ -412,19 +468,13 @@ Ext.define('coon.core.app.Application', {
             return;
         }
 
-
-        let packageName = packageConfig.name;
-
-
         me.loadPackageConfig(packageConfig)
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
-            ).then(
-                function(package) {
-                    return Ext.Package.load(package);
-                }
-            ).then(
+            ).then(function(package) {
+                return Ext.Package.load(package);
+            }).then(
                 me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
             );
     },
@@ -448,6 +498,9 @@ Ext.define('coon.core.app.Application', {
      * @return {Array}
      *
      * @private
+     *
+     * @throws if a controller for a package gets registered in packageMap
+     * and the entry already exists
      */
     findCoonJsPackageControllers : function(manifest) {
 
@@ -455,6 +508,10 @@ Ext.define('coon.core.app.Application', {
               packages = [],
               mp          = manifest && manifest.packages ? manifest.packages : {},
               keys        = Object.keys(mp);
+
+        if (!me.packageMap) {
+            me.packageMap = {};
+        }
 
         keys.forEach(function(key) {
 
@@ -471,6 +528,13 @@ Ext.define('coon.core.app.Application', {
                     controller : fqn,
                     namespace  : ns
                 });
+
+                if (me.packageMap[fqn]) {
+                    Ext.raise(
+                        "Unexpected error: PackageController \"" + fqn +
+                        "\" was already registered (via package \"" + me.packageMap[fqn] + "\")");
+                }
+                me.packageMap[fqn] = key;
             }
         });
 
