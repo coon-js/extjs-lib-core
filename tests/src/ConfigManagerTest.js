@@ -38,6 +38,8 @@ describe('coon.core.ConfigManagerTest', function(t) {
 
             let exp, e;
 
+            t.expect(ConfigManager.get("foo")).toBeUndefined();
+
             let a = {a : 1, "sect" : {"foo" : "bar"}};
             t.expect(ConfigManager.register("foo", a)).toBe(a);
             t.expect(ConfigManager.register("", {})).toBe(null);

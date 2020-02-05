@@ -102,6 +102,10 @@ Ext.define('coon.core.ConfigManager', {
 
         const me = this;
 
+        if (!me.configs) {
+            return undefined;
+        }
+
         if (arguments.length === 1) {
             return me.configs[domain];
         }
