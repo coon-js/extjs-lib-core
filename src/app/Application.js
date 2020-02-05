@@ -472,9 +472,7 @@ Ext.define('coon.core.app.Application', {
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
-            ).then(function(package) {
-                return Ext.Package.load(package);
-            }).then(
+            ).then(function(pck){return Ext.Package.load(pck);}).then(
                 me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
             );
     },
