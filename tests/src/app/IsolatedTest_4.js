@@ -33,44 +33,11 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
+describe('coon.core.app.ApplicationTest', function(t) {
 
     let app = null;
 
 
-    const buildManifest = function() {
-
-        const manifest = {};
-
-        manifest.packages = {
-            'p_foo' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'foo',
-                'coon-js' : {packageController : true}
-            },
-            'p_bar' : {
-                included : true,
-                isLoaded : false,
-                namespace : 'bar',
-                'coon-js' : {packageController : true}
-            },
-            'p_foobar' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'foobar',
-                'cs' : {packageController : true}
-            },
-            't_snafu' : {
-                included : false,
-                isLoaded : false,
-                namespace : 'snafu',
-                'coon-js' : {packageController : true}
-            }
-        };
-
-        return manifest;
-    };
 
     t.beforeEach(function() {
         Ext.isModern && Ext.viewport.Viewport.setup();
@@ -88,27 +55,52 @@ describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
             Ext.Viewport = null;
         }
 
+        coon.core.ConfigManager.configs = {};
+
     });
 
 // +----------------------------------------------------------------------------
 // |                    =~. Unit Tests .~=
 // +----------------------------------------------------------------------------
+    t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function() {
 
 
-    t.it('Should throw an error when mainView is not loaded', function(t) {
-        var exc = undefined;
+        t.it('Should create mainView based on ObjectConfig (classic only).', function(t) {
 
-        try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test',
-                mainView : 'coon.fictionalClass'
-            });
-
-        } catch(e) {exc = e;}
-
-        t.expect(exc).not.toBeNull();
-        t.expect(exc.msg).toContain("was not loaded");
-    });
+            let w;
 
 
-});
+            try {
+                w = Ext.create('coon.core.app.Application', {
+                    name        : 'test',
+                    mainView    : {
+                        xtype : "panel",
+                        viewModel : {
+                            data : {
+                                myTitle : "foo"
+                            }
+                        },
+                        bind : {
+                            title : "{myTitle}"
+                        }
+                    },
+                    controllers : [
+                        'coon.core.app.PackageController'
+                    ]
+                });
+            } catch(exc) {
+                if (Ext.isModern) {
+                    t.expect(exc).toBeDefined();
+                    return;
+                }
+            }
+            w.getMainView().getViewModel().notify();
+            t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+            t.expect(w.getMainView().getTitle()).toBe("foo");
+            w.destroy();
+            w = null;
+        });
+
+
+
+});});

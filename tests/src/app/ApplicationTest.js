@@ -701,42 +701,6 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
     });
 
 
-    t.it('Should create mainView based on ObjectConfig (classic only).', function(t) {
-
-        let w;
-
-
-        try {
-            w = Ext.create('coon.core.app.Application', {
-                name        : 'test',
-                mainView    : {
-                    xtype : "panel",
-                    viewModel : {
-                        data : {
-                            myTitle : "foo"
-                        }
-                    },
-                    bind : {
-                        title : "{myTitle}"
-                    }
-                },
-                controllers : [
-                    'coon.core.app.PackageController'
-                ]
-            });
-        } catch(exc) {
-            if (Ext.isModern) {
-                t.expect(exc).toBeDefined();
-                return;
-            }
-        }
-        w.getMainView().getViewModel().notify();
-        t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
-        t.expect(w.getMainView().getTitle()).toBe("foo");
-        w.destroy();
-        w = null;
-    });
-
     t.it("getPackageNameForController()", function(t) {
 
         app = Ext.create('coon.core.app.Application', {
@@ -796,5 +760,49 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
         t.expect(exc.msg).toContain("already registered");
 
     });
+
+
+
+    t.it("loadPackageConfig()", function(t) {
+
+        app = Ext.create('coon.core.app.Application', {
+            name : "test",
+            mainView : "Ext.Panel"
+        });
+
+        let resolved = app.loadPackageConfig({
+            name : "foo"
+        });
+
+        t.isInstanceOf(resolved, "Ext.promise.Promise");
+        t.expect(resolved.owner.completionValue).toBe("foo");
+    });
+
+
+    t.it("packageConfigLoadResolved()", function(t) {
+
+        app = Ext.create('coon.core.app.Application', {
+            name : "test",
+            mainView : "Ext.Panel"
+        });
+
+        let ret = app.packageConfigLoadResolved("foo");
+
+        t.expect(ret).toBe("foo");
+
+        ret = app.packageConfigLoadResolved({
+            request : {
+                params : {
+                    packageName : "foo"
+                },
+                defaultPackageConfig : {}
+            },
+            responseText : "{}"
+        });
+
+        t.expect(ret).toBe("foo");
+
+    });
+
 
 });});

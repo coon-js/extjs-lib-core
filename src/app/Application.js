@@ -145,6 +145,12 @@ Ext.define('coon.core.app.Application', {
             });
         }
 
+        if (Ext.isString(view) && !coon.core.Util.unchain(view, window)) {
+            Ext.raise({
+                msg : "The class \"" + view + "\" was not loaded and cannot be used as the mainView."
+            });
+        }
+
         return me.callParent([view]);
     },
 
@@ -468,11 +474,13 @@ Ext.define('coon.core.app.Application', {
             return;
         }
 
+        let load = function(pck){return Ext.Package.load(pck);};
+
         me.loadPackageConfig(packageConfig)
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
-            ).then(function(pck){return Ext.Package.load(pck);}).then(
+            ).then(load).then(
                 me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
             );
     },
@@ -577,7 +585,7 @@ Ext.define('coon.core.app.Application', {
             }
 
             console.info("No default \"packageConfig\" found in package.json for \"" + packageName + "\".");
-            return Ext.Deferred.rejected(false);
+            return Ext.Deferred.resolved(packageName);
         },
 
 
@@ -608,6 +616,10 @@ Ext.define('coon.core.app.Application', {
         packageConfigLoadResolved : function(request) {
 
             const me = this;
+
+            if (Ext.isString(request)) {
+                return request;
+            }
 
             let ajax = request.request,
                 packageName = ajax.params.packageName;

@@ -76,7 +76,8 @@ harness.start({
         'src/app/ApplicationTest.js',
         'src/app/IsolatedTest_1.js',
         'src/app/IsolatedTest_2.js',
-        'src/app/IsolatedTest_3.js'
+        'src/app/IsolatedTest_3.js',
+        'src/app/IsolatedTest_4.js'
     ]
 }, {
     group : 'data',
