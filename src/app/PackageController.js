@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -58,6 +58,19 @@
 Ext.define('coon.core.app.PackageController', {
 
     extend : 'Ext.app.Controller',
+
+    /**
+     * A template method that can be used to configure views from withing the
+     * PackageController.
+     * A default usage for these method can be found in the lib-cn_navport-package,
+     * where the ViewportController calls this method if a valid configuration
+     * for associated views is available.
+     *
+     * @param {Ext.Component} view
+     *
+     * @return {Ext.Component} view
+     */
+    configureView : Ext.emptyFn,
 
 
     /**

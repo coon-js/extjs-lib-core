@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,6 +55,14 @@ describe('coon.core.app.PackageControllerTest', function(t) {
     t.it('postLaunchHook should equal to Ext.emptyFn', function(t) {
         t.expect(controller.postLaunchHook).toBe(Ext.emptyFn);
     });
+
+    /**
+     * Test configureView
+     */
+    t.it('configureView should equal to Ext.emptyFn', function(t) {
+        t.expect(controller.configureView).toBe(Ext.emptyFn);
+    });
+
 
     /**
      * @see https://github.com/conjoon/lib-cn_core/issues/1
