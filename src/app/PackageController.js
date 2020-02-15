@@ -62,13 +62,17 @@ Ext.define('coon.core.app.PackageController', {
     /**
      * A template method that can be used to configure views from withing the
      * PackageController.
-     * A default usage for these method can be found in the lib-cn_navport-package,
-     * where the ViewportController calls this method if a valid configuration
-     * for associated views is available.
+     * Parameters to this methods are arbitrary. The following list of
+     * arguments are suggested. A default implementation can be found in
+     * the lib-cn_navport-package.
      *
-     * @param {Ext.Component} view
+     * @param {Ext.Component} view The view to configure
+     * @param {Boolean} created true if the view was just created, otherwise false,
+     * e.g. when the view is about to be activated in its parent container
+     * @param {String} route The route that triggered this method, if any
      *
-     * @return {Ext.Component} view
+     * @return {Ext.Component} view The view that was configured, or any other
+     * {Ext.Component}
      */
     configureView : Ext.emptyFn,
 
