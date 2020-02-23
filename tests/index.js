@@ -160,7 +160,8 @@ harness.start({
             items : [
                 'src/text/transformer/html/BlockquoteTransformerTest.js',
                 'src/text/transformer/html/EmailAddressTransformerTest.js',
-                'src/text/transformer/html/HyperlinkTransformerTest.js'
+                'src/text/transformer/html/HyperlinkTransformerTest.js',
+                'src/text/transformer/html/LineBreakTransformerTest.js',
             ]}]}]
 
 }, {
