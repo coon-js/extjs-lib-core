@@ -159,6 +159,7 @@ harness.start({
             group : 'html',
             items : [
                 'src/text/transformer/html/BlockquoteTransformerTest.js',
+                'src/text/transformer/html/EmailAddressTransformerTest.js',
                 'src/text/transformer/html/HyperlinkTransformerTest.js'
             ]}]}]
 
