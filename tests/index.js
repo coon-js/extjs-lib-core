@@ -152,6 +152,17 @@ harness.start({
             ]
         }]
 }, {
+    group : 'text',
+    items : [{
+        group : 'transformer',
+        items : [{
+            group : 'html',
+            items : [
+                'src/text/transformer/html/BlockquoteTransformerTest.js',
+                'src/text/transformer/html/HyperlinkTransformerTest.js'
+            ]}]}]
+
+}, {
     group : 'util',
     items : [
         'src/util/DateTest.js',
