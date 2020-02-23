@@ -24,7 +24,7 @@
  */
 
 /**
- * Transformer for transforming plain-quoted text (quote marks: ">")
+ * Transformer for transforming quoted plain-text (quote marks: ">")
  * to a text containing blockquotes.
  *
  * @example

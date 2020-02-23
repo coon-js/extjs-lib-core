@@ -24,7 +24,7 @@
  */
 
 /**
- * Transformer for transforming plain-quoted text containing Hyperlinks
+ * Transformer for transforming plain-text containing Hyperlinks
  * into text that wraps those Hyperlinks in "<a>"-tags.
  *
  * @example
