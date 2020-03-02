@@ -399,6 +399,13 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
             "coon-js" : {package : {controller : true, config : {foo : "bar"}}}
         };
 
+        Ext.manifest.packages["mock2"] = {
+            "namespace" : "coon.test.app.mock2",
+            "included"  : false,
+            "isLoaded"  : false,
+            "coon-js" : {package : {config : {bar : "foo"}}}
+        };
+
         coon.core.ConfigManager.register("mock", {foo : "bar"});
 
         t.expect(app.onProfilesReady()).toEqual([
@@ -409,6 +416,12 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
                 controller : 'coon.test.app.mock.app.PackageController',
                 namespace : 'coon.test.app.mock',
                 metadata : Ext.manifest.packages["mock"]
+            },
+            {
+                name : 'mock2',
+                controller : false,
+                namespace : 'coon.test.app.mock2',
+                metadata : Ext.manifest.packages["mock2"]
             }
         ]);
         t.expect(app.controllers).toEqual([
@@ -426,7 +439,6 @@ t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  fun
             app.getPackageConfig(
                 Ext.create('coon.test.app.mock.app.PackageController')
             )).toEqual({foo : "bar"});
-
 
         t.expect(Ext.app.namespaces['foo']).toBe(true);
         t.expect(Ext.app.namespaces['snafu']).toBe(true);

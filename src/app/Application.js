@@ -344,8 +344,8 @@ Ext.define('coon.core.app.Application', {
      */
     getPackageConfig : function(controller, key) {
         const me            = this,
-              ConfigManager = coon.core.ConfigManager,
-              args          = [me.getPackageNameForController(controller)];
+            ConfigManager = coon.core.ConfigManager,
+            args          = [me.getPackageNameForController(controller)];
 
         if (key !== undefined) {
             args.push(key);
@@ -367,7 +367,7 @@ Ext.define('coon.core.app.Application', {
     getPackageNameForController : function(controller) {
 
         const me  = this,
-              fqn = Ext.getClassName(controller);
+            fqn = Ext.getClassName(controller);
 
         if (!me.packageMap[fqn]) {
             Ext.raise("No package registered for \"" + fqn + "\"");
@@ -397,8 +397,8 @@ Ext.define('coon.core.app.Application', {
     onProfilesReady : function() {
 
         const me          = this,
-              orgPackages = me.findCoonJsPackageControllers(Ext.manifest),
-              packages    = Ext.clone(orgPackages);
+            orgPackages = me.findCoonJsPackageControllers(Ext.manifest),
+            packages    = Ext.clone(orgPackages);
 
         if (!me.controllers) {
             me.controllers = [];
@@ -407,8 +407,11 @@ Ext.define('coon.core.app.Application', {
         if (packages.length) {
 
             packages.forEach(function(packageConfig) {
-                me.controllers.push(packageConfig.controller);
-                Ext.app.addNamespaces(packageConfig.namespace);
+                if (packageConfig.controller !== false) {
+                    me.controllers.push(packageConfig.controller);
+                    Ext.app.addNamespaces(packageConfig.namespace);
+                }
+
             });
 
             Ext.env.Ready.block();
@@ -481,8 +484,8 @@ Ext.define('coon.core.app.Application', {
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
             ).then(load).then(
-                me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
-            );
+            me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
+        );
     },
 
 
@@ -511,9 +514,9 @@ Ext.define('coon.core.app.Application', {
     findCoonJsPackageControllers : function(manifest) {
 
         const me          = this,
-              packages = [],
-              mp          = manifest && manifest.packages ? manifest.packages : {},
-              keys        = Object.keys(mp);
+            packages = [],
+            mp          = manifest && manifest.packages ? manifest.packages : {},
+            keys        = Object.keys(mp);
 
         if (!me.packageMap) {
             me.packageMap = {};
@@ -521,17 +524,18 @@ Ext.define('coon.core.app.Application', {
 
         keys.forEach(function(key) {
 
-            let entry = mp[key], ns, fqn;
+            let entry = mp[key], ns, fqn,
+                cPackage = coon.core.Util.unchain('coon-js.package', entry);
 
             if (entry.included !== true && !Ext.Package.isLoaded(key) &&
-                coon.core.Util.unchain('coon-js.package.controller', entry) === true) {
+                cPackage !== undefined) {
                 ns  = entry.namespace;
                 fqn = ns + '.app.PackageController';
 
                 packages.push({
                     name     : key,
                     metadata : entry,
-                    controller : fqn,
+                    controller : cPackage && cPackage.controller === true ? fqn : false,
                     namespace  : ns
                 });
 
@@ -681,8 +685,7 @@ Ext.define('coon.core.app.Application', {
             const cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
 
             coon.core.ConfigManager.register(packageName, Ext.apply(cloned, customConfig));
-        },
-
+        }
 
     }
 
