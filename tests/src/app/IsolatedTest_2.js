@@ -33,15 +33,15 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
+describe("coon.core.app.ApplicationTest_Isolated2", function (t) {
 
     let app = null;
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         Ext.isModern && Ext.viewport.Viewport.setup();
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
 
         if (app) {
             app.destroy();
@@ -55,18 +55,18 @@ describe('coon.core.app.ApplicationTest_Isolated2', function(t) {
 
     });
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
 
-    t.it('Should throw an error when mainView is not loaded', function(t) {
+    t.it("Should throw an error when mainView is not loaded", function (t) {
         var exc = undefined;
 
         try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test',
-                mainView : 'coon.fictionalClass'
+            Ext.create("coon.core.app.Application", {
+                name  : "test",
+                mainView : "coon.fictionalClass"
             });
 
         } catch(e) {exc = e;}

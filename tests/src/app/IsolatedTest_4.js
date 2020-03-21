@@ -33,17 +33,16 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe('coon.core.app.ApplicationTest', function(t) {
+describe("coon.core.app.ApplicationTest", function (t) {
 
     let app = null;
 
 
-
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         Ext.isModern && Ext.viewport.Viewport.setup();
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
 
         if (app) {
             app.destroy();
@@ -59,20 +58,20 @@ describe('coon.core.app.ApplicationTest', function(t) {
 
     });
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
-    t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function() {
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
+    t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function () {
 
 
-        t.it('Should create mainView based on ObjectConfig (classic only).', function(t) {
+        t.it("Should create mainView based on ObjectConfig (classic only).", function (t) {
 
             let w;
 
 
             try {
-                w = Ext.create('coon.core.app.Application', {
-                    name        : 'test',
+                w = Ext.create("coon.core.app.Application", {
+                    name        : "test",
                     mainView    : {
                         xtype : "panel",
                         viewModel : {
@@ -85,7 +84,7 @@ describe('coon.core.app.ApplicationTest', function(t) {
                         }
                     },
                     controllers : [
-                        'coon.core.app.PackageController'
+                        "coon.core.app.PackageController"
                     ]
                 });
             } catch(exc) {
@@ -102,5 +101,4 @@ describe('coon.core.app.ApplicationTest', function(t) {
         });
 
 
-
-});});
+    });});

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,28 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.FormDataRequestTest', function(t) {
+describe("coon.core.data.FormDataRequestTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
 
-    t.it('Sanitize the FormDataRequest class', function(t) {
+    t.it("Sanitize the FormDataRequest class", function (t) {
 
-        var c = Ext.create('coon.core.data.FormDataRequest', {
-            progressCallback : 'foo',
+        var c = Ext.create("coon.core.data.FormDataRequest", {
+            progressCallback : "foo",
 
-            progressScope : 'bar',
+            progressScope : "bar",
 
-            formData : 'formData'
+            formData : "formData"
         });
 
         t.expect(c instanceof Ext.data.Request).toBe(true);
-        t.expect(c.getProgressCallback()).toBe('foo');
-        t.expect(c.getProgressScope()).toBe('bar');
-        t.expect(c.getFormData()).toBe('formData');
+        t.expect(c.getProgressCallback()).toBe("foo");
+        t.expect(c.getProgressScope()).toBe("bar");
+        t.expect(c.getFormData()).toBe("formData");
 
     });
 

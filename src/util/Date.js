@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 /**
  * Utility class for shared date utility functions
  */
-Ext.define('coon.core.util.Date', {
+Ext.define("coon.core.util.Date", {
 
 
     singleton : true,
@@ -40,7 +40,7 @@ Ext.define('coon.core.util.Date', {
      *
      * @return {String}
      */
-    getHumanReadableDate : function(date) {
+    getHumanReadableDate : function (date) {
 
         const today = new Date();
 

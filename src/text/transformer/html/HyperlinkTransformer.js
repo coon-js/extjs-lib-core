@@ -38,7 +38,7 @@
  *  // This is an url <a href="https://www.conjoon.org">https://www.conjoon.org</a> and it is not clickable
  *
  */
-Ext.define('coon.core.text.transformer.html.HyperlinkTransformer', {
+Ext.define("coon.core.text.transformer.html.HyperlinkTransformer", {
 
     /**
      * Invokes transforming the passed string.
@@ -47,9 +47,9 @@ Ext.define('coon.core.text.transformer.html.HyperlinkTransformer', {
      *
      * @return {String}
      */
-    transform : function(text) {
+    transform : function (text) {
 
-        const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/ig;
 
         text = text.replace(urlRegex, matches => ("<a href=\"" + matches + "\">" + matches + "</a>"));
 

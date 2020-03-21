@@ -33,16 +33,16 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe('coon.core.app.ApplicationTest_Isolated1', function(t) {
+describe("coon.core.app.ApplicationTest_Isolated1", function (t) {
 
     let app = null;
 
 
-    t.beforeEach(function() {
+    t.beforeEach(function () {
         Ext.isModern && Ext.viewport.Viewport.setup();
     });
 
-    t.afterEach(function() {
+    t.afterEach(function () {
 
         if (app) {
             app.destroy();
@@ -56,16 +56,16 @@ describe('coon.core.app.ApplicationTest_Isolated1', function(t) {
 
     });
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Should throw an error when mainView is not specified as string', function(t) {
+    t.it("Should throw an error when mainView is not specified as string", function (t) {
         var exc = undefined;
 
         try {
-            Ext.create('coon.core.app.Application', {
-                name  : 'test',
+            Ext.create("coon.core.app.Application", {
+                name  : "test",
                 mainView : {}
             });
 
@@ -74,7 +74,6 @@ describe('coon.core.app.ApplicationTest_Isolated1', function(t) {
         t.expect(exc).not.toBeNull();
         t.expect(exc.msg).toContain("empty value for view");
     });
-
 
 
 });

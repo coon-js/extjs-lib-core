@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,31 +23,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.util.MimeTest', function(t) {
+describe("coon.core.util.MimeTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.util.Mime', function(){
+    t.requireOk("coon.core.util.Mime", function (){
 
-        t.it('Test isImage()', function(t) {
+        t.it("Test isImage()", function (t) {
 
             var testData = [{
-                value    : 'IMAGE/',
+                value    : "IMAGE/",
                 expected : false
             }, {
-                value    : 'IMAGE/gif',
+                value    : "IMAGE/gif",
                 expected : true
             }, {
-                value    : 'image/foo',
+                value    : "image/foo",
                 expected : true
             }, {
-                value    : 'IMAGE_bar',
+                value    : "IMAGE_bar",
                 expected : false
             }, {
-                value    : 'IMAGE-PNG',
+                value    : "IMAGE-PNG",
                 expected : false
             }];
 

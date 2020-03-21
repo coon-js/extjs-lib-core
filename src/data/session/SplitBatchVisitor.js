@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,9 +32,9 @@
  * request is created.
  *
  */
-Ext.define('coon.core.data.session.SplitBatchVisitor', {
+Ext.define("coon.core.data.session.SplitBatchVisitor", {
 
-    extend : 'Ext.data.session.BatchVisitor',
+    extend : "Ext.data.session.BatchVisitor",
 
     /**
      * @inheritdoc
@@ -44,11 +44,11 @@ Ext.define('coon.core.data.session.SplitBatchVisitor', {
         var me     = this,
             batch  = me.callParent(arguments),
             ops    = batch ? batch.getOperations() : [],
-            nBatch = batch ? Ext.create('Ext.data.Batch') : null;
+            nBatch = batch ? Ext.create("Ext.data.Batch") : null;
 
         for (var i = 0, len = ops.length; i < len; i++) {
-            if (ops[i].getAction() !== 'create') {
-                nBatch.add(ops[i])
+            if (ops[i].getAction() !== "create") {
+                nBatch.add(ops[i]);
                 continue;
             }
 

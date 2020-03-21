@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,26 +23,26 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.validator.EmailAddressCollectionTest', function(t) {
+describe("coon.core.data.validator.EmailAddressCollectionTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Make sure class definition is as expected', function(t) {
+    t.it("Make sure class definition is as expected", function (t) {
 
-        var vtor = Ext.create('coon.core.data.validator.EmailAddressCollection');
+        var vtor = Ext.create("coon.core.data.validator.EmailAddressCollection");
 
         // sanitize
         t.expect(vtor instanceof Ext.data.validator.Validator).toBe(true);
-        t.expect(typeof(vtor.getMessage())).toBe('string');
-        t.expect(vtor.alias).toContain('data.validator.cn_core-datavalidatoremailaddresscollection');
+        t.expect(typeof(vtor.getMessage())).toBe("string");
+        t.expect(vtor.alias).toContain("data.validator.cn_core-datavalidatoremailaddresscollection");
 
         vtor = null;
     });
 
-    t.it('Make sure the validator works as expected', function(t) {
+    t.it("Make sure the validator works as expected", function (t) {
 
         var tests = [{
             config   : {allowEmpty : true},
@@ -56,16 +56,16 @@ describe('coon.core.data.validator.EmailAddressCollectionTest', function(t) {
             data     : [],
             expected : false
         }, {
-            data     : [{test : 'test'}],
+            data     : [{test : "test"}],
             expected : false
         }, {
-            data     : [{test : 'test'}, {address : 'mymailaddress'}],
+            data     : [{test : "test"}, {address : "mymailaddress"}],
             expected : false
         }, {
-            data     : [{address : 'test'}, {address : 'mymailaddress'}],
+            data     : [{address : "test"}, {address : "mymailaddress"}],
             expected : true
         }, {
-            data     : [null, {address : 'test'}, {address : 'mymailaddress'}],
+            data     : [null, {address : "test"}, {address : "mymailaddress"}],
             expected : false
         }];
 
@@ -73,12 +73,12 @@ describe('coon.core.data.validator.EmailAddressCollectionTest', function(t) {
             var test   = tests[i],
                 config = test.config ? test.config : undefined,
                 vtor   = Ext.create(
-                    'coon.core.data.validator.EmailAddressCollection',
+                    "coon.core.data.validator.EmailAddressCollection",
                     config
                 );
 
             if (test.expected === false) {
-                t.expect(vtor.validate(test.data)).toContain('Must be');
+                t.expect(vtor.validate(test.data)).toContain("Must be");
             } else {
                 t.expect(vtor.validate(test.data)).toBe(test.expected);
             }

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,47 +26,47 @@
 /**
  * Ext.ux.ajax.SimManager hook for fixture data.
  */
-Ext.define('coon.core.fixtures.sim.ItemSim', {
+Ext.define("coon.core.fixtures.sim.ItemSim", {
 
     requires : [
-        'coon.core.fixtures.sim.Init'
+        "coon.core.fixtures.sim.Init"
     ]
 
-}, function() {
+}, function () {
 
     var items = [];
 
     for (var i = 0, len = 500; i < len; i++) {
         items.push({
-            id       : (i + 1) + '',
+            id       : (i + 1) + "",
             testProp : i,
             testPropForIndexLookup : (i + 1)
         });
     }
 
     Ext.ux.ajax.SimManager.register({
-        type : 'json',
+        type : "json",
 
         url  : /cn_core\/fixtures\/PageMapItems(\/\d+)?/,
 
 
-        data: function(ctx) {
+        data: function (ctx) {
 
             var idPart  = ctx.url.match(this.url)[1],
                 filters = ctx.params.filter,
-                empty   = ctx.params.empty
+                empty   = ctx.params.empty,
                 id;
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
                 return {data : Ext.Array.findBy(
                     items,
-                    function(item) {
-                        return item.id === '' + id;
+                    function (item) {
+                        return item.id === "" + id;
                     }
                 )};
             } else if (filters) {
-                Ext.raise('no filter supported');
+                Ext.raise("no filter supported");
             } else {
                 if (empty) {
                     return [];
@@ -75,7 +75,6 @@ Ext.define('coon.core.fixtures.sim.ItemSim', {
             }
         }
     });
-
 
 
 });

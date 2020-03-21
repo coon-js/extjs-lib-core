@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -76,7 +76,7 @@
 
  *
  */
-Ext.define('coon.core.data.pageMap.RecordPosition', {
+Ext.define("coon.core.data.pageMap.RecordPosition", {
 
 
     config : {
@@ -100,19 +100,19 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
          * @throws if the arguments could not be processed, or if any exception
          * from the class constructor is thrown.
          */
-        create : function(data) {
+        create : function (data) {
 
             if (arguments.length > 1) {
                 data = [arguments[0], arguments[1]];
             } else if (!Ext.isArray(data)){
                 Ext.raise({
-                    msg       : 'static method expects an array or two arguments ' +
-                                'representing page and index',
+                    msg       : "static method expects an array or two arguments " +
+                                "representing page and index",
                     arguments : arguments
                 });
             }
 
-            return Ext.create('coon.core.data.pageMap.RecordPosition', {
+            return Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : data[0],
                 index : data[1]
             });
@@ -126,14 +126,14 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      *
      * @throws if either cfg.page or cfg.index is missing
      */
-    constructor : function(cfg) {
+    constructor : function (cfg) {
 
-        if (!cfg || !cfg.hasOwnProperty('page') ||
-            !cfg.hasOwnProperty('index')) {
+        if (!cfg || !Object.prototype.hasOwnProperty.call(cfg,"page") ||
+            !Object.prototype.hasOwnProperty.call(cfg,"index")) {
             Ext.raise({
-                msg : '\'cfg\' needs both \'page\'- and  \'index\'-property',
+                msg : "'cfg' needs both 'page'- and  'index'-property",
                 cfg : cfg
-            })
+            });
         }
 
         this.initConfig(cfg);
@@ -153,31 +153,31 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      *  - if it is less than 1
      *
      */
-    applyPage : function(page) {
+    applyPage : function (page) {
 
         var me = this;
 
         if (me.getPage() !== undefined) {
             Ext.raise({
-                msg  : '\'page\' was already defined',
+                msg  : "'page' was already defined",
                 page : me.getPage()
-            })
+            });
         }
 
         page = parseInt(page, 10);
 
         if (!Ext.isNumber(page)) {
             Ext.raise({
-                msg  : '\'page\' must be a number',
+                msg  : "'page' must be a number",
                 page : page
-            })
+            });
         }
 
         if (page < 1) {
             Ext.raise({
-                msg  : 'a page\'s value must not be less than 1',
+                msg  : "a page's value must not be less than 1",
                 page : page
-            })
+            });
         }
 
         return page;
@@ -197,31 +197,31 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      *  - if it is less than 0
      *
      */
-    applyIndex : function(index) {
+    applyIndex : function (index) {
 
         var me = this;
 
         if (me.getIndex() !== undefined) {
             Ext.raise({
-                msg   : '\'index\' was already defined',
+                msg   : "'index' was already defined",
                 index : me.getIndex()
-            })
+            });
         }
 
         index = parseInt(index, 10);
 
         if (!Ext.isNumber(index)) {
             Ext.raise({
-                msg   : '\'index\' must be a number',
+                msg   : "'index' must be a number",
                 index : index
-            })
+            });
         }
 
         if (index < 0) {
             Ext.raise({
-                msg   : 'index value must not be less than 0',
+                msg   : "index value must not be less than 0",
                 index : index
-            })
+            });
         }
 
         return index;
@@ -238,15 +238,15 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      *
      * @throws if target is not an instance of {coon.core.data.pageMap.RecordPosition}
      */
-    equalTo : function(target) {
+    equalTo : function (target) {
 
         var me = this;
 
         if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
+                msg    : "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
                 target : target
-            })
+            });
         }
 
         return me === target ||
@@ -267,16 +267,15 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      * @throws if target is not an instance of
      * {coon.core.data.pageMap.RecordPosition}
      */
-    lessThan : function(target) {
+    lessThan : function (target) {
 
-        var me = this,
-            tF, tL;
+        var me = this;
 
         if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
+                msg    : "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
                 target : target
-            })
+            });
         }
 
         return (me.getPage() < target.getPage() ||
@@ -297,16 +296,15 @@ Ext.define('coon.core.data.pageMap.RecordPosition', {
      * @throws if target is not an instance of
      * {coon.core.data.pageMap.RecordPosition}
      */
-    greaterThan : function(target) {
+    greaterThan : function (target) {
 
-        var me = this,
-            tF, tL;
+        var me = this;
 
         if (!(target instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
+                msg    : "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
                 target : target
-            })
+            });
         }
 
         return (me.getPage() > target.getPage() ||

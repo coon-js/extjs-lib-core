@@ -23,43 +23,43 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.app.PackageControllerTest', function(t) {
+describe("coon.core.app.PackageControllerTest", function (t) {
 
     var controller;
 
-    t.beforeEach(function() {
-        controller = Ext.create('coon.core.app.PackageController');
+    t.beforeEach(function () {
+        controller = Ext.create("coon.core.app.PackageController");
     });
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
     /**
      * Test create
      */
-    t.it('Should create an instance of coon.core.app.PackageController', function(t) {
+    t.it("Should create an instance of coon.core.app.PackageController", function (t) {
         t.expect(controller instanceof coon.core.app.PackageController).toBeTruthy();
     });
 
     /**
      * Test preLaunchHook
      */
-    t.it('preLaunchHook should equal to Ext.emptyFn', function(t) {
+    t.it("preLaunchHook should equal to Ext.emptyFn", function (t) {
         t.expect(controller.preLaunchHook).toBe(Ext.emptyFn);
     });
 
     /**
      * Test getMetaItems
      */
-    t.it('postLaunchHook should equal to Ext.emptyFn', function(t) {
+    t.it("postLaunchHook should equal to Ext.emptyFn", function (t) {
         t.expect(controller.postLaunchHook).toBe(Ext.emptyFn);
     });
 
     /**
      * Test configureView
      */
-    t.it('configureView should equal to Ext.emptyFn', function(t) {
+    t.it("configureView should equal to Ext.emptyFn", function (t) {
         t.expect(controller.configureView).toBe(Ext.emptyFn);
     });
 
@@ -68,9 +68,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
      * @see https://github.com/conjoon/lib-cn_core/issues/1
      * @see https://github.com/coon-js/lib-cn_core/issues/5
      */
-    t.it('Test changes regarding lib-cn_core#5', function(t) {
+    t.it("Test changes regarding lib-cn_core#5", function (t) {
 
-        var exc, e, routes, nRoutes;
+        var exc, routes, nRoutes;
 
         // +---------------------------------------------
         // | updateRoutes
@@ -78,47 +78,47 @@ describe('coon.core.app.PackageControllerTest', function(t) {
         nRoutes = {};
         routes  = [{
             routes : {
-                'myurl' : 'someAction'
+                "myurl" : "someAction"
             },
             expected : {
                 myurl : {
-                    action : 'someAction',
-                    before : 'onBeforePackageRoute'
+                    action : "someAction",
+                    before : "onBeforePackageRoute"
                 }
             }
         }, {
             routes : {
                 myconfiguredurl : {
-                    action : 'someAction'
+                    action : "someAction"
                 }
             },
             expected : {
                 myconfiguredurl : {
-                    action : 'someAction'
+                    action : "someAction"
                 }
             }
         }, {
             routes : {
                 myconfiguredurl : {
-                    action : 'someAction'
+                    action : "someAction"
                 },
-                myurl : 'someAction'
+                myurl : "someAction"
             },
             expected : {
                 myconfiguredurl : {
-                    action : 'someAction'
+                    action : "someAction"
                 },
                 myurl : {
-                    action : 'someAction',
-                    before : 'onBeforePackageRoute'
+                    action : "someAction",
+                    before : "onBeforePackageRoute"
                 }
             }
         }];
 
         for (var i = 0, len = routes.length; i < len; i++) {
-            nRoutes = Ext.apply({}, routes[i]['routes']);
+            nRoutes = Ext.apply({}, routes[i]["routes"]);
             controller.updateRoutes(nRoutes);
-            t.expect(nRoutes).toEqual(routes[i]['expected']);
+            t.expect(nRoutes).toEqual(routes[i]["expected"]);
 
         }
 
@@ -129,7 +129,7 @@ describe('coon.core.app.PackageControllerTest', function(t) {
         // +---------------------------------------------
         // | isMainViewAvailable / -app
         // +---------------------------------------------
-        exc = e = undefined;
+        exc = undefined;
         try {
             controller.isMainViewAvailable();
         } catch (e) {
@@ -142,9 +142,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
         // +---------------------------------------------
         // | isActionRoutable / -app
         // +---------------------------------------------
-        exc = e = undefined;
+        exc = undefined;
         try {
-            t.expect(controller.isActionRoutable())
+            t.expect(controller.isActionRoutable());
         } catch (e) {
             exc = e;
         }
@@ -155,9 +155,9 @@ describe('coon.core.app.PackageControllerTest', function(t) {
         // +---------------------------------------------
         // | onBeforePackageRoute / -app
         // +---------------------------------------------
-        exc = e = undefined;
+        exc = undefined;
         try {
-            t.expect(controller.onBeforePackageRoute({}))
+            t.expect(controller.onBeforePackageRoute({}));
         } catch (e) {
             exc = e;
         }
@@ -168,25 +168,25 @@ describe('coon.core.app.PackageControllerTest', function(t) {
         //
         //                  TESTS  WITH APP
         //_____________________________________________________
-        Ext.define('Issue1.nomainview.PackageController', {
-            extend : 'coon.core.app.PackageController',
+        Ext.define("Issue1.nomainview.PackageController", {
+            extend : "coon.core.app.PackageController",
             mockApp : null,
-            getApplication : function() {
+            getApplication : function () {
                 if (!this.mockApp) {
                     this.mockApp = {
-                        getMainView : function() {
+                        getMainView : function () {
                             return null;
                         },
                         shouldPackageRoute : Ext.emptyFn,
-                        interceptAction    : function() {return false;}
+                        interceptAction    : function () {return false;}
                     };
                 }
                 return this.mockApp;
             }
         });
 
-        t.waitForMs(500, function() {
-            var controller = Ext.create('Issue1.nomainview.PackageController'),
+        t.waitForMs(500, function () {
+            var controller = Ext.create("Issue1.nomainview.PackageController"),
                 resumed;
             // +---------------------------------------------
             // | isMainViewAvailable / +app-mainview
@@ -201,11 +201,11 @@ describe('coon.core.app.PackageControllerTest', function(t) {
             // | onBeforePackageRoute / +app / shouldPackeRoute:true
             // +------------------------------------------------------
             resumed = 0;
-            controller.getApplication().shouldPackageRoute = function() {
+            controller.getApplication().shouldPackageRoute = function () {
                 return true;
             };
             t.expect(resumed).toBe(0);
-            t.expect(controller.onBeforePackageRoute({resume : function(){
+            t.expect(controller.onBeforePackageRoute({resume : function (){
                 resumed++;
             }})).not.toBe(false);
             t.expect(resumed).toBe(1);
@@ -214,11 +214,11 @@ describe('coon.core.app.PackageControllerTest', function(t) {
             // | onBeforePackageRoute / +app / shouldPackeRoute:false
             // +------------------------------------------------------
             resumed = 0;
-            controller.getApplication().shouldPackageRoute = function() {
+            controller.getApplication().shouldPackageRoute = function () {
                 return false;
             };
             t.expect(resumed).toBe(0);
-            t.expect(controller.onBeforePackageRoute({resume : function(){
+            t.expect(controller.onBeforePackageRoute({resume : function (){
                 resumed++;
             }})).toBe(false);
             t.expect(resumed).toBe(0);
@@ -229,7 +229,7 @@ describe('coon.core.app.PackageControllerTest', function(t) {
             // +---------------------------------------------
             // | isActionRoutable / +app+mainview
             // +---------------------------------------------
-            controller.getApplication().getMainView = function() {
+            controller.getApplication().getMainView = function () {
                 return {};
             };
             t.expect(controller.isMainViewAvailable()).toBe(true);

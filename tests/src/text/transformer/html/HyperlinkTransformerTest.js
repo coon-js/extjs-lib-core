@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.text.transformer.html.HyperlinkTransformerTest', function(t) {
+describe("coon.core.text.transformer.html.HyperlinkTransformerTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.text.transformer.html.HyperlinkTransformer', function(){
+    t.requireOk("coon.core.text.transformer.html.HyperlinkTransformer", function (){
 
         t.it("transform()", function (t) {
 
@@ -47,4 +47,4 @@ describe('coon.core.text.transformer.html.HyperlinkTransformerTest', function(t)
         });
 
 
-    })});
+    });});

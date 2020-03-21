@@ -38,7 +38,7 @@
  *  // Please<br /> don't<br /><br /> wrap<br />me
  *
  */
-Ext.define('coon.core.text.transformer.html.LineBreakTransformer', {
+Ext.define("coon.core.text.transformer.html.LineBreakTransformer", {
 
 
     /**
@@ -48,7 +48,7 @@ Ext.define('coon.core.text.transformer.html.LineBreakTransformer', {
      *
      * @return {String}
      */
-    transform : function(text) {
+    transform : function (text) {
 
         const regex = /(\r\n|\n|\r)/gm;
 

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,14 +26,14 @@
 /**
  * Fix for https://www.sencha.com/forum/showthread.php?339006-Sencha-6-2-GPL-Commercial-auto-generated-id-of-App-Controller-is-NOT-FQN-of-class&p=1178063#post1178063
  */
-Ext.define('coon.core.overrides.core.app.PackageController', {
+Ext.define("coon.core.overrides.core.app.PackageController", {
 
-    override : 'coon.core.app.PackageController',
+    override : "coon.core.app.PackageController",
 
-    applyId : function(id) {
+    applyId : function (id) {
         return id ||
                Ext.app.Controller.getFullName(
-                   this.$className, 'controller', this.$namespace
+                   this.$className, "controller", this.$namespace
                ).absoluteName;
     }
 

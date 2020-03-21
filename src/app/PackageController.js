@@ -55,9 +55,9 @@
 
  *
  */
-Ext.define('coon.core.app.PackageController', {
+Ext.define("coon.core.app.PackageController", {
 
-    extend : 'Ext.app.Controller',
+    extend : "Ext.app.Controller",
 
     /**
      * A template method that can be used to configure views from withing the
@@ -118,7 +118,7 @@ Ext.define('coon.core.app.PackageController', {
      * @throws if the controller is not being used in an application context
      * and #getApplication is falsy
      */
-    isActionRoutable : function() {
+    isActionRoutable : function () {
         var me = this;
 
         return me.isMainViewAvailable();
@@ -138,16 +138,15 @@ Ext.define('coon.core.app.PackageController', {
      *
      * @see onBeforePackageRoute
      */
-    updateRoutes : function(routes) {
+    updateRoutes : function (routes) {
 
-        var me     = this,
-            url;
+        var url;
 
         for (url in routes) {
             if (!Ext.isObject(routes[url])) {
                 routes[url] = {
                     action : routes[url],
-                    before : 'onBeforePackageRoute'
+                    before : "onBeforePackageRoute"
                 };
             }
         }
@@ -169,7 +168,7 @@ Ext.define('coon.core.app.PackageController', {
      * @throws if the controller is not being used in an application context
      * and #getApplication is falsy
      */
-    isMainViewAvailable : function() {
+    isMainViewAvailable : function () {
         var me = this;
 
         if (!me.getApplication()) {
@@ -204,7 +203,7 @@ Ext.define('coon.core.app.PackageController', {
          * @throws if the controller is not being used in an application context
          * and #getApplication is falsy
          */
-        onBeforePackageRoute : function() {
+        onBeforePackageRoute : function () {
 
             var me     = this,
                 action = arguments[arguments.length - 1],

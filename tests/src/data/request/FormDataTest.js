@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,48 +23,48 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.request.FormDataTest', function(t) {
+describe("coon.core.data.request.FormDataTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Make sure class definition is as expected', function(t) {
-        var request = Ext.create('coon.core.data.request.FormData', {});
+    t.it("Make sure class definition is as expected", function (t) {
+        var request = Ext.create("coon.core.data.request.FormData", {});
 
         // sanitize
         t.expect(request instanceof Ext.data.request.Ajax).toBe(true);
-        t.expect(request.alias).toContain('request.cn_core-datarequestformdata');
+        t.expect(request.alias).toContain("request.cn_core-datarequestformdata");
     });
 
 
-    t.it('test openRequest() without FormData', function(t) {
-        var request = Ext.create('coon.core.data.request.FormData', {
-                options : {
-                    headers : {
-                        'Content-Type' : 'foo'
-                    }
+    t.it("test openRequest() without FormData", function (t) {
+        var request = Ext.create("coon.core.data.request.FormData", {
+            options : {
+                headers : {
+                    "Content-Type" : "foo"
                 }
-            });
+            }
+        });
 
         request.async = true;
         t.expect(request.options.headers).toEqual({
-            'Content-Type' : 'foo'
+            "Content-Type" : "foo"
         });
 
-        var xhr = request.openRequest({}, {data : {'foo' : 'bar'}});
-        t.expect(request.options.headers).toEqual({'Content-Type' : 'foo'});
+        var xhr = request.openRequest({}, {data : {"foo" : "bar"}});
+        t.expect(request.options.headers).toEqual({"Content-Type" : "foo"});
         t.expect(xhr instanceof XMLHttpRequest).toBe(true);
         t.expect(xhr.upload.onprogress).toBeFalsy();
     });
 
 
-    t.it('test openRequest() with FormData', function(t) {
-        var request = Ext.create('coon.core.data.request.FormData', {
+    t.it("test openRequest() with FormData", function (t) {
+        var request = Ext.create("coon.core.data.request.FormData", {
                 options : {
                     headers : {
-                        'Content-Type' : 'foo'
+                        "Content-Type" : "foo"
                     }
                 }
             }),
@@ -72,12 +72,12 @@ describe('coon.core.data.request.FormDataTest', function(t) {
 
         request.async = true;
 
-        request.onProgress = function() {
+        request.onProgress = function () {
             onprogresscount++;
-        }
+        };
 
         t.expect(request.options.headers).toEqual({
-            'Content-Type' : 'foo'
+            "Content-Type" : "foo"
         });
 
         var xhr = request.openRequest({}, {
@@ -85,7 +85,7 @@ describe('coon.core.data.request.FormDataTest', function(t) {
         });
 
         t.expect(request.options.headers).toEqual({
-            'Content-Type' : null
+            "Content-Type" : null
         });
 
         t.expect(xhr instanceof XMLHttpRequest).toBe(true);
@@ -97,17 +97,17 @@ describe('coon.core.data.request.FormDataTest', function(t) {
     });
 
 
-    t.it('test onProgress() undefined', function(t) {
-        var request = Ext.create('coon.core.data.request.FormData', {
-                options : {
-                    progressCallback : undefined
-                }
-            });
+    t.it("test onProgress() undefined", function (t) {
+        var request = Ext.create("coon.core.data.request.FormData", {
+            options : {
+                progressCallback : undefined
+            }
+        });
 
         var exc = undefined;
 
         try {
-            request.onProgress({'foo' : 'bar'});
+            request.onProgress({"foo" : "bar"});
         } catch (e) {
             exc = e;
         }
@@ -115,19 +115,19 @@ describe('coon.core.data.request.FormDataTest', function(t) {
         t.expect(exc).toBeUndefined();
     });
 
-    t.it('test onProgress() defined', function(t) {
+    t.it("test onProgress() defined", function (t) {
         var progressScope = {},
-            request        = Ext.create('coon.core.data.request.FormData', {
-            options : {
-                progressCallback : function(evt, options) {
-                    this['foo'] = evt;
-                    this['bar'] = options;
-                },
-                progressScope : progressScope
-            }
-        });
+            request        = Ext.create("coon.core.data.request.FormData", {
+                options : {
+                    progressCallback : function (evt, options) {
+                        this["foo"] = evt;
+                        this["bar"] = options;
+                    },
+                    progressScope : progressScope
+                }
+            });
 
-        var evt = {'rand' : 'om'};
+        var evt = {"rand" : "om"};
 
         t.expect(progressScope).toEqual({});
 

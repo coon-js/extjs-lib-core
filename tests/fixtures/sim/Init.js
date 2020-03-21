@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,15 +26,15 @@
 /**
  *
  */
-Ext.define('coon.core.fixtures.sim.Init', {
+Ext.define("coon.core.fixtures.sim.Init", {
     requires: [
-        'Ext.ux.ajax.JsonSimlet',
-        'Ext.ux.ajax.SimManager'
+        "Ext.ux.ajax.JsonSimlet",
+        "Ext.ux.ajax.SimManager"
     ],
 
     singleton: true,
 
-    constructor: function() {
+    constructor: function () {
 
         Ext.ux.ajax.SimManager.init({
             delay : 1,

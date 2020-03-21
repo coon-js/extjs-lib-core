@@ -64,7 +64,7 @@
  *  // </blockquote>
  *
  */
-Ext.define('coon.core.text.transformer.html.BlockquoteTransformer', {
+Ext.define("coon.core.text.transformer.html.BlockquoteTransformer", {
 
 
     /**
@@ -74,7 +74,7 @@ Ext.define('coon.core.text.transformer.html.BlockquoteTransformer', {
      *
      * @return {String}
      */
-    transform : function(value) {
+    transform : function (value) {
 
         const me = this;
 
@@ -139,7 +139,7 @@ Ext.define('coon.core.text.transformer.html.BlockquoteTransformer', {
                     groups++;
                 }
 
-                prev = line.indexOf(">")
+                prev = line.indexOf(">");
 
                 if (!toQuote[groups]) {
                     toQuote[groups] = [];
@@ -234,7 +234,7 @@ Ext.define('coon.core.text.transformer.html.BlockquoteTransformer', {
 
             return line.replace(
                 regex,
-                function(args) {
+                function (args) {
                     return args.replace(/(\s)*(?!$)/g, "");
                 });
         }

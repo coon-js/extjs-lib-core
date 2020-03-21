@@ -1,0 +1,43 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "extends": "eslint:recommended",
+    "globals": {
+        "Ext": true,
+        "coon": true,
+        "conjoon": true,
+        "console": true,
+        "window": true,
+        "Siesta": true,
+        "location": true,
+        "describe" : true,
+        "AbstractTestClass" : true,
+        "Class" : true,
+        "StartTest" : true,
+        "Fashion" : true
+    },
+    "ignorePatterns" : [
+        "bootstrap.js",
+        "**/build/*"
+    ],
+    "rules": {
+        "indent": ["error"],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "double"],
+        "semi": ["error", "always"],
+        "comma-dangle": ["error", "never"],
+        "no-multiple-empty-lines": ["error", {"max": 2}],
+        "space-before-function-paren": ["error", "always"],
+        "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+        "no-debugger": ["off"],
+        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "no-lonely-if": ["error"],
+        "eqeqeq": "warn"
+    }
+}
+

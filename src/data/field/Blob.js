@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,11 +57,11 @@
  * Data set to this field will always be a reference to the original Blob, not
  * a copy. Keep this in mind when using this field in your Data Models.
  */
-Ext.define('coon.core.data.field.Blob', {
+Ext.define("coon.core.data.field.Blob", {
 
-    extend : 'Ext.data.field.Field',
+    extend : "Ext.data.field.Field",
 
-    alias : 'data.field.cn_core-datafieldblob',
+    alias : "data.field.cn_core-datafieldblob",
 
     /**
      * @cfg {defaultValue=null}
@@ -73,7 +73,7 @@ Ext.define('coon.core.data.field.Blob', {
      * of the type Blob.
      * @inheritdoc
      */
-    convert : function(v) {
+    convert : function (v) {
 
         if (!(v instanceof Blob)) {
             return null;
@@ -98,7 +98,7 @@ Ext.define('coon.core.data.field.Blob', {
      * In any other case (i.e. same size since this is teh main comparator), -1
      * will be returned.
      */
-    compare : function(value1, value2) {
+    compare : function (value1, value2) {
 
         if (!(value1 instanceof Blob) && !(value2 instanceof Blob)) {
             return 0;

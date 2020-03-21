@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,21 +38,21 @@
  * The class used for establishing connections is {@link coon.core.data.AjaxForm},
  * an extended implementation of Ext.Ajax.
  */
-Ext.define('coon.core.data.proxy.RestForm', {
+Ext.define("coon.core.data.proxy.RestForm", {
 
-    extend : 'Ext.data.proxy.Rest',
+    extend : "Ext.data.proxy.Rest",
 
     requires : [
-        'coon.core.data.AjaxForm',
-        'coon.core.data.FormDataRequest',
-        'coon.core.data.operation.Upload',
-        'coon.core.data.writer.FormData'
+        "coon.core.data.AjaxForm",
+        "coon.core.data.FormDataRequest",
+        "coon.core.data.operation.Upload",
+        "coon.core.data.writer.FormData"
     ],
 
-    alias : 'proxy.cn_core-dataproxyrestform',
+    alias : "proxy.cn_core-dataproxyrestform",
 
     config : {
-        writer : 'cn_core-datawriterformdata'
+        writer : "cn_core-datawriterformdata"
     },
 
 
@@ -72,22 +72,22 @@ Ext.define('coon.core.data.proxy.RestForm', {
      * @throws if the passed operation action is "create", but the operation itself
      * is not of the type {@link coon.core.data.operation.Upload}
      */
-    buildRequest : function(operation) {
+    buildRequest : function (operation) {
 
-        var me = this,
-            config;
+        const me = this;
 
-        request = me.callParent(arguments);
+        let config,
+            request = me.callParent(arguments);
 
-        if (operation.getAction() == 'create') {
+        if (operation.getAction() === "create") {
 
             if (!(operation instanceof coon.core.data.operation.Upload)) {
                 Ext.raise({
                     source : Ext.getClassName(this),
                     msg    : Ext.getClassName(this) +
-                            '.buildRequest() needs an operation of the type ' +
-                            'coon.core.data.operation.Upload'
-                })
+                            ".buildRequest() needs an operation of the type " +
+                            "coon.core.data.operation.Upload"
+                });
             }
 
             config = Ext.apply({
@@ -95,9 +95,8 @@ Ext.define('coon.core.data.proxy.RestForm', {
                 progressScope    : operation.getProgressScope()
             }, request.getCurrentConfig());
 
-            delete request;
             request = Ext.create(
-                'coon.core.data.FormDataRequest', config
+                "coon.core.data.FormDataRequest", config
             );
         }
 
@@ -113,11 +112,11 @@ Ext.define('coon.core.data.proxy.RestForm', {
      *
      * @private
      */
-    sendRequest: function(request) {
+    sendRequest: function (request) {
 
         const me = this;
 
-        if (request.getAction() != 'create') {
+        if (request.getAction() !== "create") {
             return me.callParent(arguments);
         }
 
@@ -140,11 +139,11 @@ Ext.define('coon.core.data.proxy.RestForm', {
      *
      * @return {coon.core.data.operation.Upload}
      */
-    createOperation: function(action, config) {
+    createOperation: function (action, config) {
         var me = this;
 
-        if (action === 'create') {
-            action = 'cn_core-dataoperationupload';
+        if (action === "create") {
+            action = "cn_core-dataoperationupload";
         }
 
         return me.callParent([action, config]);

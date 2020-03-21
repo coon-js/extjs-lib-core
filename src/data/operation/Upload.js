@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,11 +36,11 @@
  * which remains "create".
  *
  */
-Ext.define('coon.core.data.operation.Upload', {
+Ext.define("coon.core.data.operation.Upload", {
 
-    extend : 'Ext.data.operation.Create',
+    extend : "Ext.data.operation.Create",
 
-    alias : 'data.operation.cn_core-dataoperationupload',
+    alias : "data.operation.cn_core-dataoperationupload",
 
     config : {
 

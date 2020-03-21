@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,14 +27,14 @@
  * PackageControllerMock. This instance's preLaunchHook returns on the first
  * call false, after this it returns always true.
  */
-Ext.define('coon.test.app.mock.PackageControllerMock', {
+Ext.define("coon.test.app.mock.PackageControllerMock", {
 
-    extend : 'coon.core.app.PackageController',
+    extend : "coon.core.app.PackageController",
 
 
     called : 0,
 
-    preLaunchHook : function() {
+    preLaunchHook : function () {
 
         var res = this.called !== 0;
 
@@ -43,7 +43,6 @@ Ext.define('coon.test.app.mock.PackageControllerMock', {
         return res;
 
     }
-
 
 
 });

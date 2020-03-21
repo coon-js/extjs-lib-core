@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,15 +34,15 @@
  * "create" action. Otherwise, regular JSON encoded data will be created by
  * this writer.
  */
-Ext.define('coon.core.data.writer.FormData', {
+Ext.define("coon.core.data.writer.FormData", {
 
-    extend : 'Ext.data.writer.Json',
+    extend : "Ext.data.writer.Json",
 
     requires : [
-        'coon.core.data.FormDataRequest'
+        "coon.core.data.FormDataRequest"
     ],
 
-    alias : 'writer.cn_core-datawriterformdata',
+    alias : "writer.cn_core-datawriterformdata",
 
 
     /**
@@ -92,13 +92,13 @@ Ext.define('coon.core.data.writer.FormData', {
      *
      * @inheritdoc
      */
-    writeRecords : function(request, data) {
+    writeRecords : function (request, data) {
 
         var me       = this,
             formData = null,
             d, key, fileCount, fileKey;
 
-        if (request.getAction() !== 'create' ||
+        if (request.getAction() !== "create" ||
             !(request instanceof coon.core.data.FormDataRequest)) {
             return me.callParent(arguments);
         }
@@ -112,19 +112,19 @@ Ext.define('coon.core.data.writer.FormData', {
 
         for (var i = 0, len = data.length; i < len; i++) {
             d         = data[i];
-            key       = 'data[' + i + ']';
+            key       = "data[" + i + "]";
             fileCount = 0;
 
             for (var a in d) {
-                if (!d.hasOwnProperty(a)) {
+                if (!Object.prototype.hasOwnProperty.call(d, a)) {
                     continue;
                 }
 
                 if (d[a] instanceof Blob) {
-                    fileKey = 'file[' + i + '][' + (fileCount++) + ']';
+                    fileKey = "file[" + i + "][" + (fileCount++) + "]";
                     formData.set(fileKey, d[a]);
                 } else {
-                    formData.set(key + '[' + a + ']', d[a]);
+                    formData.set(key + "[" + a + "]", d[a]);
                 }
             }
         }

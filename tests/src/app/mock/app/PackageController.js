@@ -26,9 +26,9 @@
 /**
  * PackageController Mock.
  */
-Ext.define('coon.test.app.mock.app.PackageController', {
+Ext.define("coon.test.app.mock.app.PackageController", {
 
-    extend : 'coon.core.app.PackageController'
+    extend : "coon.core.app.PackageController"
 
 
 });

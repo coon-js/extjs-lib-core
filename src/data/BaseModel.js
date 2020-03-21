@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,8 +26,8 @@
 /**
  * Base model class for lib-cn_core.
  */
-Ext.define('coon.core.data.BaseModel', {
+Ext.define("coon.core.data.BaseModel", {
 
-    extend : 'Ext.data.Model'
+    extend : "Ext.data.Model"
 
 });

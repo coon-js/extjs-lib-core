@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,76 +23,73 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.operation.OperationTest', function(t) {
+describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
 
-    var createRequest = function() {
+    var createRequest = function () {
 
-        return Ext.create('coon.core.data.pageMap.operation.Request');
+            return Ext.create("coon.core.data.pageMap.operation.Request");
 
-    },
-    createResult = function() {
+        },
+        createResult = function () {
 
-        return Ext.create('coon.core.data.pageMap.operation.Result', {
-            success : true,
-            reason  : -1
+            return Ext.create("coon.core.data.pageMap.operation.Result", {
+                success : true,
+                reason  : -1
+            });
+
+        };
+
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+
+
+    t.it("prerequisites", function (t) {
+
+        var op, exc, req, res;
+
+        try {Ext.create("coon.core.data.pageMap.operation.Operation");} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("is required");
+        t.expect(exc.msg.toLowerCase()).toContain("request");
+        exc = undefined;
+
+        try {Ext.create("coon.core.data.pageMap.operation.Operation", {request : null});} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+        t.expect(exc.msg.toLowerCase()).toContain("request");
+        exc = undefined;
+
+        req = createRequest();
+        op = Ext.create("coon.core.data.pageMap.operation.Operation", {
+            request : req
         });
 
-    };
+        t.expect(op instanceof coon.core.data.pageMap.operation.Operation).toBe(true);
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+        try {op.setRequest(createRequest());} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("already set");
+        t.expect(exc.msg.toLowerCase()).toContain("request");
+        exc = undefined;
 
+        t.expect(req).toBe(op.getRequest());
 
+        res = createResult();
+        op.setResult(res);
+        t.expect(op.getResult()).toBe(res);
 
+        try {op.setResult(createResult());} catch (e) {exc = e;}
+        t.expect(exc).toBeDefined();
+        t.expect(exc.msg).toBeDefined();
+        t.expect(exc.msg.toLowerCase()).toContain("already set");
+        t.expect(exc.msg.toLowerCase()).toContain("result");
+        exc = undefined;
 
-     t.it("prerequisites", function(t) {
-
-         var op, exc, e, req, res;
-
-         try {Ext.create('coon.core.data.pageMap.operation.Operation')} catch (e) {exc = e;}
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain('is required');
-         t.expect(exc.msg.toLowerCase()).toContain('request');
-         exc = undefined;
-
-         try {Ext.create('coon.core.data.pageMap.operation.Operation', {request : null})} catch (e) {exc = e;}
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-         t.expect(exc.msg.toLowerCase()).toContain('request');
-         exc = undefined;
-
-         req = createRequest();
-         op = Ext.create('coon.core.data.pageMap.operation.Operation', {
-            request : req
-         });
-
-         t.expect(op instanceof coon.core.data.pageMap.operation.Operation).toBe(true);
-
-         try {op.setRequest(createRequest());} catch (e) {exc = e;}
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain('already set');
-         t.expect(exc.msg.toLowerCase()).toContain('request');
-         exc = undefined;
-
-         t.expect(req).toBe(op.getRequest());
-
-         res = createResult();
-         op.setResult(res);
-         t.expect(op.getResult()).toBe(res);
-
-         try {op.setResult(createResult());} catch (e) {exc = e;}
-         t.expect(exc).toBeDefined();
-         t.expect(exc.msg).toBeDefined();
-         t.expect(exc.msg.toLowerCase()).toContain('already set');
-         t.expect(exc.msg.toLowerCase()).toContain('result');
-         exc = undefined;
-
-     });
-
+    });
 
 
 });

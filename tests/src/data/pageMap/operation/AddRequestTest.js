@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,25 +23,24 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.operation.AddRequestTest', function(t) {
+describe("coon.core.data.pageMap.operation.AddRequestTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
 
-    t.it("prerequisites", function(t) {
+    t.it("prerequisites", function (t) {
 
-        var ar, exc, e;
+        var ar;
 
-        ar = Ext.create('coon.core.data.pageMap.operation.AddRequest');
+        ar = Ext.create("coon.core.data.pageMap.operation.AddRequest");
 
         t.expect(ar instanceof coon.core.data.pageMap.operation.AddRequest).toBe(true);
         t.expect(ar instanceof coon.core.data.pageMap.operation.Request).toBe(true);
 
     });
-
 
 
 });

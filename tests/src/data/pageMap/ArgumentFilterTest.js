@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,260 +23,259 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.ArgumentFilterTest', function(t) {
+describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
-t.requireOk('coon.core.data.pageMap.PageMapFeeder', function(){
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+    t.requireOk("coon.core.data.pageMap.PageMapFeeder", function (){
 
-    /**
+        /**
      * filterPageValue
      */
-    t.it('filterPageValue()', function (t) {
-        let exc, e,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try {
-            filter.filterPageValue();
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
-        t.expect(exc.msg.toLowerCase()).toContain("page");
-        exc = undefined;
+        t.it("filterPageValue()", function (t) {
+            let exc,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try {
+                filter.filterPageValue();
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be a number");
+            t.expect(exc.msg.toLowerCase()).toContain("page");
+            exc = undefined;
 
-        t.expect(filter.filterPageValue('1')).toBe(1);
-        t.expect(filter.filterPageValue(432)).toBe(432);
+            t.expect(filter.filterPageValue("1")).toBe(1);
+            t.expect(filter.filterPageValue(432)).toBe(432);
 
-    });
+        });
 
 
-    /**
+        /**
      * filterPageMapValue
      */
-    t.it('filterPageMapValue()', function (t) {
-        let exc, e, pageMap,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try {
-            filter.filterPageMapValue();
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-        t.expect(exc.msg.toLowerCase()).toContain("pagemap");
-        exc = undefined;
+        t.it("filterPageMapValue()", function (t) {
+            let exc, pageMap,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try {
+                filter.filterPageMapValue();
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("pagemap");
+            exc = undefined;
 
-        pageMap = Ext.create('Ext.data.PageMap');
+            pageMap = Ext.create("Ext.data.PageMap");
 
-        t.expect(filter.filterPageMapValue(pageMap)).toBe(pageMap);
-    });
+            t.expect(filter.filterPageMapValue(pageMap)).toBe(pageMap);
+        });
 
 
-    /**
+        /**
      * filterRecordValue
      */
-    t.it('filterRecordValue()', function (t) {
-        let exc, e, arg,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try {
-            filter.filterRecordValue();
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-        t.expect(exc.msg.toLowerCase()).toContain("model");
-        exc = undefined;
+        t.it("filterRecordValue()", function (t) {
+            let exc, arg,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try {
+                filter.filterRecordValue();
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("model");
+            exc = undefined;
 
-        arg = Ext.create('Ext.data.Model');
+            arg = Ext.create("Ext.data.Model");
 
-        t.expect(filter.filterRecordValue(arg)).toBe(arg);
-    });
+            t.expect(filter.filterRecordValue(arg)).toBe(arg);
+        });
 
 
-    /**
+        /**
      * filterRecordPositionValue
      */
-    t.it('filterRecordPositionValue()', function (t) {
-        let exc, e, arg,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try {
-            filter.filterRecordPositionValue();
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-        t.expect(exc.msg.toLowerCase()).toContain("recordposition");
-        exc = undefined;
+        t.it("filterRecordPositionValue()", function (t) {
+            let exc, arg,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try {
+                filter.filterRecordPositionValue();
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("recordposition");
+            exc = undefined;
 
-        try {
-            filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), 'B');
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
-        t.expect(exc.msg.toLowerCase()).toContain("size");
-        exc = undefined;
+            try {
+                filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), "B");
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be a number");
+            t.expect(exc.msg.toLowerCase()).toContain("size");
+            exc = undefined;
 
-        try {
-            filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), 4);
-        } catch (e) {
-            exc = e
-        }
-        ;
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
-        t.expect(exc.msg.toLowerCase()).toContain("index");
-        exc = undefined;
-
-
-        arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
-        t.expect(filter.filterRecordPositionValue(arg, 0)).toBe(arg);
-
-        arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
-        t.expect(filter.filterRecordPositionValue(arg)).toBe(arg);
-
-        arg = coon.core.data.pageMap.RecordPosition.create(3, 4);
-        t.expect(filter.filterRecordPositionValue(arg, 25)).toBe(arg);
-    });
+            try {
+                filter.filterRecordPositionValue(coon.core.data.pageMap.RecordPosition.create(3, 4), 4);
+            } catch (e) {
+                exc = e;
+            }
+            
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
+            t.expect(exc.msg.toLowerCase()).toContain("index");
+            exc = undefined;
 
 
-    /**
+            arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
+            t.expect(filter.filterRecordPositionValue(arg, 0)).toBe(arg);
+
+            arg = coon.core.data.pageMap.RecordPosition.create(3, 1000000);
+            t.expect(filter.filterRecordPositionValue(arg)).toBe(arg);
+
+            arg = coon.core.data.pageMap.RecordPosition.create(3, 4);
+            t.expect(filter.filterRecordPositionValue(arg, 25)).toBe(arg);
+        });
+
+
+        /**
      * filterRecordValue
      */
-    t.it('filterIndexValue()', function(t) {
-        let exc, e, arg,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try{filter.filterIndexValue();}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
-        t.expect(exc.msg.toLowerCase()).toContain("index");
-        exc = undefined;
+        t.it("filterIndexValue()", function (t) {
+            let exc, arg,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try{filter.filterIndexValue();}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
+            t.expect(exc.msg.toLowerCase()).toContain("index");
+            exc = undefined;
 
-        try{filter.filterIndexValue(3, 'B');}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
-        t.expect(exc.msg.toLowerCase()).toContain("size");
-        exc = undefined;
+            try{filter.filterIndexValue(3, "B");}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be a number");
+            t.expect(exc.msg.toLowerCase()).toContain("size");
+            exc = undefined;
 
-        try{filter.filterIndexValue(4, 4);}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
-        t.expect(exc.msg.toLowerCase()).toContain("size");
-        exc = undefined;
-
-
-        arg = [3, 0];
-        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
-
-        arg = [3, 100000];
-        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+            try{filter.filterIndexValue(4, 4);}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("out of bounds");
+            t.expect(exc.msg.toLowerCase()).toContain("size");
+            exc = undefined;
 
 
-        arg = [3, 4];
-        t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
-    });
+            arg = [3, 0];
+            t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+
+            arg = [3, 100000];
+            t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
 
 
-    /**
+            arg = [3, 4];
+            t.expect(filter.filterIndexValue.apply(filter, arg)).toBe(arg[0]);
+        });
+
+
+        /**
      * filterRecordsArray
      */
-    t.it('filterRecordsArray()', function(t) {
-        let exc, e, arg,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
-        try{filter.filterRecordsArray();}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("empty");
-        t.expect(exc.msg.toLowerCase()).toContain("records");
-        exc = undefined;
+        t.it("filterRecordsArray()", function (t) {
+            let exc, arg,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
+            try{filter.filterRecordsArray();}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("empty");
+            t.expect(exc.msg.toLowerCase()).toContain("records");
+            exc = undefined;
 
-        try{filter.filterRecordsArray([]);}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("empty");
-        t.expect(exc.msg.toLowerCase()).toContain("records");
-        exc = undefined;
+            try{filter.filterRecordsArray([]);}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("empty");
+            t.expect(exc.msg.toLowerCase()).toContain("records");
+            exc = undefined;
 
-        try{filter.filterRecordsArray([4]);}catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("instances");
-        t.expect(exc.msg.toLowerCase()).toContain("records");
-        exc = undefined;
-
-
-        arg = [Ext.create('Ext.data.Model')];
-        t.expect(filter.filterRecordsArray(arg)).toBe(arg);
-    });
+            try{filter.filterRecordsArray([4]);}catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("instances");
+            t.expect(exc.msg.toLowerCase()).toContain("records");
+            exc = undefined;
 
 
-    /**
+            arg = [Ext.create("Ext.data.Model")];
+            t.expect(filter.filterRecordsArray(arg)).toBe(arg);
+        });
+
+
+        /**
      * filterPageMapOrFeederValue
      */
-    t.it('filterPageMapOrFeederValue()', function (t) {
-        let exc, e, pageMap,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
+        t.it("filterPageMapOrFeederValue()", function (t) {
+            let exc, pageMap,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
 
-        try {filter.filterPageMapOrFeederValue();} catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-        t.expect(exc.msg.toLowerCase()).toContain("value");
-        exc = undefined;
+            try {filter.filterPageMapOrFeederValue();} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("value");
+            exc = undefined;
 
-        pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
-        t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
+            pageMap = Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.BufferedStore")});
+            t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
 
-        let feeder = Ext.create('coon.core.data.pageMap.PageMapFeeder', {
-            pageMap : pageMap
+            let feeder = Ext.create("coon.core.data.pageMap.PageMapFeeder", {
+                pageMap : pageMap
+            });
+            t.expect(filter.filterPageMapOrFeederValue(feeder)).toBe(feeder);
         });
-        t.expect(filter.filterPageMapOrFeederValue(feeder)).toBe(feeder);
-    });
 
 
-    /**
+        /**
      * filterFeederValue
      */
-    t.it('filterFeederValue()', function (t) {
-        let exc, e, pageMap,
-            filter = Ext.create('coon.core.data.pageMap.ArgumentFilter');
+        t.it("filterFeederValue()", function (t) {
+            let exc, pageMap,
+                filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
 
-        try {filter.filterFeederValue();} catch (e) {exc = e};
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
-        t.expect(exc.msg.toLowerCase()).toContain("feeder");
-        exc = undefined;
+            try {filter.filterFeederValue();} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("feeder");
+            exc = undefined;
 
-        pageMap = Ext.create('Ext.data.PageMap', {store : Ext.create('Ext.data.BufferedStore')});
-        let feeder = Ext.create('coon.core.data.pageMap.PageMapFeeder', {
-            pageMap : pageMap
+            pageMap = Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.BufferedStore")});
+            let feeder = Ext.create("coon.core.data.pageMap.PageMapFeeder", {
+                pageMap : pageMap
+            });
+            t.expect(filter.filterFeederValue(feeder)).toBe(feeder);
         });
-        t.expect(filter.filterFeederValue(feeder)).toBe(feeder);
+
     });
-
-});
-
 
 
 });

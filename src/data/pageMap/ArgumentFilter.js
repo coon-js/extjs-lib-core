@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,10 +29,10 @@
  *
  *
  */
-Ext.define('coon.core.data.pageMap.ArgumentFilter', {
+Ext.define("coon.core.data.pageMap.ArgumentFilter", {
 
     requires : [
-        'coon.core.data.pageMap.RecordPosition'
+        "coon.core.data.pageMap.RecordPosition"
     ],
 
     /**
@@ -46,13 +46,13 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if the passed argument is not a number and less than
      * 1.
      */
-    filterPageValue : function(page) {
+    filterPageValue : function (page) {
 
         page = parseInt(page, 10);
 
         if (!Ext.isNumber(page) || page < 1) {
             Ext.raise({
-                msg  : '\'page\' must be a number greater than 0',
+                msg  : "'page' must be a number greater than 0",
                 page : page
             });
         }
@@ -72,11 +72,11 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if if the passed argument is not an instance of
      * {Ext.data.PageMap}
      */
-    filterPageMapValue : function(pageMap) {
+    filterPageMapValue : function (pageMap) {
 
         if (!(pageMap instanceof Ext.data.PageMap)) {
             Ext.raise({
-                msg     : '\'pageMap\' must be an instance of Ext.data.PageMap',
+                msg     : "'pageMap' must be an instance of Ext.data.PageMap",
                 pageMap : pageMap
             });
         }
@@ -96,7 +96,7 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if if the passed argument is not an instance of
      * {Ext.data.PageMap} and not an instance of {coon.core.data.pageMap.PageMapFeeder}
      */
-    filterPageMapOrFeederValue : function(value) {
+    filterPageMapOrFeederValue : function (value) {
 
         if (!(value instanceof Ext.data.PageMap) && !(value instanceof coon.core.data.pageMap.PageMapFeeder)) {
             Ext.raise({
@@ -120,7 +120,7 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if if the passed argument is not an instance of
      * {coon.core.data.pageMap.PageMapFeeder}
      */
-    filterFeederValue : function(feeder) {
+    filterFeederValue : function (feeder) {
 
         if (!(feeder instanceof coon.core.data.pageMap.PageMapFeeder)) {
             Ext.raise({
@@ -144,7 +144,7 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if if the passed argument is not an instance of
      * {Ext.data.Model}
      */
-    filterRecordValue : function(record) {
+    filterRecordValue : function (record) {
 
         if (!(record instanceof Ext.data.Model)) {
             Ext.raise({
@@ -172,7 +172,7 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      *
      * @see #filterIndexValue
      */
-    filterRecordPositionValue : function(position, pageSize = 0) {
+    filterRecordPositionValue : function (position, pageSize = 0) {
 
         const me = this;
 
@@ -202,7 +202,7 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if index is not a number, or is size is not a number, or if index
      * is greater than or equal to size, if size is greater than 0
      */
-    filterIndexValue :  function(index, size = 0) {
+    filterIndexValue :  function (index, size = 0) {
 
         index = parseInt(index, 10);
 
@@ -236,19 +236,19 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
      * @throws if records is empty, or if any entry is not an instance of
      * {Ext.data.Model}
      */
-    filterRecordsArray : function(records) {
+    filterRecordsArray : function (records) {
 
         if (!Ext.isArray(records) || records.length === 0) {
             Ext.raise({
-                msg     : '\'records\' must be a none-empty array',
+                msg     : "'records' must be a none-empty array",
                 records : records
             });
 
         } else {
-            Ext.Array.forEach(records, function(value) {
+            Ext.Array.forEach(records, function (value) {
                 if (!(value instanceof Ext.data.Model)) {
                     Ext.raise({
-                        msg     : '\'records\' must be an array of Ext.data.Model instances',
+                        msg     : "'records' must be an array of Ext.data.Model instances",
                         records : records
                     });
                 }
@@ -257,7 +257,6 @@ Ext.define('coon.core.data.pageMap.ArgumentFilter', {
 
         return records;
     }
-
 
 
 });

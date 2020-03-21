@@ -47,9 +47,9 @@
  * if all associated PackageController will return true in their preLaunchHook().
  *
  */
-Ext.define('coon.core.app.Application', {
+Ext.define("coon.core.app.Application", {
 
-    extend: 'Ext.app.Application',
+    extend: "Ext.app.Application",
 
     requires : [
         "Ext.Package",
@@ -94,7 +94,7 @@ Ext.define('coon.core.app.Application', {
      * @throws Exception if any of the required class configs are not available,
      * or if  {@link #mainView} were not loaded already.
      */
-    constructor : function(config) {
+    constructor : function (config) {
 
         var me = this;
 
@@ -121,7 +121,7 @@ Ext.define('coon.core.app.Application', {
      * @throws if {@link #mainView} was already set and instantiated, or if
      * the mainView ist no instance of {@link coon.comp.container.Viewport}
      */
-    applyMainView: function(value) {
+    applyMainView: function (value) {
 
         const me = this;
 
@@ -176,13 +176,13 @@ Ext.define('coon.core.app.Application', {
      *
      * @throws if {@link #mainView} was already initialized
      */
-    preLaunchHookProcess : function() {
+    preLaunchHookProcess : function () {
 
         var me = this;
 
         if (me.getMainView()) {
             Ext.raise({
-                sourceClass : 'coon.core.app.Application',
+                sourceClass : "coon.core.app.Application",
                 mainView    : me.getMainView(),
                 msg         : "coon.core.app.Application#preLaunchHookProcess cannot be run since mainView was already initialized."
             });
@@ -222,7 +222,7 @@ Ext.define('coon.core.app.Application', {
      * by #runPostLaunch
      *
      */
-    launchHook : function() {
+    launchHook : function () {
         var me = this;
 
         if (me.preLaunchHookProcess() !== false) {
@@ -247,7 +247,7 @@ Ext.define('coon.core.app.Application', {
      *
      * @private
      */
-    runPostLaunch : function() {
+    runPostLaunch : function () {
         const me = this;
 
         me.postLaunchHookProcess();
@@ -267,7 +267,7 @@ Ext.define('coon.core.app.Application', {
      *
      * @private
      */
-    releaseLastRouteAction : function(routeActionStack) {
+    releaseLastRouteAction : function (routeActionStack) {
 
         if (!routeActionStack || !routeActionStack.length) {
             return false;
@@ -289,7 +289,7 @@ Ext.define('coon.core.app.Application', {
      *
      * @param action
      */
-    interceptAction : function(action) {
+    interceptAction : function (action) {
         var me = this;
 
         if (!me.routeActionStack) {
@@ -313,7 +313,7 @@ Ext.define('coon.core.app.Application', {
      *
      * @see {coon.core.app.PackageController#isActionRoutable}
      */
-    shouldPackageRoute : function(packageController, action) {
+    shouldPackageRoute : function (packageController, action) {
         return packageController.isActionRoutable(action);
     },
 
@@ -342,7 +342,7 @@ Ext.define('coon.core.app.Application', {
      * @throws if there is no package registered with this controller in
      * #packageMap
      */
-    getPackageConfig : function(controller, key) {
+    getPackageConfig : function (controller, key) {
         const me            = this,
             ConfigManager = coon.core.ConfigManager,
             args          = [me.getPackageNameForController(controller)];
@@ -364,7 +364,7 @@ Ext.define('coon.core.app.Application', {
      *
      * @see packageMap
      */
-    getPackageNameForController : function(controller) {
+    getPackageNameForController : function (controller) {
 
         const me  = this,
             fqn = Ext.getClassName(controller);
@@ -394,7 +394,7 @@ Ext.define('coon.core.app.Application', {
      * @see findCoonJsPackageControllers
      * @see handlePackageLoad
      */
-    onProfilesReady : function() {
+    onProfilesReady : function () {
 
         const me          = this,
             orgPackages = me.findCoonJsPackageControllers(Ext.manifest),
@@ -406,7 +406,7 @@ Ext.define('coon.core.app.Application', {
 
         if (packages.length) {
 
-            packages.forEach(function(packageConfig) {
+            packages.forEach(function (packageConfig) {
                 if (packageConfig.controller !== false) {
                     me.controllers.push(packageConfig.controller);
                     Ext.app.addNamespaces(packageConfig.namespace);
@@ -416,7 +416,7 @@ Ext.define('coon.core.app.Application', {
 
             Ext.env.Ready.block();
 
-            Ext.onReady(function() {
+            Ext.onReady(function () {
                 Ext.app.Application.prototype.onProfilesReady.call(me);
             });
 
@@ -430,7 +430,6 @@ Ext.define('coon.core.app.Application', {
 
         return orgPackages;
     },
-
 
 
     /**
@@ -468,7 +467,7 @@ Ext.define('coon.core.app.Application', {
      * @see packageConfigLoadResolved
      * @see packageConfigLoadRejected
      */
-    handlePackageLoad : function(packageConfig, remainingPackages) {
+    handlePackageLoad : function (packageConfig, remainingPackages) {
 
         const me = this;
 
@@ -477,15 +476,15 @@ Ext.define('coon.core.app.Application', {
             return;
         }
 
-        let load = function(pck){return Ext.Package.load(pck);};
+        let load = function (pck){return Ext.Package.load(pck);};
 
         me.loadPackageConfig(packageConfig)
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
             ).then(load).then(
-            me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
-        );
+                me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
+            );
     },
 
 
@@ -511,7 +510,7 @@ Ext.define('coon.core.app.Application', {
      * @throws if a controller for a package gets registered in packageMap
      * and the entry already exists
      */
-    findCoonJsPackageControllers : function(manifest) {
+    findCoonJsPackageControllers : function (manifest) {
 
         const me          = this,
             packages = [],
@@ -522,15 +521,15 @@ Ext.define('coon.core.app.Application', {
             me.packageMap = {};
         }
 
-        keys.forEach(function(key) {
+        keys.forEach(function (key) {
 
             let entry = mp[key], ns, fqn,
-                cPackage = coon.core.Util.unchain('coon-js.package', entry);
+                cPackage = coon.core.Util.unchain("coon-js.package", entry);
 
             if (entry.included !== true && !Ext.Package.isLoaded(key) &&
                 cPackage !== undefined) {
                 ns  = entry.namespace;
-                fqn = ns + '.app.PackageController';
+                fqn = ns + ".app.PackageController";
 
                 packages.push({
                     name     : key,
@@ -567,11 +566,11 @@ Ext.define('coon.core.app.Application', {
          *
          * @see getPackageConfigUrl
          */
-        loadPackageConfig : function(packageEntry) {
+        loadPackageConfig : function (packageEntry) {
 
             const me = this,
                 packageName   = packageEntry.name,
-                defaultConfig = coon.core.Util.unchain('metadata.coon-js.package.config', packageEntry);
+                defaultConfig = coon.core.Util.unchain("metadata.coon-js.package.config", packageEntry);
 
             if (defaultConfig !== undefined) {
 
@@ -588,6 +587,7 @@ Ext.define('coon.core.app.Application', {
                 });
             }
 
+            // eslint-disable-next-line
             console.info("No default \"packageConfig\" found in package.json for \"" + packageName + "\".");
             return Ext.Deferred.resolved(packageName);
         },
@@ -603,7 +603,7 @@ Ext.define('coon.core.app.Application', {
          *
          * @return {String}
          */
-        computePackageConfigUrl : function(packageName) {
+        computePackageConfigUrl : function (packageName) {
             return Ext.getResourcePath("coon-js/" + packageName, null, "") + ".conf.json";
         },
 
@@ -617,7 +617,7 @@ Ext.define('coon.core.app.Application', {
          *
          * @see registerPackageConfig
          */
-        packageConfigLoadResolved : function(request) {
+        packageConfigLoadResolved : function (request) {
 
             const me = this;
 
@@ -648,7 +648,7 @@ Ext.define('coon.core.app.Application', {
          *
          * @see registerPackageConfig
          */
-        packageConfigLoadRejected : function(request) {
+        packageConfigLoadRejected : function (request) {
 
             const me = this;
 
@@ -680,7 +680,7 @@ Ext.define('coon.core.app.Application', {
          *
          * @private
          */
-        registerPackageConfig : function(packageName, defaultConfig, customConfig) {
+        registerPackageConfig : function (packageName, defaultConfig, customConfig) {
 
             const cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
 

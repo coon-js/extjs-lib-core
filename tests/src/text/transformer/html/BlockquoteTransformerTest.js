@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.text.transformer.html.BlockquoteTransformerTest', function(t) {
+describe("coon.core.text.transformer.html.BlockquoteTransformerTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.text.transformer.html.BlockquoteTransformer', function(){
+    t.requireOk("coon.core.text.transformer.html.BlockquoteTransformer", function (){
 
         t.it("sanitizeLine()", function (t) {
 
@@ -45,7 +45,7 @@ describe('coon.core.text.transformer.html.BlockquoteTransformerTest', function(t
         });
 
 
-        t.it("group()", function(t) {
+        t.it("group()", function (t) {
 
             let transformer = Ext.create("coon.core.text.transformer.html.BlockquoteTransformer");
 
@@ -58,19 +58,19 @@ describe('coon.core.text.transformer.html.BlockquoteTransformerTest', function(t
                 "stuff that",
                 "usually likes",
                 ">> to be parsed",
-                "          >>YO!",
+                "          >>YO!"
             ].join("\n");
 
             t.expect(transformer.group(text)).toEqual([
-               ["> This is", "> some quoted", ">> Text that does 1", ">> Text that does 2", ">hm good"],
-               ["stuff that", "usually likes"],
-               [">> to be parsed", ">>YO!"]
+                ["> This is", "> some quoted", ">> Text that does 1", ">> Text that does 2", ">hm good"],
+                ["stuff that", "usually likes"],
+                [">> to be parsed", ">>YO!"]
             ]);
 
         });
 
 
-        t.it('transform()', function(t) {
+        t.it("transform()", function (t) {
 
             let text = [
                 " > This is",
@@ -81,7 +81,7 @@ describe('coon.core.text.transformer.html.BlockquoteTransformerTest', function(t
                 "stuff that",
                 "usually likes",
                 ">> to be parsed",
-                ">>YO!",
+                ">>YO!"
             ].join("\n");
             
             let transformer = Ext.create("coon.core.text.transformer.html.BlockquoteTransformer");
@@ -93,10 +93,8 @@ describe('coon.core.text.transformer.html.BlockquoteTransformerTest', function(t
 
             );
 
-
             
         });
 
 
-
-    })});
+    });});

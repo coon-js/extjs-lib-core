@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -53,10 +53,10 @@
  *           start.greaterThan(end); // returns false
  *
  */
-Ext.define('coon.core.data.pageMap.IndexRange', {
+Ext.define("coon.core.data.pageMap.IndexRange", {
 
     requires : [
-        'coon.core.data.pageMap.RecordPosition'
+        "coon.core.data.pageMap.RecordPosition"
     ],
 
     config : {
@@ -80,22 +80,22 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
      * thrown by coon.core.data.pageMap.RecordPosition#create, or if
      * start is not leass than or not equal to end
      */
-    constructor : function(cfg) {
+    constructor : function (cfg) {
 
         var me = this;
 
         cfg = cfg || {};
 
-        if (!cfg.hasOwnProperty('start')) {
+        if (!Object.prototype.hasOwnProperty.call(cfg,"start")) {
             Ext.raise({
-                msg : '\'start\' must be specified',
+                msg : "'start' must be specified",
                 cfg : cfg
             });
         }
 
-        if (!cfg.hasOwnProperty('end')) {
+        if (!Object.prototype.hasOwnProperty.call(cfg,"end")) {
             Ext.raise({
-                msg : '\'end\' must be specified',
+                msg : "'end' must be specified",
                 cfg : cfg
             });
         }
@@ -105,10 +105,10 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
         if (!me.getStart().lessThan(me.getEnd()) &&
             !me.getStart().equalTo(me.getEnd())) {
             Ext.raise({
-                msg   : '\'start\' must be less than or equal to \'end\'',
+                msg   : "'start' must be less than or equal to 'end'",
                 start : cfg.start,
                 end   : cfg.end
-            })
+            });
         }
     },
 
@@ -123,15 +123,15 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
      * @throws if start was already set, or any other exception thrown
      * by coon.core.data.pageMap.RecordPosition#create
      */
-    applyStart : function(start) {
+    applyStart : function (start) {
 
         var me = this;
 
         if (me.getStart() !== undefined) {
             Ext.raise({
-                msg   : '\'start\' was already defined',
+                msg   : "'start' was already defined",
                 start : me.getStart()
-            })
+            });
         }
 
         if (start instanceof coon.core.data.pageMap.RecordPosition) {
@@ -153,15 +153,15 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
      * @throws if end was already set, or any other exception thrown
      * by coon.core.data.pageMap.RecordPosition#create
      */
-    applyEnd : function(end) {
+    applyEnd : function (end) {
 
         var me = this;
 
         if (me.getEnd() !== undefined) {
             Ext.raise({
-                msg : '\'end\' was already defined',
+                msg : "'end' was already defined",
                 end : me.getEnd()
-            })
+            });
         }
 
         if (end instanceof coon.core.data.pageMap.RecordPosition) {
@@ -185,23 +185,23 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
      * coon.core.data.pageMap.RecordPosition
      *
      */
-    contains : function(target) {
+    contains : function (target) {
 
-        var me = this, start, end, targets = [].concat(target);
+        var me = this, start, end, targets = [].concat(target), i, len;
 
-        for (var i = 0, len = targets.length; i < len; i++) {
+        for (i = 0, len = targets.length; i < len; i++) {
             if (!(targets[i] instanceof coon.core.data.pageMap.RecordPosition)) {
                 Ext.raise({
-                    msg     : '\'target\' must be an instance of coon.core.data.pageMap.RecordPosition',
+                    msg     : "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
                     targets : targets
-                })
+                });
             }
         }
 
         start = me.getStart();
         end   = me.getEnd();
 
-        for (var i = 0, len = targets.length; i < len; i++) {
+        for (i = 0, len = targets.length; i < len; i++) {
             if (start.equalTo(targets[i]) || end.equalTo(targets[i]) ||
                 (targets[i].greaterThan(start) && targets[i].lessThan(end))) {
                 return true;
@@ -209,11 +209,8 @@ Ext.define('coon.core.data.pageMap.IndexRange', {
         }
 
 
-
         return false;
     }
-
-
 
 
 });

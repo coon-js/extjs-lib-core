@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 /**
  * Utility class for handling mime types.
  */
-Ext.define('coon.core.util.Mime', {
+Ext.define("coon.core.util.Mime", {
 
 
     singleton : true,
@@ -39,12 +39,11 @@ Ext.define('coon.core.util.Mime', {
      *
      * @return {Boolean}
      */
-    isImage : function(mimeType) {
+    isImage : function (mimeType) {
 
-        var mimeType = mimeType + '',
-            reg      = /image\/./i;
+        mimeType = mimeType + "";
 
-        return mimeType.match(reg) !== null;
+        return mimeType.match(/image\/./i) !== null;
     }
 
 });

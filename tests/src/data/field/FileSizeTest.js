@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,27 +23,26 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.field.FileSizeTest', function(t) {
+describe("coon.core.data.field.FileSizeTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Make sure class definition is as expected', function(t) {
+    t.it("Make sure class definition is as expected", function (t) {
 
-        var field  = Ext.create('coon.core.data.field.FileSize');
+        var field  = Ext.create("coon.core.data.field.FileSize");
 
         // sanitize
         t.expect(field instanceof Ext.data.field.Field).toBe(true);
-        t.expect(field.alias).toContain('data.field.cn_core-datafieldfilesize');
-        t.expect(field.getSortType().name).toBe('asInt');
+        t.expect(field.alias).toContain("data.field.cn_core-datafieldfilesize");
+        t.expect(field.getSortType().name).toBe("asInt");
     });
 
 
-
-    t.it('Make sure convert() works as expected', function(t) {
-        var field  = Ext.create('coon.core.data.field.FileSize');
+    t.it("Make sure convert() works as expected", function (t) {
+        var field  = Ext.create("coon.core.data.field.FileSize");
         t.expect(field.convert(10000)).toEqual(Ext.util.Format.fileSize(10000));
     });
 

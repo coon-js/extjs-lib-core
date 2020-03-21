@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,12 +23,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('coon.test.app.mock.ApplicationMock', {
+Ext.define("coon.test.app.mock.ApplicationMock", {
 
-    extend : 'coon.core.app.Application',
+    extend : "coon.core.app.Application",
 
-    mainView: 'Ext.Panel'
-
+    mainView: "Ext.Panel"
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,11 +29,11 @@
  *
  *
  */
-Ext.define('coon.core.data.pageMap.Operation', {
+Ext.define("coon.core.data.pageMap.Operation", {
 
-   requires : [
-       'coon.core.data.pageMap.RecordPosition'
-   ],
+    requires : [
+        "coon.core.data.pageMap.RecordPosition"
+    ],
 
 
     statics : {
@@ -81,13 +81,13 @@ Ext.define('coon.core.data.pageMap.Operation', {
      *
      * @throws if type is not set
      */
-    constructor : function(cfg) {
+    constructor : function (cfg) {
 
         const me = this;
 
         cfg = cfg || {};
 
-        if (!cfg.hasOwnProperty('type')) {
+        if (!Object.prototype.hasOwnProperty.call(cfg, "type")) {
             Ext.raise({
                 msg : "'type' is required for configuring this instance",
                 cfg : cfg
@@ -95,7 +95,7 @@ Ext.define('coon.core.data.pageMap.Operation', {
         }
 
         me.setType(cfg.type);
-        if (cfg.hasOwnProperty('result')) {
+        if (Object.prototype.hasOwnProperty.call(cfg, "result")) {
             me.setResult(cfg.result);
         }
     },
@@ -110,10 +110,10 @@ Ext.define('coon.core.data.pageMap.Operation', {
      * @throws if the type for this instance was already set, or it does not
      * equal to #MOVE, #ADD or #REMOVE
      */
-    applyType : function(type) {
+    applyType : function (type) {
 
         const me      = this,
-              statics = me.statics();
+            statics = me.statics();
 
         if ([statics.MOVE, statics.ADD, statics.REMOVE].indexOf(type) === -1) {
             Ext.raise({
@@ -143,11 +143,11 @@ Ext.define('coon.core.data.pageMap.Operation', {
      * information in the result-object are missing. See #result.
      *
      */
-    applyResult : function(result) {
+    applyResult : function (result) {
 
         const me      = this,
-              statics = me.statics(),
-              type    = me.getType();
+            statics = me.statics(),
+            type    = me.getType();
 
         if (type === undefined) {
             Ext.raise({
@@ -165,33 +165,33 @@ Ext.define('coon.core.data.pageMap.Operation', {
 
         if (me.getResult()) {
             Ext.raise({
-                msg     : 'the \'result\' for this operation was already set',
+                msg     : "the 'result' for this operation was already set",
                 request : me.getResult()
             });
         }
 
-        if (!result.hasOwnProperty('success')) {
+        if (!Object.prototype.hasOwnProperty.call(result,"success")) {
             Ext.raise({
                 msg    : "'success' is required for this result",
                 result : result
             });
         }
 
-        if (result.hasOwnProperty('to') && !(result.to instanceof coon.core.data.pageMap.RecordPosition)) {
+        if (Object.prototype.hasOwnProperty.call(result,"to") && !(result.to instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
                 msg : "'to' must be an instance of coon.core.data.pageMap.RecordPosition",
                 to  : result.to
             });
         }
 
-        if (result.hasOwnProperty('from') && !(result.from instanceof coon.core.data.pageMap.RecordPosition)) {
+        if (Object.prototype.hasOwnProperty.call(result,"from") && !(result.from instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
                 msg  : "'from' must be an instance of coon.core.data.pageMap.RecordPosition",
                 from : result.from
             });
         }
 
-        if (result.hasOwnProperty('record') && !(result.record instanceof Ext.data.Model)) {
+        if (Object.prototype.hasOwnProperty.call(result,"record") && !(result.record instanceof Ext.data.Model)) {
             Ext.raise({
                 msg    : "'record' must be an instance of Ext.data.Model",
                 record : result.record
@@ -199,7 +199,7 @@ Ext.define('coon.core.data.pageMap.Operation', {
         }
 
         if ([statics.MOVE, statics.REMOVE].indexOf(type) !== -1) {
-            if (result.success && !result.hasOwnProperty('from')) {
+            if (result.success && !Object.prototype.hasOwnProperty.call(result,"from")) {
                 Ext.raise({
                     msg    : "'from' is required for this result",
                     result : result
@@ -209,7 +209,7 @@ Ext.define('coon.core.data.pageMap.Operation', {
 
 
         if ([statics.MOVE, statics.ADD].indexOf(type) !== -1) {
-            if (result.success && !result.hasOwnProperty('to')) {
+            if (result.success && !Object.prototype.hasOwnProperty.call(result,"to")) {
                 Ext.raise({
                     msg: "'to' is required for this result",
                     result: result
@@ -218,7 +218,7 @@ Ext.define('coon.core.data.pageMap.Operation', {
         }
 
         if ([statics.MOVE, statics.REMOVE, statics.ADD].indexOf(type) !== -1) {
-            if (!result.hasOwnProperty('record')) {
+            if (!Object.prototype.hasOwnProperty.call(result,"record")) {
                 Ext.raise({
                     msg    : "'record' is required for this result",
                     result : result

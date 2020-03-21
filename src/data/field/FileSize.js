@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,13 +47,13 @@
  *      console.log(f.get('size')); // outputs 9.8KB
  *
  */
-Ext.define('coon.core.data.field.FileSize', {
+Ext.define("coon.core.data.field.FileSize", {
 
-    extend : 'Ext.data.field.Field',
+    extend : "Ext.data.field.Field",
 
-    alias : 'data.field.cn_core-datafieldfilesize',
+    alias : "data.field.cn_core-datafieldfilesize",
 
-    sortType : 'asInt',
+    sortType : "asInt",
 
     /**
      * @inheritdoc

@@ -23,20 +23,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.ConfigManagerTest', function(t) {
+describe("coon.core.ConfigManagerTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.ConfigManager', function(){
+    t.requireOk("coon.core.ConfigManager", function (){
 
-        t.it('register()', function(t) {
+        t.it("register()", function (t) {
 
             const ConfigManager = coon.core.ConfigManager;
 
-            let exp, e;
+            let exp;
 
             t.expect(ConfigManager.get("foo")).toBeUndefined();
 
@@ -64,10 +64,7 @@ describe('coon.core.ConfigManagerTest', function(t) {
             t.expect(exp.msg).toContain("was already registered");
 
 
-
-
         });
 
 
-
-})});
+    });});

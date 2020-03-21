@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,20 +23,18 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.OperationTest', function(t) {
+describe("coon.core.data.pageMap.OperationTest", function (t) {
 
 
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
+    t.requireOk("coon.core.data.pageMap.Operation", function () {
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+        t.it("prerequisites", function (t) {
 
-    t.requireOk('coon.core.data.pageMap.Operation', function() {
-
-        t.it("prerequisites", function(t) {
-
-            var op, exc, e, req, res,
+            var op, exc,
                 RecordPosition = coon.core.data.pageMap.RecordPosition,
                 Operation = coon.core.data.pageMap.Operation,
                 MOVE      = Operation.MOVE,
@@ -44,84 +42,84 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
                 REMOVE    = Operation.REMOVE,
                 from      = RecordPosition.create(1, 0),
                 to        = RecordPosition.create(1, 9),
-                record    = Ext.create('Ext.data.Model');
+                record    = Ext.create("Ext.data.Model");
 
 
-            try {Ext.create('coon.core.data.pageMap.Operation')} catch (e) {exc = e;}
+            try {Ext.create("coon.core.data.pageMap.Operation");} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('type');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("type");
             exc = undefined;
 
-            try {Ext.create('coon.core.data.pageMap.Operation', {type : 'foo'})} catch (e) {exc = e;}
+            try {Ext.create("coon.core.data.pageMap.Operation", {type : "foo"});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('invalid value');
-            t.expect(exc.msg.toLowerCase()).toContain('type');
+            t.expect(exc.msg.toLowerCase()).toContain("invalid value");
+            t.expect(exc.msg.toLowerCase()).toContain("type");
             exc = undefined;
 
             // MOVE
-            op = Ext.create('coon.core.data.pageMap.Operation', {type : MOVE});
+            op = Ext.create("coon.core.data.pageMap.Operation", {type : MOVE});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(MOVE);
 
             try {op.setType(ADD);} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('already set');
-            t.expect(exc.msg.toLowerCase()).toContain('type');
+            t.expect(exc.msg.toLowerCase()).toContain("already set");
+            t.expect(exc.msg.toLowerCase()).toContain("type");
             exc = undefined;
 
             // - result
-            try {op.setResult('foo')} catch (e) {exc = e;}
+            try {op.setResult("foo");} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('must be an object');
-            t.expect(exc.msg.toLowerCase()).toContain('result');
+            t.expect(exc.msg.toLowerCase()).toContain("must be an object");
+            t.expect(exc.msg.toLowerCase()).toContain("result");
             exc = undefined;
 
-            try {op.setResult({})} catch (e) {exc = e;}
+            try {op.setResult({});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('success');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("success");
             exc = undefined;
 
 
-            try {op.setResult({success : true, from : from})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : from});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('to');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("to");
             exc = undefined;
 
-            try {op.setResult({success : true, from : from, to : to})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : from, to : to});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('record');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("record");
             exc = undefined;
 
-            try {op.setResult({success : true, from : 'foo', to : to, record : record})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : "foo", to : to, record : record});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-            t.expect(exc.msg.toLowerCase()).toContain('from');
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("from");
             exc = undefined;
 
-            try {op.setResult({success : true, from : from, to : 'foo', record : record})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : from, to : "foo", record : record});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-            t.expect(exc.msg.toLowerCase()).toContain('to');
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("to");
             exc = undefined;
 
-            try {op.setResult({success : true, from : from, to : to, record : 'foo'})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : from, to : to, record : "foo"});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-            t.expect(exc.msg.toLowerCase()).toContain('record');
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+            t.expect(exc.msg.toLowerCase()).toContain("record");
             exc = undefined;
 
             op.setResult({success : true, from : from, to : to, record : record});
@@ -131,22 +129,22 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
 
 
             // REMOVE
-            op = Ext.create('coon.core.data.pageMap.Operation', {type : REMOVE});
+            op = Ext.create("coon.core.data.pageMap.Operation", {type : REMOVE});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(REMOVE);
 
-            try {op.setResult({success : true})} catch (e) {exc = e;}
+            try {op.setResult({success : true});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('from');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("from");
             exc = undefined;
 
-            try {op.setResult({success : true, from : from})} catch (e) {exc = e;}
+            try {op.setResult({success : true, from : from});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('record');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("record");
             exc = undefined;
 
             op.setResult({success : true, from : from, record : record});
@@ -156,22 +154,22 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
 
 
             // ADD
-            op = Ext.create('coon.core.data.pageMap.Operation', {type : ADD});
+            op = Ext.create("coon.core.data.pageMap.Operation", {type : ADD});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(ADD);
 
-            try {op.setResult({success : true})} catch (e) {exc = e;}
+            try {op.setResult({success : true});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('to');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("to");
             exc = undefined;
 
-            try {op.setResult({success : true, to : to})} catch (e) {exc = e;}
+            try {op.setResult({success : true, to : to});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
-            t.expect(exc.msg.toLowerCase()).toContain('is required');
-            t.expect(exc.msg.toLowerCase()).toContain('record');
+            t.expect(exc.msg.toLowerCase()).toContain("is required");
+            t.expect(exc.msg.toLowerCase()).toContain("record");
             exc = undefined;
 
             op.setResult({success : true, to : to, record : record});
@@ -180,7 +178,7 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
             });
 
 
-            op = Ext.create('coon.core.data.pageMap.Operation', {
+            op = Ext.create("coon.core.data.pageMap.Operation", {
                 type   : MOVE,
                 result : {
                     success : false, from : from, to : to, record : record
@@ -195,7 +193,7 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
 
 
             // ADD - example for false and to not available
-            op = Ext.create('coon.core.data.pageMap.Operation', {type : ADD});
+            op = Ext.create("coon.core.data.pageMap.Operation", {type : ADD});
             t.expect(op).toBeTruthy();
             t.expect(op.getType()).toBe(ADD);
 
@@ -208,10 +206,7 @@ describe('coon.core.data.pageMap.OperationTest', function(t) {
         });
 
 
-
     });
-
-
 
 
 });

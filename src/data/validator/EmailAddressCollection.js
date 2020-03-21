@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,20 +29,20 @@
  * The array may also be empty is allowEmpty is set to true.
  *
  */
-Ext.define('coon.core.data.validator.EmailAddressCollection', {
+Ext.define("coon.core.data.validator.EmailAddressCollection", {
 
-    extend : 'Ext.data.validator.Validator',
+    extend : "Ext.data.validator.Validator",
 
-    alias : 'data.validator.cn_core-datavalidatoremailaddresscollection',
+    alias : "data.validator.cn_core-datavalidatoremailaddresscollection",
 
-    type : 'cn_core-datavalidatoremailaddresscollection',
+    type : "cn_core-datavalidatoremailaddresscollection",
 
     config : {
         /**
          * @cfg {String} message
          * The error message to return when the value is invalid.
          */
-        message : 'Must be an array of objects containing an address property.',
+        message : "Must be an array of objects containing an address property.",
 
         /**
          * @cfg {Boolean} allowEmpty
@@ -52,7 +52,7 @@ Ext.define('coon.core.data.validator.EmailAddressCollection', {
     },
 
 
-    validate: function(value) {
+    validate: function (value) {
 
         var me    = this,
             valid = Ext.isArray(value);
@@ -60,7 +60,7 @@ Ext.define('coon.core.data.validator.EmailAddressCollection', {
         if (valid) {
 
             for (var i = 0,len = value.length; i < len; i++) {
-                if (!Ext.isObject(value[i]) || !value[i].hasOwnProperty('address')) {
+                if (!Ext.isObject(value[i]) || !Object.prototype.hasOwnProperty.call(value[i],"address")) {
                     valid = false;
                     break;
                 }

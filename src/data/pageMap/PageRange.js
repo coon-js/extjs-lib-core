@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -57,12 +57,12 @@
  *          range.getLast();  // 3
  *
  */
-Ext.define('coon.core.data.pageMap.PageRange', {
+Ext.define("coon.core.data.pageMap.PageRange", {
 
 
     requires : [
-        'coon.core.Util',
-        'coon.core.data.pageMap.RecordPosition'
+        "coon.core.Util",
+        "coon.core.data.pageMap.RecordPosition"
     ],
 
 
@@ -86,9 +86,9 @@ Ext.define('coon.core.data.pageMap.PageRange', {
          * @throws if the arguments could not be processed, or if any exception
          * from the class constructor is thrown.
          */
-        create : function(data) {
+        create : function (data) {
 
-            if (arguments.length == 1 && !Ext.isArray(arguments[0])) {
+            if (arguments.length === 1 && !Ext.isArray(arguments[0])) {
                 data = [arguments[0]];
             } else if (arguments.length > 1) {
                 data = Array.prototype.slice.apply(arguments, [0]);
@@ -96,13 +96,13 @@ Ext.define('coon.core.data.pageMap.PageRange', {
 
             if (!Ext.isArray(data)){
                 Ext.raise({
-                    msg  : 'static method expects an array or arguments ' +
-                           'representing a page range',
+                    msg  : "static method expects an array or arguments " +
+                           "representing a page range",
                     arguments : arguments
                 });
             }
 
-            return Ext.create('coon.core.data.pageMap.PageRange', {
+            return Ext.create("coon.core.data.pageMap.PageRange", {
                 pages : data
             });
         },
@@ -123,14 +123,13 @@ Ext.define('coon.core.data.pageMap.PageRange', {
          * @throws any exception thrown by {coon.core.Util#createRange}
          * or by this class constructor
          */
-        createFor : function(start, end) {
-            return Ext.create('coon.core.data.pageMap.PageRange', {
+        createFor : function (start, end) {
+            return Ext.create("coon.core.data.pageMap.PageRange", {
                 pages : coon.core.Util.createRange(start, end)
             });
         }
 
     },
-
 
 
     /**
@@ -141,13 +140,13 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      * @throws if pages is not specified
      */
-    constructor : function(cfg) {
+    constructor : function (cfg) {
 
         cfg = cfg || {};
 
-        if (!cfg.hasOwnProperty('pages')) {
+        if (!Object.prototype.hasOwnProperty.call(cfg,"pages")) {
             Ext.raise({
-                msg : '\'pages\' must be specified',
+                msg : "'pages' must be specified",
                 cfg : cfg
             });
         }
@@ -167,32 +166,32 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      * not a sequentially ordered list of numeric values, or if the first page is
      * less than 1
      */
-    applyPages : function(pages) {
+    applyPages : function (pages) {
 
         var me = this;
 
         if (me.getPages() !== undefined) {
             Ext.raise({
-                msg   : '\'pages\' was already defined',
+                msg   : "'pages' was already defined",
                 pages : me.getPages()
             });
         }
 
         if (!Ext.isArray(pages)) {
             Ext.raise({
-                msg   : '\'pages\' must be an array',
+                msg   : "'pages' must be an array",
                 pages : pages
             });
         }
 
-        pages = pages.map(function(v){
+        pages = pages.map(function (v){
             return parseInt(v, 10);
         });
 
         if (pages[0] < 1 || isNaN(pages[0])) {
             Ext.raise({
-                msg   : 'a page range\'s first page must not be less than 1 ' +
-                        'and must be a number',
+                msg   : "a page range's first page must not be less than 1 " +
+                        "and must be a number",
                 pages : pages
             });
         }
@@ -204,8 +203,8 @@ Ext.define('coon.core.data.pageMap.PageRange', {
         for (var i = 1, len = pages.length; i < len; i++) {
             if (pages[i] - pages[i - 1] !== 1) {
                 Ext.raise({
-                    msg   : '\'pages\' was converted to a numeric list but it ' +
-                            'seems to be not an ordered list of numeric data',
+                    msg   : "'pages' was converted to a numeric list but it " +
+                            "seems to be not an ordered list of numeric data",
                     pages : pages
                 });
             }
@@ -220,7 +219,7 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      *  @return {Number}
      */
-    getFirst : function() {
+    getFirst : function () {
         return this.getPages()[0];
     },
 
@@ -230,7 +229,7 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      *  @return {Number}
      */
-    getLast : function() {
+    getLast : function () {
         return this.getPages()[this.getPages().length - 1];
     },
 
@@ -240,7 +239,7 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      * @return {Number}
      */
-    getLength : function() {
+    getLength : function () {
         return this.getPages().length;
     },
 
@@ -255,14 +254,14 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      * @throws if target is not an instance of {coon.core.data.pageMap.PageRange}
      */
-    equalTo : function(target) {
+    equalTo : function (target) {
 
         var me = this,
             tF, tL;
 
         if (!(target instanceof coon.core.data.pageMap.PageRange)) {
             Ext.raise({
-                msg    : '\'target\' must be an instance of coon.core.data.pageMap.PageRange',
+                msg    : "'target' must be an instance of coon.core.data.pageMap.PageRange",
                 target : target
             });
         }
@@ -271,8 +270,8 @@ Ext.define('coon.core.data.pageMap.PageRange', {
         tL = me.getLength();
 
         return me === target ||
-               this.getPages().filter(function(v, index) {
-                    return tF[index] && tF[index] === v;
+               this.getPages().filter(function (v, index) {
+                   return tF[index] && tF[index] === v;
                }).length === tL;
 
     },
@@ -288,13 +287,13 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      * @return {Boolean}
      */
-    contains : function(position) {
+    contains : function (position) {
 
         const me = this;
 
         if (!(position instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg      : '\'position\' must be an instance of coon.core.data.pageMap.RecordPosition',
+                msg      : "'position' must be an instance of coon.core.data.pageMap.RecordPosition",
                 position : position
             });
         }
@@ -309,7 +308,7 @@ Ext.define('coon.core.data.pageMap.PageRange', {
      *
      * @return {Array}
      */
-    toArray : function() {
+    toArray : function () {
 
         // 0? see https://jsperf.com/cloning-arrays/3
         return this.getPages().slice(0);

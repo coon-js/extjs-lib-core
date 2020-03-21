@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,27 +23,24 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.operation.ResultReasonTest', function(t) {
+describe("coon.core.data.pageMap.operation.ResultReasonTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
 
+    t.it("prerequisites", function (t) {
 
+        t.expect(coon.core.data.pageMap.operation.ResultReason).toBeDefined();
 
-        t.it("prerequisites", function(t) {
+        t.expect(coon.core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND).toBeDefined();
 
-            t.expect(coon.core.data.pageMap.operation.ResultReason).toBeDefined();
+        t.expect(coon.core.data.pageMap.operation.ResultReason.OK).toBeDefined();
 
-            t.expect(coon.core.data.pageMap.operation.ResultReason.RECORD_NOT_FOUND).toBeDefined();
-
-            t.expect(coon.core.data.pageMap.operation.ResultReason.OK).toBeDefined();
-
-            t.expect(coon.core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE).toBeDefined();
-        });
-
+        t.expect(coon.core.data.pageMap.operation.ResultReason.FEED_INDEXES_NOT_AVAILABLE).toBeDefined();
+    });
 
 
 });

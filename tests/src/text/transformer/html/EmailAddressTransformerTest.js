@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.text.transformer.html.EmailAddressTransformerTest', function(t) {
+describe("coon.core.text.transformer.html.EmailAddressTransformerTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.text.transformer.html.EmailAddressTransformer', function(){
+    t.requireOk("coon.core.text.transformer.html.EmailAddressTransformer", function (){
 
         t.it("transform()", function (t) {
 
@@ -42,7 +42,14 @@ describe('coon.core.text.transformer.html.EmailAddressTransformerTest', function
                 "Please contact <a href=\"mailto:info@conjoon.com\">info@conjoon.com</a> for further information."
             );
 
+            text = "Please contact info-test@conjoon-domain-info.com for further information.";
+
+            t.expect(transformer.transform(text)).toBe(
+                "Please contact <a href=\"mailto:info-test@conjoon-domain-info.com\">info-test@conjoon-domain-info.com</a> for further information."
+            );
+
+
         });
 
 
-    })});
+    });});

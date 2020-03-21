@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,50 +23,49 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.operation.ResultTest', function(t) {
+describe("coon.core.data.pageMap.operation.ResultTest", function (t) {
 
 
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
 
+    t.it("prerequisites", function (t) {
 
-    t.it("prerequisites", function(t) {
+        var op, exc;
 
-        var op, exc, e;
-
-        try {Ext.create('coon.core.data.pageMap.operation.Result')} catch (e) {exc = e;}
+        try {Ext.create("coon.core.data.pageMap.operation.Result");} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('is required');
-        t.expect(exc.msg.toLowerCase()).toContain('success');
+        t.expect(exc.msg.toLowerCase()).toContain("is required");
+        t.expect(exc.msg.toLowerCase()).toContain("success");
         exc = undefined;
 
-        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : true})} catch (e) {exc = e;}
+        try {Ext.create("coon.core.data.pageMap.operation.Result", {success : true});} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('is required');
-        t.expect(exc.msg.toLowerCase()).toContain('reason');
+        t.expect(exc.msg.toLowerCase()).toContain("is required");
+        t.expect(exc.msg.toLowerCase()).toContain("reason");
         exc = undefined;
 
-        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : 'o', reason : 'o'})} catch (e) {exc = e;}
+        try {Ext.create("coon.core.data.pageMap.operation.Result", {success : "o", reason : "o"});} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be a boolean value');
-        t.expect(exc.msg.toLowerCase()).toContain('success');
+        t.expect(exc.msg.toLowerCase()).toContain("must be a boolean value");
+        t.expect(exc.msg.toLowerCase()).toContain("success");
         exc = undefined;
 
-        try {Ext.create('coon.core.data.pageMap.operation.Result', {success : true, reason : null})} catch (e) {exc = e;}
+        try {Ext.create("coon.core.data.pageMap.operation.Result", {success : true, reason : null});} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must not be');
-        t.expect(exc.msg.toLowerCase()).toContain('reason');
+        t.expect(exc.msg.toLowerCase()).toContain("must not be");
+        t.expect(exc.msg.toLowerCase()).toContain("reason");
         exc = undefined;
 
-        op = Ext.create('coon.core.data.pageMap.operation.Result', {
+        op = Ext.create("coon.core.data.pageMap.operation.Result", {
             success : true,
-            reason  : 'foo'
+            reason  : "foo"
         });
 
         t.expect(op instanceof coon.core.data.pageMap.operation.Result).toBe(true);
@@ -74,21 +73,20 @@ describe('coon.core.data.pageMap.operation.ResultTest', function(t) {
         try {op.setSuccess(false);} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('already set');
-        t.expect(exc.msg.toLowerCase()).toContain('success');
+        t.expect(exc.msg.toLowerCase()).toContain("already set");
+        t.expect(exc.msg.toLowerCase()).toContain("success");
         exc = undefined;
 
-        try {op.setReason('bar');} catch (e) {exc = e;}
+        try {op.setReason("bar");} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('already set');
-        t.expect(exc.msg.toLowerCase()).toContain('reason');
+        t.expect(exc.msg.toLowerCase()).toContain("already set");
+        t.expect(exc.msg.toLowerCase()).toContain("reason");
         exc = undefined;
 
         t.expect(op.getSuccess()).toBe(true);
-        t.expect(op.getReason()).toBe('foo');
+        t.expect(op.getReason()).toBe("foo");
     });
-
 
 
 });

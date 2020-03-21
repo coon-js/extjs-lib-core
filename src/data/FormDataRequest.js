@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,9 +31,9 @@
  * See {@link coon.core.data.request.FormData}
  * See {@link coon.core.data.AjaxForm}
  */
-Ext.define('coon.core.data.FormDataRequest', {
+Ext.define("coon.core.data.FormDataRequest", {
 
-    extend: 'Ext.data.Request',
+    extend: "Ext.data.Request",
 
     config : {
 

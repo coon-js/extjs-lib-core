@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,10 +35,10 @@
  * data fields in the data model of the record that are referenced by the used
  * PageMap and the records this instance operates on.
  */
-Ext.define('coon.core.data.pageMap.IndexLookup', {
+Ext.define("coon.core.data.pageMap.IndexLookup", {
 
     requires : [
-        'coon.core.data.pageMap.PageMapUtil'
+        "coon.core.data.pageMap.PageMapUtil"
     ],
 
 
@@ -124,9 +124,10 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
      *
      * @throws if more than one sorter was configured
      */
-    findInsertIndex : function(record, pageMapFeeder) {
+    findInsertIndex : function (record, pageMapFeeder) {
 
-        const me        = this,
+        const
+            me          = this,
             pageMap     = pageMapFeeder.getPageMap(),
             PageMapUtil = coon.core.data.pageMap.PageMapUtil,
             sorters     = pageMap.getStore().getSorters(),
@@ -134,11 +135,11 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
             lastPage    = PageMapUtil.getLastPossiblePageNumber(pageMap);
 
         let range, cmpFunc, property, dir, index, ignoreId, first, last,
-            previousIndex, recordPosition;
+            previousIndex, recordPosition, feed;
 
-        if (sorters.length != 1) {
+        if (sorters.length !== 1) {
             Ext.raise({
-                msg     : 'there must be one sorter configured for the PageMap\'s store',
+                msg     : "there must be one sorter configured for the PageMap's store",
                 sorters : sorters
             });
         }
@@ -162,8 +163,8 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
 
         recordPosition = PageMapUtil.findRecord(record, pageMapFeeder);
         ignoreId       = recordPosition
-                         ? record.getId()
-                         : undefined;
+            ? record.getId()
+            : undefined;
 
 
         for (var i = 0, len = ranges.length; i < len; i++) {
@@ -187,8 +188,8 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
                 if (first === 1) {
                     let feed = pageMapFeeder.getFeedAt(first);
                     return feed
-                           ? - 1
-                           : [1, 0];
+                        ? - 1
+                        : [1, 0];
                 }
 
                 if (previousIndex === 1) {
@@ -268,27 +269,27 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
      * @throws if start or end or anything in between is not available as a page
      * in the queried PageMap
      */
-    scanRangeForIndex : function(start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
+    scanRangeForIndex : function (start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
 
-        const me  = this,
-              map = pageMapFeeder.getPageMap().map,
-              PageMapUtil = coon.core.data.pageMap.PageMapUtil,
-              RecordPosition = coon.core.data.pageMap.RecordPosition;
+        const
+            map = pageMapFeeder.getPageMap().map,
+            PageMapUtil = coon.core.data.pageMap.PageMapUtil,
+            RecordPosition = coon.core.data.pageMap.RecordPosition;
 
         let pageIterate, cmpRecord, cmp,
-            targetPosition, neighbour;
+            targetPosition, neighbour, i;
 
-        for (var i = start; i <= end; i++) {
-            if (!map.hasOwnProperty(i) && !pageMapFeeder.getFeedAt(i)) {
+        for (i = start; i <= end; i++) {
+            if (!Object.prototype.hasOwnProperty.call(map, i) && !pageMapFeeder.getFeedAt(i)) {
                 Ext.raise({
-                    msg  : 'page not available in PageMap and not available as Feed',
+                    msg  : "page not available in PageMap and not available as Feed",
                     page : i,
                     map  : map
-                })
+                });
             }
         }
 
-        for (var i = start; i <= end; i++) {
+        for (i = start; i <= end; i++) {
 
             let feed    = pageMapFeeder.getFeedAt(i),
                 lena    = feed ? feed.getSize() : map[i].value.length,
@@ -310,74 +311,71 @@ Ext.define('coon.core.data.pageMap.IndexLookup', {
 
                 switch (true) {
 
-                    case (cmp === 0):
-                        // if we are looking for an index and compare tells us that the source
-                        // value is treated equal with the target value, we will check if
-                        // the NEXT neighbour (left or right, depending on the computed target position)
-                        // is equal to the value of the source record.
-                        // since we assume that the data we are browing is already ordered,
-                        // we then assume that we do not need to move the record to a new
-                        // position, since moving it would not actually change the
-                        // requested order of values.
+                case (cmp === 0):
+                    // if we are looking for an index and compare tells us that the source
+                    // value is treated equal with the target value, we will check if
+                    // the NEXT neighbour (left or right, depending on the computed target position)
+                    // is equal to the value of the source record.
+                    // since we assume that the data we are browing is already ordered,
+                    // we then assume that we do not need to move the record to a new
+                    // position, since moving it would not actually change the
+                    // requested order of values.
 
-                        //  0:  1 (u)  ->  2       2 (u)
-                        //  1:  2 (v)          =>  2 (v)
-                        //  2:  3 (w)              3 (w)
-                        //
-                        // without this check, we would unneccessary change the order
-                        // to v, u, w
-                        //
-                        // the same check applies for DESCENDING order
-                        if (recordPosition) {
-                            targetPosition = RecordPosition.create(pageIterate, a);
+                    //  0:  1 (u)  ->  2       2 (u)
+                    //  1:  2 (v)          =>  2 (v)
+                    //  2:  3 (w)              3 (w)
+                    //
+                    // without this check, we would unneccessary change the order
+                    // to v, u, w
+                    //
+                    // the same check applies for DESCENDING order
+                    if (recordPosition) {
+                        targetPosition = RecordPosition.create(pageIterate, a);
 
-                            if (targetPosition.lessThan(recordPosition)) {
-                                neighbour = PageMapUtil.getNeighbour(
-                                    RecordPosition.create(
-                                        recordPosition.getPage(), recordPosition.getIndex()),
-                                    pageMapFeeder, true
-                                );
-                            } else if (targetPosition.greaterThan(recordPosition)) {
-                                neighbour = PageMapUtil.getNeighbour(
-                                    RecordPosition.create(
-                                        recordPosition.getPage(), recordPosition.getIndex()),
-                                    pageMapFeeder, false
-                                );
-                            }
-
-                            if (neighbour && cmpFunc.apply(null, [value, neighbour.get(property)]) === 0) {
-                                return [
-                                    recordPosition.getPage(),
-                                    recordPosition.getIndex()];
-                            }
+                        if (targetPosition.lessThan(recordPosition)) {
+                            neighbour = PageMapUtil.getNeighbour(
+                                RecordPosition.create(
+                                    recordPosition.getPage(), recordPosition.getIndex()),
+                                pageMapFeeder, true
+                            );
+                        } else if (targetPosition.greaterThan(recordPosition)) {
+                            neighbour = PageMapUtil.getNeighbour(
+                                RecordPosition.create(
+                                    recordPosition.getPage(), recordPosition.getIndex()),
+                                pageMapFeeder, false
+                            );
                         }
 
-                        return [pageIterate, a];
-                        break;
+                        if (neighbour && cmpFunc.apply(null, [value, neighbour.get(property)]) === 0) {
+                            return [
+                                recordPosition.getPage(),
+                                recordPosition.getIndex()];
+                        }
+                    }
 
-                    case (direction === 'ASC' && cmp === -1):
+                    return [pageIterate, a];
 
-                        if (a === 0 ||
+                case (direction === "ASC" && cmp === -1):
+
+                    if (a === 0 ||
                             // it is an left hand feed with a
                             // next page, and the  value is less than the
                             // first found index
                             // also, return -1 if we have no place in the feed
                             (hasNext && feed.getFreeSpace() === a)
-                        ) {
-                            return -1;
-                        }
+                    ) {
+                        return -1;
+                    }
 
-                        // next always grows to left!
-                        return [pageIterate, a - (hasNext ? 1 : 0)];
-                        break;
+                    // next always grows to left!
+                    return [pageIterate, a - (hasNext ? 1 : 0)];
 
-                    case (direction === 'DESC' && cmp === 1):
-                        if (a === 0 && pageIterate === start ||
+                case (direction === "DESC" && cmp === 1):
+                    if (a === 0 && pageIterate === start ||
                             (hasNext && feed.getFreeSpace() === a)) {
-                            return -1;
-                        }
-                        return [pageIterate, a];
-                        break;
+                        return -1;
+                    }
+                    return [pageIterate, a];
                 }
 
             }

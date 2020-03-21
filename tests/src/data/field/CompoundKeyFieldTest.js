@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,28 +23,27 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.field.CompoundKeyFieldTest', function(t) {
+describe("coon.core.data.field.CompoundKeyFieldTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Make sure class definition is as expected', function(t) {
+    t.it("Make sure class definition is as expected", function (t) {
 
-        var field  = Ext.create('coon.core.data.field.CompoundKeyField');
+        var field  = Ext.create("coon.core.data.field.CompoundKeyField");
 
         // sanitize
-        t.isInstanceOf(field, 'Ext.data.field.String');
-        t.expect(field.alias).toContain('data.field.cn_core-datafieldcompoundkey');
+        t.isInstanceOf(field, "Ext.data.field.String");
+        t.expect(field.alias).toContain("data.field.cn_core-datafieldcompoundkey");
         t.expect(field.critical).toBe(true);
-        t.expect(field.validators).toContain('presence');
+        t.expect(field.validators).toContain("presence");
     });
 
 
-
-    t.it('Make sure convert() works as expected', function(t) {
-        var field  = Ext.create('coon.core.data.field.CompoundKeyField');
+    t.it("Make sure convert() works as expected", function (t) {
+        var field  = Ext.create("coon.core.data.field.CompoundKeyField");
 
         t.expect(field.convert("")).toBeUndefined();
         t.expect(field.convert(null)).toBeUndefined();

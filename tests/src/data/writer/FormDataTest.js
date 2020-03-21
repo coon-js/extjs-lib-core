@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,37 +23,37 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.writer.FormDataTest', function(t) {
+describe("coon.core.data.writer.FormDataTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Sanitize the writer', function(t) {
-        var writer = Ext.create('coon.core.data.writer.FormData');
+    t.it("Sanitize the writer", function (t) {
+        var writer = Ext.create("coon.core.data.writer.FormData");
 
         t.expect(writer instanceof Ext.data.writer.Json).toBe(true);
-        t.expect(writer.alias).toContain('writer.cn_core-datawriterformdata');
+        t.expect(writer.alias).toContain("writer.cn_core-datawriterformdata");
     });
 
-    t.it('Test writeRecords()', function(t) {
-        var jsonwr = Ext.create('Ext.data.writer.Json'),
-            writer = Ext.create('coon.core.data.writer.FormData'),
-            b1     = new Blob(["foo"], {type : 'text/plain'}),
-            b2     = new Blob(["bar"], {type : 'text/plain'}),
+    t.it("Test writeRecords()", function (t) {
+        var jsonwr = Ext.create("Ext.data.writer.Json"),
+            writer = Ext.create("coon.core.data.writer.FormData"),
+            b1     = new Blob(["foo"], {type : "text/plain"}),
+            b2     = new Blob(["bar"], {type : "text/plain"}),
             data   = [{
-                fileName : 'foo',
+                fileName : "foo",
                 blob     : b1
             }, {
-                fileName : 'bar',
+                fileName : "bar",
                 blob     : b2
             }],
-            regularRequest  = Ext.create('Ext.data.Request'),
-            formDataRequest = Ext.create('coon.core.data.FormDataRequest');
+            regularRequest  = Ext.create("Ext.data.Request"),
+            formDataRequest = Ext.create("coon.core.data.FormDataRequest");
 
-        regularRequest.setAction('update');
-        formDataRequest.setAction('update');
+        regularRequest.setAction("update");
+        formDataRequest.setAction("update");
 
         // +++++
         // different writers, different requests,same data, same action
@@ -73,31 +73,31 @@ describe('coon.core.data.writer.FormDataTest', function(t) {
         // +++++
         // existing keys get overwritten
         var formData   = new FormData,
-            keyCompare = 'data[0][fileName]';
+            keyCompare = "data[0][fileName]";
 
-        formData.set('data[0][fileName]', 'snafu');
+        formData.set("data[0][fileName]", "snafu");
 
-        formDataRequest = Ext.create('coon.core.data.FormDataRequest');
-        formDataRequest.setAction('create');
+        formDataRequest = Ext.create("coon.core.data.FormDataRequest");
+        formDataRequest.setAction("create");
         formDataRequest.setFormData(formData);
-        t.expect(formDataRequest.getFormData().get(keyCompare)).toBe('snafu');
+        t.expect(formDataRequest.getFormData().get(keyCompare)).toBe("snafu");
 
         retForm = writer.writeRecords(formDataRequest, data);
 
         t.expect(formDataRequest).toBe(retForm);
-        t.expect(retForm.getFormData().get(keyCompare)).toBe('foo');
+        t.expect(retForm.getFormData().get(keyCompare)).toBe("foo");
 
 
         // +++++
         // check that blobs are properly set
-        formDataRequest = Ext.create('coon.core.data.FormDataRequest');
-        formDataRequest.setAction('create');
+        formDataRequest = Ext.create("coon.core.data.FormDataRequest");
+        formDataRequest.setAction("create");
         retForm = writer.writeRecords(formDataRequest, data);
 
         t.expect(retForm.getFormData()).toBeDefined();
 
-        t.expect(retForm.getFormData().get('data[0][fileName]')).toBe("foo");
-        t.expect(retForm.getFormData().get('data[1][fileName]')).toBe("bar");
+        t.expect(retForm.getFormData().get("data[0][fileName]")).toBe("foo");
+        t.expect(retForm.getFormData().get("data[1][fileName]")).toBe("bar");
 
         var readerB1 = new FileReader(),
             readerB2 = new FileReader(),
@@ -105,15 +105,14 @@ describe('coon.core.data.writer.FormDataTest', function(t) {
             readerB2Form = new FileReader();
         readerB1.readAsText(b1);
         readerB2.readAsText(b2);
-        readerB1Form.readAsText(retForm.getFormData().get('file[0][0]'));
-        readerB2Form.readAsText(retForm.getFormData().get('file[1][0]'));
+        readerB1Form.readAsText(retForm.getFormData().get("file[0][0]"));
+        readerB2Form.readAsText(retForm.getFormData().get("file[1][0]"));
 
-        t.waitForMs(500, function() {
+        t.waitForMs(500, function () {
             t.expect(readerB1.result).toBe(readerB1Form.result);
             t.expect(readerB2.result).toBe(readerB2Form.result);
         });
     });
-
 
 
 });

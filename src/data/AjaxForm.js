@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,12 +46,12 @@
  *          }
  *      });
  */
-Ext.define('coon.core.data.AjaxForm', {
+Ext.define("coon.core.data.AjaxForm", {
 
-    extend : 'Ext.data.Connection',
+    extend : "Ext.data.Connection",
 
     requires : [
-        'coon.core.data.request.FormData'
+        "coon.core.data.request.FormData"
     ],
 
     singleton : true,
@@ -68,7 +68,7 @@ Ext.define('coon.core.data.AjaxForm', {
      *
      * Makes sure the data prepared for the request is set to "formData".
      */
-    setOptions : function(options, scope) {
+    setOptions : function (options, scope) {
 
         var me         = this,
             newOptions = me.callParent(arguments);
@@ -89,13 +89,13 @@ Ext.define('coon.core.data.AjaxForm', {
      * @param requestOptions
      * @returns {*|Object}
      */
-    createRequest: function(options, requestOptions) {
+    createRequest: function (options, requestOptions) {
         var me = this;
 
-        options.type = 'cn_core-datarequestformdata';
+        options.type = "cn_core-datarequestformdata";
 
         return me.callParent([options, requestOptions]);
     }
 
 
-})
+});

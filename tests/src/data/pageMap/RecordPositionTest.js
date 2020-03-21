@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,68 +23,68 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
+describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('constructor()', function(t) {
+    t.it("constructor()", function (t) {
 
-        var exc, e;
+        var exc;
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition');
+            Ext.create("coon.core.data.pageMap.RecordPosition");
         } catch (e) {
             exc = e;
         }
 
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('needs both');
+        t.expect(exc.msg.toLowerCase()).toContain("needs both");
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page : 2
             });
         } catch (e) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('needs both');
+        t.expect(exc.msg.toLowerCase()).toContain("needs both");
 
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
                 index : 2
             });
         } catch (e) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('needs both');
+        t.expect(exc.msg.toLowerCase()).toContain("needs both");
     });
 
 
-    t.it('applyPage()', function(t) {
+    t.it("applyPage()", function (t) {
 
-        var exc, e, position;
+        var exc;
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
-                page  : 'u',
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
+                page  : "u",
                 index : 1
             });
         } catch (e) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('page');
-        t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+        t.expect(exc.msg.toLowerCase()).toContain("page");
+        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
 
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 0,
                 index : 1
             });
@@ -92,11 +92,11 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('page');
-        t.expect(exc.msg.toLowerCase()).toContain('must not be less than');
+        t.expect(exc.msg.toLowerCase()).toContain("page");
+        t.expect(exc.msg.toLowerCase()).toContain("must not be less than");
 
 
-        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
+        var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
             page  : 2,
             index : 1
         });
@@ -107,31 +107,31 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('page');
-        t.expect(exc.msg.toLowerCase()).toContain('was already defined');
+        t.expect(exc.msg.toLowerCase()).toContain("page");
+        t.expect(exc.msg.toLowerCase()).toContain("was already defined");
 
     });
 
 
-    t.it('applyIndex()', function(t) {
+    t.it("applyIndex()", function (t) {
 
-        var exc, e, position;
+        var exc;
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
-                index  : 'u',
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
+                index  : "u",
                 page : 1
             });
         } catch (e) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('index');
-        t.expect(exc.msg.toLowerCase()).toContain('must be a number');
+        t.expect(exc.msg.toLowerCase()).toContain("index");
+        t.expect(exc.msg.toLowerCase()).toContain("must be a number");
 
 
         try {
-            Ext.create('coon.core.data.pageMap.RecordPosition', {
+            Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 1,
                 index : -1
             });
@@ -139,11 +139,11 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('index');
-        t.expect(exc.msg.toLowerCase()).toContain('must not be less than');
+        t.expect(exc.msg.toLowerCase()).toContain("index");
+        t.expect(exc.msg.toLowerCase()).toContain("must not be less than");
 
 
-        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
+        var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
             page  : 2,
             index : 1
         });
@@ -154,17 +154,17 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
             exc = e;
         }
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('index');
-        t.expect(exc.msg.toLowerCase()).toContain('was already defined');
+        t.expect(exc.msg.toLowerCase()).toContain("index");
+        t.expect(exc.msg.toLowerCase()).toContain("was already defined");
 
     });
 
 
-    t.it('getter', function(t) {
+    t.it("getter", function (t) {
 
-        var position = Ext.create('coon.core.data.pageMap.RecordPosition', {
-              page  : 7879,
-              index : 4000
+        var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
+            page  : 7879,
+            index : 4000
         });
 
         t.expect(position.getPage()).toBe(7879);
@@ -173,24 +173,24 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
     });
 
 
-    t.it('equalTo()', function(t) {
+    t.it("equalTo()", function (t) {
 
-        var posLeft = Ext.create('coon.core.data.pageMap.RecordPosition', {
+        var posLeft = Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 3,
                 index : 2
             }),
-            posRight = Ext.create('coon.core.data.pageMap.RecordPosition', {
+            posRight = Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 3,
                 index : 2
             }),
-            posNope_1 = Ext.create('coon.core.data.pageMap.RecordPosition', {
+            posNope_1 = Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 4,
                 index : 2
             }),
-            posNope_2 = Ext.create('coon.core.data.pageMap.RecordPosition', {
+            posNope_2 = Ext.create("coon.core.data.pageMap.RecordPosition", {
                 page  : 3,
                 index : 5
-            }), exc, e;
+            }), exc;
 
 
         try {
@@ -200,7 +200,7 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
         }
 
         t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
 
         t.expect(posLeft.equalTo(posLeft)).toBe(true);
@@ -212,23 +212,23 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
 
     });
 
-    t.it('coon.core.data.pageMap.RecordPosition.create()', function(t) {
+    t.it("coon.core.data.pageMap.RecordPosition.create()", function (t) {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
-            exc, e, pos,
+            exc, pos,
             tests = [
                 [1, 2],
                 [4, 9],
                 [211, 99],
                 [8, 3, 4, 2]
-            ];
+            ], i, len;
 
         try{RecordPosition.create();}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         exc = undefined;
 
-        try{RecordPosition.create(['foo', null]);}catch(e){exc = e;}
+        try{RecordPosition.create(["foo", null]);}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         exc = undefined;
@@ -259,7 +259,7 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
         exc = undefined;
 
         // with array as arg
-        for (var i = 0, len = tests.length; i < len; i++) {
+        for (i = 0, len = tests.length; i < len; i++) {
             pos = RecordPosition.create.call(null, tests[i]);
             t.expect(pos instanceof coon.core.data.pageMap.RecordPosition).toBe(true);
             t.expect(pos.getPage()).toBe(tests[i][0]);
@@ -267,7 +267,7 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
         }
 
         // with arguments as args
-        for (var i = 0, len = tests.length; i < len; i++) {
+        for (i = 0, len = tests.length; i < len; i++) {
             pos = RecordPosition.create.apply(null, tests[i]);
             t.expect(pos instanceof coon.core.data.pageMap.RecordPosition).toBe(true);
             t.expect(pos.getPage()).toBe(tests[i][0]);
@@ -277,7 +277,7 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
     });
 
 
-    t.it('lessThan()', function(t) {
+    t.it("lessThan()", function (t) {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
@@ -302,27 +302,27 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
                 right : [112, 2],
                 exp   : true
             }],
-            exc, e;
+            exc;
 
         left = RecordPosition.create(1, 1);
 
         try{left.lessThan();}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
         exc = undefined;
 
         for (var i = 0, len = tests.length; i < len; i++) {
             left  = RecordPosition.create(tests[i].left);
             right = RecordPosition.create(tests[i].right);
 
-            t.expect(left.lessThan(right)).toBe(tests[i].exp)
+            t.expect(left.lessThan(right)).toBe(tests[i].exp);
         }
 
     });
 
 
-    t.it('greaterThan()', function(t) {
+    t.it("greaterThan()", function (t) {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
@@ -347,25 +347,24 @@ describe('coon.core.data.pageMap.RecordPositionTest', function(t) {
                 right : [10,32],
                 exp   : true
             }],
-            exc, e;
+            exc;
 
         left = RecordPosition.create(1, 1);
 
         try{left.greaterThan();}catch(e){exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
+        t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
         exc = undefined;
 
         for (var i = 0, len = tests.length; i < len; i++) {
             left  = RecordPosition.create(tests[i].left);
             right = RecordPosition.create(tests[i].right);
 
-            t.expect(left.greaterThan(right)).toBe(tests[i].exp)
+            t.expect(left.greaterThan(right)).toBe(tests[i].exp);
         }
 
     });
-
 
 
 });

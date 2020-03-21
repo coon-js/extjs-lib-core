@@ -39,7 +39,7 @@
  *  // Please contact <a href="mailto:infi@conjoon.com">info@conjoon.com</a> for further information.
  *
  */
-Ext.define('coon.core.text.transformer.html.EmailAddressTransformer', {
+Ext.define("coon.core.text.transformer.html.EmailAddressTransformer", {
 
 
     /**
@@ -49,9 +49,9 @@ Ext.define('coon.core.text.transformer.html.EmailAddressTransformer', {
      *
      * @return {String}
      */
-    transform : function(text) {
+    transform : function (text) {
 
-        const emailRegex = /[a-zA-Z0-9\+\.\_\%\-]{1,256}\@[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}(\.[a-zA-Z0-9][a-zA-Z0-9\-]{0,25})+/gi;
+        const emailRegex = /[a-zA-Z0-9+._%-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9-]{0,64}(\.[a-zA-Z0-9][a-zA-Z0-9-]{0,25})+/gi;
 
         text = text.replace(emailRegex, matches => ("<a href=\"mailto:" + matches + "\">" + matches + "</a>"));
 

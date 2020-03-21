@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,20 +29,20 @@
  * The array may also be empty is allowEmpty is set to true.
  *
  */
-Ext.define('coon.core.data.validator.EmailAddress', {
+Ext.define("coon.core.data.validator.EmailAddress", {
 
-    extend : 'Ext.data.validator.Validator',
+    extend : "Ext.data.validator.Validator",
 
-    alias : 'data.validator.cn_core-datavalidatoremailaddress',
+    alias : "data.validator.cn_core-datavalidatoremailaddress",
 
-    type : 'cn_core-datavalidatoremailaddress',
+    type : "cn_core-datavalidatoremailaddress",
 
     config : {
         /**
          * @cfg {String} message
          * The error message to return when the value is invalid.
          */
-        message : 'Must be an object containing an address property.',
+        message : "Must be an object containing an address property.",
 
         /**
          * @cfg {Boolean} allowEmpty
@@ -52,19 +52,19 @@ Ext.define('coon.core.data.validator.EmailAddress', {
     },
 
 
-    validate: function(value) {
+    validate: function (value) {
 
         var me    = this,
             valid = Ext.isObject(value);
 
         if (value === null) {
-            if (!!me.getAllowEmpty()) {
+            if (me.getAllowEmpty()) {
                 return true;
             }
             return me.getMessage();
         }
 
-        if (valid && !value.hasOwnProperty('address')) {
+        if (valid && !Object.prototype.hasOwnProperty.call(value,"address")) {
             return me.getMessage();
         }
 

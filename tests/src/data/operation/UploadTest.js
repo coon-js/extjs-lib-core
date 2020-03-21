@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,29 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.operation.UploadTest', function(t) {
+describe("coon.core.data.operation.UploadTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Make sure class definition is as expected', function(t) {
+    t.it("Make sure class definition is as expected", function (t) {
 
-        var up  = Ext.create('coon.core.data.operation.Upload');
+        var up  = Ext.create("coon.core.data.operation.Upload");
 
         // sanitize
         t.expect(up instanceof Ext.data.operation.Create).toBe(true);
-        t.expect(up.alias).toContain('data.operation.cn_core-dataoperationupload');
-        t.expect(up.getAction()).toBe('create');
+        t.expect(up.alias).toContain("data.operation.cn_core-dataoperationupload");
+        t.expect(up.getAction()).toBe("create");
 
-        up.setProgressCallback('foo');
-        up.setProgressScope('bar');
+        up.setProgressCallback("foo");
+        up.setProgressScope("bar");
 
-        t.expect(up.getProgressCallback()).toBe('foo');
-        t.expect(up.getProgressScope()).toBe('bar');
+        t.expect(up.getProgressCallback()).toBe("foo");
+        t.expect(up.getProgressScope()).toBe("bar");
     });
-
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,21 +23,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.BaseModelTest', function(t) {
+describe("coon.core.data.BaseModelTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Sanitize the base model', function(t) {
+    t.it("Sanitize the base model", function (t) {
 
-        var rec = Ext.create('coon.core.data.BaseModel');
+        var rec = Ext.create("coon.core.data.BaseModel");
 
         t.expect(rec instanceof Ext.data.Model).toBeTruthy();
 
     });
-
 
 
 });

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -79,11 +79,11 @@
  * The default value of this field is null
  *
  */
-Ext.define('coon.core.data.field.EmailAddress', {
+Ext.define("coon.core.data.field.EmailAddress", {
 
-    extend : 'Ext.data.field.Field',
+    extend : "Ext.data.field.Field",
 
-    alias : 'data.field.cn_core-datafieldemailaddress',
+    alias : "data.field.cn_core-datafieldemailaddress",
 
     /**
      * @cfg {Array=[]} defaultValue
@@ -95,7 +95,7 @@ Ext.define('coon.core.data.field.EmailAddress', {
     /**
      * @inheritdoc
      */
-    convert : function(v) {
+    convert : function (v) {
 
         if (!Ext.isString(v) && !Ext.isObject(v)) {
             return null;
@@ -108,14 +108,14 @@ Ext.define('coon.core.data.field.EmailAddress', {
             };
         }
 
-        if (!v.hasOwnProperty('address')) {
+        if (!Object.prototype.hasOwnProperty.call(v,"address")) {
             return null;
         }
 
-        v = Ext.copy({}, v, 'name,address');
+        v = Ext.copy({}, v, "name,address");
 
-        if (!v.hasOwnProperty('name')) {
-            v['name'] = v['address'];
+        if (!Object.prototype.hasOwnProperty.call(v,"name")) {
+            v["name"] = v["address"];
 
         }
 
@@ -125,7 +125,7 @@ Ext.define('coon.core.data.field.EmailAddress', {
     /**
      * @inheritdoc
      */
-    serialize : function(v) {
+    serialize : function (v) {
 
         if (!Ext.isObject(v)) {
             return null;
@@ -152,7 +152,7 @@ Ext.define('coon.core.data.field.EmailAddress', {
      *      //value2:
      *      {name : 'peter', address :'peterparker@dailynews.com'}
      */
-    compare : function(value1, value2) {
+    compare : function (value1, value2) {
 
         if (!Ext.isObject(value1) && !Ext.isObject(value2)) {
             return 0;
@@ -167,21 +167,20 @@ Ext.define('coon.core.data.field.EmailAddress', {
         }
 
 
-
-        if (!value1.hasOwnProperty('address') &&
-            value2.hasOwnProperty('address')) {
+        if (!Object.prototype.hasOwnProperty.call(value1,"address") &&
+            Object.prototype.hasOwnProperty.call(value2,"address")) {
             return -1;
         }
 
-        if (!value1.hasOwnProperty('name') &&
-            value2.hasOwnProperty('name')) {
+        if (!Object.prototype.hasOwnProperty.call(value1,"name") &&
+            Object.prototype.hasOwnProperty.call(value2,"name")) {
             return -1;
         }
 
-        if ((value1['address'] + '').toLowerCase() ===
-            (value2['address'] + '').toLowerCase() &&
-            (value1['name'] + '').toLowerCase() ===
-            (value2['name'] + '').toLowerCase()) {
+        if ((value1["address"] + "").toLowerCase() ===
+            (value2["address"] + "").toLowerCase() &&
+            (value1["name"] + "").toLowerCase() ===
+            (value2["name"] + "").toLowerCase()) {
             return 0;
         }
 

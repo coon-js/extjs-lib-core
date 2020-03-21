@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,41 +23,41 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.session.SplitBatchVisitorTest', function(t) {
+describe("coon.core.data.session.SplitBatchVisitorTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Unit Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.it('Should successfully test class', function(t) {
+    t.it("Should successfully test class", function (t) {
 
-        var visitor = Ext.create('coon.core.data.session.SplitBatchVisitor');
+        var visitor = Ext.create("coon.core.data.session.SplitBatchVisitor");
 
         t.expect(visitor instanceof Ext.data.session.BatchVisitor).toBe(true);
     });
 
 
-    t.it('Test getBatch()', function(t) {
+    t.it("Test getBatch()", function (t) {
 
         // to make sure, same config with regular BatchVisitor
         var operations = [
-            Ext.create('Ext.data.Model'),
-            Ext.create('Ext.data.Model'),
-            Ext.create('Ext.data.Model')
+            Ext.create("Ext.data.Model"),
+            Ext.create("Ext.data.Model"),
+            Ext.create("Ext.data.Model")
         ];
 
-        var visitor = Ext.create('Ext.data.session.BatchVisitor');
+        var visitor = Ext.create("Ext.data.session.BatchVisitor");
         visitor.onDirtyRecord(operations[0]);
         visitor.onDirtyRecord(operations[1]);
         visitor.onDirtyRecord(operations[2]);
         t.expect(visitor.getBatch().getOperations().length).toBe(1);
 
-        visitor = Ext.create('coon.core.data.session.SplitBatchVisitor');
+        visitor = Ext.create("coon.core.data.session.SplitBatchVisitor");
         operations = [
-            Ext.create('Ext.data.Model'),
-            Ext.create('Ext.data.Model'),
-            Ext.create('Ext.data.Model')
+            Ext.create("Ext.data.Model"),
+            Ext.create("Ext.data.Model"),
+            Ext.create("Ext.data.Model")
         ];
         visitor.onDirtyRecord(operations[0]);
         visitor.onDirtyRecord(operations[1]);

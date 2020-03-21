@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 /**
  * Utility class.
  */
-Ext.define('coon.core.Util', {
+Ext.define("coon.core.Util", {
 
 
     singleton : true,
@@ -48,13 +48,13 @@ Ext.define('coon.core.Util', {
      * @return {Mixed} undefined if either scope was not found or the chain could
      * not be resolved, otherwise the value found in [scope][chain]
      */
-    unchain : function(chain, scope) {
+    unchain : function (chain, scope) {
 
         if (arguments.length === 1) {
             scope = window;
         }
 
-        var parts = chain.split('.'),
+        var parts = chain.split("."),
             obj   = scope;
 
         while (parts.length) {
@@ -85,19 +85,18 @@ Ext.define('coon.core.Util', {
      *
      * @return {Array} The ordered, unique list of neighbours for target
      */
-    listNeighbours : function(list, target) {
+    listNeighbours : function (list, target) {
 
         var pages = [],
             range = [],
             pind, i, len;
 
         // parse, filter, sort
-        pages = list.map(function(v){return parseInt(v, 10)});
+        pages = list.map(function (v){return parseInt(v, 10);});
         pages = pages.filter(function (value, index, self) {
             return self.indexOf(value, 0) === index;
         });
-        pages.sort(function(a, b){return a-b});
-
+        pages.sort(function (a, b){return a-b;});
 
 
         pind = pages.indexOf(parseInt(target, 10));
@@ -144,26 +143,26 @@ Ext.define('coon.core.Util', {
      *
      * @throws if list is not an array
      */
-    groupIndices : function(list) {
+    groupIndices : function (list) {
 
         var groups = [],
             pages;
 
         if (!Ext.isArray(list)) {
             Ext.raise({
-                msg  : '\'list\' must be an array',
+                msg  : "'list' must be an array",
                 list : list
-            })
+            });
         }
 
         // parse, filter, sort
-        pages = list.map(function(v){return parseInt(v, 10)});
+        pages = list.map(function (v){return parseInt(v, 10);});
         pages = pages.filter(function (value, index, self) {
             return self.indexOf(value) === index;
         });
-        pages.sort(function(a, b){return a-b});
+        pages.sort(function (a, b){return a-b;});
 
-        pages.reduce(function(previousValue, currentValue, index, array){
+        pages.reduce(function (previousValue, currentValue, index, array){
             if (currentValue > previousValue + 1) {
                 groups.push([]);
             }
@@ -192,7 +191,7 @@ Ext.define('coon.core.Util', {
      * @throws if start is not a number or less than 1, or if end is not a number
      * or if end is less than start
      */
-    createRange : function(start, end) {
+    createRange : function (start, end) {
 
         var ret;
 
@@ -201,14 +200,14 @@ Ext.define('coon.core.Util', {
 
         if (!Ext.isNumber(start)) {
             Ext.raise({
-                msg   : '\'start\' must be a number',
+                msg   : "'start' must be a number",
                 start : start
             });
         }
 
         if (!Ext.isNumber(end) || end < start) {
             Ext.raise({
-                msg   : '\'end\' must be a number equal to or greater than start',
+                msg   : "'end' must be a number equal to or greater than start",
                 end   : end,
                 start : start
             });
@@ -218,7 +217,7 @@ Ext.define('coon.core.Util', {
         // needs to be filled so we can apply map to it
         ret.fill(undefined);
 
-        return ret.map(function() {
+        return ret.map(function () {
             return start++;
         });
 

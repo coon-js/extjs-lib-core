@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,282 +23,280 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe('coon.core.data.pageMap.PageRangeTest', function(t) {
+describe("coon.core.data.pageMap.PageRangeTest", function (t) {
 
 
-// +----------------------------------------------------------------------------
-// |                    =~. Tests .~=
-// +----------------------------------------------------------------------------
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
 
-    t.requireOk('coon.core.data.pageMap.PageRange', function() {
+    t.requireOk("coon.core.data.pageMap.PageRange", function () {
 
 
+        t.it("constructor()", function (t) {
 
-    t.it('constructor()', function(t) {
+            var exc;
 
-        var exc, e;
+            try {Ext.create("coon.core.data.pageMap.PageRange");} catch (e) {exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be specified");
 
-        try {Ext.create('coon.core.data.pageMap.PageRange');} catch (e) {exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be specified');
-
-        t.expect(
-            Ext.create('coon.core.data.pageMap.PageRange', {pages:[1]})
+            t.expect(
+                Ext.create("coon.core.data.pageMap.PageRange", {pages:[1]})
             instanceof coon.core.data.pageMap.PageRange
-        ).toBe(true);
+            ).toBe(true);
 
 
-    });
-
-    t.it('applyPages()', function(t) {
-
-        var exc, e;
-
-        try {
-            Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [1, 2, 5]
-            });
-        } catch (e) {
-            exc = e;
-        }
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('not an ordered list');
-
-
-        try {
-            Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [0, 1, 2]
-            });
-        } catch (e) {
-            exc = e;
-        }
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must not be less than 1');
-
-
-        try {
-            Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : 'somestuff'
-            });
-        } catch (e) {
-            exc = e;
-        }
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be an array');
-
-
-        var range = Ext.create('coon.core.data.pageMap.PageRange', {
-            pages : [1, 2, 3]
         });
 
-        try {
-            range.setPages([4, 5, 6]);
-        } catch (e) {
-            exc = e;
-        }
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('was already defined');
+        t.it("applyPages()", function (t) {
 
-    });
+            var exc;
+
+            try {
+                Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [1, 2, 5]
+                });
+            } catch (e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("not an ordered list");
 
 
-    t.it('getter', function(t) {
+            try {
+                Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [0, 1, 2]
+                });
+            } catch (e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must not be less than 1");
 
-        var range = Ext.create('coon.core.data.pageMap.PageRange', {
-              pages : [3, 4, 5]
+
+            try {
+                Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : "somestuff"
+                });
+            } catch (e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an array");
+
+
+            var range = Ext.create("coon.core.data.pageMap.PageRange", {
+                pages : [1, 2, 3]
+            });
+
+            try {
+                range.setPages([4, 5, 6]);
+            } catch (e) {
+                exc = e;
+            }
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("was already defined");
+
         });
 
-        t.expect(range.getPages()).toEqual([3, 4, 5]);
-        t.expect(range.getFirst()).toBe(3);
-        t.expect(range.getLast()).toBe(5);
-        t.expect(range.getLength()).toBe(3);
-    });
 
+        t.it("getter", function (t) {
 
-    t.it('equalTo()', function(t) {
-
-        var rangeLeft = Ext.create('coon.core.data.pageMap.PageRange', {
+            var range = Ext.create("coon.core.data.pageMap.PageRange", {
                 pages : [3, 4, 5]
-            }),
-            rangeRight = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [3, 4, 5]
-            }),
-            rangeNope_1 = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [1]
-            }),
-            rangeNope_2 = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [4, 5, 6]
-            }), exc, e;
+            });
+
+            t.expect(range.getPages()).toEqual([3, 4, 5]);
+            t.expect(range.getFirst()).toBe(3);
+            t.expect(range.getLast()).toBe(5);
+            t.expect(range.getLength()).toBe(3);
+        });
 
 
-        try {
-            rangeLeft.equalTo([1]);
-        } catch (e) {
-            exc = e;
-        }
+        t.it("equalTo()", function (t) {
 
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg.toLowerCase()).toContain('must be an instance of');
-
-
-        t.expect(rangeLeft.equalTo(rangeLeft)).toBe(true);
-        t.expect(rangeLeft.equalTo(rangeRight)).toBe(true);
-        t.expect(rangeRight.equalTo(rangeLeft)).toBe(true);
-        t.expect(rangeLeft.equalTo(rangeNope_1)).toBe(false);
-        t.expect(rangeLeft.equalTo(rangeNope_2)).toBe(false);
-        t.expect(rangeNope_1.equalTo(rangeNope_2)).toBe(false);
-
-    });
+            var rangeLeft = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [3, 4, 5]
+                }),
+                rangeRight = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [3, 4, 5]
+                }),
+                rangeNope_1 = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [1]
+                }),
+                rangeNope_2 = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [4, 5, 6]
+                }), exc;
 
 
-    t.it('equalTo() - (2)', function(t) {
+            try {
+                rangeLeft.equalTo([1]);
+            } catch (e) {
+                exc = e;
+            }
 
-        var rangeLeft = Ext.create('coon.core.data.pageMap.PageRange', {
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
+
+
+            t.expect(rangeLeft.equalTo(rangeLeft)).toBe(true);
+            t.expect(rangeLeft.equalTo(rangeRight)).toBe(true);
+            t.expect(rangeRight.equalTo(rangeLeft)).toBe(true);
+            t.expect(rangeLeft.equalTo(rangeNope_1)).toBe(false);
+            t.expect(rangeLeft.equalTo(rangeNope_2)).toBe(false);
+            t.expect(rangeNope_1.equalTo(rangeNope_2)).toBe(false);
+
+        });
+
+
+        t.it("equalTo() - (2)", function (t) {
+
+            var rangeLeft = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [3]
+                }),
+                rangeRight = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [3]
+                }),
+                rangeNope_1 = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [5]
+                }),
+                rangeNope_2 = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [6]
+                });
+
+
+            t.expect(rangeLeft.equalTo(rangeLeft)).toBe(true);
+            t.expect(rangeLeft.equalTo(rangeRight)).toBe(true);
+            t.expect(rangeRight.equalTo(rangeLeft)).toBe(true);
+            t.expect(rangeLeft.equalTo(rangeNope_1)).toBe(false);
+            t.expect(rangeLeft.equalTo(rangeNope_2)).toBe(false);
+            t.expect(rangeNope_1.equalTo(rangeNope_2)).toBe(false);
+
+        });
+
+
+        t.it("toArray()", function (t) {
+
+            var range = Ext.create("coon.core.data.pageMap.PageRange", {
+                    pages : [3, 4, 5]
+                }),
+                arr;
+
+            arr = range.toArray();
+            t.expect(arr).toEqual([3, 4, 5]);
+
+            // mae sure no reference to the original page array is returned
+            arr[0] = 8;
+            t.expect(range.getFirst()).toBe(3);
+
+
+            range = Ext.create("coon.core.data.pageMap.PageRange", {
                 pages : [3]
-            }),
-            rangeRight = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [3]
-            }),
-            rangeNope_1 = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [5]
-            }),
-            rangeNope_2 = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [6]
-            }), exc, e;
+            });
 
+            arr = range.toArray();
+            t.expect(arr).toEqual([3]);
 
-        t.expect(rangeLeft.equalTo(rangeLeft)).toBe(true);
-        t.expect(rangeLeft.equalTo(rangeRight)).toBe(true);
-        t.expect(rangeRight.equalTo(rangeLeft)).toBe(true);
-        t.expect(rangeLeft.equalTo(rangeNope_1)).toBe(false);
-        t.expect(rangeLeft.equalTo(rangeNope_2)).toBe(false);
-        t.expect(rangeNope_1.equalTo(rangeNope_2)).toBe(false);
+            // mae sure no reference to the original page array is returned
+            arr[0] = 3;
+            t.expect(range.getFirst()).toBe(3);
+            t.expect(range.getLast()).toBe(3);
 
-    });
-
-
-    t.it('toArray()', function(t) {
-
-        var range = Ext.create('coon.core.data.pageMap.PageRange', {
-                pages : [3, 4, 5]
-            }),
-            arr;
-
-        arr = range.toArray();
-        t.expect(arr).toEqual([3, 4, 5]);
-
-        // mae sure no reference to the original page array is returned
-        arr[0] = 8;
-        t.expect(range.getFirst()).toBe(3);
-
-
-        range = Ext.create('coon.core.data.pageMap.PageRange', {
-            pages : [3]
         });
 
-        arr = range.toArray();
-        t.expect(arr).toEqual([3]);
 
-        // mae sure no reference to the original page array is returned
-        arr[0] = 3;
-        t.expect(range.getFirst()).toBe(3);
-        t.expect(range.getLast()).toBe(3);
+        t.it("coon.core.data.pageMap.PageRange.create()", function (t) {
 
-    });
+            var PageRange = coon.core.data.pageMap.PageRange,
+                exc, range,
+                tests = [
+                    [4],
+                    [1, 2],
+                    [4, 5],
+                    [211, 212],
+                    [8, 9, 10, 11]
+                ], i ,len;
 
+            try{PageRange.create();}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
+            try{PageRange.create(["foo"]);}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-    t.it('coon.core.data.pageMap.PageRange.create()', function(t) {
+            try{PageRange.create({}, {});}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-        var PageRange = coon.core.data.pageMap.PageRange,
-            exc, e, range,
-            tests = [
-                [4],
-                [1, 2],
-                [4, 5],
-                [211, 212],
-                [8, 9, 10, 11]
-            ];
+            try{PageRange.create({});}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-        try{PageRange.create();}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
+            try{PageRange.create([]);}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-        try{PageRange.create(['foo']);}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
+            try{PageRange.create([1], 0);}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-        try{PageRange.create({}, {});}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
+            try{PageRange.create(0, 1);}catch(e){exc = e;}
+            t.expect(exc).toBeDefined();
+            t.expect(exc.msg).toBeDefined();
+            exc = undefined;
 
-        try{PageRange.create({});}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
+            // with array as arg
+            for (i = 0, len = tests.length; i < len; i++) {
+                range = PageRange.create.call(null, tests[i]);
+                t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
+                t.expect(range.toArray()).toEqual(tests[i]);
+            }
 
-        try{PageRange.create([]);}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
+            // with arguments as args
+            for (i = 0, len = tests.length; i < len; i++) {
+                range = PageRange.create.apply(null, tests[i]);
+                t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
+                t.expect(range.toArray()).toEqual(tests[i]);
+            }
 
-        try{PageRange.create([1], 0);}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
-
-        try{PageRange.create(0, 1);}catch(e){exc = e;}
-        t.expect(exc).toBeDefined();
-        t.expect(exc.msg).toBeDefined();
-        exc = undefined;
-
-        // with array as arg
-        for (var i = 0, len = tests.length; i < len; i++) {
-            range = PageRange.create.call(null, tests[i]);
-            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
-            t.expect(range.toArray()).toEqual(tests[i]);
-        }
-
-        // with arguments as args
-        for (var i = 0, len = tests.length; i < len; i++) {
-            range = PageRange.create.apply(null, tests[i]);
-            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
-            t.expect(range.toArray()).toEqual(tests[i]);
-        }
-
-    });
+        });
 
 
-    t.it('coon.core.data.pageMap.PageRange.createFor()', function(t) {
+        t.it("coon.core.data.pageMap.PageRange.createFor()", function (t) {
 
-        t.isCalledNTimes('createRange', coon.core.Util, 2);
+            t.isCalledNTimes("createRange", coon.core.Util, 2);
 
-        var PageRange = coon.core.data.pageMap.PageRange,
-            exc, e, range,
-            tests = [
-                [1, 2],
-                [4, 5]
-            ];
-
-
-        // with arguments as args
-        for (var i = 0, len = tests.length; i < len; i++) {
-            range = PageRange.createFor.apply(null, tests[i]);
-            t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
-        }
-
-    });
+            var PageRange = coon.core.data.pageMap.PageRange,
+                range,
+                tests = [
+                    [1, 2],
+                    [4, 5]
+                ];
 
 
-        t.it('contains()', function(t) {
+            // with arguments as args
+            for (var i = 0, len = tests.length; i < len; i++) {
+                range = PageRange.createFor.apply(null, tests[i]);
+                t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
+            }
+
+        });
+
+
+        t.it("contains()", function (t) {
 
 
             var PageRange      = coon.core.data.pageMap.PageRange,
                 RecordPosition = coon.core.data.pageMap.RecordPosition,
-                exc, e, range, pos,
+                range, pos,
                 tests = [
                     {range : [1, 2],  pos :  [1, 19], exp : true},
                     {range : [1, 2],  pos :  [2, 22], exp : true},
@@ -316,4 +314,4 @@ describe('coon.core.data.pageMap.PageRangeTest', function(t) {
 
         });
 
-})});
+    });});

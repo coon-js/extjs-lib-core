@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2019 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,19 +27,19 @@
  * Session class which lets you configure an individual BatchVisitor to use for
  * creating batches.
  */
-Ext.define('coon.core.data.Session', {
+Ext.define("coon.core.data.Session", {
 
-    extend : 'Ext.data.Session',
+    extend : "Ext.data.Session",
 
     requires : [
-        'Ext.data.session.BatchVisitor'
+        "Ext.data.session.BatchVisitor"
     ],
 
     /**
      * @cfg {String=Ext.data.session.BatchVisitor } batchVisitorClassName
      * The class name of the BatchVisitor to use with this session.
      */
-    batchVisitorClassName : 'Ext.data.session.BatchVisitor',
+    batchVisitorClassName : "Ext.data.session.BatchVisitor",
 
 
     /**
@@ -71,7 +71,7 @@ Ext.define('coon.core.data.Session', {
          * loaded or if the class specified in #batchVisitorClassName is not of type
          * Ext.data.session.BatchVisitor
          */
-        createVisitor : function() {
+        createVisitor : function () {
 
             var me  = this,
                 cls = me.batchVisitorClassName,

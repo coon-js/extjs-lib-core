@@ -37,7 +37,7 @@
  *      coon.core.ConfigManager.get("dev-cn_imapusersim", "prop"); // undefined
  *      coon.core.ConfigManager.get("dev-cn_imapusersim", "prop", "someDefaultValue"); // "someDefaultValue"
  */
-Ext.define('coon.core.ConfigManager', {
+Ext.define("coon.core.ConfigManager", {
 
     requires : [
         "coon.core.Util"
@@ -63,7 +63,7 @@ Ext.define('coon.core.ConfigManager', {
      *
      * @throws if "domain" was already registered
      */
-    register : function(domain, config) {
+    register : function (domain, config) {
 
         const me = this;
 
@@ -98,7 +98,7 @@ Ext.define('coon.core.ConfigManager', {
      * otherwise the (default) value. Returns the complete configuration for the domain if only
      * the domain was specified.
      */
-    get : function(domain, key, defaultValue) {
+    get : function (domain, key, defaultValue) {
 
         const me = this;
 
