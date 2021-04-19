@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -138,5 +138,21 @@ describe("coon.core.UtilTest", function (t) {
             }
         });
 
+        t.it("purge", function (t) {
+
+            const Util = coon.core.Util;
+
+            let input = {a : 1, b : undefined, c : 3, d : undefined};
+
+            t.expect(Util.purge(input)).toEqual({a : 1, c : 3});
+
+            input = {a : 1, b : "", c : ""};
+            t.expect(Util.purge(input, "")).toEqual({a : 1});
+
+            input = {a : 1, b : "", c : ""};
+            t.expect(Util.purge(input, "")).not.toBe(input);
+
+
+        });
 
     });});

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,24 @@ Ext.define("coon.core.Util", {
 
 
     singleton : true,
+
+    /**
+     * Expects an Object and removes all the entries which equal to match.
+     *
+     *      @example
+     *      var foo = { 1 : "", 2 : "bar", 3 : ""};
+     *
+     *      coon.core.Util.purge(foo, ""); // {2 : "bar"}
+     *
+     * @param {Object} input
+     * @param {Mixed} match, defaults to undefined
+     *
+     * @return {Array} a new filtered array
+     */
+    purge : function (input, match= undefined) {
+        return Object.fromEntries(Object.entries(input).filter(([k, v]) => v !== match));
+    },
+
 
     /**
      * Splits the specified string by looking for "." as separators and returns
