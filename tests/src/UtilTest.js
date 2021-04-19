@@ -138,7 +138,7 @@ describe("coon.core.UtilTest", function (t) {
             }
         });
 
-        t.it("purge", function (t) {
+        t.it("purge()", function (t) {
 
             const Util = coon.core.Util;
 
@@ -153,6 +153,18 @@ describe("coon.core.UtilTest", function (t) {
             t.expect(Util.purge(input, "")).not.toBe(input);
 
 
+        });
+
+
+        t.it("flip()", function (t) {
+
+            const Util = coon.core.Util;
+
+            let input = {a : 1, b : 2, c : 3, d : 4},
+                res = Util.flip(input);
+
+            t.expect(res).not.toBe(input);
+            t.expect(res).toEqual({1 : "a", 2 : "b", 3 : "c" , 4: "d"});
         });
 
     });});

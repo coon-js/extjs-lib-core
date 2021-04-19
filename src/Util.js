@@ -32,6 +32,23 @@ Ext.define("coon.core.Util", {
     singleton : true,
 
     /**
+     * Expects an Object and flips key/value/pairs.
+     *
+     *      @example
+     *      var foo = { 1 : "foo", 2 : "bar", 3 : "snafu"};
+     *
+     *      coon.core.Util.flip(foo); // {"bar" : 1, "bar": 2, "snafu" : 3}
+     *
+     * @param {Object} input
+     *
+     * @return {Object} a new object where the key/value pairs are flipped
+     */
+    flip : function (input) {
+        return Object.assign({}, ...Object.entries(input).map(([k, v]) => ({[v] : k})));
+    },
+
+
+    /**
      * Expects an Object and removes all the entries which equal to match.
      *
      *      @example
@@ -42,7 +59,7 @@ Ext.define("coon.core.Util", {
      * @param {Object} input
      * @param {Mixed} match, defaults to undefined
      *
-     * @return {Array} a new filtered array
+     * @return {Object} a new filtered object
      */
     purge : function (input, match= undefined) {
         return Object.fromEntries(Object.entries(input).filter(([k, v]) => v !== match));
