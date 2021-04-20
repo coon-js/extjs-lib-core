@@ -99,7 +99,7 @@ Ext.define("coon.core.Theme", {
          * });
          *
          */
-        modes : null
+        modes : undefined
     },
 
     /**

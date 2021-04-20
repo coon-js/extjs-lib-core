@@ -35,7 +35,7 @@ describe("coon.core.ThemeTest", function (t) {
 
         const theme = Ext.create("coon.core.Theme");
 
-        t.expect(theme.getModes()).toBe(null);
+        t.expect(theme.getModes()).toBeUndefined();
 
         t.expect(theme.switchMode).toBe(Ext.emptyFn);
         t.expect(theme.get).toBe(Ext.emptyFn);
