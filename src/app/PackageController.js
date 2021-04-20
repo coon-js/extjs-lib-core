@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -90,6 +90,20 @@ Ext.define("coon.core.app.PackageController", {
      * from being rendered
      */
     preLaunchHook : Ext.emptyFn,
+
+
+    /**
+     * Return "true" tpo force a coon-driven application to process your PackageController's
+     * preLaunchHook, even if any other PackageController already returned false to prevent
+     * further processingthe processing of preLaunchHooks.
+     * This is useful in scenarios where data has to be loaded or data has to
+     * be made available that is not user/security sensitive, such as theme-data.
+     *
+     * @returns {boolean}
+     */
+    isPreLaunchForceable : function () {
+        return false;
+    },
 
 
     /**
