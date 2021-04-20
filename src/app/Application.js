@@ -505,7 +505,8 @@ Ext.define("coon.core.app.Application", {
                 load.bind(me, packageConfig)
             )
             .then(
-                me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
+                me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages),
+                (e) => {Ext.raise({msg : "Error while loading package", error : e});}
             );
     },
 
