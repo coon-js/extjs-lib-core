@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -189,7 +189,7 @@ Ext.define("coon.core.app.Application", {
         }
 
         var ctrl = null,
-            res  = false,
+            res  = true,
             controllers = this.controllers.getRange();
 
         for (var i = 0, len = controllers.length; i < len; i++) {
@@ -198,15 +198,19 @@ Ext.define("coon.core.app.Application", {
 
             if ((ctrl instanceof coon.core.app.PackageController) &&
                 Ext.isFunction(ctrl.preLaunchHook)) {
-                res = ctrl.preLaunchHook(this);
 
                 if (res === false) {
-                    return false;
+                    if (ctrl.isPreLaunchForceable() === true) {
+                        ctrl.preLaunchHook(this);
+                    }
+                } else {
+                    res = ctrl.preLaunchHook(this);
                 }
             }
         }
 
-        return true;
+        // preLaunchHooks may not have returned explicitely boolean
+        return res !== false;
     },
 
 
@@ -357,6 +361,8 @@ Ext.define("coon.core.app.Application", {
     /**
      * Returns the package name this controller is associated with.
      * Returns null if no associated package was found.
+     * Note: This method can only be called after packages and their corresponding
+     * controllers were computed in #findCoonJsPackageControllers.
      *
      * @param {Ext.app.Controller} controller
      *
@@ -476,13 +482,29 @@ Ext.define("coon.core.app.Application", {
             return;
         }
 
-        let load = function (pck){return Ext.Package.load(pck);};
+        let load = function (packageConfig) {
+
+            if (packageConfig.included) {
+                if(packageConfig.controller !== false && packageConfig.controller !== undefined) {
+                    return Ext.Package.loadAllScripts(
+                        packageConfig.name,
+                        [Ext.Loader.getPath(packageConfig.controller)]
+                    );
+                }
+                return Promise.resolve();
+            }
+            return Ext.Package.load(packageConfig.name);
+        };
 
         me.loadPackageConfig(packageConfig)
             .then(
                 me.packageConfigLoadResolved.bind(me),
                 me.packageConfigLoadRejected.bind(me)
-            ).then(load).then(
+            )
+            .then(
+                load.bind(me, packageConfig)
+            )
+            .then(
                 me.handlePackageLoad.bind(me, remainingPackages.pop(), remainingPackages)
             );
     },
@@ -526,12 +548,12 @@ Ext.define("coon.core.app.Application", {
             let entry = mp[key], ns, fqn,
                 cPackage = coon.core.Util.unchain("coon-js.package", entry);
 
-            if (entry.included !== true && !Ext.Package.isLoaded(key) &&
-                cPackage !== undefined) {
+            if (cPackage !== undefined) {
                 ns  = entry.namespace;
                 fqn = ns + ".app.PackageController";
 
                 packages.push({
+                    included : entry.included === true,
                     name     : key,
                     metadata : entry,
                     controller : cPackage && cPackage.controller === true ? fqn : false,
@@ -573,8 +595,6 @@ Ext.define("coon.core.app.Application", {
                 defaultConfig = coon.core.Util.unchain("metadata.coon-js.package.config", packageEntry);
 
             if (defaultConfig !== undefined) {
-
-                me.computePackageConfigUrl(packageName);
 
                 return Ext.Ajax.request({
                     method : "GET",
