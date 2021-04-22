@@ -105,7 +105,7 @@ Ext.define("coon.core.app.Application", {
 
         me.launch = Ext.Function.createInterceptor(me.launch, me.launchHook, me);
 
-
+        me.pluginMap = {};
         me.callParent([config]);
     },
 
@@ -196,14 +196,11 @@ Ext.define("coon.core.app.Application", {
 
             ctrl = controllers[i];
 
-            if ((ctrl instanceof coon.core.app.PackageController) &&
-                Ext.isFunction(ctrl.preLaunchHook)) {
+            if (ctrl instanceof coon.core.app.PackageController) {
 
-                if (res === false) {
-                    if (ctrl.isPreLaunchForceable() === true) {
-                        ctrl.preLaunchHook(this);
-                    }
-                } else {
+                ctrl.visitPlugins(me);
+
+                if (Ext.isFunction(ctrl.preLaunchHook) && res !== false) {
                     res = ctrl.preLaunchHook(this);
                 }
             }
@@ -423,6 +420,15 @@ Ext.define("coon.core.app.Application", {
             Ext.env.Ready.block();
 
             Ext.onReady(function () {
+                try {
+                    me.mapControllerPlugins(orgPackages);
+                } catch (e) {
+                    Ext.raise({
+                        "msg" : "Mapping the plugins failed",
+                        "reason" : e
+                    });
+                }
+
                 Ext.app.Application.prototype.onProfilesReady.call(me);
             });
 
@@ -435,6 +441,45 @@ Ext.define("coon.core.app.Application", {
 
 
         return orgPackages;
+    },
+
+
+    /**
+     * Overridden to make sure each controller gets its addPlugin()-method called
+     * if there are any plugins registered in the Applications pluginMap.
+     * Will delete each assigned controller from the pluginMap afterwards to prevent doubles.
+     *
+     * @param {String} name
+     * @param {Boolean} preventCreate
+     *
+     * @returns {coon.core.app.PackageController}
+     *
+     * @see coon.core.app.PackageController#addPlugin
+     */
+    getController : function (name, preventCreate) {
+
+        const 
+            me = this, 
+            controller = me.callParent(arguments);
+
+        if (controller && (controller instanceof coon.core.app.PackageController)) {
+
+            const
+                fqn = Ext.getClassName(controller),
+                plugins = me.pluginMap[fqn];
+
+            if (!plugins) {
+                return controller;
+            }
+            
+            plugins.forEach (function (plugin) {
+                controller.addPlugin(Ext.create(plugin));
+            });
+
+            delete me.pluginMap[fqn];
+        }
+
+        return controller;
     },
 
 
@@ -461,7 +506,7 @@ Ext.define("coon.core.app.Application", {
      * If "package.config" in the package.json is a configuration object, its key/value pairs
      * will get overridden by key/value pairs by the same name in the custom config file.
      * See #registerPackageConfig.
-     * Note: The config files for each Package will be loaded BEFOE the package gets loaded,
+     * Note: The config files for each Package will be loaded BEFORE the package gets loaded,
      * so that the packages can take advantage of already loaded configurations.
      *
      * @param {String} packageName
@@ -485,12 +530,6 @@ Ext.define("coon.core.app.Application", {
         let load = function (packageConfig) {
 
             if (packageConfig.included) {
-                if(packageConfig.controller !== false && packageConfig.controller !== undefined) {
-                    return Ext.Package.loadAllScripts(
-                        packageConfig.name,
-                        [Ext.Loader.getPath(packageConfig.controller)]
-                    );
-                }
                 return Promise.resolve();
             }
             return Ext.Package.load(packageConfig.name);
@@ -704,8 +743,44 @@ Ext.define("coon.core.app.Application", {
         registerPackageConfig : function (packageName, defaultConfig, customConfig) {
 
             const cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
-
             coon.core.ConfigManager.register(packageName, Ext.apply(cloned, customConfig));
+        },
+
+
+        /**
+         * Iterates through the packages and check their configuration (if any) if there are
+         * any ControllerPlugins configured.
+         * Will map the class-names (fqn) of the ControllerPlugins to the class-name of the Controller
+         * (fqn) in pluginMap.
+         *
+         * @param {Array} packages
+         *
+         * @return {Object} pluginMap
+         *
+         * @private
+         */
+        mapControllerPlugins : function (packages) {
+
+            const me = this;
+
+            packages.forEach(function (pck) {
+
+                let plugins = coon.core.ConfigManager.get(pck.name, "plugins.controller");
+                if (!plugins) {
+                    return me.pluginMap;
+                }
+
+                plugins.forEach(function (plugin) {
+
+                    let ctrl = pck.controller,
+                        fqn = Ext.manifest.packages[plugin].namespace + ".app.ControllerPlugin";
+
+                    me.pluginMap[ctrl] = me.pluginMap[ctrl] || [];
+                    me.pluginMap[ctrl].push(fqn);
+                });
+            });
+
+            return me.pluginMap;
         }
 
     }

@@ -54,17 +54,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 return false;
             }
         });
-        Ext.define("coon.test.app.mock.app.MockCtrlForce", {
-            extend : "coon.core.app.PackageController",
-            preLaunchHook : function () {
-                MOCKCTRLORDER.push("MockCtrlForce");
-                return true;
-            },
-            isPreLaunchForceable : function () {
-                return true;
-            }
 
-        });
         Ext.define("coon.test.app.mock.app.MockCtrlUndefined", {
             extend : "coon.core.app.PackageController",
             preLaunchHook : function () {
@@ -144,6 +134,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
                     "coon.test.app.mock.PackageControllerMock"
                 ]
             });
+
+            t.expect(w.pluginMap).toEqual({});
 
             var VIEW = null;
             if (Ext.isModern) {
@@ -366,6 +358,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 tmpMani = Ext.manifest,
                 tmpFn = Ext.Package.isLoaded;
 
+            t.isCalledNTimes("mapControllerPlugins", app, 0);
+
             coon.core.app.Application.prototype.onProfilesReady = AVOID_CONSTRUCTOR;
 
             app.handlePackageLoad = function (){CALLED++;};
@@ -421,6 +415,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 tmpMani = Ext.manifest,
                 tmpFn = Ext.Package.isLoaded;
 
+            let spy = t.spyOn(app, "mapControllerPlugins");
+
             coon.core.app.Application.prototype.onProfilesReady = AVOID_CONSTRUCTOR;
 
             app.handlePackageLoad = function (){CALLED++;};
@@ -429,7 +425,6 @@ describe("coon.core.app.ApplicationTest", function (t) {
             };
 
             Ext.manifest = buildManifest();
-
 
             Ext.manifest.packages["mock"] = {
                 "namespace" : "coon.test.app.mock",
@@ -447,7 +442,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
             coon.core.ConfigManager.register("mock", {foo : "bar"});
 
-            t.expect(app.onProfilesReady()).toEqual([
+            let registeredControllers = [
                 {included : false, name : "p_foo", metadata : Ext.manifest.packages["p_foo"], controller : "foo.app.PackageController", namespace : "foo"},
                 {included : true, name : "p_bar", metadata : Ext.manifest.packages["p_bar"], controller : "bar.app.PackageController", namespace : "bar"},
                 {included : false, name : "t_snafu", metadata : Ext.manifest.packages["t_snafu"], controller : "snafu.app.PackageController", namespace : "snafu"},
@@ -465,13 +460,18 @@ describe("coon.core.app.ApplicationTest", function (t) {
                     namespace : "coon.test.app.mock2",
                     metadata : Ext.manifest.packages["mock2"]
                 }
-            ]);
+            ];
+
+            t.expect(app.onProfilesReady()).toEqual(registeredControllers);
             t.expect(app.controllers).toEqual([
                 "foo.app.PackageController",
                 "bar.app.PackageController",
                 "snafu.app.PackageController",
                 "coon.test.app.mock.app.PackageController"
             ]);
+
+            t.expect(spy.calls.mostRecent().args[0]).toEqual(registeredControllers);
+
 
             t.expect(
                 app.getPackageNameForController(
@@ -745,19 +745,17 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Tests with forcing preLaunchHooks / forceable", function (t) {
+        t.it("Tests with preLaunchHooks ", function (t) {
 
             defineControllerMocks();
 
             t.waitForMs(500, function () {
 
-                // forceable
                 app = Ext.create("coon.core.app.Application", {
                     name: "test",
                     mainView: "Ext.Panel",
                     controllers: [
                         "coon.test.app.mock.app.MockCtrlFalse",
-                        "coon.test.app.mock.app.MockCtrlForce",
                         "coon.test.app.mock.app.MockCtrlTrue"
                     ]
                 });
@@ -768,8 +766,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 let res = app.preLaunchHookProcess();
 
                 t.expect(MOCKCTRLORDER).toEqual([
-                    "MockCtrlFalse",
-                    "MockCtrlForce"
+                    "MockCtrlFalse"
                 ]);
 
                 t.expect(res).toBe(false);
@@ -778,7 +775,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Tests with forcing preLaunchHooks / return value undefined", function (t) {
+        t.it("Tests with preLaunchHooks / return value undefined", function (t) {
             // return value undefined
 
             defineControllerMocks();
@@ -911,5 +908,61 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
         });
 
+
+        t.it("mapControllerPlugins()", function (t) {
+
+            const orgMani = Ext.manifest;
+
+            app = Ext.create("coon.core.app.Application", {
+                name : "test",
+                mainView : "Ext.Panel"
+            });
+
+            Ext.manifest = buildManifest();
+
+            coon.core.ConfigManager.register("p_bar",  coon.core.Util.chain("plugins.controller", {}, ["mockplugin"]));
+            Ext.manifest.packages["mockplugin"] = {namespace : "snafu.com"};
+            let packages = [
+                {name : "p_foo", controller : "foo.app.PackageController"},
+                {name : "p_bar", controller : "bar.app.PackageController"}
+            ];
+
+            t.expect(app.pluginMap).toEqual({});
+
+            let map = app.mapControllerPlugins(packages);
+
+            t.expect(map).toEqual({"bar.app.PackageController" : ["snafu.com.app.ControllerPlugin"]});
+            t.expect(map).toBe(app.pluginMap);
+
+            Ext.manifest = orgMani;
+        });
+
+
+        t.it("getController()", function (t) {
+
+            app = Ext.create("coon.core.app.Application", {
+                name : "test",
+                mainView : "Ext.Panel",
+                controllers : [
+                    "coon.test.app.mock.app.PackageController"
+                ]
+            });
+
+            app.pluginMap= {
+                "coon.test.app.mock.app.PackageController" : ["coon.test.app.mock.app.ControllerPlugin"]
+            };
+
+            let controller = app.getController("coon.test.app.mock.app.PackageController");
+
+            t.isInstanceOf(controller, "coon.test.app.mock.app.PackageController");
+            t.expect(controller.plugins.length).toBe(1);
+            let plugin = controller.plugins[0];
+            t.isInstanceOf(plugin, "coon.test.app.mock.app.ControllerPlugin");
+
+            let controller2 = app.getController("coon.test.app.mock.app.PackageController");
+            t.expect(controller2).toBe(controller);
+            t.expect(controller.plugins.length).toBe(1);
+            t.expect(controller.plugins[0]).toBe(plugin);
+        });
 
     });});
