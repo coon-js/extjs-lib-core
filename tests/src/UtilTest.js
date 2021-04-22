@@ -167,4 +167,22 @@ describe("coon.core.UtilTest", function (t) {
             t.expect(res).toEqual({1 : "a", 2 : "b", 3 : "c" , 4: "d"});
         });
 
+
+        t.it("chain()", function (t) {
+
+            let obj = {};
+            let res = coon.core.Util.chain("a.b.c.d", obj, "foo");
+
+            t.expect(res).toBe(obj);
+
+            t.expect(res).toEqual({ a : { b : {c : { d : "foo"}}}} );
+
+            res = coon.core.Util.chain("a.b.c.d", {"a" : {"b" : {}}}, "bar");
+            t.expect(res).toEqual({ a : { b : {c : { d : "bar"}}}} );
+
+            res = coon.core.Util.chain("a.b.c.d", {"a" : {"d" : "u"}}, "bar");
+            t.expect(res).toEqual({ a : { b : {c : { d : "bar"}}, d : "u"}} );
+
+        });
+
     });});
