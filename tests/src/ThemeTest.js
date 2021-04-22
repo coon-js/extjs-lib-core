@@ -33,13 +33,22 @@ describe("coon.core.ThemeTest", function (t) {
 
     t.it("functionality", function (t) {
 
-        const theme = Ext.create("coon.core.Theme");
+        let theme = Ext.create("coon.core.Theme");
 
         t.expect(theme.getModes()).toBeUndefined();
 
         t.expect(theme.switchMode).toBe(Ext.emptyFn);
         t.expect(theme.get).toBe(Ext.emptyFn);
         t.expect(theme.set).toBe(Ext.emptyFn);
+
+        theme = Ext.create("coon.core.Theme", {
+            modes : {
+                "foo" : "bar"
+            }
+        });
+
+        t.expect(theme.getModes()).toEqual({"foo" : "bar"});
+
     });
 
 });
