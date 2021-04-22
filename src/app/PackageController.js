@@ -52,12 +52,26 @@
  *              before : 'onBeforePackageRoute'
  *          }
  *      }
-
+ *
+ * Plugins
+ * =======
+ * PackageController can have plugins that usually get called during the preLaunchHook by the owning
+ * application. Plugins must be of the type {coon.core.app.ControllerPlugin}.
  *
  */
 Ext.define("coon.core.app.PackageController", {
 
     extend : "Ext.app.Controller",
+
+    requires : [
+        "coon.core.Util",
+        "coon.core.app.ControllerPlugin"
+    ],
+
+    /**
+     * @private
+     */
+    plugins : null,
 
     /**
      * A template method that can be used to configure views from withing the
@@ -78,6 +92,51 @@ Ext.define("coon.core.app.PackageController", {
 
 
     /**
+     * Adds the plugin to stack of plugins for execution.
+     * owning applications usually call the plugins during the preLaunchHook.
+     * They cannot be vetoed.
+     *
+     * @param {coon.core.app.ControllerPlugin} plugin
+     *
+     *  @throws if the submitted argument is not an instance of {coon.core.app.ControllerPlugin}
+     */
+    addPlugin : function (plugin) {
+
+        if (!(plugin instanceof coon.core.app.ControllerPlugin)) {
+            Ext.raise("plugin must be an instance of coon.core.app.ControllerPlugin");
+        }
+
+        const me = this;
+
+        coon.core.Util.chain("plugins", me, []);
+
+        me.plugins.push(plugin);
+    },
+
+
+    /**
+     * Visits all plugins and call their run() method.
+     *
+     * @param {coon.core.app.Application} app
+     *
+     * @protected
+     */
+    visitPlugins : function (app) {
+
+        const me = this;
+
+        if (!me.plugins) {
+            return;
+        }
+
+        me.plugins.forEach(function (plugin) {
+            plugin.run(app);
+        });
+
+    },
+
+    
+    /**
      * Gets called before the {@link coon.core.app.Application#launch}
      * method is being processed and the {@link coon.core.app.Application#applicationView}
      * is being rendered.
@@ -90,20 +149,6 @@ Ext.define("coon.core.app.PackageController", {
      * from being rendered
      */
     preLaunchHook : Ext.emptyFn,
-
-
-    /**
-     * Return "true" tpo force a coon-driven application to process your PackageController's
-     * preLaunchHook, even if any other PackageController already returned false to prevent
-     * further processingthe processing of preLaunchHooks.
-     * This is useful in scenarios where data has to be loaded or data has to
-     * be made available that is not user/security sensitive, such as theme-data.
-     *
-     * @returns {boolean}
-     */
-    isPreLaunchForceable : function () {
-        return false;
-    },
 
 
     /**

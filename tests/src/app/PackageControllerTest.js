@@ -240,8 +240,35 @@ describe("coon.core.app.PackageControllerTest", function (t) {
     });
 
 
+    // lib-cn_core#14
     t.it("isPreLaunchForceable()", function (t) {
-        t.expect(controller.isPreLaunchForceable()).toBe(false);
+        t.expect(controller.isPreLaunchForceable).toBeUndefined();
     });
+
+    t.it("addPlugin()", function (t) {
+
+        let exc = null;
+        try {
+            controller.addPlugin({});
+        } catch (e) {
+            exc = e;
+        }
+        t.expect (exc.msg).toContain("must be an instance of");
+
+        let plugin1 = Ext.create("coon.core.app.ControllerPlugin");
+        plugin1.run = function () {};
+        let plugin2 = Ext.create("coon.core.app.ControllerPlugin");
+        plugin2.run = function () {};
+
+        t.isCalledNTimes("run", plugin1, 1);
+        t.isCalledNTimes("run", plugin2, 1);
+
+        controller.addPlugin(plugin1);
+        controller.addPlugin(plugin2);
+
+        controller.visitPlugins();
+
+    });
+
 
 });
