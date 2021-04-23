@@ -82,7 +82,7 @@ Ext.define("coon.core.Theme", {
          *       dark : {
          *           name : "Dark Mode",
          *           default : true,
-         *           colors : {
+         *           config : {
          *               "base" : "blue",
          *              "background": "black"
          *           }
@@ -90,7 +90,7 @@ Ext.define("coon.core.Theme", {
          *       light : {
          *           name : "Light Mode",
          *           default : false,
-         *           colors : {
+         *           config : {
          *               base : "#000000",
          *               background : "#ffffff"
          *           }
@@ -101,6 +101,17 @@ Ext.define("coon.core.Theme", {
          */
         modes : undefined
     },
+
+
+    /**
+     * Constructor.
+     *
+     * @param {Object} cfg
+     */
+    constructor : function (cfg) {
+        this.initConfig(cfg);
+    },
+
 
     /**
      * Switches between various theme modes during runtime.

@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,16 +28,17 @@
  * advanced routing and launch hooks. For a reference implementation, see
  * https://github.com/conjoon.
  *
- * NOTE:
- * =====
+ *
+ * Dynamically loaded packages
+ * ----------------------------
  * This Application implementation queries Ext.manifest for packages which are defined as
  * "used" in app.json and have the "coon-js" section configured with an entry "packageController"
  * configured:
  * @examples
  *    "coon-js" : {"package" : {"controller" : true}}
  *
- * This packages will dynamically loaded by THIS application implementation, and
- * THIS application will make sure that Ext.env.Ready is blocked until all packages
+ * Theses packages will dynamically get loaded by this application implementation, and
+ * this application will make sure that Ext.env.Ready is blocked until all packages
  * where loaded, before the regular application startup pipeline is continued.
  * We're actively overwriting onProfilesReady for this.
  *
@@ -45,6 +46,50 @@
  * returns true.
  * preLaunchHook() will also take care of properly setting the mainView up if, and only
  * if all associated PackageController will return true in their preLaunchHook().
+ *
+ * Dynamically loaded configurations
+ * ---------------------------------
+ * You can add configuration files to your packages which must follow the naming scheme
+ * [package_name].conf.json. These configuration files must be placed in the "resources"-folder
+ * of the owning application, e.g. for the package "myPackage" and the app "myApp" using the following path:
+ * /myApp/resources/coon-js/myPackage.conf.json.
+ * Configuration files will be looked up if a package has the following section configured in its
+ * package.json:
+ *   "coon-js" : {"package" : {"config" : {}}}
+ * This section can also hold configuration data that is registered with the coon.coreConfigManager.
+ * It can then be queried using a call to coon.coore.ConfigManager.get("myPackage"). For more information,
+ * refer to the docs of coon.core.ConfigManager.
+ * If a package holds a configuration entry in the above described section, its configuration file
+ * will automatically be queried, resulting in a 404 if not specified.
+ * If the file exists, its configuration will be merged with the default configuration found in the
+ * package.json in a way that the configuration from the json-file will override the package.json's
+ * default configuration.
+ *
+ * Using ApplicationController plugins
+ * -----------------------------------
+ * coon.core.app.PackageController can have plugins of the type coon.core.app.ControllerPlugin
+ * that are called by the application during the preLaunchHook-process. Regardless of the
+ * state of the return-values of PackageController's preLaunchHook(), all plugins will be executed during
+ * the preLaunchHookProcess.
+ * For registering PluginControllers, either create them and add them to the PackageController by hand
+ * by calling coon.core.app.PackageController#addPlugin, or use the package configuration as described above.
+ * You can use the package-name to specify a single ControllerPlugin out of this package (it will be looked up in the
+ * packages "app"-folder under the classname [package-namespace].app.ControllerPlugin), or by specifying the fqn
+ * of the ControllerPlugins to load:
+ *
+ * package.json:
+ * // plug-coon_themeutil has the namespace coon.plugin.themeutil
+ * // tries to create coon.plugin.themeutil.app.ControllerPlugin during application startup
+ * "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
+ *
+ * // tries to create coon.plugin.themeutil.app.ControllerPlugin during application startup
+ * "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.ControllerPlugin"]}}}}
+ *
+ * You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
+ * the ControllerPlugins you'd like to use.
+ * Note: You need to make sure that owning packages are required by the PackageController's package using them.
+ * For more information on PackageController-plugins, see coon.core.app.ControllerPlugin.
+ *
  *
  */
 Ext.define("coon.core.app.Application", {
@@ -105,7 +150,7 @@ Ext.define("coon.core.app.Application", {
 
         me.launch = Ext.Function.createInterceptor(me.launch, me.launchHook, me);
 
-
+        me.pluginMap = {};
         me.callParent([config]);
     },
 
@@ -196,14 +241,11 @@ Ext.define("coon.core.app.Application", {
 
             ctrl = controllers[i];
 
-            if ((ctrl instanceof coon.core.app.PackageController) &&
-                Ext.isFunction(ctrl.preLaunchHook)) {
+            if (ctrl instanceof coon.core.app.PackageController) {
 
-                if (res === false) {
-                    if (ctrl.isPreLaunchForceable() === true) {
-                        ctrl.preLaunchHook(this);
-                    }
-                } else {
+                ctrl.visitPlugins(me);
+
+                if (res !== false && Ext.isFunction(ctrl.preLaunchHook)) {
                     res = ctrl.preLaunchHook(this);
                 }
             }
@@ -423,6 +465,15 @@ Ext.define("coon.core.app.Application", {
             Ext.env.Ready.block();
 
             Ext.onReady(function () {
+                try {
+                    me.mapControllerPlugins(orgPackages);
+                } catch (e) {
+                    Ext.raise({
+                        "msg" : "Mapping the plugins failed",
+                        "reason" : e
+                    });
+                }
+
                 Ext.app.Application.prototype.onProfilesReady.call(me);
             });
 
@@ -435,6 +486,57 @@ Ext.define("coon.core.app.Application", {
 
 
         return orgPackages;
+    },
+
+
+    /**
+     * Overridden to make sure each controller gets its addPlugin()-method called
+     * if there are any plugins registered in the Applications pluginMap.
+     * Will delete each assigned controller from the pluginMap afterwards to prevent doubles.
+     *
+     * @param {String} name
+     * @param {Boolean} preventCreate
+     *
+     * @returns {coon.core.app.PackageController}
+     *
+     * @see coon.core.app.PackageController#addPlugin
+     *
+     * @throws if the class for the requested plugin could not be created.
+     */
+    getController : function (name, preventCreate) {
+
+        const 
+            me = this, 
+            controller = me.callParent(arguments);
+
+        if (controller && (controller instanceof coon.core.app.PackageController)) {
+
+            const
+                fqn = Ext.getClassName(controller),
+                plugins = me.pluginMap[fqn];
+
+            if (!plugins) {
+                return controller;
+            }
+
+            plugins.forEach (function (plugin) {
+                let inst;
+                try {
+                    inst = Ext.create(plugin);
+                } catch (e) {
+                    Ext.raise({
+                        msg : "Could not create instance for specified PluginController \"" + plugin + "\"",
+                        reason : e
+                    });
+                }
+
+                controller.addPlugin(inst);
+            });
+
+            delete me.pluginMap[fqn];
+        }
+
+        return controller;
     },
 
 
@@ -461,7 +563,7 @@ Ext.define("coon.core.app.Application", {
      * If "package.config" in the package.json is a configuration object, its key/value pairs
      * will get overridden by key/value pairs by the same name in the custom config file.
      * See #registerPackageConfig.
-     * Note: The config files for each Package will be loaded BEFOE the package gets loaded,
+     * Note: The config files for each Package will be loaded BEFORE the package gets loaded,
      * so that the packages can take advantage of already loaded configurations.
      *
      * @param {String} packageName
@@ -485,12 +587,6 @@ Ext.define("coon.core.app.Application", {
         let load = function (packageConfig) {
 
             if (packageConfig.included) {
-                if(packageConfig.controller !== false && packageConfig.controller !== undefined) {
-                    return Ext.Package.loadAllScripts(
-                        packageConfig.name,
-                        [Ext.Loader.getPath(packageConfig.controller)]
-                    );
-                }
                 return Promise.resolve();
             }
             return Ext.Package.load(packageConfig.name);
@@ -704,8 +800,60 @@ Ext.define("coon.core.app.Application", {
         registerPackageConfig : function (packageName, defaultConfig, customConfig) {
 
             const cloned = Ext.isObject(defaultConfig) ? Ext.clone(defaultConfig) : {};
-
             coon.core.ConfigManager.register(packageName, Ext.apply(cloned, customConfig));
+        },
+
+
+        /**
+         * Iterates through the packages and check their configuration (if any) if there are
+         * any ControllerPlugins configured.
+         * Will map the class-names (fqn) of the ControllerPlugins to the class-name of the Controller
+         * (fqn) in pluginMap.
+         *
+         * @param {Array} packages
+         *
+         * @return {Object} pluginMap
+         *
+         * @private
+         */
+        mapControllerPlugins : function (packages) {
+
+            const me = this;
+
+            packages.forEach(function (pck) {
+
+                let plugins = coon.core.ConfigManager.get(pck.name, "plugins.controller");
+                if (!plugins) {
+                    return me.pluginMap;
+                }
+
+                plugins.forEach(function (plugin) {
+
+                    let ctrl = pck.controller, fqn;
+
+                    // query the packages to see if there are fqns specified for the
+                    // namespaces found in the packages.
+                    packages.some(function (pluginPackage) {
+
+                        if (plugin.indexOf(pluginPackage.namespace) === 0) {
+                            fqn = plugin;
+                            return true;
+                        }
+                    });
+
+                    if (!fqn && Ext.manifest.packages[plugin]) {
+                        fqn = Ext.manifest.packages[plugin].namespace + ".app.ControllerPlugin";
+                    }
+
+                    if (fqn) {
+                        me.pluginMap[ctrl] = me.pluginMap[ctrl] || [];
+                        me.pluginMap[ctrl].push(fqn);
+                    }
+
+                });
+            });
+
+            return me.pluginMap;
         }
 
     }

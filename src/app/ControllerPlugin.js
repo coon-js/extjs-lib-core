@@ -1,6 +1,6 @@
 /**
- * coon.js
- * lib-cn_core
+ * conjoon
+ * lib-cn-core
  * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
@@ -23,32 +23,44 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ThemeTest", function (t) {
+/**
+ * Basic implementation for ControllerPlugins used by PackageControllers.
+ *
+ * @example
+ * Ext.define("MyController", {
+ *
+ *    extend : "coon.core.app.PackageController"
+ *
+ * });
+ *
+ * Ext.define("HelloWorldPlugin", {
+ *
+ *    extend : "coon.core.app.ControllerPlugin",
+ *
+ *    run : function (controller) {
+ *
+ *        console.log("Hello World!");
+ *
+ *        console.log("The owning controller", controller, "just requested this plugin.");
+ *    }
+ *
+ *
+ * });
+ *
+ * let controller = Ext.create("MyController");
+ *
+ * controller.addPlugin(Ext.create("helloWorldPlugin"));
+ *
+ *
+ *
+ */
+Ext.define("coon.core.app.ControllerPlugin", {
 
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
-
-
-    t.it("functionality", function (t) {
-
-        let theme = Ext.create("coon.core.Theme");
-
-        t.expect(theme.getModes()).toBeUndefined();
-
-        t.expect(theme.switchMode).toBe(Ext.emptyFn);
-        t.expect(theme.get).toBe(Ext.emptyFn);
-        t.expect(theme.set).toBe(Ext.emptyFn);
-
-        theme = Ext.create("coon.core.Theme", {
-            modes : {
-                "foo" : "bar"
-            }
-        });
-
-        t.expect(theme.getModes()).toEqual({"foo" : "bar"});
-
-    });
+    /**
+     * Executes this plugin.
+     *
+     * @param {coon.core.app.PackageController} controller The owning controller.
+     */
+    run : Ext.emptyFn
 
 });

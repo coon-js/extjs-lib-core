@@ -32,6 +32,49 @@ Ext.define("coon.core.Util", {
     singleton : true,
 
     /**
+     * Creates an object chain on the target object and initializes it with
+     * the defaultValue, if specified.
+     * Returns the target object.
+     *
+     * @example
+     *    let obj = {};
+     *    coon.core.Util.chain("a.b.c.d", obj, "foo");
+     *
+     *    // obj
+     *    // { a : { b : {c : { d : "foo"}}}}
+     *
+     * @param {String} str
+     * @param {Object} target
+     *
+     * @param defaultValue
+     */
+    chain : function (str, target = {}, defaultValue = undefined) {
+
+        const keys = str.split(".");
+
+        const cr = function (obj, keys) {
+
+            let key;
+
+            key = keys.shift();
+            if (!obj[key]) {
+                obj[key] = keys.length ? {} : defaultValue;
+            }
+
+            if (keys.length) {
+                cr(obj[key], keys);
+            }
+
+            return obj;
+        };
+
+        cr(target, keys);
+
+        return target;
+    },
+
+
+    /**
      * Expects an Object and flips key/value/pairs.
      *
      *      @example
@@ -44,7 +87,10 @@ Ext.define("coon.core.Util", {
      * @return {Object} a new object where the key/value pairs are flipped
      */
     flip : function (input) {
-        return Object.assign({}, ...Object.entries(input).map(([k, v]) => ({[v] : k})));
+        /**
+         * no arrow with destruct assignment, see lib-cn_core#18
+         */
+        return Object.assign({}, ...Object.entries(input).map(function ([k, v]){ return {[v] : k};}));
     },
 
 
@@ -62,7 +108,10 @@ Ext.define("coon.core.Util", {
      * @return {Object} a new filtered object
      */
     purge : function (input, match= undefined) {
-        return Object.fromEntries(Object.entries(input).filter(([k, v]) => v !== match));
+        /**
+         * no arrow with destruct assignment, see lib-cn_core#18
+         */
+        return Object.fromEntries(Object.entries(input).filter(function ([k, v]) {return v !== match;}));
     },
 
 

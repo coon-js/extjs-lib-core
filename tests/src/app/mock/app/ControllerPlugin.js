@@ -23,32 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ThemeTest", function (t) {
+/**
+ * ControllerPlugin Mock.
+ */
+Ext.define("coon.test.app.mock.app.ControllerPlugin", {
 
+    extend : "coon.core.app.ControllerPlugin"
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
-
-
-    t.it("functionality", function (t) {
-
-        let theme = Ext.create("coon.core.Theme");
-
-        t.expect(theme.getModes()).toBeUndefined();
-
-        t.expect(theme.switchMode).toBe(Ext.emptyFn);
-        t.expect(theme.get).toBe(Ext.emptyFn);
-        t.expect(theme.set).toBe(Ext.emptyFn);
-
-        theme = Ext.create("coon.core.Theme", {
-            modes : {
-                "foo" : "bar"
-            }
-        });
-
-        t.expect(theme.getModes()).toEqual({"foo" : "bar"});
-
-    });
 
 });
