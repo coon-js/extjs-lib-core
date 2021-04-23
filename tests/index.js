@@ -74,6 +74,7 @@ harness.start({
     ]}, {
     group : "app",
     items : [
+        "src/app/ControllerPluginTest.js",
         "src/app/PackageControllerTest.js",
         "src/app/ApplicationTest.js",
         "src/app/IsolatedTest_1.js",

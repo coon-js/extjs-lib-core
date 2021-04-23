@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -52,12 +52,41 @@
  *              before : 'onBeforePackageRoute'
  *          }
  *      }
-
+ *
+ * Plugins
+ * =======
+ * PackageController can have plugins that usually get called during the preLaunchHook by the owning
+ * application. Plugins must be of the type {coon.core.app.ControllerPlugin}.
  *
  */
 Ext.define("coon.core.app.PackageController", {
 
     extend : "Ext.app.Controller",
+
+    requires : [
+        "coon.core.Util",
+        "coon.core.app.ControllerPlugin"
+    ],
+
+    /**
+     * @private
+     * @type {Array=coon.core.app.ControllerPlugin}
+     */
+    plugins : null,
+
+
+    /**
+     * @constructor
+     * @param cfg
+     */
+    constructor : function (cfg) {
+
+        const me = this;
+        me.callParent(arguments);
+
+        me.plugins = [];
+    },
+
 
     /**
      * A template method that can be used to configure views from withing the
@@ -78,6 +107,59 @@ Ext.define("coon.core.app.PackageController", {
 
 
     /**
+     * Adds the plugin to stack of plugins for execution.
+     * owning applications usually call the plugins during the preLaunchHook.
+     * They cannot be vetoed.
+     *
+     * @param {coon.core.app.ControllerPlugin} plugin
+     *
+     *  @throws if the submitted argument is not an instance of {coon.core.app.ControllerPlugin}
+     */
+    addPlugin : function (plugin) {
+
+        if (!(plugin instanceof coon.core.app.ControllerPlugin)) {
+            Ext.raise("plugin must be an instance of coon.core.app.ControllerPlugin");
+        }
+
+        const me = this;
+
+        me.plugins.push(plugin);
+    },
+
+
+    /**
+     * Visits all plugins and call their run() method.
+     *
+     * @param {coon.core.app.Application} app
+     *
+     * @protected
+     *
+     * @throws if any error occured during execution of the PluginController's run method
+     */
+    visitPlugins : function (app) {
+
+        const me = this;
+
+        if (!me.plugins) {
+            return;
+        }
+
+        me.plugins.forEach(function (plugin) {
+            try {
+                plugin.run(me);
+            } catch (e) {
+                Ext.raise({
+                    msg : "Executing the PluginController failed.",
+                    reason : e
+                });
+            }
+
+        });
+
+    },
+
+
+    /**
      * Gets called before the {@link coon.core.app.Application#launch}
      * method is being processed and the {@link coon.core.app.Application#applicationView}
      * is being rendered.
@@ -90,20 +172,6 @@ Ext.define("coon.core.app.PackageController", {
      * from being rendered
      */
     preLaunchHook : Ext.emptyFn,
-
-
-    /**
-     * Return "true" tpo force a coon-driven application to process your PackageController's
-     * preLaunchHook, even if any other PackageController already returned false to prevent
-     * further processingthe processing of preLaunchHooks.
-     * This is useful in scenarios where data has to be loaded or data has to
-     * be made available that is not user/security sensitive, such as theme-data.
-     *
-     * @returns {boolean}
-     */
-    isPreLaunchForceable : function () {
-        return false;
-    },
 
 
     /**
