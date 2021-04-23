@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -70,8 +70,23 @@ Ext.define("coon.core.app.PackageController", {
 
     /**
      * @private
+     * @type {Array=coon.core.app.ControllerPlugin}
      */
     plugins : null,
+
+
+    /**
+     * @constructor
+     * @param cfg
+     */
+    constructor : function (cfg) {
+
+        const me = this;
+        me.callParent(arguments);
+
+        me.plugins = [];
+    },
+
 
     /**
      * A template method that can be used to configure views from withing the
@@ -108,8 +123,6 @@ Ext.define("coon.core.app.PackageController", {
 
         const me = this;
 
-        coon.core.Util.chain("plugins", me, []);
-
         me.plugins.push(plugin);
     },
 
@@ -120,6 +133,8 @@ Ext.define("coon.core.app.PackageController", {
      * @param {coon.core.app.Application} app
      *
      * @protected
+     *
+     * @throws if any error occured during execution of the PluginController's run method
      */
     visitPlugins : function (app) {
 
@@ -130,12 +145,20 @@ Ext.define("coon.core.app.PackageController", {
         }
 
         me.plugins.forEach(function (plugin) {
-            plugin.run(app);
+            try {
+                plugin.run(me);
+            } catch (e) {
+                Ext.raise({
+                    msg : "Executing the PluginController failed.",
+                    reason : e
+                });
+            }
+
         });
 
     },
 
-    
+
     /**
      * Gets called before the {@link coon.core.app.Application#launch}
      * method is being processed and the {@link coon.core.app.Application#applicationView}

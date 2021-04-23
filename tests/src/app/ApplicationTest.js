@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -920,18 +920,33 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
             Ext.manifest = buildManifest();
 
-            coon.core.ConfigManager.register("p_bar",  coon.core.Util.chain("plugins.controller", {}, ["mockplugin"]));
+            coon.core.ConfigManager.register("p_bar",  coon.core.Util.chain("plugins.controller", {}, ["mockplugin", "notexisting"]));
+            coon.core.ConfigManager.register("p_foo",  coon.core.Util.chain("plugins.controller", {}, ["someother.package.app.SomePlugin", "com.foobar.ControllerPlugin", "canvas",  "otherpackage.foo.app.AnotherOne"]));
+
+            Ext.manifest.packages["canvas"] = {namespace : "org.acme"};
             Ext.manifest.packages["mockplugin"] = {namespace : "snafu.com"};
+            Ext.manifest.packages["p_foo"] = {namespace : "foo"};
+            Ext.manifest.packages["p_bar"] = {namespace : "someother.pack"};
+            Ext.manifest.packages["someother"] = {namespace : "someother.package"};
+            Ext.manifest.packages["otherpackage"] = {namespace : "otherpackage.foo"};
+
             let packages = [
-                {name : "p_foo", controller : "foo.app.PackageController"},
-                {name : "p_bar", controller : "bar.app.PackageController"}
+                {name : "canvas", "namespace" :  Ext.manifest.packages["canvas"].namespace},
+                {name : "mockplugin", "namespace" :  Ext.manifest.packages["mockplugin"].namespace},
+                {name : "p_bar", controller : Ext.manifest.packages["p_bar"].namespace + ".app.PackageController", "namespace" :  Ext.manifest.packages["p_bar"].namespace},
+                {name : "p_foo", controller : Ext.manifest.packages["p_foo"].namespace + ".app.PackageController", "namespace" :  Ext.manifest.packages["p_foo"].namespace},
+                {name : "someother", "namespace" :  Ext.manifest.packages["someother"].namespace},
+                {name : "otherpackage", "namespace" :  Ext.manifest.packages["otherpackage"].namespace}
             ];
 
             t.expect(app.pluginMap).toEqual({});
 
             let map = app.mapControllerPlugins(packages);
 
-            t.expect(map).toEqual({"bar.app.PackageController" : ["snafu.com.app.ControllerPlugin"]});
+            t.expect(map).toEqual({
+                [Ext.manifest.packages["p_bar"].namespace + ".app.PackageController"]: ["snafu.com.app.ControllerPlugin"],
+                [Ext.manifest.packages["p_foo"].namespace + ".app.PackageController"] : ["someother.package.app.SomePlugin", "org.acme.app.ControllerPlugin", "otherpackage.foo.app.AnotherOne"]
+            });
             t.expect(map).toBe(app.pluginMap);
 
             Ext.manifest = orgMani;
@@ -964,5 +979,56 @@ describe("coon.core.app.ApplicationTest", function (t) {
             t.expect(controller.plugins.length).toBe(1);
             t.expect(controller.plugins[0]).toBe(plugin);
         });
+
+
+        t.it("all controller plugins called regardless of preLaunchHook w/ proper default arguments", function (t) {
+
+            defineControllerMocks();
+
+            t.waitForMs(250, function () {
+
+                app = Ext.create("coon.core.app.Application", {
+                    name: "test_undefined",
+                    mainView: "Ext.Panel",
+                    controllers: [
+                        "coon.test.app.mock.app.MockCtrlFalse",
+                        "coon.test.app.mock.app.MockCtrlTrue",
+                        "coon.test.app.mock.app.MockCtrlUndefined"
+                    ]
+                });
+                app.getMainView = () => null;
+
+                const
+                    plugin1 = Ext.create("coon.core.app.ControllerPlugin"),
+                    plugin2 = Ext.create("coon.core.app.ControllerPlugin"),
+                    plugin3 = Ext.create("coon.core.app.ControllerPlugin");
+
+                const
+                    plugin1Spy = t.spyOn(plugin1, "run"),
+                    plugin2Spy = t.spyOn(plugin2, "run"),
+                    plugin3Spy = t.spyOn(plugin3, "run");
+
+                const
+                    controller1 = app.getController("coon.test.app.mock.app.MockCtrlFalse"),
+                    controller2 = app.getController("coon.test.app.mock.app.MockCtrlTrue"),
+                    controller3 = app.getController("coon.test.app.mock.app.MockCtrlUndefined");
+
+                controller1.addPlugin(plugin1);
+                controller2.addPlugin(plugin2);
+                controller3.addPlugin(plugin3);
+
+                const res = app.preLaunchHookProcess();
+
+                t.expect(plugin1Spy).toHaveBeenCalledWith(controller1);
+                t.expect(plugin2Spy).toHaveBeenCalledWith(controller2);
+                t.expect(plugin3Spy).toHaveBeenCalledWith(controller3);
+
+                t.expect(res).toBe(false);
+
+            });
+
+
+        });
+
 
     });});

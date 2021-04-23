@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -245,6 +245,7 @@ describe("coon.core.app.PackageControllerTest", function (t) {
         t.expect(controller.isPreLaunchForceable).toBeUndefined();
     });
 
+
     t.it("addPlugin()", function (t) {
 
         let exc = null;
@@ -267,6 +268,27 @@ describe("coon.core.app.PackageControllerTest", function (t) {
         controller.addPlugin(plugin2);
 
         controller.visitPlugins();
+
+    });
+
+    t.it("visitPlugins() throws", function (t) {
+
+        let exc = null;
+
+        let plugin1 = Ext.create("coon.core.app.ControllerPlugin");
+        plugin1.run = function () {
+            // eslint-disable-next-line
+            sf
+        };
+
+        controller.addPlugin(plugin1);
+
+        try {
+            controller.visitPlugins();
+        } catch (e) {
+            exc = e;
+        }
+        t.expect (exc.msg).toContain("Executing the PluginController failed");
 
     });
 
