@@ -53,10 +53,10 @@
  *  });
  *
  *  let theme = Ext.create("MyTheme");
- *  coon.core.ThemeManager.setTheme(theme);
+ *  coon.core.ThemeManager.setTheme(theme); // theme now available via coon.core.ThemeManager.get()
  *
- *  theme.switchMode("light");
- *  theme.switchMode("dark");
+ *  theme.setMode("light");
+ *  theme.setMode("dark");
  *
  * @abstract
  */
@@ -64,6 +64,20 @@ Ext.define("coon.core.Theme", {
 
 
     config : {
+
+        /**
+         * The name of the entry in #modes that has it's property "default"
+         * set to true.
+         */
+        defaultMode : undefined,
+
+        /**
+         * Switches between various theme modes during runtime.
+         *
+         * @type {String} The key from "modes" this theme should be using, if any.
+         */
+        mode : undefined,
+
         /**
          * Allows for specifying different (color-)modes this theme can use.
          * Should be an object containing keys as their unique identifiers,
@@ -109,16 +123,100 @@ Ext.define("coon.core.Theme", {
      * @param {Object} cfg
      */
     constructor : function (cfg) {
-        this.initConfig(cfg);
+        const me = this;
+
+        me.initConfig(cfg);
     },
 
 
     /**
-     * Switches between various theme modes during runtime.
+     * Notifier to the modes-property.
+     * Will automatically set the defaultMode to the mode flagged as default found
+     * in the available modes and then switch to it.
      *
-     * @param {String} mode The name of the mode to switch to.
      */
-    switchMode : Ext.emptyFn,
+    updateModes : function () {
+
+        const me = this;
+
+        me.setDefaultMode(me.findDefaultMode());
+        me.setMode(me.getDefaultMode());
+    },
+
+
+    /**
+     * Applier for "mode" for a theme. Make sure you implement updateMode to propery
+     * initialize the theme with the updated mode.
+     *
+     * @param {String} mode The new mode the theme should be using.
+     *
+     * @return {undefined|String} returns undefined if the mode is not available with
+     * "getModes()", otherwise the name of the new mode.
+     */
+    applyMode : function (mode) {
+
+        const
+            me = this,
+            modes = me.getModes(),
+            newMode = modes[mode];
+
+        if (!newMode) {
+            return;
+        }
+
+        return mode;
+    },
+
+
+    /**
+     * Sets the default mode this theme.
+     * To switch to the default theme, use #setMode.
+     *
+     * @example
+     * let def = this.getDefaultMode();
+     * this.setMode(def);
+     *
+     * this.setDefaultMode("newMode");
+     * this.setMode(this.getDefaultMode);
+     *
+     * @param {String} mode The mode that should be used as the default mode.
+     */
+    applyDefaultMode : function (mode) {
+
+        const
+            me = this,
+            modes = me.getModes();
+
+        Object.entries(modes).forEach(function (entry) {
+            if (entry[0] === mode) {
+                entry[1].default = true;
+            } else {
+                entry[1].default = false;
+            }
+        });
+
+    },
+
+
+    /**
+     * Queries the entries of #modes and returns the first one which has its
+     * "default"-property set to true.
+     *
+     * @example
+     * this.setM
+     *
+     * @return {Undefined|String} returns undefined if no default mode was found, otherwise
+     * the name of the entry of the defualt mode.
+     */
+    findDefaultMode : function () {
+        const
+            me = this,
+            modes = me.getModes(),
+            defaultMode =  Object.entries(modes).find((entry) => entry[1].default === true)[0];
+
+        return defaultMode;
+    },
+
 
     /**
      * Returns the value found for the specified key.
@@ -130,6 +228,7 @@ Ext.define("coon.core.Theme", {
      */
     get : Ext.emptyFn,
 
+    
     /**
      * Sets the value for the specified key.
      *
@@ -140,4 +239,5 @@ Ext.define("coon.core.Theme", {
      * @return {coon.core.Theme} this
      */
     set : Ext.emptyFn
+
 });
