@@ -183,6 +183,16 @@ describe("coon.core.UtilTest", function (t) {
             res = coon.core.Util.chain("a.b.c.d", {"a" : {"d" : "u"}}, "bar");
             t.expect(res).toEqual({ a : { b : {c : { d : "bar"}}, d : "u"}} );
 
+            let ctrl = "foo.bar.snafu";
+            obj = {};
+            coon.core.Util.chain("pluginMap", obj, {[ctrl] : []});
+            ctrl = "bar.snafu.foo";
+
+            coon.core.Util.chain("pluginMap", obj, {[ctrl] : []});
+            t.expect(obj.pluginMap["foo.bar.snafu"]).toEqual([]);
+            t.expect(obj.pluginMap["bar.snafu.foo"]).toBeUndefined();
+
+
         });
 
     });});
