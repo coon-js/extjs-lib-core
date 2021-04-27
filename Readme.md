@@ -65,7 +65,7 @@ If the file exists, its configuration will be merged with the default configurat
 ```package.json``` in a way that the configuration from the json-file will override the ```package.json```'s
 default configuration.
 
-## Using ApplicationController plugins
+## Using plugins for PackageControllers
 [coon.core.app.PackageController](https://github.com/coon-js/lib-cn_core/blob/master/src/app/PackageController.js) 
 can have an arbitrary number of plugins of the type [coon.core.app.ControllerPlugin](https://github.com/coon-js/lib-cn_core/blob/master/src/app/ControllerPlugin.js)
 that are called by the application during the ```preLaunchHook```-process. Regardless of the
@@ -90,6 +90,10 @@ or
 // tries to create coon.plugin.themeutil.app.ControllerPlugin during application startup, must therefore be existing in memory
 "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.ControllerPlugin"]}}}}
 ```
+
+In order for a ```PackageController``` to use one or more ```ControllerPlugin```(s), the you need to set the
+```coon-js.package.controller```\-property in the configuration to ```true```. Otherwise, the controller will not get
+registered as a ```PackageController``` for the application and therefor not loaded.
 
 You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
 the ```ControllerPlugins``` you'd like to use. 

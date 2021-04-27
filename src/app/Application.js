@@ -80,11 +80,13 @@
  * package.json:
  * // plug-coon_themeutil has the namespace coon.plugin.themeutil
  * // tries to create coon.plugin.themeutil.app.ControllerPlugin during application startup
- * "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
+ * "coon-js" : {"package" : {"controller" : true, "config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
  *
  * // tries to create coon.plugin.themeutil.app.ControllerPlugin during application startup
- * "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.ControllerPlugin"]}}}}
+ * "coon-js" : {"package" : {"controller" : true, "config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.ControllerPlugin"]}}}}
  *
+ * In order for a PackageController to use ControlelrPlugins, the PackageController must be flagged as used in the
+ * configuration by specifying the "coon-js.package.controller" property as true.
  * You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
  * the ControllerPlugins you'd like to use.
  * Note: You need to make sure that owning packages are required by the PackageController's package using them.
