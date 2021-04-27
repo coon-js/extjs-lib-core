@@ -65,7 +65,7 @@ If the file exists, its configuration will be merged with the default configurat
 ```package.json``` in a way that the configuration from the json-file will override the ```package.json```'s
 default configuration.
 
-## Using ApplicationController plugins
+## Using plugins for PackageControllers
 [coon.core.app.PackageController](https://github.com/coon-js/lib-cn_core/blob/master/src/app/PackageController.js) 
 can have an arbitrary number of plugins of the type [coon.core.app.ControllerPlugin](https://github.com/coon-js/lib-cn_core/blob/master/src/app/ControllerPlugin.js)
 that are called by the application during the ```preLaunchHook```-process. Regardless of the
