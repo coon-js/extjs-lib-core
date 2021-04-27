@@ -91,6 +91,10 @@ or
 "coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.ControllerPlugin"]}}}}
 ```
 
+In order for a ```PackageController``` to use one or more ```ControllerPlugin```(s), the you need to set the
+```coon-js.package.controller```\-property in the configuration to ```true```. Otherwise, the controller will not get
+registered as a ```PackageController``` for the application and therefor not loaded.
+
 You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
 the ```ControllerPlugins``` you'd like to use. 
 Note: You need to make sure that owning packages are required by the ```PackageController```'s package using them.
