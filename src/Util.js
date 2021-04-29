@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -128,11 +128,12 @@ Ext.define("coon.core.Util", {
      * @param {String} chain The object chain to resolve
      * @param {Object=Window} scope The scope where the chain is assumed. Defaults
      * to Window
+     * @param {Mixed} defaultValue a defaultValue to return in case the chain is not existing
      *
      * @return {Mixed} undefined if either scope was not found or the chain could
      * not be resolved, otherwise the value found in [scope][chain]
      */
-    unchain : function (chain, scope) {
+    unchain : function (chain, scope, defaultValue = undefined) {
 
         if (arguments.length === 1) {
             scope = window;
@@ -141,12 +142,12 @@ Ext.define("coon.core.Util", {
         var parts = chain.split("."),
             obj   = scope;
 
-        while (parts.length) {
-            if (!obj) {
-                return undefined;
-            }
-
+        while (obj !== undefined && parts.length) {
             obj = obj[parts.shift()];
+        }
+
+        if (obj === undefined) {
+            return defaultValue;
         }
 
         return obj;

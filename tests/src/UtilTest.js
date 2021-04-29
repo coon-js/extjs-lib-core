@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,13 +34,16 @@ describe("coon.core.UtilTest", function (t) {
 
         t.it("unchain()", function (t) {
 
-
-            var testMe = {1:{2:{3:{4:{5:"foo"}}}}};
+            const testMe = {1:{2:{3:{4:{5:"foo"}}}}};
 
             t.expect(coon.core.Util.unchain("1.2.3.4.5", testMe)).toBe("foo");
             t.expect(coon.core.Util.unchain("1.2.9.4.5", testMe)).toBeUndefined();
 
             t.expect(coon.core.Util.unchain("1.2.3.4.5")).toBeUndefined();
+
+            t.expect(coon.core.Util.unchain("1.2.3.4.5", testMe, "end")).toBe("foo");
+            t.expect(coon.core.Util.unchain("1.2.8.4.5", testMe, "defaultValue")).toBe("defaultValue");
+            t.expect(coon.core.Util.unchain("1.2.3.4.6", testMe, "defaultValue")).toBe("defaultValue");
 
         });
 
