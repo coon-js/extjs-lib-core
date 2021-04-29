@@ -15,10 +15,11 @@
         "output": {
             "base" : "${package.dir}/build",
             "js": {
-                "version": "ES6"
+                "version": "NEXT"
             }
         },
         "compressor": {
+            "type" : "closure",
             "polyfills": "none"
         },
         "local": true,
