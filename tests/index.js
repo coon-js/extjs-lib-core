@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -154,6 +154,17 @@ harness.start({
                 "src/data/writer/FormDataTest.js"
             ]
         }]
+}, {
+    group : "env",
+    items : [
+        "src/env/VendorBaseTest.js", {
+            group : "ext",
+            items : [
+                "src/env/ext/VendorBaseTest.js"
+            ]
+        }
+    ]
+
 }, {
     group : "text",
     items : [{
