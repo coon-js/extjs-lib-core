@@ -67,6 +67,9 @@ harness.start({
 }, {
     group : ".",
     items : [
+        "src/ExceptionTest.js",
+        "src/IllegalArgumentExceptionTest.js",
+        "src/UnsupportedOperationExceptionTest.js",
         "src/ThemeTest.js",
         "src/ThemeManagerTest.js",
         "src/UtilTest.js",
