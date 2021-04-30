@@ -42,6 +42,8 @@
  */
 Ext.define("coon.core.env.ext.VendorBase", {
 
+    extend : "coon.core.env.VendorBase",
+
     requires : [
         "coon.core.Util"
     ],
@@ -51,7 +53,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     get : function (key) {
-        return coon.core.Util.unchain(key, Ext.manifest);
+        return coon.core.Util.unchain(key, this.getEnvironment());
     },
 
 
@@ -75,7 +77,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackage : function (packageName) {
-        return coon.core.Util.unchain("packages." + packageName, Ext.manifest);
+        return coon.core.Util.unchain("packages." + packageName, this.getEnvironment());
     }
 
 });
