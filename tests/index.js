@@ -67,13 +67,18 @@ harness.start({
 }, {
     group : ".",
     items : [
-        "src/ExceptionTest.js",
-        "src/IllegalArgumentExceptionTest.js",
-        "src/UnsupportedOperationExceptionTest.js",
+        "src/EnvironmentTest.js",
         "src/ThemeTest.js",
         "src/ThemeManagerTest.js",
         "src/UtilTest.js",
         "src/ConfigManagerTest.js"
+    ]}, {
+    group : "exception",
+    items : [
+        "src/exception/ExceptionTest.js",
+        "src/exception/IllegalArgumentExceptionTest.js",
+        "src/exception/UnsupportedOperationExceptionTest.js",
+        "src/exception/MissingPropertyExceptionTest.js"
     ]}, {
     group : "app",
     items : [
