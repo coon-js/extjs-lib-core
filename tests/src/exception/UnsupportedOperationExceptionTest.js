@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.IllegalArgumentExceptionTest", function (t) {
+describe("coon.core.UnsupportedOperationExceptionTest", function (t) {
 
 
     // +----------------------------------------------------------------------------
@@ -31,11 +31,18 @@ describe("coon.core.IllegalArgumentExceptionTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("constructor()", function (t) {
+    t.requireOk("coon.core.exception.UnsupportedOperationException",  () => {
 
-        let exc = Ext.create("coon.core.IllegalArgumentException");
-        t.isInstanceOf(exc, "coon.core.Exception");
+        t.it("alternateClassName", (t) => {
+            t.expect(coon.core.exception.UnsupportedOperationException.prototype.alternateClassName).toBe("coon.core.UnsupportedOperationException");
+        });
+
+        t.it("constructor()", function (t) {
+
+            let exc = Ext.create("coon.core.exception.UnsupportedOperationException");
+            t.isInstanceOf(exc, "coon.core.exception.Exception");
+        });
+
     });
-
 
 });

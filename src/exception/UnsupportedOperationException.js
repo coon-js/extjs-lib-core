@@ -23,20 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.UnsupportedOperationExceptionTest", function (t) {
+/**
+ * Exception class indicating that an operation cannot be executed.
+ *
+ */
+Ext.define("coon.core.exception.UnsupportedOperationException", {
 
+    alternateClassName : "coon.core.UnsupportedOperationException",
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-
-    t.it("constructor()", function (t) {
-
-
-        let exc = Ext.create("coon.core.UnsupportedOperationException");
-        t.isInstanceOf(exc, "coon.core.Exception");
-    });
-
+    extend : "coon.core.exception.Exception"
 
 });

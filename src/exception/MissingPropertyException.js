@@ -23,34 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ExceptionTest", function (t) {
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
+/**
+ * Exception class to be thrown whenever a property is expected, but missing.
+ */
+Ext.define("coon.core.exception.MissingPropertyException", {
 
+    alternateClassName : "coon.core.MissingPropertyException",
 
-    t.it("constructor()", function (t) {
-
-        let exc;
-
-        exc = Ext.create("coon.core.Exception", {
-            msg : "Exception"
-        });
-
-        t.expect(exc.getMsg()).toBe("Exception");
-        exc.msg = "bar";
-        t.expect(exc.msg).toBe("Exception");
-
-
-        exc = Ext.create("coon.core.Exception");
-        t.expect(exc.msg).toBeUndefined();
-
-        exc = Ext.create("coon.core.Exception", "some exception");
-        t.expect(exc.msg).toBe("some exception");
-
-
-    });
-
+    extend : "coon.core.exception.Exception"
 
 });

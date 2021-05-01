@@ -27,7 +27,9 @@
  * Base Exception class.
  *
  */
-Ext.define("coon.core.Exception", {
+Ext.define("coon.core.exception.Exception", {
+
+    alternateClassName : "coon.core.Exception",
 
     /**
      * @type {String} msg

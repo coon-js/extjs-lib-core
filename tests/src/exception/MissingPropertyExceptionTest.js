@@ -23,13 +23,27 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+describe("coon.core.MissingPropertyExceptionTest", function (t) {
 
-/**
- * Exception class indicating that an inappropriate argument has been passed to a method.
- *
- */
-Ext.define("coon.core.IllegalArgumentException", {
 
-    extend : "coon.core.Exception"
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+
+
+    t.requireOk("coon.core.exception.MissingPropertyException",  () => {
+
+        t.it("alternateClassName", (t) => {
+            t.expect(coon.core.exception.MissingPropertyException.prototype.alternateClassName).toBe("coon.core.MissingPropertyException");
+        });
+
+        t.it("constructor()", function (t) {
+
+            let exc = Ext.create("coon.core.exception.MissingPropertyException");
+            t.isInstanceOf(exc, "coon.core.exception.Exception");
+        });
+
+    });
+
 
 });

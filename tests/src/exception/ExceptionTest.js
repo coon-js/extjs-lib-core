@@ -23,12 +23,41 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Exception class indicating that an operation cannot be executed.
- *
- */
-Ext.define("coon.core.UnsupportedOperationException", {
+describe("coon.core.exception.ExceptionTest", function (t) {
 
-    extend : "coon.core.Exception"
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+
+    t.requireOk("coon.core.exception.Exception",  () => {
+
+        t.it("alternateClassName", (t) => {
+            t.expect(coon.core.exception.Exception.prototype.alternateClassName).toBe("coon.core.Exception");
+        });
+
+
+        t.it("constructor()", (t) => {
+
+            let exc;
+
+            exc = Ext.create("coon.core.exception.Exception", {
+                msg : "Exception"
+            });
+
+            t.expect(exc.getMsg()).toBe("Exception");
+            exc.msg = "bar";
+            t.expect(exc.msg).toBe("Exception");
+
+
+            exc = Ext.create("coon.core.exception.Exception");
+            t.expect(exc.msg).toBeUndefined();
+
+            exc = Ext.create("coon.core.exception.Exception", "some exception");
+            t.expect(exc.msg).toBe("some exception");
+
+
+        });
+
+    });
 
 });
