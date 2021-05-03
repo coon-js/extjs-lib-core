@@ -23,27 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.exception.MissingPropertyExceptionTest", function (t) {
+/**
+ * Exception class representing exceptions that occured during the processing of executors
+ * of Promises.
+ */
+Ext.define("coon.core.exception.PromiseExecutionException", {
 
+    alternateClassName : "coon.core.PromiseExecutionException",
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-
-    t.requireOk("coon.core.exception.MissingPropertyException",  () => {
-
-        t.it("alternateClassName", (t) => {
-            t.expect(coon.core.exception.MissingPropertyException.prototype.alternateClassName).toBe("coon.core.MissingPropertyException");
-        });
-
-        t.it("constructor()", function (t) {
-
-            let exc = Ext.create("coon.core.exception.MissingPropertyException");
-            t.isInstanceOf(exc, "coon.core.exception.Exception");
-        });
-
-    });
-
+    extend : "coon.core.exception.Exception"
 
 });

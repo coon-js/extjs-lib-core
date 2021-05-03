@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.UnsupportedOperationExceptionTest", function (t) {
+describe("coon.core.exception.UnsupportedOperationExceptionTest", function (t) {
 
 
     // +----------------------------------------------------------------------------

@@ -23,27 +23,24 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.exception.MissingPropertyExceptionTest", function (t) {
+describe("coon.core.exception.PromiseExecutionExceptionTest", function (t) {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-
-    t.requireOk("coon.core.exception.MissingPropertyException",  () => {
+    t.requireOk("coon.core.exception.PromiseExecutionException",  () => {
 
         t.it("alternateClassName", (t) => {
-            t.expect(coon.core.exception.MissingPropertyException.prototype.alternateClassName).toBe("coon.core.MissingPropertyException");
+            t.expect(coon.core.exception.PromiseExecutionException.prototype.alternateClassName).toBe("coon.core.PromiseExecutionException");
         });
 
         t.it("constructor()", function (t) {
 
-            let exc = Ext.create("coon.core.exception.MissingPropertyException");
+            let exc = Ext.create("coon.core.exception.PromiseExecutionException");
             t.isInstanceOf(exc, "coon.core.exception.Exception");
         });
 
     });
-
-
 });
