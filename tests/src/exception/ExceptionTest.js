@@ -44,7 +44,7 @@ describe("coon.core.exception.ExceptionTest", function (t) {
                 msg : "Exception"
             });
 
-            t.expect(exc.getMsg()).toBe("Exception");
+            t.expect(exc.getMessage()).toBe("Exception");
             exc.msg = "bar";
             t.expect(exc.msg).toBe("Exception");
 

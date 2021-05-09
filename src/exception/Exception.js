@@ -40,7 +40,7 @@ Ext.define("coon.core.exception.Exception", {
      *
      * @returns {String}
      */
-    getMsg () {
+    getMessage () {
         return this.msg;
     },
 
@@ -59,8 +59,3 @@ Ext.define("coon.core.exception.Exception", {
 
 
 });
-
-//
-// const exc = Ext.create("coon.core.Exception" ,{msg : "Exception thrown"});#
-// exc.msg = "another string";
-// console.log(exc.msg); // "Exception thrown"
