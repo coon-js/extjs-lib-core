@@ -82,7 +82,7 @@ describe("coon.core.data.request.file.FileLoaderTest", function (t) {
             exc = e;
         }
 
-        t.isInstanceOf(exc, "coon.core.exception.PromiseExecutionException")
+        t.isInstanceOf(exc, "coon.core.exception.PromiseExecutionException");
         t.expect(exc.getMessage()).toContain("404");
     });
 
@@ -121,8 +121,5 @@ describe("coon.core.data.request.file.FileLoaderTest", function (t) {
             }
         });
     });
-
-
-
-
+    
 });
