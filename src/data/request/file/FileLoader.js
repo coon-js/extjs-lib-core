@@ -39,7 +39,7 @@ Ext.define("coon.core.data.request.file.FileLoader", {
 
 
     requires : [
-        "coon.core.exception.PromiseExecutionException",
+        "coon.core.data.request.HttpRequestException",
         "coon.core.exception.IllegalArgumentException"
     ],
 
@@ -56,14 +56,14 @@ Ext.define("coon.core.data.request.file.FileLoader", {
      * loader.load("app-cn_mail.conf.json").then(
      *      (conf) => {console.log(conf);}, // console.logs the plain text from the loaded file
      *      (exc) => {console.log(exc);} // console logs the exception, if any occured,
-     *                                   // which is a coon.core.exception.PromiseExecutionException
+     *                                   // which is a coon.core.data.request.HttpRequestException
      * );
      * // or
      * let txt;
      * try {
      *    txt = await loader.load("app-cn_mail.conf.json");
      * } catch (e) {
-     *    // exception handling for  coon.core.exception.PromiseExecutionException
+     *    // exception handling for  coon.core.data.request.HttpRequestException
      * }
      * console.log(txt); // file contents
      *
@@ -72,7 +72,7 @@ Ext.define("coon.core.data.request.file.FileLoader", {
      *
      * @return {Mixed|Promise}
      *
-     * @throws {coon.core.exception.PromiseExecutionException} if any exception occured,
+     * @throws {coon.core.data.request.HttpRequestException} if any exception occured,
      * or {coon.core.exception.IllegalArgumentException} if url was not a string
      */
     async load (url) {
@@ -91,7 +91,7 @@ Ext.define("coon.core.data.request.file.FileLoader", {
                 if (httpRequest.status === 200) {
                     resolve(httpRequest.responseText);
                 } else {
-                    reject(new coon.core.exception.PromiseExecutionException(
+                    reject(new coon.core.data.request.HttpRequestException(
                         httpRequest.status + " " + httpRequest.statusText
                     ));
                 }
@@ -99,7 +99,7 @@ Ext.define("coon.core.data.request.file.FileLoader", {
 
             request.onerror = (progressEvent) => {
                 const httpRequest = progressEvent.target;
-                reject(new coon.core.exception.PromiseExecutionException(
+                reject(new coon.core.data.request.HttpRequestException(
                     `An unexpected error occured while trying to load from ${httpRequest.responseURL}`
                 ));
             };
