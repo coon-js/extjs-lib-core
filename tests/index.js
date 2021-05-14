@@ -75,13 +75,19 @@ harness.start({
     ]}, {
     group : "exception",
     items : [
+        "src/exception/AlreadyExistsExceptionTest.js",
         "src/exception/ExceptionTest.js",
+        "src/exception/ParseExceptionTest.js",
         "src/exception/IllegalArgumentExceptionTest.js",
         "src/exception/UnsupportedOperationExceptionTest.js",
-        "src/exception/MissingPropertyExceptionTest.js"
+        "src/exception/MissingPropertyExceptionTest.js",
+        "src/exception/PromiseExecutionExceptionTest.js"
     ]}, {
     group : "app",
     items : [
+        "src/app/ApplicationExceptionTest.js",
+        "src/app/ConfigurationExceptionTest.js",
+        "src/app/ConfigLoaderTest.js",
         "src/app/ControllerPluginTest.js",
         "src/app/PackageControllerTest.js",
         "src/app/ApplicationTest.js",
@@ -137,8 +143,13 @@ harness.start({
         },
         {
             group : "request",
-            items : [
-                "src/data/request/FormDataTest.js"
+            items : [{
+                group : "file",
+                items : [
+                    "src/data/request/file/FileLoaderTest.js"
+                ]
+            },
+            "src/data/request/FormDataTest.js"
             ]
         }, {
             group : "schema",
