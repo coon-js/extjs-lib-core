@@ -149,6 +149,7 @@ harness.start({
                     "src/data/request/file/FileLoaderTest.js"
                 ]
             },
+            "src/data/request/HttpRequestExceptionTest.js",
             "src/data/request/FormDataTest.js"
             ]
         }, {
