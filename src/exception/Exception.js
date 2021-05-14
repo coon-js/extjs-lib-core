@@ -37,6 +37,12 @@ Ext.define("coon.core.exception.Exception", {
      */
 
     /**
+     * @type {coon.core.exception.Exception|Error|Object|String} cause
+     * @protected
+     */
+
+
+    /**
      *
      * @returns {String}
      */
@@ -46,13 +52,30 @@ Ext.define("coon.core.exception.Exception", {
 
 
     /**
-     * Constructor.
-     * @param {Object} cfg
+     *
+     * @return {coon.core.exception.Exception|Error|Object|String}
      */
-    constructor (cfg) {
+    getCause () {
+        return this.cause;
+    },
+
+
+    /**
+     * Creates a new exception with the specified arguments.
+     * cfg may be an object containing a msg or message property that represents the error message
+     * for this exception, or a plain string.
+     * The second arguments may be an exception or any other data type representing
+     * the cause of the exception.
+     *
+     * @param {(String|{msg: string}|{message: string}|undefined)} cfg
+     * @param {(coon.core.exception.Exception|Error|Object|String)} cause
+     */
+    constructor (cfg, cause = undefined) {
         this.msg = typeof cfg === "object" 
-            ? cfg.msg 
+            ? cfg.msg || cfg.message
             : (typeof cfg === "string" ? cfg : undefined);
+
+        this.cause = cause;
 
         Object.freeze(this);
     }

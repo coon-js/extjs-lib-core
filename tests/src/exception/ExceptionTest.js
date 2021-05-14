@@ -44,9 +44,9 @@ describe("coon.core.exception.ExceptionTest", function (t) {
                 msg : "Exception"
             });
 
+            t.expect(Object.isFrozen(exc)).toBe(true);
+
             t.expect(exc.getMessage()).toBe("Exception");
-            exc.msg = "bar";
-            t.expect(exc.msg).toBe("Exception");
 
 
             exc = Ext.create("coon.core.exception.Exception");
@@ -54,6 +54,10 @@ describe("coon.core.exception.ExceptionTest", function (t) {
 
             exc = Ext.create("coon.core.exception.Exception", "some exception");
             t.expect(exc.msg).toBe("some exception");
+
+
+            exc = Ext.create("coon.core.exception.Exception", "some msg", "the cause");
+            t.expect(exc.getCause()).toBe("the cause");
 
 
         });
