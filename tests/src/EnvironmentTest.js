@@ -1,0 +1,126 @@
+/**
+ * coon.js
+ * lib-cn_core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+describe("coon.core.EnvironmentTest",  (t) => {
+
+    t.requireOk("coon.core.Environment", () => {
+
+        const Environment = coon.core.Environment;
+
+
+        t.beforeEach(() => {
+            Environment._vendorBase = undefined;
+        });
+
+        // +----------------------------------------------------------------------------
+        // |                    =~. Tests .~=
+        // +----------------------------------------------------------------------------
+
+        t.it("wrong type for vendorBase / ok / already set", (t) => {
+
+            t.expect(Environment.getVendorBase()).toBeUndefined();
+
+            let exc;
+
+            // wrong type
+            try {
+                Environment.setVendorBase("foo");
+            } catch (e) {
+                exc = e;
+            }
+            t.isInstanceOf(exc, "coon.core.IllegalArgumentException");
+
+            // ok
+            let vendorBase = Ext.create("coon.core.env.VendorBase");
+            Environment.setVendorBase(vendorBase);
+            t.expect(Environment.getVendorBase()).toBe(vendorBase);
+
+            exc = undefined;
+            try {
+                Environment.setVendorBase(Ext.create("coon.core.env.VendorBase"));
+            } catch (e) {
+                exc = e;
+            }
+            t.isInstanceOf(exc, "coon.core.UnsupportedOperationException");
+        });
+
+
+        t.it("proper delegates", (t) => {
+
+            let vendorBase = Ext.create("coon.core.env.VendorBase"),
+                spy, delegate;
+
+            Environment.setVendorBase(vendorBase);
+            t.expect(Environment.getVendorBase()).toBe(vendorBase);
+
+            delegate = t.spyOn(Environment, "delegate");
+
+            // get
+            spy = t.spyOn(vendorBase, "get");
+            t.expect(Environment.get("somekey")).toBeUndefined();
+            t.expect(spy.calls.mostRecent().args[0]).toBe("somekey");
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("get");
+
+            // getPathForResource
+            spy = t.spyOn(vendorBase, "getPathForResource");
+            t.expect(Environment.getPathForResource("path")).toBeUndefined();
+            t.expect(spy.calls.mostRecent().args[0]).toBe("path");
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getPathForResource");
+
+            // getPackage
+            spy = t.spyOn(vendorBase, "getPackage");
+            t.expect(Environment.getPackage("package")).toBeUndefined();
+            t.expect(spy.calls.mostRecent().args[0]).toBe("package");
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getPackage");
+
+            // getEnvironment
+            spy = t.spyOn(vendorBase, "getEnvironment");
+            t.expect(Environment.getEnvironment()).toBeUndefined();
+            t.expect(spy.calls.all().length).toBe(1);
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getEnvironment");
+
+        });
+
+
+        t.it("no VendorBase available for delegates", (t) => {
+
+            let exc;
+
+            t.expect(Environment.getVendorBase()).toBeUndefined();
+
+            exc = undefined;
+            try {
+                Environment.get("somekey");
+            } catch (e) {
+                exc = e;
+            }
+            t.isInstanceOf(exc, "coon.core.MissingPropertyException");
+
+
+        });
+
+
+    });
+});

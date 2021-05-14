@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,7 +40,8 @@
 Ext.define("coon.core.ConfigManager", {
 
     requires : [
-        "coon.core.Util"
+        "coon.core.Util",
+        "coon.core.exception.AlreadyExistsException"
     ],
 
     singleton : true,
@@ -61,7 +62,7 @@ Ext.define("coon.core.ConfigManager", {
      * @return {Object} The config applied for the domain, or null
      * if the domain was not a valid string
      *
-     * @throws if "domain" was already registered
+     * @throws {coon.core.exception.AlreadyExistsException} if "domain" was already registered
      */
     register : function (domain, config) {
 
@@ -76,7 +77,7 @@ Ext.define("coon.core.ConfigManager", {
         }
 
         if (me.configs[domain]) {
-            Ext.raise("domain \"" + domain + "\" was already registered.");
+            throw new coon.core.exception.AlreadyExistsException("domain \"" + domain + "\" was already registered.");
         }
 
         me.configs[domain] = config;

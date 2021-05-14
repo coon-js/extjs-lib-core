@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -67,13 +67,27 @@ harness.start({
 }, {
     group : ".",
     items : [
+        "src/EnvironmentTest.js",
         "src/ThemeTest.js",
         "src/ThemeManagerTest.js",
         "src/UtilTest.js",
         "src/ConfigManagerTest.js"
     ]}, {
+    group : "exception",
+    items : [
+        "src/exception/AlreadyExistsExceptionTest.js",
+        "src/exception/ExceptionTest.js",
+        "src/exception/ParseExceptionTest.js",
+        "src/exception/IllegalArgumentExceptionTest.js",
+        "src/exception/UnsupportedOperationExceptionTest.js",
+        "src/exception/MissingPropertyExceptionTest.js",
+        "src/exception/PromiseExecutionExceptionTest.js"
+    ]}, {
     group : "app",
     items : [
+        "src/app/ApplicationExceptionTest.js",
+        "src/app/ConfigurationExceptionTest.js",
+        "src/app/ConfigLoaderTest.js",
         "src/app/ControllerPluginTest.js",
         "src/app/PackageControllerTest.js",
         "src/app/ApplicationTest.js",
@@ -129,8 +143,13 @@ harness.start({
         },
         {
             group : "request",
-            items : [
-                "src/data/request/FormDataTest.js"
+            items : [{
+                group : "file",
+                items : [
+                    "src/data/request/file/FileLoaderTest.js"
+                ]
+            },
+            "src/data/request/FormDataTest.js"
             ]
         }, {
             group : "schema",
@@ -154,6 +173,17 @@ harness.start({
                 "src/data/writer/FormDataTest.js"
             ]
         }]
+}, {
+    group : "env",
+    items : [
+        "src/env/VendorBaseTest.js", {
+            group : "ext",
+            items : [
+                "src/env/ext/VendorBaseTest.js"
+            ]
+        }
+    ]
+
 }, {
     group : "text",
     items : [{
