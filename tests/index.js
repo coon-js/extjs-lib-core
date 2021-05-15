@@ -88,6 +88,7 @@ harness.start({
         "src/app/ApplicationExceptionTest.js",
         "src/app/ConfigurationExceptionTest.js",
         "src/app/ConfigLoaderTest.js",
+        "src/app/BatchConfigLoaderTest.js",
         "src/app/ControllerPluginTest.js",
         "src/app/PackageControllerTest.js",
         "src/app/ApplicationTest.js",
