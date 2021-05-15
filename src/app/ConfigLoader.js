@@ -104,8 +104,7 @@ Ext.define("coon.core.app.ConfigLoader", {
         let config = {};
 
         try {
-            let
-                txt = await me.fileLoader.load(url);
+            let txt = await me.fileLoader.load(url);
 
             try {
                 config = JSON.parse(txt);
