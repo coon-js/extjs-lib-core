@@ -148,7 +148,7 @@ Ext.define("coon.core.app.BatchConfigLoader", {
      *
      * @see #loadDomain
      */
-    load: async function () {
+    async load () {
 
         const
             me = this,
