@@ -84,7 +84,8 @@ Ext.define("coon.core.app.ConfigLoader", {
      * {coon.core.ConfigManager}.
      *
      * @param {String} domain The domain for which the configuration should be loaded.
-     *
+     * @param {String} url The url where the configuration file for exactly this domain can be found.
+     *                     Will fall back to #getPathForDomain if not specified
      * @returns {Object|Promise}
      *
      * @throws IllegalArgumentException, PromiseExecutionException
@@ -95,11 +96,11 @@ Ext.define("coon.core.app.ConfigLoader", {
      * @throws {coon.core.app.ConfigurationException} when an exception occurs.
      * The exception that caused this exception will be wrapped.
      */
-    async load (domain) {
+    async load (domain, url) {
 
-        const
-            me = this,
-            url = me.getPathForDomain(domain);
+        const me = this;
+
+        url = url ? url : me.getPathForDomain(domain) ;
 
         let config = {};
 

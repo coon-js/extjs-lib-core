@@ -49,6 +49,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
             loader.destroy();
             loader = null;
 
+            coon.core.ConfigManager.configs = {};
             coon.core.Environment._vendorBase = undefined;
 
         });
@@ -88,6 +89,27 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
                 coon.core.Environment.getPathForResource(loader.getFileNameForDomain(DOMAIN))
             );
             t.expect(spy.calls.mostRecent().args[0]).toBe(DOMAIN);
+        });
+
+
+        t.it("load() - falls back to getPathForDomain() if url not specified", async t => {
+
+            let spy = t.spyOn(loader, "getPathForDomain");
+
+            await loader.load("mockdomain");
+
+            t.expect(spy).toHaveBeenCalledWith("mockdomain");
+        });
+
+
+        t.it("load() - does not call getPathForDomain() if url specified", async t => {
+
+            let mockdomainPath = loader.getPathForDomain("mockdomain"),
+                spy = t.spyOn(loader, "getPathForDomain");
+
+            await loader.load("mockdomain", mockdomainPath);
+
+            t.expect(spy).not.toHaveBeenCalled();
         });
 
 
