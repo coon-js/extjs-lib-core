@@ -27,11 +27,10 @@
 /**
  * Loader for configuration files represented by a domain.
  * The found config for the domain will be registered with the coon.core.ConfigManager.
- * Paths for domains are computed via the return value of {coon.core.Environment#getPathForResource}.
+ * Base-paths for domains are computed via the return value of {coon.core.Environment#getPathForResource}.
  *
- *
- * @example
- *    // existing json-file at [resource_path]/app-cn_mail.conf.json
+ * * @example
+ *    // existing json-file at [resource_path]/[coon-js.resources]/app-cn_mail.conf.json
  *    const configLoader = new coon.core.app.ConfigLoader(new coon.core.data.request.file.FileLoader());
  *    const res = await configLoader.load("app-cn_mail");
  *    console.log(res); // json-decoded contents of the json file on success
@@ -143,19 +142,33 @@ Ext.define("coon.core.app.ConfigLoader", {
 
 
         /**
-         * Returns the path to the resource teh domain is representing.
+         * Returns the path to the resource the domain is representing.
          * Note: This method does not check if the file is existing.
+         *
+         * @example
+         *     // coon.core.Environment.get("coon-js.resources"); // returns "coon-js/files";
+         *     // coon.core.Environment.getPathForResource(""); // returns "./resources"
+         *     // this.getFileNameForDomain("mydomain"); // returns "mydomain.conf.json"
+         *     this.getPathFormDomain("mydomain"); // returns "./resources/coon.js/files/mydomain.conf.json"
          *
          * @param {String} domain
          *
          * @return {String} The relative path to the resource from the location
-         * this script was executed.
+         * this script was executed. Will weave the value found in the "coon-js.resources"-environment
+         * in if available.
          *
          * @see getFileNameForDomain
          * @see {coon.core.Environment#getPathForResource}
          */
         getPathForDomain (domain) {
-            return coon.core.Environment.getPathForResource(this.getFileNameForDomain(domain));
+
+            const Environment = coon.core.Environment;
+
+            let resourcePath = Environment.get("coon-js.resources");
+
+            resourcePath = resourcePath ? resourcePath +"/" : "";
+
+            return Environment.getPathForResource(resourcePath + this.getFileNameForDomain(domain));
         }
 
 
