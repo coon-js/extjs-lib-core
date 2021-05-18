@@ -25,6 +25,8 @@
 
 describe("coon.core.env.ext.VendorBaseTest", function (t) {
 
+    "use strict";
+
     let TMPMANIFEST = null,
         vendorBase;
 
@@ -86,6 +88,17 @@ describe("coon.core.env.ext.VendorBaseTest", function (t) {
         t.expect(spy.calls.mostRecent().args[1]).toBe(null);
         t.expect(spy.calls.mostRecent().args[2]).toBe("");
 
+    });
+
+    t.it("loadPackage()", async (t) => {
+
+        let spy = t.spyOn(Ext.Package, "load").and.callFake(async () => {});
+
+        t.isInstanceOf(vendorBase.loadPackage("pack"), "Promise");
+
+        t.expect(spy.calls.mostRecent().args[0]).toBe("pack");
+
+        spy.remove();
     });
 
 });

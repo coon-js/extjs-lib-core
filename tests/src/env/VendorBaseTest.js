@@ -34,10 +34,11 @@ describe("coon.core.env.VendorBaseTest", function (t) {
 
         let vendorBase = Ext.create("coon.core.env.VendorBase");
 
-        t.expect(vendorBase.get).toBe(Ext.emptyFn);
-        t.expect(vendorBase.getPathForResource).toBe(Ext.emptyFn);
-        t.expect(vendorBase.getEnvironment).toBe(Ext.emptyFn);
-        t.expect(vendorBase.getPackage).toBe(Ext.emptyFn);
+        t.expect(vendorBase.get).toBeDefined();
+        t.expect(vendorBase.getPathForResource).toBeDefined();
+        t.expect(vendorBase.getEnvironment).toBeDefined();
+        t.expect(vendorBase.getPackage).toBeDefined();
+        t.expect(vendorBase.loadPackage).toBeDefined();
 
     });
 
