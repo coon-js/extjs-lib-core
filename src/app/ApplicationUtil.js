@@ -113,9 +113,10 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         const packages = {};
 
-        Object.entries(manifestPackages).forEach(([packageName, packageConfig]) => {
+        Object.entries(manifestPackages).forEach((entry) => {
 
-            let coonPackage = coon.core.Util.unchain("coon-js.package", packageConfig);
+            let [packageName, packageConfig] = entry,
+                coonPackage = coon.core.Util.unchain("coon-js.package", packageConfig);
 
             if (coonPackage !== undefined) {
                 packages[packageName] = Ext.clone(packageConfig);
@@ -186,7 +187,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
             packages = me.getCoonPackages(manifestPackages);
 
         let found = undefined;
-        Object.entries(packages).some(([packageName, config]) => {
+        Object.entries(packages).some((entry) => {
+
+            let [packageName, config] = entry;
 
             if (config["coon-js"].package.controller === controller) {
                 found = packageName;
@@ -249,7 +252,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
             coonPackages = me.getCoonPackages(manifestPackages),
             pluginMap = {};
 
-        Object.entries(coonPackages).forEach( ([name, packageConfig]) => {
+        Object.entries(coonPackages).forEach( (entry) => {
+
+            let [, packageConfig] = entry;
 
             const plugins = [].concat(coon.core.Util.unchain(
                 "coon-js.package.config.plugins.controller",
@@ -270,7 +275,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
                 // query the packages to see if there are fqns specified for the
                 // namespaces found in the packages.
-                Object.entries(coonPackages).some( ([name, packageConfig]) => {
+                Object.entries(coonPackages).some( (entry) => {
+
+                    let [, packageConfig] = entry;
 
                     if (plugin.indexOf(packageConfig.namespace) === 0) {
                         fqn = plugin;
@@ -408,8 +415,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
             controllers = [],
             entries = Object.entries(coonPackages);
 
-        entries.forEach(([name, packageConfig]) => {
-            let controller = coon.core.Util.unchain("coon-js.package.controller", packageConfig),
+        entries.forEach((entry) => {
+            let [, packageConfig] = entry,
+                controller = coon.core.Util.unchain("coon-js.package.controller", packageConfig),
                 config = coon.core.Util.unchain("coon-js.package.config", packageConfig);
 
             if (controller) {
@@ -421,7 +429,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         await batchLoader.load();
 
-        await Promise.all(entries.map(async ([name, config]) => {
+        await Promise.all(entries.map(async (entry) => {
+
+            let [name, config] = entry;
 
             if (config.included) {
                 return;
