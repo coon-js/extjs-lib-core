@@ -24,11 +24,11 @@
  */
 
 /**
- * ControllerPlugin Mock.
+ * ApplicationPlugin Mock.
  */
-Ext.define("coon.test.app.mock.app.ControllerPlugin", {
+Ext.define("coon.test.app.mock.app.ApplicationPlugin", {
 
-    extend : "coon.core.app.plugin.ControllerPlugin"
+    extend : "coon.core.app.plugin.ApplicationPlugin"
 
 
 });
