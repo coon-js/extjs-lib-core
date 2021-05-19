@@ -164,6 +164,32 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
         });
 
 
+        t.it("load() - valid json, path does not exist", async (t) => {
+
+            const expected = {};
+
+            t.expect(coon.core.ConfigManager.get("mockdomain")).toBeUndefined();
+
+            let config = await loader.load("mockdomain", undefined, "foo");
+            t.isDeeply(config, expected);
+            t.isDeeply(coon.core.ConfigManager.get("mockdomain"), expected);
+        });
+
+        t.it("load() - valid json, path does exist", async (t) => {
+
+            const expected = {
+                //"config" : {
+                "foo" : "bar"
+                //}
+            };
+
+            t.expect(coon.core.ConfigManager.get("mockdomain")).toBeUndefined();
+
+            let config = await loader.load("mockdomain", undefined, "config");
+            t.isDeeply(config, expected);
+            t.isDeeply(coon.core.ConfigManager.get("mockdomain"), expected);
+        });
+
     });
 
 });

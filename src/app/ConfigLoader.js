@@ -85,6 +85,9 @@ Ext.define("coon.core.app.ConfigLoader", {
      * @param {String} domain The domain for which the configuration should be loaded.
      * @param {String} url The url where the configuration file for exactly this domain can be found.
      *                     Will fall back to #getPathForDomain if not specified
+     * @param {String} configPath a path in the loaded json that should be used as the configuration object.
+     * empty object will be registered if a path is specified and the target does noct exist.
+     *
      * @returns {Object|Promise}
      *
      * @throws IllegalArgumentException, PromiseExecutionException
@@ -95,7 +98,8 @@ Ext.define("coon.core.app.ConfigLoader", {
      * @throws {coon.core.app.ConfigurationException} when an exception occurs.
      * The exception that caused this exception will be wrapped.
      */
-    async load (domain, url) {
+    async load (domain, url, configPath) {
+        "use strict";
 
         const me = this;
 
@@ -113,7 +117,11 @@ Ext.define("coon.core.app.ConfigLoader", {
                 throw new coon.core.exception.ParseException(e);
             }
 
-            coon.core.ConfigManager.register(domain, config);
+            config = configPath ? coon.core.Util.unchain(configPath, config, {}) : config
+
+            coon.core.ConfigManager.register(
+                domain, config
+            );
 
         } catch (e) {
             throw new coon.core.app.ConfigurationException(e.getMessage(), e);
