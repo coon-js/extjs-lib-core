@@ -271,25 +271,9 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             plugins.forEach(function (plugin) {
 
-                let fqn;
+                let fqn = me.getFqnForPlugin(plugin, coonPackages, "controller");
 
-                // query the packages to see if there are fqns specified for the
-                // namespaces found in the packages.
-                Object.entries(coonPackages).some( (entry) => {
-
-                    let [, packageConfig] = entry;
-
-                    if (plugin.indexOf(packageConfig.namespace) === 0) {
-                        fqn = plugin;
-                        return true;
-                    }
-                });
-
-                if (!fqn && coon.core.Environment.get(`packages.${plugin}`)) {
-                    fqn = `${coon.core.Environment.get(`packages.${plugin}.namespace`)}.app.plugin.ControllerPlugin`;
-                }
-
-                if (fqn) {
+                 if (fqn) {
                     pluginMap[ctrl] = pluginMap[ctrl] || [];
                     pluginMap[ctrl].push(fqn);
                 }
@@ -298,6 +282,63 @@ Ext.define("coon.core.app.ApplicationUtil",{
         });
 
         return pluginMap;
+    },
+
+
+    /**
+     * Iterates through the list of plugin-names this method gets called with and returns an array with fqn
+     * representing the classes of the type {coon.core.app.plugin.ApplicationPlugin} that should be used as
+     * application plugins.
+     * Application plugins can be configured in two ways: either set an entry to the package-name the
+     * plugin can be found in (the fqn will be computed by this class then) or specify the fqn by hand.
+     * Note: application plugins specified with their fqn must have their corresponding "coon-js"-packages in the
+     * environment.
+     *
+     * @example
+     *     // conjoon.conf.json of an application named "conjoon".
+     *     // "theme-cn_material" is a package that is required by the package that defines
+     *     // this plugin in it's config. It has the namespace "conjoon.cn_material":
+     *
+     *     {
+     *         "conjoon" : {
+     *             "config" : {
+     *                 "application" : {
+     *                     "plugins" : [
+     *                         "theme-cn_material", // will compute the fqn to "conjoon.cn_material.app.plugin.ApplicationPlugin"
+     *                         "some.other.plugins.Fqn"
+     *                     ]
+     *                 }
+     *             }
+     *         }
+     *     }
+     *
+     *     this.getApplicationPlugins(pck); // returns ["conjoon.cn_material.app.plugin.ApplicationPlugin", "some.other.plugins.Fqn"]
+     *
+     * @param {Object} packages The object containing all package informations available in the environment.
+     *
+     * @return {Array} an array containing all fqns of the plugins found based on the information available in applicationConfig
+     *
+     * @private
+     */
+    getApplicationPlugins (applicationConfig, manifestPackages) {
+        "use strict";
+
+        const
+            me = this,
+            coonPackages = me.getCoonPackages(manifestPackages),
+            plugins = coon.core.Util.unchain("application.plugins", applicationConfig, []),
+            fqns = [];
+
+        plugins.forEach( (plugin) => {
+
+            let fqn = me.getFqnForPlugin(plugin, coonPackages, "application");
+
+            if (fqn) {
+                fqns.push(fqn);
+            }
+        });
+
+        return fqns;
     },
 
 
@@ -442,6 +483,41 @@ Ext.define("coon.core.app.ApplicationUtil",{
         }));
 
         return controllers;
+    },
+
+
+    /**
+     * @private
+     */
+    getFqnForPlugin : function (plugin, coonPackages, type) {
+        "use strict";
+
+        type = (""+type).toLowerCase();
+
+        if (["application", "controller"].indexOf(type) === -1) {
+            return;
+        }
+
+        let fqn;
+
+        Object.entries(coonPackages).some( (entry) => {
+
+            let [, packageConfig] = entry;
+
+            // check first if a package can be identified under the name of the plugin
+            // this will be given precedence
+            if (coon.core.Environment.get(`packages.${plugin}`)) {
+                fqn = `${coon.core.Environment.get(`packages.${plugin}.namespace`)}.app.plugin.${type === "application" ? "Application" : "Controller"}Plugin`;
+                return true;
+            }
+
+            if (plugin.indexOf(packageConfig.namespace) === 0) {
+                fqn = plugin;
+                return true;
+            }
+        });
+
+        return fqn;
     }
 
 

@@ -198,7 +198,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                         namespace : "snafu",
                         "coon-js" : {package : {controller : "mycustom.Controller", config : {plugins : {controller : "some.acme.controller.Plugin"}}}}
                     }
-                }, 
+                },
                 result = {
                     "foo.app.PackageController" : [
                         "com.bar.app.plugin.ControllerPlugin",
@@ -218,6 +218,53 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
 
             t.isDeeply(applicationUtil.getControllerPlugins({foobar : {}}), {});
+        });
+
+
+        t.it("getApplicationPlugins()", function (t) {
+
+            const
+                applicationConfig = {
+                    "application" : {
+                        "plugins" : [
+                            "ApplicationPluginCustomWONamespace",
+                            "application.plugin.custom.w.Namespace",
+                            "foo"
+                        ]
+                    }
+                },
+                manifestPackages =  {
+                    foo : {
+                        included : false,
+                        namespace : "foo",
+                        "coon-js" : {package  : true}
+                    },
+                    bar : {
+                        included : true,
+                        namespace : "com.bar",
+                        "coon-js" : {package  : true}
+                    },
+                    acme : {
+                        namespace : "some.acme",
+                        "coon-js" : {package : true}
+                    },
+                    snafu : {
+                        included : false,
+                        namespace : "application.plugin",
+                        "coon-js" : {package : true}
+                    }
+                },
+                result = [
+                    "application.plugin.custom.w.Namespace",
+                    "foo.app.plugin.ApplicationPlugin"
+                ];
+
+            setupEnvironment({packages : manifestPackages});
+
+            Object.freeze(manifestPackages);
+            Object.freeze(result);
+
+            t.isDeeply(applicationUtil.getApplicationPlugins(applicationConfig, manifestPackages), result);
         });
 
 
