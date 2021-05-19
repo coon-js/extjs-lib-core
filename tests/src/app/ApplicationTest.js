@@ -375,18 +375,28 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
         t.it("addApplicationPlugin()", (t) => {
 
+            const
+                appPlug = "coon.test.app.mock.app.ApplicationPlugin",
+                ctrlPlug = "coon.test.app.mock.app.ControllerPlugin";
+
+            let exc;
+
+            let app = Ext.create("coon.core.app.Application", {
+                name     : "test",
+                mainView : "Ext.Panel"
+            });
+
+            try {
+                app.addApplicationPlugin(appPlug);
+            } catch (e) {
+                exc = e;
+            }
+
+            t.isInstanceOf(exc, "coon.core.app.ApplicationException");
+            t.expect(exc.getMessage()).toContain("Could not find");
+
             t.requireOk("coon.test.app.mock.app.ApplicationPlugin",
-                         "coon.test.app.mock.app.ControllerPlugin", function () {
-                    const
-                        appPlug = "coon.test.app.mock.app.ApplicationPlugin",
-                        ctrlPlug = "coon.test.app.mock.app.ControllerPlugin";
-
-                    let app = Ext.create("coon.core.app.Application", {
-                        name     : "test",
-                        mainView : "Ext.Panel"
-                    });
-
-                    let exc;
+                "coon.test.app.mock.app.ControllerPlugin", function () {
 
                     try {
                         app.addApplicationPlugin(ctrlPlug);
@@ -405,6 +415,32 @@ describe("coon.core.app.ApplicationTest", function (t) {
                     t.expect(app.addApplicationPlugin(Ext.create(appPlug))).toBe(app);
                     t.expect(app.applicationPlugins[0]).toBe(plug);
                 });
+        });
+
+
+        t.it("visitPlugins()", (t) => {
+
+            let applicationPluginMocks = [
+                    {run : (app) => {}},
+                    {run : (app) => {}}
+                ], spys = [];
+
+            let app = Ext.create("coon.core.app.Application", {
+                name     : "test",
+                mainView : "Ext.Panel"
+            });
+
+            applicationPluginMocks.forEach((plug) => {
+                spys.push(t.spyOn(plug, "run"));
+            });
+
+            app.applicationPlugins = applicationPluginMocks;
+            app.visitPlugins();
+
+            spys.forEach((spy) => {
+                t.expect(spy).toHaveBeenCalled(1);
+                t.expect(spy).toHaveBeenCalledWith(app);
+            });
         });
 
 
@@ -751,5 +787,4 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-
-});});
+    });});

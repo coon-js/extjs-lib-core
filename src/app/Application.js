@@ -258,7 +258,7 @@ Ext.define("coon.core.app.Application",{
      * This method will iterate over the controllers configured for this application.
      * If an {@link coon.core.app.PackageController} is configured, it's
      * {@link coon.core.app.PackageController#preLaunchHook} method will
-     * be called.
+     * be called. Additionally  its visitPlugins()-method will be called.
      *
      * @returns {boolean} false if the {@link #mainView} should not be
      * rendered, otherwise true
@@ -266,6 +266,9 @@ Ext.define("coon.core.app.Application",{
      * @protected
      *
      * @throws if {@link #mainView} was already initialized
+     *
+     * @see coon.core.app.PackageController#visitPlugins
+     * @see #visitPlugins
      */
     preLaunchHookProcess () {
 
@@ -279,7 +282,7 @@ Ext.define("coon.core.app.Application",{
             });
         }
 
-        me.visitApplicationPlugins();
+        me.visitPlugins();
 
         var ctrl = null,
             res  = true,
@@ -559,23 +562,24 @@ Ext.define("coon.core.app.Application",{
 
     /**
      * Adds an application plugin to the list of plugins this application maintains.
+     * The method will try to resolve the fqn submitted to this method by using the Ext.ClassManager.
      *
-     * @param className
+     * @param {String} className
+     *
+     * @return this
+     *
+     * @throws {coon.core.app.ApplicationException} if the plugin is not available, or if the
+     * plugin is not an instance of {coon.core.app.plugin.ApplicationPlugin}
      */
-    async addApplicationPlugin (plugin) {
+    addApplicationPlugin (plugin) {
 
         const me = this;
 
         if (typeof plugin === "string") {
             if (!Ext.ClassManager.get(plugin)) {
-                plugin = await new Promise(function (resolve, reject) {
-                    Ext.require(plugin, resolve(plugin), me);
-                });
-                if (!Ext.ClassManager.get(plugin)) {
-                    throw new coon.core.app.ApplicationException(
-                        `Could not find plugin "${plugin}"`
-                    );
-                }
+                throw new coon.core.app.ApplicationException(
+                    `Could not find the plugin "${plugin}". Make sure it is loaded with it's owning package.`
+                );
             }
             plugin = Ext.create(plugin);
         }
@@ -605,16 +609,20 @@ Ext.define("coon.core.app.Application",{
 
 
     /**
+     * Iterates over the applicationPlugins-collection holding instances of
+     * {coon.core.app.plugin.ApplicationPlugin} and calls their run-method, by passing
+     * this application as the owner of the plugin.
      *
+     * @private
+     *
+     * @see coon.core.app.plugin.ApplicationPlugin#run
      */
-    visitApplicationPlugins : function () {
-
+    visitPlugins : function () {
         const
             me = this,
             plugins = me.applicationPlugins || [];
 
         plugins.forEach((plugin) => plugin.run(me));
     }
-
 
 });
