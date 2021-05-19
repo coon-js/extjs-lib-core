@@ -1,7 +1,7 @@
 /**
  * coon.js
  * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,46 +35,62 @@
  */
 describe("coon.core.app.ApplicationTest_Isolated3", function (t) {
 
-    let app = null;
+    t.requireOk("coon.core.app.Application", () => {
+        let app = null;
+
+        const buildManifest = function () {
+
+            const manifest = {};
+
+            manifest.name = "ApplicationTest";
+            manifest["coon-js"] = {env: "dev"};
+            manifest.packages = {};
+            manifest.resources = {path: "./fixtures", shared: "../bar"};
+            return manifest;
+        };
 
 
-    t.beforeEach(function () {
-        Ext.isModern && Ext.viewport.Viewport.setup();
+        t.beforeEach(function () {
+            Ext.manifest = buildManifest();
+            coon.core.app.Application.prototype.onProfilesReady = Ext.app.Application.prototype.onProfilesReady;
+            Ext.isModern && Ext.viewport.Viewport.setup();
+        });
+
+        t.afterEach(function () {
+
+            if (app) {
+                app.destroy();
+                app = null;
+            }
+
+            if (Ext.isModern && Ext.Viewport) {
+                Ext.Viewport.destroy();
+                Ext.Viewport = null;
+            }
+
+        });
+
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
+
+
+        // Test error
+        t.it("Should throw an error when mainView is not specified", function (t) {
+            var exc = undefined;
+
+            try {
+                Ext.create("coon.core.app.Application", {
+                    name: "test"
+                });
+
+            } catch (e) {
+                exc = e;
+            }
+
+            t.expect(exc).not.toBeNull();
+            t.expect(exc.msg).toContain("empty value for view");
+
+        });
     });
-
-    t.afterEach(function () {
-
-        if (app) {
-            app.destroy();
-            app = null;
-        }
-
-        if (Ext.isModern && Ext.Viewport) {
-            Ext.Viewport.destroy();
-            Ext.Viewport = null;
-        }
-
-    });
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
-
-
-    // Test error
-    t.it("Should throw an error when mainView is not specified", function (t) {
-        var exc = undefined;
-
-        try {
-            Ext.create("coon.core.app.Application", {
-                name  : "test"
-            });
-
-        } catch(e) {exc = e;}
-
-        t.expect(exc).not.toBeNull();
-        t.expect(exc.msg).toContain("empty value for view");
-
-    });
-
 });
