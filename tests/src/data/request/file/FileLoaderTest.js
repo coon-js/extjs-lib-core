@@ -91,7 +91,7 @@ describe("coon.core.data.request.file.FileLoaderTest", function (t) {
 
         let exc, responseText;
 
-        loader.load("./fixtures/mockdomain.conf.json")
+        loader.load("./fixtures/coon-js/mockdomain.conf.json")
             .then((txt) => responseText = txt, (e) => exc = true);
 
         t.waitForMs(TIMEOUT, () => {
@@ -112,7 +112,7 @@ describe("coon.core.data.request.file.FileLoaderTest", function (t) {
 
         let responseText;
 
-        responseText = await loader.load("./fixtures/mockdomain.conf.json");
+        responseText = await loader.load("./fixtures/coon-js/mockdomain.conf.json");
 
         t.expect(typeof responseText).toBe("string");
         t.expect(JSON.parse(responseText)).toEqual({
