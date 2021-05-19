@@ -108,12 +108,16 @@ Ext.define("coon.core.app.PackageController", {
 
     /**
      * Adds the plugin to stack of plugins for execution.
-     * owning applications usually call the plugins during the preLaunchHook.
+     * Owning applications usually call the plugins during the preLaunchHook.
      * They cannot be vetoed.
+     * This method checks whether a plugin with the same id is already configured
+     * for this controller and does not add it another time if that is the case.
      *
      * @param {coon.core.app.ControllerPlugin} plugin
      *
-     *  @throws if the submitted argument is not an instance of {coon.core.app.ControllerPlugin}
+     * @return this
+     *
+     * @throws if the submitted argument is not an instance of {coon.core.app.ControllerPlugin}
      */
     addPlugin : function (plugin) {
 
@@ -123,7 +127,17 @@ Ext.define("coon.core.app.PackageController", {
 
         const me = this;
 
-        me.plugins.push(plugin);
+        let found = me.plugins.some( (plug) => {
+            if (plug === plugin || plug.getId() === plugin.getId()) {
+                return true;
+            }
+        })
+
+        if (!found) {
+            me.plugins.push(plugin);
+        }
+
+        return me;
     },
 
 
