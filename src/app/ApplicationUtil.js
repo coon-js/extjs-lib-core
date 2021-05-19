@@ -344,14 +344,15 @@ Ext.define("coon.core.app.ApplicationUtil",{
             urls = me.getApplicationConfigUrls(),
             envUrl = urls.environment,
             defaultUrl = urls.default,
-            appName = coon.core.Environment.get("name");
+            appName = coon.core.Environment.get("name"),
+            configPath = `${appName}.config`;
 
         let skipDefault = !!envUrl,
             loadedConfig;
 
         if (skipDefault) {
             try {
-                loadedConfig = await me.configLoader.load(appName, envUrl);
+                loadedConfig = await me.configLoader.load(appName, envUrl, configPath);
             } catch (e) {
                 if (typeof e.getCause === "function" && (e.getCause() instanceof coon.core.data.request.HttpRequestException)) {
                     skipDefault = false;
@@ -364,7 +365,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         if (!skipDefault) {
             try {
-                loadedConfig = await me.configLoader.load(appName, defaultUrl);
+                loadedConfig = await me.configLoader.load(appName, defaultUrl, configPath);
             } catch (e) {
                 if (typeof e.getCause === "function" && !(e.getCause() instanceof coon.core.data.request.HttpRequestException)) {
                     throw e;
@@ -416,15 +417,16 @@ Ext.define("coon.core.app.ApplicationUtil",{
             entries = Object.entries(coonPackages);
 
         entries.forEach((entry) => {
-            let [, packageConfig] = entry,
+            let [name, packageConfig] = entry,
                 controller = coon.core.Util.unchain("coon-js.package.controller", packageConfig),
                 config = coon.core.Util.unchain("coon-js.package.config", packageConfig);
 
             if (controller) {
                 controllers.push(controller);
             }
-
-            batchLoader.addDomain(packageConfig.name, typeof config === "object" ? config : undefined);
+            if (config) {
+                batchLoader.addDomain(name, typeof config === "object" ? config : undefined);
+            }
         });
 
         await batchLoader.load();

@@ -57,6 +57,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                 t.expect(spy).toHaveBeenCalled(1);
                 t.expect(spy.calls.all()[0].args[0]).toBe(appName);
                 t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls()[env ? "environment" : "default"]);
+                t.expect(spy.calls.all()[0].args[2]).toBe(`${appName}.config`);
 
                 t.expect(exc).toBe(configurationException);
             };
@@ -346,7 +347,6 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
             let ctrls = await applicationUtil.loadPackages(coon.core.Environment.get("packages"));
 
             t.isDeeply(applicationUtil.batchConfigLoader.domains, {
-                "foo" : {},
                 "bar" : {conf : "set"}
             });
 
