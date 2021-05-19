@@ -47,7 +47,7 @@
  *
  * });
  *
- * Ext.getApplication().addPlugin(Ext.create("HelloWorldPlugin"));
+ * Ext.getApplication().addApplicationPlugin(Ext.create("HelloWorldPlugin"));
  * Ext.getApplication().visitApplicationPlugins();
  *
  *

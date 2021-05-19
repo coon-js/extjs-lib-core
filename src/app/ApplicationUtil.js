@@ -273,7 +273,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
                 let fqn = me.getFqnForPlugin(plugin, coonPackages, "controller");
 
-                 if (fqn) {
+                if (fqn) {
                     pluginMap[ctrl] = pluginMap[ctrl] || [];
                     pluginMap[ctrl].push(fqn);
                 }
