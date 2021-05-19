@@ -201,7 +201,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                 }, 
                 result = {
                     "foo.app.PackageController" : [
-                        "com.bar.app.plugins.ControllerPlugin",
+                        "com.bar.app.plugin.ControllerPlugin",
                         "snafu.Controller"
                     ],
                     "mycustom.Controller" : [

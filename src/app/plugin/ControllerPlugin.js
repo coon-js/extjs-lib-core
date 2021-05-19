@@ -35,7 +35,7 @@
  *
  * Ext.define("HelloWorldPlugin", {
  *
- *    extend : "coon.core.app.ControllerPlugin",
+ *    extend : "coon.core.app.plugin.ControllerPlugin",
  *
  *    run : function (controller) {
  *
@@ -54,7 +54,7 @@
  *
  *
  */
-Ext.define("coon.core.app.ControllerPlugin", {
+Ext.define("coon.core.app.plugin.ControllerPlugin", {
 
     /**
      * @var id

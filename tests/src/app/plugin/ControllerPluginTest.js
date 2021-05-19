@@ -23,28 +23,28 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.ControllerPluginTest", function (t) {
+describe("coon.core.app.plugin.ControllerPluginTest", function (t) {
 
     var plugin;
 
     t.beforeEach(function () {
-        plugin = Ext.create("coon.core.app.ControllerPlugin");
+        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin");
     });
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create an instance of coon.core.app.ControllerPlugin", function (t) {
-        t.isInstanceOf(plugin, "coon.core.app.ControllerPlugin");
+    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", function (t) {
+        t.isInstanceOf(plugin, "coon.core.app.plugin.ControllerPlugin");
     });
 
 
     t.it("getId()", (t) => {
-        let plugin = Ext.create("coon.core.app.ControllerPlugin");
-        t.expect(plugin.getId()).toBe("coon.core.app.ControllerPlugin");
+        let plugin = Ext.create("coon.core.app.plugin.ControllerPlugin");
+        t.expect(plugin.getId()).toBe("coon.core.app.plugin.ControllerPlugin");
 
-        plugin = Ext.create("coon.core.app.ControllerPlugin", {id : "myId"});
+        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin", {id : "myId"});
         t.expect(plugin.getId()).toBe("myId");
     });
 

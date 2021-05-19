@@ -221,7 +221,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *         "coon-js" : {
      *             "plugins" : {
      *                 "controller" : "theme-cn_material" // will set the value of "controller" to
-     *                                                    // "conjoon.cn_material.app.plugins.ControllerPlugin"
+     *                                                    // "conjoon.cn_material.app.plugin.ControllerPlugin"
      *             }
      *         }
      *     }
@@ -229,12 +229,12 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *    {
      *         "coon-js" : {
      *             "plugins" : {
-     *                 "controller" : "conjoon.cn_material.app.plugins.ControllerPlugin"
+     *                 "controller" : "conjoon.cn_material.app.plugin.ControllerPlugin"
      *             }
      *         }
      *     }
      *
-     *     this.getControllerPlugins(pck); // returns {"conjoon.cn_user.app.PackageController" : ["conjoon.cn_material.app.plugins.ControllerPlugin"]}
+     *     this.getControllerPlugins(pck); // returns {"conjoon.cn_user.app.PackageController" : ["conjoon.cn_material.app.plugin.ControllerPlugin"]}
      *
      *
      *
@@ -286,7 +286,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
                 });
 
                 if (!fqn && coon.core.Environment.get(`packages.${plugin}`)) {
-                    fqn = `${coon.core.Environment.get(`packages.${plugin}.namespace`)}.app.plugins.ControllerPlugin`;
+                    fqn = `${coon.core.Environment.get(`packages.${plugin}.namespace`)}.app.plugin.ControllerPlugin`;
                 }
 
                 if (fqn) {

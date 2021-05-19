@@ -256,9 +256,9 @@ describe("coon.core.app.PackageControllerTest", function (t) {
         }
         t.expect (exc.msg).toContain("must be an instance of");
 
-        let plugin1 = Ext.create("coon.core.app.ControllerPlugin");
+        let plugin1 = Ext.create("coon.core.app.plugin.ControllerPlugin");
         plugin1.run = function () {};
-        let plugin2 = Ext.create("coon.core.app.ControllerPlugin", {id : "someid"});
+        let plugin2 = Ext.create("coon.core.app.plugin.ControllerPlugin", {id : "someid"});
         plugin2.run = function () {};
 
         t.isCalledNTimes("run", plugin1, 1);
@@ -273,9 +273,9 @@ describe("coon.core.app.PackageControllerTest", function (t) {
 
     t.it("addPlugin() - plugin with the same id is not added again", function (t) {
 
-        let plugin1 = Ext.create("coon.core.app.ControllerPlugin");
+        let plugin1 = Ext.create("coon.core.app.plugin.ControllerPlugin");
         plugin1.run = function () {};
-        let plugin2 = Ext.create("coon.core.app.ControllerPlugin");
+        let plugin2 = Ext.create("coon.core.app.plugin.ControllerPlugin");
         plugin2.run = function () {};
 
         t.isCalledNTimes("run", plugin1, 1);
@@ -295,7 +295,7 @@ describe("coon.core.app.PackageControllerTest", function (t) {
 
         let exc = null;
 
-        let plugin1 = Ext.create("coon.core.app.ControllerPlugin");
+        let plugin1 = Ext.create("coon.core.app.plugin.ControllerPlugin");
         plugin1.run = function () {
             // eslint-disable-next-line
             sf
