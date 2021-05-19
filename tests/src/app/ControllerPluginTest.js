@@ -40,11 +40,6 @@ describe("coon.core.app.ControllerPluginTest", function (t) {
     });
 
 
-    t.it("run()", function (t) {
-        t.expect(plugin.run).toBe(Ext.emptyFn);
-    });
-
-
     t.it("getId()", (t) => {
         let plugin = Ext.create("coon.core.app.ControllerPlugin");
         t.expect(plugin.getId()).toBe("coon.core.app.ControllerPlugin");

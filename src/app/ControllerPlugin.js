@@ -77,10 +77,10 @@ Ext.define("coon.core.app.ControllerPlugin", {
 
     /**
      * Executes this plugin.
-     *
+     * @var run
+     * @type {Function}
      * @param {coon.core.app.PackageController} controller The owning controller.
      */
-    run : () => {},
 
 
     /**
