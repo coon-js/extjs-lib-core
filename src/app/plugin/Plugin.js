@@ -1,6 +1,6 @@
 /**
- * coon.js
- * lib-cn_core
+ * conjoon
+ * lib-cn-core
  * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
@@ -23,21 +23,55 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.plugin.ControllerPluginTest", function (t) {
+/**
+ * Basic implementation for plugins used by the application and package controllers.
+ *
+ * @abstract
+ */
+Ext.define("coon.core.app.plugin.Plugin", {
 
-    var plugin;
+    /**
+     * @var id
+     * @type {String}
+     * @private
+     * @see getId
+     */
 
-    t.beforeEach(function () {
-        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin");
-    });
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
+    /**
+     * @constructor
+     * @param {Object} cfg
+     */
+    constructor (cfg) {
+        const me = this;
 
-    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", function (t) {
-        t.isInstanceOf(plugin, "coon.core.app.plugin.Plugin");
-    });
+        me.id = cfg && cfg.id;
+    },
+
+
+    /**
+     * Executes this plugin.
+     * @var run
+     * @type {Function}
+     * @param {Object} origin The source using the plugin.
+     */
+
+
+    /**
+     * Returns the id configured for this plugin. If not available,
+     * returns the class name.
+     *
+     * @return {String}
+     */
+    getId () {
+        const me = this;
+
+        if (!me.id) {
+            return Ext.getClassName(me);
+        }
+
+        return me.id;
+    }
 
 
 });

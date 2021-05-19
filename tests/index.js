@@ -96,8 +96,10 @@ harness.start({
         "src/app/IsolatedTest_2.js",
         "src/app/IsolatedTest_3.js",
         "src/app/IsolatedTest_4.js", {
-        group : "plugin",
+            group : "plugin",
             items : [
+                "src/app/plugin/PluginTest.js",
+                "src/app/plugin/ApplicationPluginTest.js",
                 "src/app/plugin/ControllerPluginTest.js"
             ]
         }

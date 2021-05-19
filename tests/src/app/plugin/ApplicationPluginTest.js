@@ -23,19 +23,19 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.plugin.ControllerPluginTest", function (t) {
+describe("coon.core.app.plugin.ApplicationPluginTest", function (t) {
 
     var plugin;
 
     t.beforeEach(function () {
-        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin");
+        plugin = Ext.create("coon.core.app.plugin.ApplicationPlugin");
     });
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", function (t) {
+    t.it("Should create an instance of coon.core.app.plugin.ApplicationPlugin", function (t) {
         t.isInstanceOf(plugin, "coon.core.app.plugin.Plugin");
     });
 

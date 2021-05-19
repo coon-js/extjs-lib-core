@@ -56,48 +56,6 @@
  */
 Ext.define("coon.core.app.plugin.ControllerPlugin", {
 
-    /**
-     * @var id
-     * @type {String}
-     * @private
-     * @see getId
-     */
-
-
-    /**
-     * @constructor
-     * @param {Object} cfg
-     */
-    constructor (cfg) {
-        const me = this;
-
-        me.id = cfg && cfg.id;
-    },
-
-
-    /**
-     * Executes this plugin.
-     * @var run
-     * @type {Function}
-     * @param {coon.core.app.PackageController} controller The owning controller.
-     */
-
-
-    /**
-     * Returns the id configured for this plugin. If not available,
-     * returns the class name.
-     *
-     * @return {String}
-     */
-    getId () {
-        const me = this;
-
-        if (!me.id) {
-            return Ext.getClassName(me);
-        }
-
-        return me.id;
-    }
-
+    extend : "coon.core.app.plugin.Plugin"
 
 });
