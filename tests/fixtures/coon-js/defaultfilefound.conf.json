@@ -1,4 +1,7 @@
 {
-  "defaultfile" : "found"
-
+  "defaultfilefound" : {
+    "config" : {
+      "defaultfile" : "found"
+    }
+  }
 }

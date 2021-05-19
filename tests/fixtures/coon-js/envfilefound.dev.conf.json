@@ -1,4 +1,7 @@
 {
-  "envfile" : "found"
-
+  "envfilefound" : {
+    "config" : {
+      "envfile" : "found"
+    }
+  }
 }
