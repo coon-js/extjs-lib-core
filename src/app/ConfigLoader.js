@@ -117,7 +117,7 @@ Ext.define("coon.core.app.ConfigLoader", {
                 throw new coon.core.exception.ParseException(e);
             }
 
-            config = configPath ? coon.core.Util.unchain(configPath, config, {}) : config
+            config = configPath ? coon.core.Util.unchain(configPath, config, {}) : config;
 
             coon.core.ConfigManager.register(
                 domain, config

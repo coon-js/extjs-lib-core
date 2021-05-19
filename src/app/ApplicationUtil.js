@@ -25,7 +25,7 @@
 
 /**
  *  Internal utility class used by coon.core.app.Application to fetch various informations
- *  out of manifest files.
+ *  out of manifest files, map plugins and load configurations.
  *
  *  @private
  */
