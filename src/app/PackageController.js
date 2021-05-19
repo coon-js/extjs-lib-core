@@ -131,7 +131,7 @@ Ext.define("coon.core.app.PackageController", {
             if (plug === plugin || plug.getId() === plugin.getId()) {
                 return true;
             }
-        })
+        });
 
         if (!found) {
             me.plugins.push(plugin);
