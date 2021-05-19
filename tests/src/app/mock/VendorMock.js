@@ -23,24 +23,43 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
 
+/**
+ * Mock class for vendor environments.
+ */
+Ext.define("coon.test.app.mock.VendorMock", {
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
+    extend : "coon.core.env.VendorBase",
 
-    t.it("functionality", function (t) {
+    requires : [
+        "coon.core.Util"
+    ],
 
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
+    /**
+     * @var mockedEnvironment
+     * @type {Object}
+     * @private
+     */
 
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
+    constructor (cfg) {
+        this.mockedEnvironment = cfg;
+    },
 
-    });
+    getPathForResource : (resource) => {
+        return `fixtures/${resource}`;
+    },
 
+    get (key) {
+        return coon.core.Util.unchain(key, this.mockedEnvironment);
+    },
+
+    getEnvironment () {
+        return this.mockedEnvironment || {};
+    },
+
+    getPackage (pack){
+        return coon.core.Util.unchain(pack, this.mockedEnvironment["packages"]);
+    }
 
 });
+

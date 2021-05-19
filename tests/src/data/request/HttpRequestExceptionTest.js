@@ -23,22 +23,21 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
+describe("coon.core.data.request.HttpRequestExceptionTest", function (t) {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("functionality", function (t) {
 
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
+    t.requireOk("coon.core.data.request.HttpRequestException",  () => {
 
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
+        t.it("constructor()", function (t) {
+
+            let exc = Ext.create("coon.core.data.request.HttpRequestException");
+            t.isInstanceOf(exc, "coon.core.exception.Exception");
+        });
 
     });
 

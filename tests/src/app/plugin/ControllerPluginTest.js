@@ -1,6 +1,6 @@
 /**
- * conjoon
- * lib-cn-core
+ * coon.js
+ * lib-cn_core
  * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
@@ -23,44 +23,21 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Basic implementation for ControllerPlugins used by PackageControllers.
- *
- * @example
- * Ext.define("MyController", {
- *
- *    extend : "coon.core.app.PackageController"
- *
- * });
- *
- * Ext.define("HelloWorldPlugin", {
- *
- *    extend : "coon.core.app.ControllerPlugin",
- *
- *    run : function (controller) {
- *
- *        console.log("Hello World!");
- *
- *        console.log("The owning controller", controller, "just requested this plugin.");
- *    }
- *
- *
- * });
- *
- * let controller = Ext.create("MyController");
- *
- * controller.addPlugin(Ext.create("helloWorldPlugin"));
- *
- *
- *
- */
-Ext.define("coon.core.app.ControllerPlugin", {
+describe("coon.core.app.plugin.ControllerPluginTest", function (t) {
 
-    /**
-     * Executes this plugin.
-     *
-     * @param {coon.core.app.PackageController} controller The owning controller.
-     */
-    run : Ext.emptyFn
+    var plugin;
+
+    t.beforeEach(function () {
+        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin");
+    });
+
+    // +----------------------------------------------------------------------------
+    // |                    =~. Unit Tests .~=
+    // +----------------------------------------------------------------------------
+
+    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", function (t) {
+        t.isInstanceOf(plugin, "coon.core.app.plugin.Plugin");
+    });
+
 
 });

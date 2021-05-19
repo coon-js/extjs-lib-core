@@ -1,6 +1,6 @@
 /**
- * coon.js
- * lib-cn_core
+ * conjoon
+ * lib-cn-core
  * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
@@ -23,24 +23,39 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
+/**
+ * Basic implementation for ControllerPlugins used by PackageControllers.
+ *
+ * @example
+ * Ext.define("MyController", {
+ *
+ *    extend : "coon.core.app.PackageController"
+ *
+ * });
+ *
+ * Ext.define("HelloWorldPlugin", {
+ *
+ *    extend : "coon.core.app.plugin.ControllerPlugin",
+ *
+ *    run : function (controller) {
+ *
+ *        console.log("Hello World!");
+ *
+ *        console.log("The owning controller", controller, "just requested this plugin.");
+ *    }
+ *
+ *
+ * });
+ *
+ * let controller = Ext.create("MyController");
+ *
+ * controller.addPlugin(Ext.create("helloWorldPlugin"));
+ *
+ *
+ *
+ */
+Ext.define("coon.core.app.plugin.ControllerPlugin", {
 
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-    t.it("functionality", function (t) {
-
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
-
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
-
-    });
-
+    extend : "coon.core.app.plugin.Plugin"
 
 });

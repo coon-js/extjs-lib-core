@@ -27,11 +27,10 @@
 /**
  * Loader for configuration files represented by a domain.
  * The found config for the domain will be registered with the coon.core.ConfigManager.
- * Paths for domains are computed via the return value of {coon.core.Environment#getPathForResource}.
+ * Base-paths for domains are computed via the return value of {coon.core.Environment#getPathForResource}.
  *
- *
- * @example
- *    // existing json-file at [resource_path]/app-cn_mail.conf.json
+ * * @example
+ *    // existing json-file at [resource_path]/[coon-js.resources]/app-cn_mail.conf.json
  *    const configLoader = new coon.core.app.ConfigLoader(new coon.core.data.request.file.FileLoader());
  *    const res = await configLoader.load("app-cn_mail");
  *    console.log(res); // json-decoded contents of the json file on success
@@ -84,6 +83,10 @@ Ext.define("coon.core.app.ConfigLoader", {
      * {coon.core.ConfigManager}.
      *
      * @param {String} domain The domain for which the configuration should be loaded.
+     * @param {String} url The url where the configuration file for exactly this domain can be found.
+     *                     Will fall back to #getPathForDomain if not specified
+     * @param {String} configPath a path in the loaded json that should be used as the configuration object.
+     * empty object will be registered if a path is specified and the target does noct exist.
      *
      * @returns {Object|Promise}
      *
@@ -95,17 +98,17 @@ Ext.define("coon.core.app.ConfigLoader", {
      * @throws {coon.core.app.ConfigurationException} when an exception occurs.
      * The exception that caused this exception will be wrapped.
      */
-    async load (domain) {
+    async load (domain, url, configPath) {
+        "use strict";
 
-        const
-            me = this,
-            url = me.getPathForDomain(domain);
+        const me = this;
+
+        url = url ? url : me.getPathForDomain(domain) ;
 
         let config = {};
 
         try {
-            let
-                txt = await me.fileLoader.load(url);
+            let txt = await me.fileLoader.load(url);
 
             try {
                 config = JSON.parse(txt);
@@ -114,7 +117,11 @@ Ext.define("coon.core.app.ConfigLoader", {
                 throw new coon.core.exception.ParseException(e);
             }
 
-            coon.core.ConfigManager.register(domain, config);
+            config = configPath ? coon.core.Util.unchain(configPath, config, {}) : config;
+
+            coon.core.ConfigManager.register(
+                domain, config
+            );
 
         } catch (e) {
             throw new coon.core.app.ConfigurationException(e.getMessage(), e);
@@ -143,19 +150,33 @@ Ext.define("coon.core.app.ConfigLoader", {
 
 
         /**
-         * Returns the path to the resource teh domain is representing.
+         * Returns the path to the resource the domain is representing.
          * Note: This method does not check if the file is existing.
+         *
+         * @example
+         *     // coon.core.Environment.get("coon-js.resources"); // returns "coon-js/files";
+         *     // coon.core.Environment.getPathForResource(""); // returns "./resources"
+         *     // this.getFileNameForDomain("mydomain"); // returns "mydomain.conf.json"
+         *     this.getPathFormDomain("mydomain"); // returns "./resources/coon.js/files/mydomain.conf.json"
          *
          * @param {String} domain
          *
          * @return {String} The relative path to the resource from the location
-         * this script was executed.
+         * this script was executed. Will weave the value found in the "coon-js.resources"-environment
+         * in if available.
          *
          * @see getFileNameForDomain
          * @see {coon.core.Environment#getPathForResource}
          */
         getPathForDomain (domain) {
-            return coon.core.Environment.getPathForResource(this.getFileNameForDomain(domain));
+
+            const Environment = coon.core.Environment;
+
+            let resourcePath = Environment.get("coon-js.resources");
+
+            resourcePath = resourcePath ? resourcePath +"/" : "";
+
+            return Environment.getPathForResource(resourcePath + this.getFileNameForDomain(domain));
         }
 
 

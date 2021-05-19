@@ -23,24 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
+/**
+ * ApplicationPlugin Mock.
+ */
+Ext.define("coon.test.app.mock.app.ApplicationPlugin", {
 
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-    t.it("functionality", function (t) {
-
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
-
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
-
-    });
+    extend : "coon.core.app.plugin.ApplicationPlugin"
 
 
 });

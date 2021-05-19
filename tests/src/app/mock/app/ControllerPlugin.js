@@ -28,7 +28,7 @@
  */
 Ext.define("coon.test.app.mock.app.ControllerPlugin", {
 
-    extend : "coon.core.app.ControllerPlugin"
+    extend : "coon.core.app.plugin.ControllerPlugin"
 
 
 });

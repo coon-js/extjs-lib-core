@@ -39,7 +39,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
 
             let vendorBase = Ext.create("coon.core.env.VendorBase");
             vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
-
+            vendorBase.get = (key) => {if (key === "coon-js.resources") {return "coon-js";}};
             coon.core.Environment.setVendorBase(vendorBase);
         });
 
@@ -49,6 +49,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
             loader.destroy();
             loader = null;
 
+            coon.core.ConfigManager.configs = {};
             coon.core.Environment._vendorBase = undefined;
 
         });
@@ -85,9 +86,32 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
             let spy = t.spyOn(loader, "getFileNameForDomain");
 
             t.expect(loader.getPathForDomain(DOMAIN)).toBe(
-                coon.core.Environment.getPathForResource(loader.getFileNameForDomain(DOMAIN))
+                coon.core.Environment.getPathForResource(
+                    coon.core.Environment.get("coon-js.resources") + "/" + loader.getFileNameForDomain(DOMAIN)
+                )
             );
             t.expect(spy.calls.mostRecent().args[0]).toBe(DOMAIN);
+        });
+
+
+        t.it("load() - falls back to getPathForDomain() if url not specified", async t => {
+
+            let spy = t.spyOn(loader, "getPathForDomain");
+
+            await loader.load("mockdomain");
+
+            t.expect(spy).toHaveBeenCalledWith("mockdomain");
+        });
+
+
+        t.it("load() - does not call getPathForDomain() if url specified", async t => {
+
+            let mockdomainPath = loader.getPathForDomain("mockdomain"),
+                spy = t.spyOn(loader, "getPathForDomain");
+
+            await loader.load("mockdomain", mockdomainPath);
+
+            t.expect(spy).not.toHaveBeenCalled();
         });
 
 
@@ -139,6 +163,32 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
 
         });
 
+
+        t.it("load() - valid json, path does not exist", async (t) => {
+
+            const expected = {};
+
+            t.expect(coon.core.ConfigManager.get("mockdomain")).toBeUndefined();
+
+            let config = await loader.load("mockdomain", undefined, "foo");
+            t.isDeeply(config, expected);
+            t.isDeeply(coon.core.ConfigManager.get("mockdomain"), expected);
+        });
+
+        t.it("load() - valid json, path does exist", async (t) => {
+
+            const expected = {
+                //"config" : {
+                "foo" : "bar"
+                //}
+            };
+
+            t.expect(coon.core.ConfigManager.get("mockdomain")).toBeUndefined();
+
+            let config = await loader.load("mockdomain", undefined, "config");
+            t.isDeeply(config, expected);
+            t.isDeeply(coon.core.ConfigManager.get("mockdomain"), expected);
+        });
 
     });
 

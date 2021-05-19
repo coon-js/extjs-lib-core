@@ -23,24 +23,13 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
 
+/**
+ * Exception class to be thrown whenever a HttpRequest to a resource was not successful,
+ * successful as in terms of HTTP STATUS 200 OK.
+ */
+Ext.define("coon.core.data.request.HttpRequestException", {
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-    t.it("functionality", function (t) {
-
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
-
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
-
-    });
-
+    extend : "coon.core.exception.Exception"
 
 });

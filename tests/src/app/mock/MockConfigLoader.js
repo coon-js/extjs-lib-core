@@ -23,24 +23,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
+Ext.define("coon.test.app.mock.MockConfigLoader", {
+
+    extend : "coon.core.app.ConfigLoader",
+
+    requires : [
+        "coon.core.ConfigManager"
+    ],
+
+    constructor () {},
+
+    async load (domain) {
+        switch (domain) {
+
+        case "ParseException":
+            throw new coon.core.app.ConfigurationException(domain, new coon.core.exception.ParseException(domain));
+
+        case "bar":
+        case "foo":
+            return coon.core.ConfigManager.register(domain,{domain : domain});
+
+        case "HttpRequestException":
+            throw new coon.core.app.ConfigurationException(domain, new coon.core.data.request.HttpRequestException(domain));
+        }
 
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-    t.it("functionality", function (t) {
-
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
-
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
-
-    });
-
+    }
 
 });

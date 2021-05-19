@@ -85,16 +85,24 @@ harness.start({
     ]}, {
     group : "app",
     items : [
+        "src/app/ApplicationTest.js",
+        "src/app/ApplicationUtilTest.js",
         "src/app/ApplicationExceptionTest.js",
+        "src/app/BatchConfigLoaderTest.js",
         "src/app/ConfigurationExceptionTest.js",
         "src/app/ConfigLoaderTest.js",
-        "src/app/ControllerPluginTest.js",
         "src/app/PackageControllerTest.js",
-        "src/app/ApplicationTest.js",
         "src/app/IsolatedTest_1.js",
         "src/app/IsolatedTest_2.js",
         "src/app/IsolatedTest_3.js",
-        "src/app/IsolatedTest_4.js"
+        "src/app/IsolatedTest_4.js", {
+            group : "plugin",
+            items : [
+                "src/app/plugin/PluginTest.js",
+                "src/app/plugin/ApplicationPluginTest.js",
+                "src/app/plugin/ControllerPluginTest.js"
+            ]
+        }
     ]
 }, {
     group : "data",
@@ -149,6 +157,7 @@ harness.start({
                     "src/data/request/file/FileLoaderTest.js"
                 ]
             },
+            "src/data/request/HttpRequestExceptionTest.js",
             "src/data/request/FormDataTest.js"
             ]
         }, {

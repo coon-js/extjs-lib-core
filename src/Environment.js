@@ -136,6 +136,27 @@ Ext.define("coon.core.Environment", {
         return this.delegate("getPackage", arguments);
     },
 
+    
+    /**
+     * Attempts to load the package with the specified name into the current
+     * environment.
+     *
+     * @param {String} packageName
+     *
+     * @returns {Promise<Mixed>}
+     */
+    async loadPackage (packageName) {
+
+        const
+            me = this,
+            vendorBase = me.getVendorBase();
+
+        if (!vendorBase) {
+            throw new coon.core.MissingPropertyException("no VendorBase configured for the Environment");
+        }
+
+        return await vendorBase.loadPackage(packageName);
+    },
 
     privates : {
 

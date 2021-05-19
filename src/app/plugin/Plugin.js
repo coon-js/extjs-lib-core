@@ -1,6 +1,6 @@
 /**
- * coon.js
- * lib-cn_core
+ * conjoon
+ * lib-cn-core
  * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
  *
  * Permission is hereby granted, free of charge, to any person
@@ -23,24 +23,55 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.VendorBaseTest", function (t) {
+/**
+ * Basic implementation for plugins used by the application and package controllers.
+ *
+ * @abstract
+ */
+Ext.define("coon.core.app.plugin.Plugin", {
+
+    /**
+     * @var id
+     * @type {String}
+     * @private
+     * @see getId
+     */
 
 
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
+    /**
+     * @constructor
+     * @param {Object} cfg
+     */
+    constructor (cfg) {
+        const me = this;
 
-    t.it("functionality", function (t) {
+        me.id = cfg && cfg.id;
+    },
 
-        let vendorBase = Ext.create("coon.core.env.VendorBase");
 
-        t.expect(vendorBase.get).toBeDefined();
-        t.expect(vendorBase.getPathForResource).toBeDefined();
-        t.expect(vendorBase.getEnvironment).toBeDefined();
-        t.expect(vendorBase.getPackage).toBeDefined();
-        t.expect(vendorBase.loadPackage).toBeDefined();
+    /**
+     * Executes this plugin.
+     * @var run
+     * @type {Function}
+     * @param {Object} origin The source using the plugin.
+     */
 
-    });
+
+    /**
+     * Returns the id configured for this plugin. If not available,
+     * returns the class name.
+     *
+     * @return {String}
+     */
+    getId () {
+        const me = this;
+
+        if (!me.id) {
+            return Ext.getClassName(me);
+        }
+
+        return me.id;
+    }
 
 
 });

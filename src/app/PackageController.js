@@ -56,7 +56,7 @@
  * Plugins
  * =======
  * PackageController can have plugins that usually get called during the preLaunchHook by the owning
- * application. Plugins must be of the type {coon.core.app.ControllerPlugin}.
+ * application. Plugins must be of the type {coon.core.app.plugin.ControllerPlugin}.
  *
  */
 Ext.define("coon.core.app.PackageController", {
@@ -65,12 +65,12 @@ Ext.define("coon.core.app.PackageController", {
 
     requires : [
         "coon.core.Util",
-        "coon.core.app.ControllerPlugin"
+        "coon.core.app.plugin.ControllerPlugin"
     ],
 
     /**
      * @private
-     * @type {Array=coon.core.app.ControllerPlugin}
+     * @type {Array=coon.core.app.plugin.ControllerPlugin}
      */
     plugins : null,
 
@@ -108,22 +108,36 @@ Ext.define("coon.core.app.PackageController", {
 
     /**
      * Adds the plugin to stack of plugins for execution.
-     * owning applications usually call the plugins during the preLaunchHook.
+     * Owning applications usually call the plugins during the preLaunchHook.
      * They cannot be vetoed.
+     * This method checks whether a plugin with the same id is already configured
+     * for this controller and does not add it another time if that is the case.
      *
-     * @param {coon.core.app.ControllerPlugin} plugin
+     * @param {coon.core.app.plugin.ControllerPlugin} plugin
      *
-     *  @throws if the submitted argument is not an instance of {coon.core.app.ControllerPlugin}
+     * @return this
+     *
+     * @throws if the submitted argument is not an instance of {coon.core.app.plugin.ControllerPlugin}
      */
     addPlugin : function (plugin) {
 
-        if (!(plugin instanceof coon.core.app.ControllerPlugin)) {
-            Ext.raise("plugin must be an instance of coon.core.app.ControllerPlugin");
+        if (!(plugin instanceof coon.core.app.plugin.ControllerPlugin)) {
+            Ext.raise("plugin must be an instance of coon.core.app.plugin.ControllerPlugin");
         }
 
         const me = this;
 
-        me.plugins.push(plugin);
+        let found = me.plugins.some( (plug) => {
+            if (plug === plugin || plug.getId() === plugin.getId()) {
+                return true;
+            }
+        });
+
+        if (!found) {
+            me.plugins.push(plugin);
+        }
+
+        return me;
     },
 
 

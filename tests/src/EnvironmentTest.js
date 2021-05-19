@@ -104,6 +104,28 @@ describe("coon.core.EnvironmentTest",  (t) => {
         });
 
 
+        t.it("loadPackage()", async (t) => {
+
+            let vendorBase = Ext.create("coon.core.env.VendorBase"),
+                exc, spy;
+
+            try {
+                await Environment.loadPackage("pack");
+            } catch (e) {
+                exc = e;
+            }
+
+            t.isInstanceOf(exc, "coon.core.exception.MissingPropertyException");
+
+            Environment.setVendorBase(vendorBase);
+            // loadPackage
+            spy = t.spyOn(vendorBase, "loadPackage").and.callFake(async () => {});
+            t.isInstanceOf(Environment.loadPackage("pack"), "Promise");
+            t.expect(spy.calls.all().length).toBe(1);
+            t.expect(spy.calls.mostRecent().args[0]).toBe("pack");
+        });
+
+
         t.it("no VendorBase available for delegates", (t) => {
 
             let exc;

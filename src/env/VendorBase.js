@@ -37,7 +37,7 @@ Ext.define("coon.core.env.VendorBase", {
      *
      * @return {String}
      */
-    getPathForResource : Ext.emptyFn,
+    getPathForResource (){},
 
 
     /**
@@ -48,7 +48,7 @@ Ext.define("coon.core.env.VendorBase", {
      * @returns {Mixed} Either the value or undefined if the value is not defined or
      * the environment is not available
      */
-    get : Ext.emptyFn,
+    get (){},
 
 
     /**
@@ -56,7 +56,7 @@ Ext.define("coon.core.env.VendorBase", {
      *
      * @return  {Object}
      */
-    getEnvironment : Ext.emptyFn,
+    getEnvironment (){},
 
 
     /**
@@ -66,7 +66,17 @@ Ext.define("coon.core.env.VendorBase", {
      *
      * @return {Object}
      */
-    getPackage : Ext.emptyFn
+    getPackage (){},
+
+
+    /**
+     * Attempts to load the package with the specified package-name into the current environment.
+     *
+     * @param {String} packageName
+     *
+     * @return {Promise<void>}
+     */
+    async loadPackage (){}
 
 });
 
