@@ -61,12 +61,27 @@ describe("coon.core.env.ext.VendorBaseTest", function (t) {
 
 
     t.it("get()", function (t) {
-        t.expect(vendorBase.get("coon-js")).toBe(Ext.manifest["coon-js"]);
+        t.expect(vendorBase.get("manifest")).toBe(Ext.manifest);
     });
 
 
     t.it("getEnvironment()", function (t) {
-        t.expect(vendorBase.getEnvironment()).toBe(Ext.manifest);
+        t.expect(vendorBase.getEnvironment()).toBe(Ext);
+    });
+
+
+    t.it("getManifest()", function (t) {
+        t.expect(vendorBase.getManifest()).toBe(Ext.manifest);
+    });
+
+
+    t.it("getManifest(\"coon-js\")", function (t) {
+        t.expect(vendorBase.getManifest("coon-js")).toBe(Ext.manifest["coon-js"]);
+    });
+
+
+    t.it("getPackages()", function (t) {
+        t.expect(vendorBase.getPackages()).toBe(Ext.manifest.packages);
     });
 
 

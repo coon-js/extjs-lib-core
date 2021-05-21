@@ -39,7 +39,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
             },
             loadApplicationConfigExceptionTemplate = async (t, env) => {
                 const appName = "envfilefound";
-                setupEnvironment({name : appName, "coon-js" : {env : env}});
+                setupEnvironment({manifest: {name : appName, "coon-js" : {env : env}}});
 
                 let configurationException = new coon.core.app.ConfigurationException(new coon.core.exception.Exception());
                 applicationUtil.configLoader.load = function () {
@@ -136,7 +136,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
         t.it("getApplicationConfigUrls()", function (t) {
 
-            setupEnvironment({name : "appname", "coon-js" : {env : "testing"}});
+            setupEnvironment({manifest : {name : "appname", "coon-js" : {env : "testing"}}});
 
             let defaultPath = "fixtures/coon-js/appname.conf.json",
                 envPath =  "fixtures/coon-js/appname.testing.conf.json";
@@ -209,7 +209,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                     ]
                 };
 
-            setupEnvironment({packages : manifestPackages});
+            setupEnvironment({manifest : {packages : manifestPackages}});
 
             Object.freeze(manifestPackages);
             Object.freeze(result);
@@ -259,7 +259,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                     "foo.app.plugin.ApplicationPlugin"
                 ];
 
-            setupEnvironment({packages : manifestPackages});
+            setupEnvironment({manifest : {packages : manifestPackages}});
 
             Object.freeze(manifestPackages);
             Object.freeze(result);
@@ -270,7 +270,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
         t.it("loadApplicationConfig() - no env-property in manifest available", async t => {
             const appName = "foo";
-            setupEnvironment({name : appName});
+            setupEnvironment({manifest : {name : appName}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callFake(async () => {});
 
@@ -285,7 +285,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but both files not found", async t => {
 
             const appName = "foo";
-            setupEnvironment({name : appName, "coon-js" : {env : "dev"}});
+            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -302,7 +302,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but only default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({name : appName, "coon-js" : {env : "dev"}});
+            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -319,7 +319,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev)  not available, default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({name : appName});
+            setupEnvironment({manifest : {name : appName}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -333,7 +333,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
         t.it("loadApplicationConfig() - env-property (dev) available, env file found", async t => {
             const appName = "envfilefound";
-            setupEnvironment({name : appName, "coon-js" : {env : "dev"}});
+            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -358,7 +358,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadPackages()", async (t) => {
             const appName = "testapp";
 
-            setupEnvironment({
+            setupEnvironment({manifest : {
                 name : appName,
                 packages : {
                     foo: {
@@ -386,12 +386,12 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                         }
                     }
                 }
-            });
+            }});
 
             let envLoaderSpy = t.spyOn(coon.core.Environment, "loadPackage").and.callFake(async () => {}),
                 batchLoaderSpy = t.spyOn(applicationUtil.batchConfigLoader, "load").and.callFake(async () => {});
 
-            let ctrls = await applicationUtil.loadPackages(coon.core.Environment.get("packages"));
+            let ctrls = await applicationUtil.loadPackages(coon.core.Environment.getPackages());
 
             t.isDeeply(applicationUtil.batchConfigLoader.domains, {
                 "bar" : {conf : "set"}

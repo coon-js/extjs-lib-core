@@ -53,12 +53,20 @@ Ext.define("coon.test.app.mock.VendorMock", {
         return coon.core.Util.unchain(key, this.mockedEnvironment);
     },
 
+    getManifest (key) {
+        return key ? coon.core.Util.unchain(key, this.mockedEnvironment.manifest) : this.mockedEnvironment.manifest;
+    },
+
     getEnvironment () {
         return this.mockedEnvironment || {};
     },
 
-    getPackage (pack){
-        return coon.core.Util.unchain(pack, this.mockedEnvironment["packages"]);
+    getPackage (pack) {
+        return coon.core.Util.unchain(pack, this.mockedEnvironment.manifest.packages);
+    },
+
+    getPackages () {
+        return this.mockedEnvironment.manifest.packages;
     }
 
 });

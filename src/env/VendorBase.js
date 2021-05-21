@@ -41,7 +41,7 @@ Ext.define("coon.core.env.VendorBase", {
 
 
     /**
-     * Returns the value for the key/path specified in Ext.manifest.
+     * Returns the value for the key/path specified in the environment.
      *
      * @param {String} key
      *
@@ -60,6 +60,17 @@ Ext.define("coon.core.env.VendorBase", {
 
 
     /**
+     * Returns all manifest information available.
+     * If a key is specified, only the value for the key from the manifest will be returned, if available.
+     *
+     * @param {String}
+     *
+     * @return  {Mixed}
+     */
+    getManifest (key) {},
+
+
+    /**
      * Returns the package information for the specified package-name
      *
      * @param {String} packageName
@@ -67,6 +78,14 @@ Ext.define("coon.core.env.VendorBase", {
      * @return {Object}
      */
     getPackage (){},
+
+
+    /**
+     * Returns all packages available. Keyed by their package names.
+     *
+     * @return {Object}
+     */
+    getPackages (){},
 
 
     /**
