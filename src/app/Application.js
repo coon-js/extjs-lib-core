@@ -487,7 +487,7 @@ Ext.define("coon.core.app.Application",{
         let conf = await me.applicationUtil.loadApplicationConfig();
 
         let applicationPlugins = me.applicationUtil.getApplicationPlugins(
-            conf, coon.core.Environment.get("packages")
+            conf, coon.core.Environment.getPackages()
         );
 
         await applicationPlugins.forEach(async (plugin) => await me.addApplicationPlugin(plugin));
@@ -505,7 +505,7 @@ Ext.define("coon.core.app.Application",{
 
         const me = this;
 
-        let packageControllers = await me.applicationUtil.loadPackages(coon.core.Environment.get("packages"));
+        let packageControllers = await me.applicationUtil.loadPackages(coon.core.Environment.getPackages());
 
         Ext.app.addNamespaces(packageControllers);
 
@@ -537,7 +537,7 @@ Ext.define("coon.core.app.Application",{
 
             const
                 fqn = Ext.getClassName(controller),
-                plugins = me.applicationUtil.getControllerPlugins(coon.core.Environment.get("packages") || {});
+                plugins = me.applicationUtil.getControllerPlugins(coon.core.Environment.getPackages() || {});
 
             if (!plugins[fqn]) {
                 return controller;

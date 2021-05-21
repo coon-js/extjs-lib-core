@@ -39,7 +39,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
 
             let vendorBase = Ext.create("coon.core.env.VendorBase");
             vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
-            vendorBase.get = (key) => {if (key === "coon-js.resources") {return "coon-js";}};
+            vendorBase.getManifest = (key) => {if (key === "coon-js.resources") {return "coon-js";}};
             coon.core.Environment.setVendorBase(vendorBase);
         });
 
@@ -87,7 +87,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
 
             t.expect(loader.getPathForDomain(DOMAIN)).toBe(
                 coon.core.Environment.getPathForResource(
-                    coon.core.Environment.get("coon-js.resources") + "/" + loader.getFileNameForDomain(DOMAIN)
+                    coon.core.Environment.getManifest("coon-js.resources") + "/" + loader.getFileNameForDomain(DOMAIN)
                 )
             );
             t.expect(spy.calls.mostRecent().args[0]).toBe(DOMAIN);

@@ -474,10 +474,10 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
                 t.expect(getApplicationPluginsSpy).toHaveBeenCalled(1);
                 t.expect(getApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock);
-                t.isDeeply(getApplicationPluginsSpy.calls.mostRecent().args[1], coon.core.Environment.get("packages"));
+                t.isDeeply(getApplicationPluginsSpy.calls.mostRecent().args[1], coon.core.Environment.getPackages());
 
                 t.expect(loadPackagesSpy).toHaveBeenCalled(1);
-                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  coon.core.Environment.get("packages"));
+                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  coon.core.Environment.getPackages());
 
                 t.expect(findApplicationPluginsSpy).toHaveBeenCalled(1);
 
@@ -680,7 +680,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
             t.expect(spy).toHaveBeenCalled(1);
 
-            t.isDeeply(spy.calls.mostRecent().args[0], coon.core.Environment.get("packages"));
+            t.isDeeply(spy.calls.mostRecent().args[0], coon.core.Environment.getPackages());
 
             t.isInstanceOf(controller, "coon.test.app.mock.app.PackageController");
             t.expect(controller.plugins.length).toBe(1);

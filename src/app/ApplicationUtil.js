@@ -159,8 +159,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         const
             Environment = coon.core.Environment,
-            applicationName = Environment.get("name"),
-            env =  Environment.get("coon-js.env"),
+            applicationName = Environment.getManifest("name"),
+            env =  Environment.getManifest("coon-js.env"),
             envPath = env ? "coon-js/" + [applicationName, ".", env, ".conf.json"].join("") : undefined;
 
         return {
@@ -385,7 +385,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
             urls = me.getApplicationConfigUrls(),
             envUrl = urls.environment,
             defaultUrl = urls.default,
-            appName = coon.core.Environment.get("name"),
+            appName = coon.core.Environment.getManifest("name"),
             configPath = `${appName}.config`;
 
         let skipDefault = !!envUrl,
@@ -506,8 +506,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             // check first if a package can be identified under the name of the plugin
             // this will be given precedence
-            if (coon.core.Environment.get(`packages.${plugin}`)) {
-                fqn = `${coon.core.Environment.get(`packages.${plugin}.namespace`)}.app.plugin.${type === "application" ? "Application" : "Controller"}Plugin`;
+            if (coon.core.Environment.getPackage(plugin)) {
+                fqn = `${coon.core.Environment.getPackage(plugin).namespace}.app.plugin.${type === "application" ? "Application" : "Controller"}Plugin`;
                 return true;
             }
 

@@ -29,15 +29,20 @@
  * provides access to the environment information as provided by the VendorBase-API.
  *
  * @example
- * // return values depend on the implementation of the configured VendorBase and
+ * // return values depending on the implementation of the configured VendorBase and
  * // its implementation.
  * // Following examples assume an ExtJS-vendor is configured:
- * // Ext.manifest = {"coon-js" : {"env" : "development"}, "packages" : {"mypackage" : {}}}
+ * // Ext // namespace
+ * // Ext.manifest = {"name" : "myapp", "coon-js" : {"env" : "development"}, "packages" : {"mypackage" : {}}}
  * let vendor = Ext.create("coon.core.env.ext.VendorBase");
  * coon.core.Environment.setVendor(vendor);
- * coon.core.Environment.get("coon-js.env");
- * coon.core.Environment.getEnvironment(); // Ext.manifest
+ * coon.core.Environment.getName(); // "myapp"
+ * coon.core.Environment.get("base"); // Ext.base
+ * coon.core.Environment.getEnvironment(); // Ext
  * coon.core.Environment.getPackage("mypackage"); // Ext.manifest.packages.mypackage
+ * coon.core.Environment.getPackages(); // Ext.manifest.packages
+ * coon.core.Environment.getManifest(); // Ext.manifest
+ * coon.core.Environment.getManifest("coon-js.env"); // "development"
  *
  * // Ext.getResourcePath("KEY") -> "../build/development/resources/KEY"
  * coon.core.Environment.getPathForResource("KEY"); // "../build/development/resources/KEY"
@@ -90,7 +95,7 @@ Ext.define("coon.core.Environment", {
 
 
     /**
-     * Returns the value for the key/path specified in Ext.manifest.
+     * Returns the value for the key/path specified in the Environment.
      *
      * @param {String} key
      *
@@ -126,6 +131,17 @@ Ext.define("coon.core.Environment", {
 
 
     /**
+     * Returns all manifest information available.
+     * If a key is specified, only the value for the key from the manifest will be returned, if available.
+     *
+     * @return  {Mixed}
+     */
+    getManifest (key) {
+        return this.delegate("getManifest", arguments);
+    },
+
+
+    /**
      * Returns the package information for the specified package-name
      *
      * @param {String} packageName
@@ -136,7 +152,18 @@ Ext.define("coon.core.Environment", {
         return this.delegate("getPackage", arguments);
     },
 
-    
+
+    /**
+     * Returns all package informations available in the current environment.
+     *
+     * @return {Object} keyed with the package names available, their values providing
+     * further information.
+     */
+    getPackages () {
+        return this.delegate("getPackages", arguments);
+    },
+
+
     /**
      * Attempts to load the package with the specified name into the current
      * environment.

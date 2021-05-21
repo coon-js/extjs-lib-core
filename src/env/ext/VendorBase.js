@@ -70,7 +70,15 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getEnvironment () {
-        return Ext.manifest;
+        return Ext;
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    getManifest (key) {
+        return key ? coon.core.Util.unchain(key, Ext.manifest) : Ext.manifest;
     },
 
 
@@ -78,7 +86,15 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackage (packageName) {
-        return coon.core.Util.unchain("packages." + packageName, this.getEnvironment());
+        return coon.core.Util.unchain("packages." + packageName, this.getManifest());
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    getPackages () {
+        return coon.core.Util.unchain("packages", this.getManifest());
     },
 
 

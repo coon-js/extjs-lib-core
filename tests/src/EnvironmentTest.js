@@ -101,6 +101,25 @@ describe("coon.core.EnvironmentTest",  (t) => {
             t.expect(spy.calls.all().length).toBe(1);
             t.expect(delegate.calls.mostRecent().args[0]).toBe("getEnvironment");
 
+            // getPackages
+            spy = t.spyOn(vendorBase, "getPackages");
+            t.expect(Environment.getPackages()).toBeUndefined();
+            t.expect(spy.calls.all().length).toBe(1);
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getPackages");
+
+            // getManifest
+            spy = t.spyOn(vendorBase, "getManifest");
+            t.expect(Environment.getManifest()).toBeUndefined();
+            t.expect(spy.calls.all().length).toBe(1);
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getManifest");
+            t.expect(delegate.calls.mostRecent().args[1][0]).toBeUndefined();
+
+            // getManifest w/key
+            t.expect(Environment.getManifest("key")).toBeUndefined();
+            t.expect(spy.calls.all().length).toBe(2);
+            t.expect(delegate.calls.mostRecent().args[0]).toBe("getManifest");
+            t.expect(delegate.calls.mostRecent().args[1][0]).toBe("key");
+
         });
 
 
@@ -134,7 +153,7 @@ describe("coon.core.EnvironmentTest",  (t) => {
 
             exc = undefined;
             try {
-                Environment.get("somekey");
+                Environment.getManifest("somekey");
             } catch (e) {
                 exc = e;
             }

@@ -39,6 +39,8 @@ describe("coon.core.env.VendorBaseTest", function (t) {
         t.expect(vendorBase.getEnvironment).toBeDefined();
         t.expect(vendorBase.getPackage).toBeDefined();
         t.expect(vendorBase.loadPackage).toBeDefined();
+        t.expect(vendorBase.getPackages).toBeDefined();
+        t.expect(vendorBase.getManifest).toBeDefined();
 
     });
 
