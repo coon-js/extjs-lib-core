@@ -71,7 +71,8 @@ harness.start({
         "src/ThemeTest.js",
         "src/ThemeManagerTest.js",
         "src/UtilTest.js",
-        "src/ConfigManagerTest.js"
+        "src/ConfigManagerTest.js",
+        "src/FileLoaderTest.js"
     ]}, {
     group : "exception",
     items : [
@@ -154,7 +155,8 @@ harness.start({
             items : [{
                 group : "file",
                 items : [
-                    "src/data/request/file/FileLoaderTest.js"
+                    "src/data/request/file/FileLoaderTest.js",
+                    "src/data/request/file/XmlHttpRequestFileLoaderTest.js"
                 ]
             },
             "src/data/request/HttpRequestExceptionTest.js",

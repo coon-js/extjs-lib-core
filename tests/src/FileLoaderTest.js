@@ -23,25 +23,34 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-/**
- * Abstract interface for file loaders.
- */
-Ext.define("coon.core.data.request.file.FileLoader", {
-
-    /**
-     * Initiates loading the file specified with the given url and returns a
-     * Promise or a mixed value representing the file contents if used with async/await.
-     *
-     * @param {String} url The location to read the file from
-     *
-     * @return {Mixed|Promise}
-     *
-     * @throws {coon.core.data.request.HttpRequestException} if any exception occured,
-     * or {coon.core.exception.IllegalArgumentException} if url was not a string
-     */
-    async load (url) {}
+describe("coon.core.FileLoaderTest", (t) => {
+    "use strict";
 
 
+    // +----------------------------------------------------------------------------
+    // |                    =~. Tests .~=
+    // +----------------------------------------------------------------------------
+
+    t.requireOk("coon.core.FileLoader", () => {
+
+        t.it("functionality", async (t) => {
+
+            t.isInstanceOf(coon.core.FileLoader, "coon.core.data.request.file.FileLoader");
+
+            t.isInstanceOf(coon.core.FileLoader.fileLoader, "coon.core.data.request.file.XmlHttpRequestFileLoader");
+
+            const
+                RETURNMOCK = {},
+                url = "./fixtures/coon-js/mockdomain.conf.json",
+                spy = t.spyOn(coon.core.FileLoader.fileLoader, "load").and.callFake(async () => {return RETURNMOCK;}),
+                res = await coon.core.FileLoader.load(url);
+
+            t.expect(spy.calls.mostRecent().args[0]).toBe(url);
+
+            t.expect(res).toBe(RETURNMOCK);
+
+            spy.remove();
+           
+        });
+    });
 });
-

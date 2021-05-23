@@ -25,10 +25,6 @@
 
 describe("coon.core.data.request.file.FileLoaderTest", function (t) {
 
-
-    const
-        TIMEOUT = 250;
-
     let loader;
 
     t.beforeEach(function () {
@@ -55,71 +51,4 @@ describe("coon.core.data.request.file.FileLoaderTest", function (t) {
 
     });
 
-
-    t.it("load() - 404 (thenable)", (t) => {
-
-        let exc, CALLED;
-
-        loader.load("someurl")
-            .then((json) => CALLED = true, (e) => {exc = e;});
-
-        t.waitForMs(TIMEOUT, () => {
-            t.expect(CALLED).toBeUndefined();
-            t.isInstanceOf(exc, "coon.core.data.request.HttpRequestException");
-            t.expect(exc.getMessage()).toContain("404");
-        });
-
-    });
-
-
-    t.it("load() - 404 (async/await)", async (t) => {
-
-        let exc;
-
-        try {
-            await loader.load("someurl");
-        } catch (e) {
-            exc = e;
-        }
-
-        t.isInstanceOf(exc, "coon.core.data.request.HttpRequestException");
-        t.expect(exc.getMessage()).toContain("404");
-    });
-
-
-    t.it("load() - success (thenable)", (t) => {
-
-        let exc, responseText;
-
-        loader.load("./fixtures/coon-js/mockdomain.conf.json")
-            .then((txt) => responseText = txt, (e) => exc = true);
-
-        t.waitForMs(TIMEOUT, () => {
-
-            t.expect(exc).toBeUndefined();
-            t.expect(typeof responseText).toBe("string");
-            t.expect(JSON.parse(responseText)).toEqual({
-                "config" : {
-                    "foo" : "bar"
-                }
-            });
-        });
-
-    });
-
-
-    t.it("load() - success (await async)", async (t) => {
-
-        let responseText;
-
-        responseText = await loader.load("./fixtures/coon-js/mockdomain.conf.json");
-
-        t.expect(typeof responseText).toBe("string");
-        t.expect(JSON.parse(responseText)).toEqual({
-            "config" : {
-                "foo" : "bar"
-            }
-        });
-    });
-    
 });

@@ -35,7 +35,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         "coon.core.Util",
         "coon.core.Environment",
         "coon.core.app.BatchConfigLoader",
-        "coon.core.data.request.file.FileLoader",
+        "coon.core.data.request.file.XmlHttpRequestFileLoader",
         "coon.core.app.ConfigLoader",
         "coon.core.data.request.HttpRequestException"
     ],
@@ -57,7 +57,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         const me = this;
 
         me.configLoader = new coon.core.app.ConfigLoader(
-            new coon.core.data.request.file.FileLoader()
+            new coon.core.data.request.file.XmlHttpRequestFileLoader()
         );
         me.batchConfigLoader = new coon.core.app.BatchConfigLoader(me.configLoader);
 

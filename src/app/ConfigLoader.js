@@ -31,7 +31,7 @@
  *
  * * @example
  *    // existing json-file at [resource_path]/[coon-js.resources]/app-cn_mail.conf.json
- *    const configLoader = new coon.core.app.ConfigLoader(new coon.core.data.request.file.FileLoader());
+ *    const configLoader = new coon.core.app.ConfigLoader(new coon.core.data.request.file.XmlHttpRequestFileLoader());
  *    const res = await configLoader.load("app-cn_mail");
  *    console.log(res); // json-decoded contents of the json file on success
  *

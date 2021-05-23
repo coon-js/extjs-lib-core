@@ -35,7 +35,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
 
         t.beforeEach(function () {
 
-            loader = Ext.create("coon.core.app.ConfigLoader", Ext.create("coon.core.data.request.file.FileLoader"));
+            loader = Ext.create("coon.core.app.ConfigLoader", Ext.create("coon.core.data.request.file.XmlHttpRequestFileLoader"));
 
             let vendorBase = Ext.create("coon.core.env.VendorBase");
             vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
@@ -61,7 +61,7 @@ describe("coon.core.app.ConfigLoaderTest", function (t) {
         t.it("defaults", (t) => {
 
             t.isInstanceOf(loader, "coon.core.app.ConfigLoader");
-            t.isInstanceOf(loader.fileLoader, "coon.core.data.request.file.FileLoader");
+            t.isInstanceOf(loader.fileLoader, "coon.core.data.request.file.XmlHttpRequestFileLoader");
 
             let exc;
 

@@ -28,7 +28,10 @@ Ext.define("coon.test.app.mock.MockConfigLoader", {
     extend : "coon.core.app.ConfigLoader",
 
     requires : [
-        "coon.core.ConfigManager"
+        "coon.core.ConfigManager",
+        "coon.core.app.ConfigurationException",
+        "coon.core.exception.ParseException",
+        "coon.core.data.request.HttpRequestException"
     ],
 
     constructor () {},

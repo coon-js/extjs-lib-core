@@ -25,23 +25,43 @@
 
 
 /**
- * Abstract interface for file loaders.
+ * Convenient singleton file loader interface.
+ * Uses a coon.core.data.request.file.XmlHttpRequestFileLoader internally.
+ *
+ * @singleton
  */
-Ext.define("coon.core.data.request.file.FileLoader", {
+Ext.define("coon.core.FileLoader", {
+
+    extend : "coon.core.data.request.file.FileLoader",
+
+    singleton : true,
+
+    requires : [
+        "coon.core.data.request.file.XmlHttpRequestFileLoader"
+    ],
 
     /**
-     * Initiates loading the file specified with the given url and returns a
-     * Promise or a mixed value representing the file contents if used with async/await.
-     *
-     * @param {String} url The location to read the file from
-     *
-     * @return {Mixed|Promise}
-     *
-     * @throws {coon.core.data.request.HttpRequestException} if any exception occured,
-     * or {coon.core.exception.IllegalArgumentException} if url was not a string
+     * The FileLoader used.
+     * @var fileLoader
+     * @type coon.core.data.request.file.XmlHttpRequestFileLoader
+     * @private
      */
-    async load (url) {}
 
+
+    /**
+     * @constructor
+     */
+    constructor () {
+        this.fileLoader = new coon.core.data.request.file.XmlHttpRequestFileLoader;
+    },
+
+
+    /**
+     * @inheritdoc
+     */
+    async load (url) {
+        return await this.fileLoader.load(url);
+    }
 
 });
 
