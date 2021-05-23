@@ -96,12 +96,18 @@ describe("coon.core.env.ext.VendorBaseTest", function (t) {
 
         let spy = t.spyOn(Ext, "getResourcePath");
 
-
         t.expect(vendorBase.getPathForResource("someresource")).toBe(Ext.manifest.resources.path + "/someresource");
 
         t.expect(spy.calls.mostRecent().args[0]).toBe("someresource");
         t.expect(spy.calls.mostRecent().args[1]).toBe(null);
         t.expect(spy.calls.mostRecent().args[2]).toBe("");
+
+        t.expect(vendorBase.getPathForResource("someresource", "pack")).toBe(Ext.manifest.resources.path + "/pack/someresource");
+
+        t.expect(spy.calls.mostRecent().args[0]).toBe("someresource");
+        t.expect(spy.calls.mostRecent().args[1]).toBe(null);
+        t.expect(spy.calls.mostRecent().args[2]).toBe("pack");
+
 
     });
 

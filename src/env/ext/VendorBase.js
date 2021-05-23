@@ -61,8 +61,8 @@ Ext.define("coon.core.env.ext.VendorBase", {
     /**
      * @inheritdoc
      */
-    getPathForResource (path) {
-        return Ext.getResourcePath(path, null, "");
+    getPathForResource (path, pckg) {
+        return Ext.getResourcePath(path, null, pckg ? pckg : "");
     },
 
 

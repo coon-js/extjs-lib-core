@@ -110,12 +110,15 @@ Ext.define("coon.core.Environment", {
     /**
      * Returns a resource path for the given key. Will prepend any path-segment
      * defined by the used vendor environment to the passed argument.
+     * If the related package is specified, the package's name will be considered
+     * when computing the resource path.
      *
      * @param {String} path
+     * @param {String} pckg optional name of the package the resource belongs to
      *
      * @return {String}
      */
-    getPathForResource (path) {
+    getPathForResource (path, pckg) {
         return this.delegate("getPathForResource", arguments);
     },
 

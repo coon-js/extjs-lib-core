@@ -85,8 +85,10 @@ describe("coon.core.EnvironmentTest",  (t) => {
 
             // getPathForResource
             spy = t.spyOn(vendorBase, "getPathForResource");
-            t.expect(Environment.getPathForResource("path")).toBeUndefined();
-            t.expect(spy.calls.mostRecent().args[0]).toBe("path");
+            t.expect(Environment.getPathForResource("path", "pck")).toBeUndefined();
+            let recCall = spy.calls.mostRecent();
+            t.expect(recCall.args[0]).toBe("path");
+            t.expect(recCall.args[1]).toBe("pck");
             t.expect(delegate.calls.mostRecent().args[0]).toBe("getPathForResource");
 
             // getPackage
