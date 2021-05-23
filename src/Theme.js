@@ -256,7 +256,8 @@ Ext.define("coon.core.Theme", {
      * Queries the key in the current mode set for this theme.
      *
      * @param {Mixed} key The key for which a value from this theme should
-     * be returned.
+     * be returned. If left empty, all key/value pairs for the current mode
+     * will be returned
      *
      * @return {Mixed} undefined if no value was found for the specified key,
      * otherwise the existing value.
@@ -272,7 +273,7 @@ Ext.define("coon.core.Theme", {
             return undefined;
         }
 
-        return modes[mode].config[key];
+        return key ? modes[mode].config[key] : modes[mode].config;
     },
 
     

@@ -39,7 +39,10 @@ describe("coon.core.ThemeTest", function (t) {
             },
             indigo: {
                 default: true,
-                config: {}
+                config: {
+                    color : "indigo",
+                    background : "red"
+                }
             }
         };
     };
@@ -71,7 +74,6 @@ describe("coon.core.ThemeTest", function (t) {
 
         t.expect(theme.set("someKey", "1")).toBe(theme);
         t.expect(theme.get("someKey")).toBeUndefined();
-
     });
 
 
@@ -131,5 +133,8 @@ describe("coon.core.ThemeTest", function (t) {
         t.expect(theme.set("someKey", "1")).toBe(theme);
         t.expect(theme.get("someKey")).toBe("1");
 
+        theme = Ext.create("coon.core.Theme", {modes : themeConfig});
+        t.isDeeply(theme.get(), themeConfig.indigo.config);
     });
+    
 });
