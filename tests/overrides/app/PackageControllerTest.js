@@ -56,6 +56,9 @@ describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
             t.expect(controller.getId()).toBe("Test.subname.app.controller.ControllerName");
         });
 
+        // prevent "Adding assertions after the test has finished"
+        t.waitForMs(250, () => {});
+
     });
 
 
@@ -82,6 +85,9 @@ describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
 
                 t.expect(controller.getId()).toBe("Test.subname.app.controller.ControllerName");
             });
+
+            // prevent "Adding assertions after the test has finished"
+            t.waitForMs(250, () => {});
 
         });
 

@@ -67,13 +67,15 @@ describe("coon.core.template.javaScript.StringCompilerTest", (t) => {
 
     t.it("buildArgumentList()", (t) => {
         t.expect(inst.buildArgumentList(keys)).toEqual(argumentList);
+
+        t.expect(inst.buildArgumentList(["foo", "foo.bar", "config", "config[test]"])).toEqual(["foo", "config"]);
     });
 
 
     t.it("getBlacklistedKeys()", (t) => {
         t.expect(inst.getBlacklistedKeys(argumentList, [])).toEqual([]);
-        t.expect(inst.getBlacklistedKeys(argumentList, ["foo"])).toEqual([]);
-        t.expect(inst.getBlacklistedKeys(argumentList, ["foo", "window", "this", "that", "templated"])).toEqual(["templated", "that"]);
+        t.expect(inst.getBlacklistedKeys(argumentList, ["foo"])).toEqual(["templated", "that", "configured"]);
+        t.expect(inst.getBlacklistedKeys(argumentList, ["foo", "window", "this", "that", "templated"])).toEqual(["configured"]);
     });
 
 
@@ -81,18 +83,27 @@ describe("coon.core.template.javaScript.StringCompilerTest", (t) => {
         t.expect(inst.getFunctionConfig(argumentList, tpl)).toEqual(compiledCfg);
     });
 
+    t.it("getNativeFunction", (t) => {
 
+        let f = inst.getNativeFunction("foo", "return foo;");
+
+        t.expect(f(1)).toBe(1);
+    });
+
+    
     t.it("compile()", (t) => {
 
         const
             whitelist = [],
             spies = {
+                getNativeFnSpy : t.spyOn(inst, "getNativeFunction"),
                 argumentListSpy : t.spyOn(inst, "buildArgumentList"),
                 keysSpy : t.spyOn(inst, "getKeys"),
                 cfgSpy : t.spyOn(inst, "getFunctionConfig"),
-                blacklistSpy : t.spyOn(inst, "getBlacklistedKeys")
+                blacklistSpy : t.spyOn(inst, "getBlacklistedKeys"),
+                fnSpy : t.spyOn(Function, "constructor")
             },
-            {argumentListSpy, cfgSpy, blacklistSpy, keysSpy} = spies;
+            {argumentListSpy, cfgSpy, blacklistSpy, keysSpy, getNativeFnSpy} = spies;
 
         const fn = inst.compile(tpl, whitelist);
         t.isInstanceOf(fn, "coon.core.template.javaScript.Tpl");
@@ -103,6 +114,8 @@ describe("coon.core.template.javaScript.StringCompilerTest", (t) => {
         t.expect(blacklistSpy).toHaveBeenCalledWith(args, whitelist);
 
         t.expect(cfgSpy).toHaveBeenCalledWith(args, tpl);
+
+        t.expect(getNativeFnSpy).toHaveBeenCalledWith(cfgSpy.calls.mostRecent().returnValue.args, cfgSpy.calls.mostRecent().returnValue.fn);
 
         Object.values(spies).forEach(spy => spy.remove());
     });
@@ -119,7 +132,7 @@ describe("coon.core.template.javaScript.StringCompilerTest", (t) => {
         }
 
         t.isInstanceOf(exc, "coon.core.template.CompilerException");
-        t.expect(exc.getMessage()).toContain("this");
+        t.expect(exc.getMessage()).toContain("that");
     });
 
 

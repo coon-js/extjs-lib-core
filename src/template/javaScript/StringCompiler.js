@@ -62,7 +62,7 @@ Ext.define("coon.core.template.javaScript.StringCompiler", {
 
         const
             fn = me.getFunctionConfig(args, txt),
-            cpl = new Function (fn.args, fn.txt);
+            cpl = me.getNativeFunction(fn.args, fn.fn);
 
         return new coon.core.template.javaScript.Tpl(cpl);
     },
@@ -74,7 +74,7 @@ Ext.define("coon.core.template.javaScript.StringCompiler", {
      * unique and that object chains are resolved to the root object.
      *
      *  @example
-     *  this.buildArgumentList(["foo", "foo.bar", "config"]); // "foo, config"
+     *  this.buildArgumentList(["foo", "foo.bar", "config", "config[\"test\"]]); // "foo, config"
      *
      * @param  {Array} keyList
      *
@@ -85,7 +85,7 @@ Ext.define("coon.core.template.javaScript.StringCompiler", {
     buildArgumentList : (keyList) => {
         "use strict";
 
-        let list = keyList.map(key => key.split(".")[0]);
+        let list = keyList.map(key => key.split(/\.|\[/)[0]);
 
         return [...new Set(list)];
     },
@@ -124,25 +124,28 @@ Ext.define("coon.core.template.javaScript.StringCompiler", {
 
 
     /**
-     * Compares the whitelist of keys with the blacklist of keys and returns
-     * all values that appear both in blackList and in whiteList.
+     * Compares the whitelist of keys with the submitted keys returns
+     * all values that do not appear in the whitelist.
      *
      * @example
      * this.getBlacklistedKeys(
      *      ["foo", "bar", "window", "this"],
-     *      ["this", "test", "foo", "window"]
-     *  ); // ["this", "foo", "window"]
+     *      ["test", "foo", "window"]
+     *  ); // ["this", "bar"]
      *
      * @param {Array} source
-     * @param {Array} blackList
+     * @param {Array} whitelist if left empty, all keys are allowed
      *
      * @return {Array}
      *
      * @private
      */
-    getBlacklistedKeys : (source, blackList) => {
+    getBlacklistedKeys : (source, whitelist) => {
         "use strict";
-        return source.filter(entry => blackList.indexOf(entry) !== -1);
+        if (!whitelist.length) {
+            return [];
+        }
+        return source.filter(entry => whitelist.indexOf(entry) === -1);
     },
 
 
@@ -163,6 +166,15 @@ Ext.define("coon.core.template.javaScript.StringCompiler", {
             args : `{${argumentList.join(", ")}}`,
             fn : `return \`${txt}\``
         };
+    },
+
+
+    /**
+     * @private
+     */
+    getNativeFunction : (args, body) => {
+        return new Function(args, body);
     }
+
 
 });
