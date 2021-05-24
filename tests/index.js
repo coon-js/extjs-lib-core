@@ -70,6 +70,7 @@ harness.start({
         "src/EnvironmentTest.js",
         "src/ThemeTest.js",
         "src/ThemeManagerTest.js",
+        "src/TemplateTest.js",
         "src/UtilTest.js",
         "src/ConfigManagerTest.js",
         "src/FileLoaderTest.js"
@@ -193,6 +194,24 @@ harness.start({
                 "src/env/ext/VendorBaseTest.js"
             ]
         }
+    ]
+
+}, {
+    group : "template",
+    items : [{
+        group : "javaScript",
+        items : [
+            "src/template/javaScript/StringCompilerTest.js",
+            "src/template/javaScript/StringTemplateTest.js",
+            "src/template/javaScript/TplTest.js"
+        ]
+    },
+    "src/template/CompilerTest.js",
+    "src/template/TemplateTest.js",
+    "src/template/CompiledTplTest.js",
+    "src/template/CompilerExceptionTest.js",
+    "src/template/TemplateExceptionTest.js",
+    "src/template/RenderExceptionTest.js"
     ]
 
 }, {
