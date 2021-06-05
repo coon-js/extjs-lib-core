@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
+describe("coon.core.data.pageMap.RecordPositionTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("constructor()", function (t) {
+    t.it("constructor()", (t) => {
 
         var exc;
 
@@ -45,7 +45,7 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page : 2
+                page: 2
             });
         } catch (e) {
             exc = e;
@@ -56,7 +56,7 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                index : 2
+                index: 2
             });
         } catch (e) {
             exc = e;
@@ -66,14 +66,14 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("applyPage()", function (t) {
+    t.it("applyPage()", (t) => {
 
         var exc;
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : "u",
-                index : 1
+                page: "u",
+                index: 1
             });
         } catch (e) {
             exc = e;
@@ -85,8 +85,8 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 0,
-                index : 1
+                page: 0,
+                index: 1
             });
         } catch (e) {
             exc = e;
@@ -97,8 +97,8 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
 
         var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
-            page  : 2,
-            index : 1
+            page: 2,
+            index: 1
         });
 
         try {
@@ -113,14 +113,14 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("applyIndex()", function (t) {
+    t.it("applyIndex()", (t) => {
 
         var exc;
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                index  : "u",
-                page : 1
+                index: "u",
+                page: 1
             });
         } catch (e) {
             exc = e;
@@ -132,8 +132,8 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
         try {
             Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 1,
-                index : -1
+                page: 1,
+                index: -1
             });
         } catch (e) {
             exc = e;
@@ -144,8 +144,8 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
 
         var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
-            page  : 2,
-            index : 1
+            page: 2,
+            index: 1
         });
 
         try {
@@ -160,11 +160,11 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("getter", function (t) {
+    t.it("getter", (t) => {
 
         var position = Ext.create("coon.core.data.pageMap.RecordPosition", {
-            page  : 7879,
-            index : 4000
+            page: 7879,
+            index: 4000
         });
 
         t.expect(position.getPage()).toBe(7879);
@@ -173,23 +173,23 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("equalTo()", function (t) {
+    t.it("equalTo()", (t) => {
 
         var posLeft = Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 3,
-                index : 2
+                page: 3,
+                index: 2
             }),
             posRight = Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 3,
-                index : 2
+                page: 3,
+                index: 2
             }),
             posNope_1 = Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 4,
-                index : 2
+                page: 4,
+                index: 2
             }),
             posNope_2 = Ext.create("coon.core.data.pageMap.RecordPosition", {
-                page  : 3,
-                index : 5
+                page: 3,
+                index: 5
             }), exc;
 
 
@@ -212,7 +212,7 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
 
     });
 
-    t.it("coon.core.data.pageMap.RecordPosition.create()", function (t) {
+    t.it("coon.core.data.pageMap.RecordPosition.create()", (t) => {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
             exc, pos,
@@ -277,30 +277,30 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("lessThan()", function (t) {
+    t.it("lessThan()", (t) => {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
             tests = [{
-                left  : [1, 2],
-                right : [1, 2],
-                exp   : false
+                left: [1, 2],
+                right: [1, 2],
+                exp: false
             }, {
-                left  : [1, 1],
-                right : [1, 2],
-                exp   : true
+                left: [1, 1],
+                right: [1, 2],
+                exp: true
             }, {
-                left  : [34, 2],
-                right : [3, 2],
-                exp   : false
+                left: [34, 2],
+                right: [3, 2],
+                exp: false
             }, {
-                left  : [1, 9],
-                right : [1, 2],
-                exp   : false
+                left: [1, 9],
+                right: [1, 2],
+                exp: false
             }, {
-                left  : [10,32],
-                right : [112, 2],
-                exp   : true
+                left: [10,32],
+                right: [112, 2],
+                exp: true
             }],
             exc;
 
@@ -322,30 +322,30 @@ describe("coon.core.data.pageMap.RecordPositionTest", function (t) {
     });
 
 
-    t.it("greaterThan()", function (t) {
+    t.it("greaterThan()", (t) => {
 
         var RecordPosition = coon.core.data.pageMap.RecordPosition,
             left, right,
             tests = [{
-                left : [1, 2],
-                right  : [1, 2],
-                exp   : false
+                left: [1, 2],
+                right: [1, 2],
+                exp: false
             }, {
-                left : [1, 2],
-                right  : [1, 1],
-                exp   : true
+                left: [1, 2],
+                right: [1, 1],
+                exp: true
             }, {
-                left  : [3, 2],
-                right : [34, 2],
-                exp   : false
+                left: [3, 2],
+                right: [34, 2],
+                exp: false
             }, {
-                left  : [1, 2],
-                right : [1, 9],
-                exp   : false
+                left: [1, 2],
+                right: [1, 9],
+                exp: false
             }, {
-                left  : [112, 2],
-                right : [10,32],
-                exp   : true
+                left: [112, 2],
+                right: [10,32],
+                exp: true
             }],
             exc;
 

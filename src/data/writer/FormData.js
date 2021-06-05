@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -36,13 +36,13 @@
  */
 Ext.define("coon.core.data.writer.FormData", {
 
-    extend : "Ext.data.writer.Json",
+    extend: "Ext.data.writer.Json",
 
-    requires : [
+    requires: [
         "coon.core.data.FormDataRequest"
     ],
 
-    alias : "writer.cn_core-datawriterformdata",
+    alias: "writer.cn_core-datawriterformdata",
 
 
     /**
@@ -92,7 +92,7 @@ Ext.define("coon.core.data.writer.FormData", {
      *
      * @inheritdoc
      */
-    writeRecords : function (request, data) {
+    writeRecords: function (request, data) {
 
         var me       = this,
             formData = null,

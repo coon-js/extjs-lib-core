@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,22 +23,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
+describe("coon.core.data.pageMap.PageMapFeederTest", (t) => {
 
     Ext.define("MockModel", {
-        extend : "Ext.data.Model",
-        fields : [{
-            name : "testPropForIndexLookup",
-            type : "int"
+        extend: "Ext.data.Model",
+        fields: [{
+            name: "testPropForIndexLookup",
+            type: "int"
         }]
     });
 
-    const TIMEOUT = 1250,
+    const TIMEOUT = 1TIMEOUT,
         loadPages = function (store, pages) {
 
             store.loadPage(pages.shift(), {
 
-                callback : function () {
+                callback: function () {
                     if (pages.length) {
                         loadPages(store, pages);
                     }
@@ -58,20 +58,20 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
             var store;
 
             store = Ext.create("Ext.data.BufferedStore", {
-                model : "MockModel",
-                autoLoad : true,
-                sorters : cfg.sorters,
-                pageSize : 25,
-                fields : ["id", "testProp"],
-                proxy : {
-                    type : "rest",
-                    url  : "cn_core/fixtures/PageMapItems",
-                    extraParams : {
-                        empty : cfg.empty
+                model: "MockModel",
+                autoLoad: true,
+                sorters: cfg.sorters,
+                pageSize: 25,
+                fields: ["id", "testProp"],
+                proxy: {
+                    type: "rest",
+                    url: "cn_core/fixtures/PageMapItems",
+                    extraParams: {
+                        empty: cfg.empty
                     },
-                    reader : {
-                        type         : "json",
-                        rootProperty : "data"
+                    reader: {
+                        type: "json",
+                        rootProperty: "data"
                     }
                 }
             });
@@ -81,7 +81,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
         },
         prop = function (testProperty, id) {
             let cfg = {
-                testPropForIndexLookup : testProperty
+                testPropForIndexLookup: testProperty
             };
             if (id) {
                 cfg.id = "" + id;
@@ -107,7 +107,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
             cfg = cfg || {};
 
             return Ext.create("coon.core.data.pageMap.PageMapFeeder", {
-                pageMap : createPageMap(cfg)
+                pageMap: createPageMap(cfg)
             });
         },
         createFeed = function (cfg) {
@@ -154,7 +154,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         PageMapFeeder = coon.core.data.pageMap.PageMapFeeder;
 
 
-                    t.it("prerequisites", function (t) {
+                    t.it("prerequisites", (t) => {
 
                         var ls, exc;
 
@@ -166,21 +166,21 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg.toLowerCase()).toContain("is required");
 
-                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", {pageMap : null});} catch (e) {exc = e;}
+                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", {pageMap: null});} catch (e) {exc = e;}
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
-                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", { pageMap : Ext.create("Ext.data.PageMap")});} catch (e) {exc = e;}
+                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", { pageMap: Ext.create("Ext.data.PageMap")});} catch (e) {exc = e;}
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg.toLowerCase()).toContain("valid store");
 
-                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", { pageMap :
-          Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.Store")})});} catch (e) {exc = e;}
+                        try {Ext.create("coon.core.data.pageMap.PageMapFeeder", { pageMap:
+          Ext.create("Ext.data.PageMap", {store: Ext.create("Ext.data.Store")})});} catch (e) {exc = e;}
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg.toLowerCase()).toContain("valid store");
 
                         ls = Ext.create("coon.core.data.pageMap.PageMapFeeder", {
-                            pageMap : Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.BufferedStore")})
+                            pageMap: Ext.create("Ext.data.PageMap", {store: Ext.create("Ext.data.BufferedStore")})
                         });
 
                         t.expect(ls instanceof coon.core.data.pageMap.PageMapFeeder).toBe(true);
@@ -194,11 +194,11 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("getFeedAt()", function (t) {
+                    t.it("getFeedAt()", (t) => {
 
                         let feed = createFeed({
-                                size     : 25,
-                                previous : 7
+                                size: 25,
+                                previous: 7
                             }),
                             feeder = createFeeder();
 
@@ -212,14 +212,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("isPageCandidate()", function (t) {
+                    t.it("isPageCandidate()", (t) => {
                         let candidate = createFeedFilled({
-                                size     : 25,
-                                previous : 7
+                                size: 25,
+                                previous: 7
                             }, true),
                             nocandidate = createFeedFilled({
-                                size : 25,
-                                next : 2
+                                size: 25,
+                                next: 2
                             }, false);
                         let feeder = createFeeder();
 
@@ -233,7 +233,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("createFeedAt()", function (t) {
+                    t.it("createFeedAt()", (t) => {
 
                         let exc, ret,
                             feeder   = createFeeder(),
@@ -267,7 +267,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         delete pageMap.map[2];
                         delete pageMap.map[3];
                         feeder.feed = {};
-                        feeder.feed[2] = Ext.create(Feed, {size : pageSize, previous : 1});
+                        feeder.feed[2] = Ext.create(Feed, {size: pageSize, previous: 1});
                         pageMap.map[3] = {};
                         try{feeder.createFeedAt(2, 3);}catch(e){exc=e;}
                         t.expect(exc).toBeDefined();
@@ -279,7 +279,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         delete pageMap.map[2];
                         delete pageMap.map[3];
                         feeder.feed = {};
-                        feeder.feed[3] = Ext.create(Feed, {size : pageSize, next : 4});
+                        feeder.feed[3] = Ext.create(Feed, {size: pageSize, next: 4});
                         pageMap.map[2] = {};
                         try{feeder.createFeedAt(3, 2);}catch(e){exc=e;}
                         t.expect(exc).toBeDefined();
@@ -311,12 +311,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("swapMapToFeed() - exceptions", function (t) {
+                    t.it("swapMapToFeed() - exceptions", (t) => {
 
                         var exc,
                             feeder = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             feeder.getPageMap().removeAtKey(5);
@@ -348,7 +348,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("swapMapToFeed()", function (t) {
+                    t.it("swapMapToFeed()", (t) => {
 
                         let page, newFeed,
                             feeder    = createFeeder(),
@@ -360,7 +360,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                                 }
                             };
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             page = 5;
                             pageMap.removeAtKey(page + 1);
@@ -435,7 +435,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - exception" , function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - exception" , (t) => {
 
                         let exc,
                             feeder    = createFeeder();
@@ -450,11 +450,11 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("hasPreviousFeed()", function (t) {
+                    t.it("hasPreviousFeed()", (t) => {
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             t.expect(feeder.hasPreviousFeed(5)).toBe(false);
 
                             pageMap.removeAtKey(4);
@@ -467,12 +467,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("hasNextFeed()", function (t) {
+                    t.it("hasNextFeed()", (t) => {
 
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             t.expect(feeder.hasNextFeed(5)).toBe(false);
 
                             pageMap.removeAtKey(6);
@@ -485,7 +485,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeeds() - A", function (t) {
+                    t.it("groupWithFeeds() - A", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -493,7 +493,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder    = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -513,7 +513,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeeds() - B", function (t) {
+                    t.it("groupWithFeeds() - B", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -521,7 +521,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -541,7 +541,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeeds() - C", function (t) {
+                    t.it("groupWithFeeds() - C", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -549,7 +549,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -571,13 +571,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeeds() - D", function (t) {
+                    t.it("groupWithFeeds() - D", (t) => {
 
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap(),
                             pageSize  = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.removeAtKey(4);
                             pageMap.removeAtKey(9);
@@ -603,7 +603,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeedsForPage() - A", function (t) {
+                    t.it("groupWithFeedsForPage() - A", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -611,7 +611,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder    = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -631,7 +631,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeedsForPage() - B", function (t) {
+                    t.it("groupWithFeedsForPage() - B", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -639,7 +639,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder    = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -659,7 +659,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeedsForPage() - C", function (t) {
+                    t.it("groupWithFeedsForPage() - C", (t) => {
 
                         // [1, 2] (3:2) (4:5)[5](6:5) [ 8, 9] (10:9)
                         //         // groupWithFeedsForPage(1)
@@ -667,7 +667,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         //
                         var feeder    = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
@@ -689,13 +689,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("groupWithFeedsForPage() - D", function (t) {
+                    t.it("groupWithFeedsForPage() - D", (t) => {
 
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap(),
                             pageSize  = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.removeAtKey(4);
                             pageMap.removeAtKey(9);
@@ -721,7 +721,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - A", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - A", (t) => {
 
                         // - RANGE       = [1, 2] [4, 5] [8, 9 , 10, 11]
                         // - REM (1, 1)  =  [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
@@ -729,7 +729,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(6);
@@ -745,12 +745,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - B", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - B", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(1);
                             feeder.getPageMap().removeAtKey(2);
@@ -767,7 +767,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - C", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - C", (t) => {
 
                         // [1] (2:1) (3:4) [4] (5:4) (7:8) [8, 9, 10] (11:10)
                         // REM 2
@@ -777,7 +777,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(2);
                             feeder.getPageMap().removeAtKey(3);
@@ -804,12 +804,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - D", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - D", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             // [1, 2, 3, 4, 5] [7, 8, 9 10 , 11. 12]
                             feeder.getPageMap().removeAtKey(6);
                             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[6], [7, 13]]);
@@ -818,24 +818,24 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - E", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - E", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[13]]);
                         });
 
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - F", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - F", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             feeder.getPageMap().removeAtKey(3);
                             feeder.getPageMap().removeAtKey(4);
                             feeder.getPageMap().removeAtKey(6);
@@ -850,12 +850,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - G", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - G", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2] [5], [8, 9] [11, 12]
 
@@ -871,12 +871,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - H", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - H", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2] [5], [8, 9] [12]
                             feeder.getPageMap().removeAtKey(3);
@@ -901,13 +901,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - I", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - I", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD,
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(feeder.findFeedIndexesForActionAtPage(5, ADD)).toEqual([[13]]);
                             t.expect(feeder.findFeedIndexesForActionAtPage(4, ADD)).toEqual([[13]]);
@@ -1030,12 +1030,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - J", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - J", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.getPageMap().removeAtKey(1);
                             feeder.getPageMap().removeAtKey(5);
@@ -1049,13 +1049,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - K", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - K", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE,
                             pageMap   = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // When removing in a feed, we must make sure the Feed exists,
                             // otherwise we cannot remove from it
@@ -1081,14 +1081,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - L", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - L", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE,
                             pageMap   = feeder.getPageMap(),
                             pageSize  = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // When removing in a feed, we must make sure the Feed exists,
                             // otherwise we cannot remove from it
@@ -1123,14 +1123,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - M", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - M", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE,
                             pageMap   = feeder.getPageMap(),
                             pageSize  = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // When removing in a feed, we must make sure the Feed exists,
                             // otherwise we cannot remove from it
@@ -1164,13 +1164,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("findFeedIndexesForActionAtPage() - N", function (t) {
+                    t.it("findFeedIndexesForActionAtPage() - N", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE,
                             pageMap   = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // 1 2 3 4 5 6 7 8 9 12
                             t.expect(pageMap.peekPage(1)).toBeTruthy();
@@ -1202,13 +1202,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeFeedAt()", function (t) {
+                    t.it("removeFeedAt()", (t) => {
 
                         var newFeed, page = 5,
                             feeder  = createFeeder(),
                             pageMap = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.removeAtKey(page);
                             pageMap.removeAtKey(page + 1);
@@ -1226,12 +1226,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("swapFeedToMap() - exceptions", function (t) {
+                    t.it("swapFeedToMap() - exceptions", (t) => {
                         let exc, page,
                             feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             page = 5;
 
@@ -1250,7 +1250,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("swapFeedToMap()", function (t) {
+                    t.it("swapFeedToMap()", (t) => {
                         let page, newFeed,
                             feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap(),
@@ -1261,7 +1261,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                                 }
                             };
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             page = 5;
                             pageMap.removeAtKey(page + 1);
@@ -1289,13 +1289,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - A", function (t) {
+                    t.it("sanitizeFeedsForPage() - A", (t) => {
 
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2] [5] [8, 9] [12]
                             // 1 ADD
@@ -1334,13 +1334,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - B", function (t) {
+                    t.it("sanitizeFeedsForPage() - B", (t) => {
 
                         var feeder    = createFeeder(),
                             pageMap   = feeder.getPageMap(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2] [8, 9],(10:9),[12]
                             // FEED 10 is previous:9
@@ -1382,12 +1382,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - C", function (t) {
+                    t.it("sanitizeFeedsForPage() - C", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             // [1, 2] [8, 9],(10:9),[12]
@@ -1414,12 +1414,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - D", function (t) {
+                    t.it("sanitizeFeedsForPage() - D", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             // [1, 2] [8, 9],(10:9),[12]
@@ -1443,12 +1443,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - E", function (t) {
+                    t.it("sanitizeFeedsForPage() - E", (t) => {
 
                         var feeder    = createFeeder(),
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             // [1, 2] (8:9) [9],(10:9),[12]
@@ -1475,12 +1475,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - F", function (t) {
+                    t.it("sanitizeFeedsForPage() - F", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             // [1, 2] (8: 9) [9],(10:9),[12]
@@ -1510,13 +1510,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - G", function (t) {
+                    t.it("sanitizeFeedsForPage() - G", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD,
                             REMOVE    = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2], [4, 5], [7, 8, 9, 10, 11, 12]
                             // 1, ADD:    [1, 2] (3) (4) [5] (6) (7)[8, 9, 10, 11, 12] (13)
@@ -1561,12 +1561,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - H", function (t) {
+                    t.it("sanitizeFeedsForPage() - H", (t) => {
 
                         var feeder    = createFeeder(),
                             ADD       = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             // throws exception since feed at 10 will be out of sync with
@@ -1595,13 +1595,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - I", function (t) {
+                    t.it("sanitizeFeedsForPage() - I", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize(),
                             REMOVE   = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1637,13 +1637,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - J", function (t) {
+                    t.it("sanitizeFeedsForPage() - J", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize(),
                             REMOVE   = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1686,7 +1686,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - exceptions", function (t) {
+                    t.it("prepareForAction() - exceptions", (t) => {
 
                         let exc,
                             feeder   = createFeeder();
@@ -1700,12 +1700,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - A", function (t) {
+                    t.it("prepareForAction() - A", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             REMOVE   = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1732,12 +1732,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - B", function (t) {
+                    t.it("prepareForAction() - B", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             ADD      = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2, 3]  [5, 6, 7, 8]  [10, 11, 12]
@@ -1756,13 +1756,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - C", function (t) {
+                    t.it("prepareForAction() - C", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize(),
                             REMOVE   = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1797,13 +1797,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - D", function (t) {
+                    t.it("prepareForAction() - D", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize(),
                             REMOVE   = PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1836,11 +1836,11 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - E", function (t) {
+                    t.it("prepareForAction() - E", (t) => {
                         let feeder   = createFeeder(),
                             ADD      = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -1858,12 +1858,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - F", function (t) {
+                    t.it("prepareForAction() - F", (t) => {
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             ADD      = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
@@ -1893,13 +1893,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("prepareForAction() - G", function (t) {
+                    t.it("prepareForAction() - G", (t) => {
 
                         let feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             ADD      = PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.swapMapToFeed(3, 2);
                             feeder.getFeedAt(3).extract(1);
@@ -1922,44 +1922,44 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - not found", function (t) {
+                    t.it("removeRecord() - not found", (t) => {
 
                         let feeder  = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             var op = feeder.removeRecord(prop(10000000000));
 
 
                             testOp(op, {
-                                success : false
+                                success: false
                             }, t);
                         });
 
                     });
 
 
-                    t.it("removeRecord() - no feedIndexes available", function (t) {
+                    t.it("removeRecord() - no feedIndexes available", (t) => {
 
                         let feeder  = createFeeder(),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             feeder.findFeedIndexesForActionAtPage = function () {return null;};
 
                             var op = feeder.removeRecord(pageMap.map[1].value[0]);
 
                             testOp(op, {
-                                success : false
+                                success: false
                             }, t);
                         });
 
                     });
 
 
-                    t.it("removeRecord() - found", function (t) {
+                    t.it("removeRecord() - found", (t) => {
 
                         let rec, op, recNext,
                             feeder   = createFeeder(),
@@ -1968,7 +1968,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             mapping  = {},
                             indexMap = {}, i, a , lena;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             rec      = map[3].value[5];
                             recNext = map[3].value[6];
@@ -2011,14 +2011,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             t.expect(pageMap.indexMap[rec.internalId]).toBeUndefined();
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                         });
                     });
 
 
-                    t.it("removeRecord() - found in feed", function (t) {
+                    t.it("removeRecord() - found in feed", (t) => {
 
                         let rec, op,
                             feeder    = createFeeder(),
@@ -2029,7 +2029,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
                             recNextId;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2] (3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10, 11] (12:11)
@@ -2056,10 +2056,10 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             t.expect(toIntMap(Ext.Object.getKeys(feeder.feed))).toEqual([4, 8, 9, 12]);
 
                             mapping = {
-                                11 : [],
-                                9  : [],
-                                8  : [],
-                                4  : []
+                                11: [],
+                                9: [],
+                                8: [],
+                                4: []
                             };
 
 
@@ -2074,7 +2074,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(rec);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.getFeedAt(4).getFreeSpace()).toBe(1);
@@ -2092,7 +2092,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - doesnt pass across none sibling pages and Feeds", function (t) {
+                    t.it("removeRecord() - doesnt pass across none sibling pages and Feeds", (t) => {
 
                         let rec, op,
                             feeder    = createFeeder(),
@@ -2102,7 +2102,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE,
                             recNextId;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2, 3, 4, 5] (6:5) (7:8) [8, 9, 10, 11] (12:11)
@@ -2118,13 +2118,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
 
 
                             mapping = {
-                                11 : [],
-                                7  : [],
-                                6  : [],
-                                5  : [],
-                                4  : [],
-                                3  : [],
-                                2  : []
+                                11: [],
+                                7: [],
+                                6: [],
+                                5: [],
+                                4: [],
+                                3: [],
+                                2: []
                             };
 
                             mapping[11][24] = feeder.getFeedAt(12).getAt(0);
@@ -2142,7 +2142,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(rec);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(map[2].value[24].getId()).toBe(recNextId);
@@ -2158,14 +2158,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("canServeFromFeed()", function (t) {
+                    t.it("canServeFromFeed()", (t) => {
                         let exc,
                             feeder   = createFeeder(),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize();
 
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.removeAtKey(3);
                             pageMap.removeAtKey(4);
@@ -2206,7 +2206,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - recreate feeds - A", function (t) {
+                    t.it("removeRecord() - recreate feeds - A", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2215,7 +2215,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             pageSize  = pageMap.getPageSize(),
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2247,7 +2247,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(map[2].value[12]);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.prepareForAction(2, REMOVE)).toEqual([
@@ -2263,7 +2263,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - recreate feeds () - B", function (t) {
+                    t.it("removeRecord() - recreate feeds () - B", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2272,7 +2272,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             pageSize  = pageMap.getPageSize(),
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2299,7 +2299,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(map[2].value[12]);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             // 9 is 25, it is NOW allowed to shift to 8, since 8 has enough room to get filled up
@@ -2315,7 +2315,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - recreate feeds () - C", function (t) {
+                    t.it("removeRecord() - recreate feeds () - C", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2324,7 +2324,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             pageSize  = pageMap.getPageSize(),
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2375,7 +2375,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(map[2].value[12]);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             // although 9 is 25, it is not allowed to shift to 8
@@ -2404,7 +2404,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - recreate feeds () - D", function (t) {
+                    t.it("removeRecord() - recreate feeds () - D", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2412,7 +2412,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             map       = pageMap.map,
                             pageSize  = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2445,7 +2445,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             let remMe = function (page, value) {
                                 op = feeder.removeRecord(map[page].value[value]);
                                 testOp(op, {
-                                    success : true
+                                    success: true
                                 }, t);
                             };
 
@@ -2478,7 +2478,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - multiple", function (t) {
+                    t.it("removeRecord() - multiple", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2487,7 +2487,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             pageSize  = pageMap.getPageSize(),
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2514,7 +2514,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(map[2].value[12]);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             // feed at 3 gone, cant serve
@@ -2524,7 +2524,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
 
                     });
 
-                    t.it("removeRecord() - sanitized is called afterwards", function (t) {
+                    t.it("removeRecord() - sanitized is called afterwards", (t) => {
 
                         let op,
                             feeder    = createFeeder(),
@@ -2533,7 +2533,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             pageSize  = pageMap.getPageSize(),
                             REMOVE    = coon.core.data.pageMap.PageMapFeeder.ACTION_REMOVE;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2564,7 +2564,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.removeRecord(map[2].value[12]);
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.getFeedAt(9)).toBeNull();
@@ -2575,13 +2575,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord - exceptions", function (t) {
+                    t.it("addRecord - exceptions", (t) => {
 
                         let exc, e,
                             feeder         = createFeeder(),
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2) (4:5) [5, 6, 7] (8:7) (9:10) [10,11] (12:11)
@@ -2603,7 +2603,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord - A", function (t) {
+                    t.it("addRecord - A", (t) => {
 
                         let op,
                             feeder         = createFeeder(),
@@ -2616,7 +2616,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             mapping        = [],
                             PageMapUtil    = coon.core.data.pageMap.PageMapUtil;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             for (let i in map) {
@@ -2639,7 +2639,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             op = feeder.addRecord(addRec, RecordPosition.create(1, 0));
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.getFeedAt(13)).not.toBeNull();
@@ -2660,7 +2660,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord - B", function (t) {
+                    t.it("addRecord - B", (t) => {
 
                         let op,
                             feeder         = createFeeder(),
@@ -2669,7 +2669,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
@@ -2698,26 +2698,26 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             };
 
                             let undefinedRecords = {
-                                3 : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
-                                6 : [0, 1],
-                                9 : [0, 1]
+                                3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                                6: [0, 1],
+                                9: [0, 1]
                             };
 
                             let movedRecords = {
-                                1  : {5 : addRec},
-                                2  : {0 : map[1].value[24]},
-                                3  : {0 : map[2].value[24]},
-                                7  : {0 : feeder.getFeedAt(6).getAt(24)},
-                                8  : {0 : map[7].value[24]},
-                                10 : {0 : feeder.getFeedAt(9).getAt(24)},
-                                11 : {0 : map[10].value[24]},
-                                12 : {0 : map[11].value[24]}
+                                1: {5: addRec},
+                                2: {0: map[1].value[24]},
+                                3: {0: map[2].value[24]},
+                                7: {0: feeder.getFeedAt(6).getAt(24)},
+                                8: {0: map[7].value[24]},
+                                10: {0: feeder.getFeedAt(9).getAt(24)},
+                                11: {0: map[10].value[24]},
+                                12: {0: map[11].value[24]}
                             };
 
                             op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             for (let i in undefinedRecords) {
@@ -2745,7 +2745,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord - C", function (t) {
+                    t.it("addRecord - C", (t) => {
 
                         let op,
                             feeder         = createFeeder(),
@@ -2754,7 +2754,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
@@ -2793,25 +2793,25 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             };
 
                             let undefinedRecords = {
-                                6 : [0, 1],
-                                9 : [0, 1]
+                                6: [0, 1],
+                                9: [0, 1]
                             };
 
                             let movedRecords = {
-                                1  : {5 : addRec},
-                                2  : {0 : map[1].value[24]},
-                                3  : {0 : map[2].value[24]},
-                                7  : {0 : feeder.getFeedAt(6).getAt(24)},
-                                8  : {0 : map[7].value[24]},
-                                10 : {0 : feeder.getFeedAt(9).getAt(24)},
-                                11 : {0 : map[10].value[24]},
-                                12 : {0 : map[11].value[24]}
+                                1: {5: addRec},
+                                2: {0: map[1].value[24]},
+                                3: {0: map[2].value[24]},
+                                7: {0: feeder.getFeedAt(6).getAt(24)},
+                                8: {0: map[7].value[24]},
+                                10: {0: feeder.getFeedAt(9).getAt(24)},
+                                11: {0: map[10].value[24]},
+                                12: {0: map[11].value[24]}
                             };
 
                             op = feeder.addRecord(addRec, RecordPosition.create(1, 5));
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
@@ -2840,7 +2840,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord - D", function (t) {
+                    t.it("addRecord - D", (t) => {
 
                         let op,
                             feeder         = createFeeder(),
@@ -2849,7 +2849,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             ADD            = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD,
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // loaded: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                             // [1, 2](3:2)  (6:7) [7] (8:7) (9:10) [10,11] (12:11)
@@ -2888,23 +2888,23 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             };
 
                             let undefinedRecords = {
-                                6 : [0, 1],
-                                9 : [0, 1]
+                                6: [0, 1],
+                                9: [0, 1]
                             };
 
                             let movedRecords = {
-                                3  : {5 : addRec},
-                                7  : {0 : feeder.getFeedAt(6).getAt(24)},
-                                8  : {0 : map[7].value[24]},
-                                10 : {0 : feeder.getFeedAt(9).getAt(24)},
-                                11 : {0 : map[10].value[24]},
-                                12 : {0 : map[11].value[24]}
+                                3: {5: addRec},
+                                7: {0: feeder.getFeedAt(6).getAt(24)},
+                                8: {0: map[7].value[24]},
+                                10: {0: feeder.getFeedAt(9).getAt(24)},
+                                11: {0: map[10].value[24]},
+                                12: {0: map[11].value[24]}
                             };
 
                             op = feeder.addRecord(addRec, RecordPosition.create(3, 5));
 
                             testOp(op, {
-                                success : true
+                                success: true
                             }, t);
 
                             t.expect(feeder.getFeedAt(3).getAt(24)).toBe(prevFeed3Rec);
@@ -2933,12 +2933,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
 
                     });
 
-                    t.it("sanitizerSuspended", function (t) {
+                    t.it("sanitizerSuspended", (t) => {
 
                         let feeder = createFeeder(),
                             ADD    = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             feeder.sanitizerSuspended = true;
                             t.expect(feeder.sanitizeFeedsForPage(1, ADD)).toBe(false);
                             feeder.sanitizerSuspended = false;
@@ -2948,7 +2948,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("moveRecord - A", function (t) {
+                    t.it("moveRecord - A", (t) => {
 
                         let exc, op,
                             feeder = createFeeder(),
@@ -2957,7 +2957,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             RecordPosition = coon.core.data.pageMap.RecordPosition,
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             try {feeder.moveRecord(prop(34), RecordPosition.create(5, 10));}catch(e){exc=e;}
                             t.expect(exc).toBeDefined();
@@ -2995,7 +2995,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("moveRecord - B", function (t) {
+                    t.it("moveRecord - B", (t) => {
 
                         let op, feeder = createFeeder(),
                             pageMap = feeder.getPageMap(),
@@ -3003,7 +3003,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             RecordPosition = coon.core.data.pageMap.RecordPosition,
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             // [1, 2] (3:2) (4:5) [5, 6] ....
 
@@ -3039,7 +3039,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("replaceWith()", function (t) {
+                    t.it("replaceWith()", (t) => {
 
                         let feeder         = createFeeder(),
                             pageMap        = feeder.getPageMap(),
@@ -3048,7 +3048,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                             exc, newProp, oldProp, newPropForFeed, oldIndex;
 
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             newProp        = prop(2113);
                             newPropForFeed = prop(2113);
@@ -3080,12 +3080,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("reset()", function (t) {
+                    t.it("reset()", (t) => {
 
                         let feeder = createFeeder();
 
                         feeder.sanitizerSuspended = true;
-                        feeder.feed               = {1 : 2};
+                        feeder.feed               = {1: 2};
 
                         feeder.reset();
 
@@ -3096,12 +3096,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("addRecord() - total count", function (t) {
+                    t.it("addRecord() - total count", (t) => {
 
                         let feeder         = createFeeder(),
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let oldCount = feeder.getPageMap().getStore().getTotalCount();
 
@@ -3114,11 +3114,11 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - total count", function (t) {
+                    t.it("removeRecord() - total count", (t) => {
 
                         let feeder = createFeeder();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let oldCount = feeder.getPageMap().getStore().getTotalCount();
 
@@ -3133,7 +3133,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("getIndexLookup()", function (t) {
+                    t.it("getIndexLookup()", (t) => {
 
                         let feeder = createFeeder();
 
@@ -3145,12 +3145,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - A", function (t) {
+                    t.it("add() - A", (t) => {
 
-                        let feeder  = createFeeder({empty : true, sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder  = createFeeder({empty: true, sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             t.expect(pageMap.map).toEqual({});
@@ -3173,14 +3173,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - B", function (t) {
+                    t.it("add() - B", (t) => {
 
-                        let feeder   = createFeeder({empty : true, sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({empty: true, sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap(),
                             pageSize = pageMap.getPageSize(),
                             size     = 32, rec, op;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             t.expect(pageMap.map).toEqual({});
@@ -3205,12 +3205,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - C", function (t) {
+                    t.it("add() - C", (t) => {
 
-                        let feeder   = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let totalCount = pageMap.getStore().getTotalCount();
 
@@ -3225,16 +3225,16 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - D", function (t) {
+                    t.it("add() - D", (t) => {
 
-                        let feeder   = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.getStore().loadPage(20);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 let totalCount = pageMap.getStore().getTotalCount();
 
@@ -3255,13 +3255,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - E", function (t) {
+                    t.it("add() - E", (t) => {
 
-                        let feeder   = createFeeder({empty : true, sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({empty: true, sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap(),
                             size     = 32, rec, op, i;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(pageMap.map).toEqual({});
                             t.expect(pageMap.getStore().getTotalCount()).toBe(0);
@@ -3295,12 +3295,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("remove()", function (t) {
+                    t.it("remove()", (t) => {
 
-                        let feeder   = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
                             t.isCalled("removeRecord", feeder);
                             t.expect(feeder.remove(pageMap.map[1].value[2])).toBeTruthy();
 
@@ -3308,13 +3308,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("update() - A", function (t) {
+                    t.it("update() - A", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                             pageMap     = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
 
                             let totalCount = pageMap.getStore().getTotalCount();
@@ -3339,16 +3339,16 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("update() - B", function (t) {
+                    t.it("update() - B", (t) => {
 
-                        let feeder   = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.getStore().loadPage(20);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 let rec = pageMap.map[1].value[0];
                                 rec.set("testPropForIndexLookup", 898979878);
@@ -3369,14 +3369,14 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("reset-callback", function (t) {
+                    t.it("reset-callback", (t) => {
 
-                        let feeder   = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
-                            feeder.feed = {1:2};
+                            feeder.feed = {1: 2};
 
                             pageMap.generation = 89;
                             pageMap.clear(false);
@@ -3395,18 +3395,18 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - last page", function (t) {
+                    t.it("removeRecord() - last page", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
                             pageMap.getStore().loadPage(lastPage);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 let remRec = pageMap.map[lastPage].value[2],
                                     op     = feeder.removeRecord(remRec);
@@ -3428,17 +3428,17 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("isPageCandidate() - feed as highest possible page number", function (t) {
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                    t.it("isPageCandidate() - feed as highest possible page number", (t) => {
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
                             pageMap.getStore().loadPage(lastPage);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 feeder.swapMapToFeed(lastPage, lastPage - 1);
 
@@ -3451,19 +3451,19 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                         });
                     });
 
-                    t.it("removeRecord() - feeder", function (t) {
+                    t.it("removeRecord() - feeder", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                             pageSize    = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             let lastPage = PageMapUtil.getLastPossiblePageNumber(pageMap);
                             pageMap.getStore().loadPage(lastPage);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 feeder.swapMapToFeed(lastPage, lastPage - 1);
 
@@ -3497,13 +3497,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("sanitizeFeedsForPage() - finalizing", function (t) {
+                    t.it("sanitizeFeedsForPage() - finalizing", (t) => {
 
-                        let feeder  = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder  = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap = feeder.getPageMap(),
                             ADD     = coon.core.data.pageMap.PageMapFeeder.ACTION_ADD;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             pageMap.map[3].value = [];
 
@@ -3529,13 +3529,13 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("swapMapToFeed() - consider value length instead of pageSize", function (t) {
+                    t.it("swapMapToFeed() - consider value length instead of pageSize", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             pageSize    = pageMap.getPageSize();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(pageMap.map[3].value.length).toBe(pageSize);
                             pageMap.map[3].value.splice(3, 2);
@@ -3551,24 +3551,24 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("hasPreviousFeed() - page 1 does not cause errors due to check for data at page '0'", function (t) {
+                    t.it("hasPreviousFeed() - page 1 does not cause errors due to check for data at page '0'", (t) => {
 
-                        let feeder = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]});
+                        let feeder = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]});
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(feeder.hasPreviousFeed(1)).toBe(false);
                         });
                     });
 
 
-                    t.it("removePageAt() - no listener", function (t) {
+                    t.it("removePageAt() - no listener", (t) => {
 
                         let exc,
-                            feeder  = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                            feeder  = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(pageMap.map[1]).toBeDefined();
                             feeder.removePageAt(1);
@@ -3589,12 +3589,12 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removePageAt() - listener", function (t) {
+                    t.it("removePageAt() - listener", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap();
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(pageMap.map[1]).toBeDefined();
                             feeder.removePageAt(1);
@@ -3614,22 +3614,22 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("add() - first and last page available", function (t) {
+                    t.it("add() - first and last page available", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             store       = pageMap.getStore(),
                             pageSize    = pageMap.getPageSize(),
                             PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                             cmps = [];
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(20);
 
                             pageMap.getStore().loadPage(20);
 
-                            t.waitForMs(250, function () {
+                            t.waitForMs(TIMEOUT, function () {
 
                                 t.expect(pageMap.map[1]).toBeDefined();
                                 t.expect(pageMap.map[20]).toBeDefined();
@@ -3675,9 +3675,9 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - issue (A)", function (t) {
+                    t.it("removeRecord() - issue (A)", (t) => {
 
-                        let feeder      = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder      = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap     = feeder.getPageMap(),
                             ADD         = PageMapFeeder.ACTION_ADD,
                             REMOVE      = PageMapFeeder.ACTION_REMOVE;
@@ -3789,15 +3789,15 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("removeRecord() - issue (B)", function (t) {
+                    t.it("removeRecord() - issue (B)", (t) => {
 
-                        let feeder         = createFeeder({sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder         = createFeeder({sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap        = feeder.getPageMap(),
                             ADD            = PageMapFeeder.ACTION_ADD,
                             REMOVE         = PageMapFeeder.ACTION_REMOVE,
                             RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(TIMEOUT, function () {
 
                             loadPages(pageMap.getStore(),[13, 14, 15, 16]);
 
@@ -3808,7 +3808,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                                 pageMap.removeAtKey(19);
                                 pageMap.removeAtKey(20);
 
-                                t.waitForMs(250, function () {
+                                t.waitForMs(TIMEOUT, function () {
 
                                     feeder.swapMapToFeed(10, 9);
                                     feeder.swapMapToFeed(14, 13);
@@ -3894,9 +3894,9 @@ describe("coon.core.data.pageMap.PageMapFeederTest", function (t) {
                     });
 
 
-                    t.it("lib-cn_core#4", function (t) {
+                    t.it("extjs-lib-core#4", (t) => {
 
-                        let feeder   = createFeeder({empty : true, sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]}),
+                        let feeder   = createFeeder({empty: true, sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]}),
                             pageMap  = feeder.getPageMap(),
                             rec;
 

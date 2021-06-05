@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.PageRangeTest", function (t) {
+describe("coon.core.data.pageMap.PageRangeTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
     t.requireOk("coon.core.data.pageMap.PageRange", function () {
 
 
-        t.it("constructor()", function (t) {
+        t.it("constructor()", (t) => {
 
             var exc;
 
@@ -42,20 +42,20 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
             t.expect(exc.msg.toLowerCase()).toContain("must be specified");
 
             t.expect(
-                Ext.create("coon.core.data.pageMap.PageRange", {pages:[1]})
+                Ext.create("coon.core.data.pageMap.PageRange", {pages: [1]})
             instanceof coon.core.data.pageMap.PageRange
             ).toBe(true);
 
 
         });
 
-        t.it("applyPages()", function (t) {
+        t.it("applyPages()", (t) => {
 
             var exc;
 
             try {
                 Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [1, 2, 5]
+                    pages: [1, 2, 5]
                 });
             } catch (e) {
                 exc = e;
@@ -66,7 +66,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
 
             try {
                 Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [0, 1, 2]
+                    pages: [0, 1, 2]
                 });
             } catch (e) {
                 exc = e;
@@ -77,7 +77,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
 
             try {
                 Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : "somestuff"
+                    pages: "somestuff"
                 });
             } catch (e) {
                 exc = e;
@@ -87,7 +87,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
 
 
             var range = Ext.create("coon.core.data.pageMap.PageRange", {
-                pages : [1, 2, 3]
+                pages: [1, 2, 3]
             });
 
             try {
@@ -101,10 +101,10 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("getter", function (t) {
+        t.it("getter", (t) => {
 
             var range = Ext.create("coon.core.data.pageMap.PageRange", {
-                pages : [3, 4, 5]
+                pages: [3, 4, 5]
             });
 
             t.expect(range.getPages()).toEqual([3, 4, 5]);
@@ -114,19 +114,19 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("equalTo()", function (t) {
+        t.it("equalTo()", (t) => {
 
             var rangeLeft = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [3, 4, 5]
+                    pages: [3, 4, 5]
                 }),
                 rangeRight = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [3, 4, 5]
+                    pages: [3, 4, 5]
                 }),
                 rangeNope_1 = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [1]
+                    pages: [1]
                 }),
                 rangeNope_2 = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [4, 5, 6]
+                    pages: [4, 5, 6]
                 }), exc;
 
 
@@ -150,19 +150,19 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("equalTo() - (2)", function (t) {
+        t.it("equalTo() - (2)", (t) => {
 
             var rangeLeft = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [3]
+                    pages: [3]
                 }),
                 rangeRight = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [3]
+                    pages: [3]
                 }),
                 rangeNope_1 = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [5]
+                    pages: [5]
                 }),
                 rangeNope_2 = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [6]
+                    pages: [6]
                 });
 
 
@@ -176,10 +176,10 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("toArray()", function (t) {
+        t.it("toArray()", (t) => {
 
             var range = Ext.create("coon.core.data.pageMap.PageRange", {
-                    pages : [3, 4, 5]
+                    pages: [3, 4, 5]
                 }),
                 arr;
 
@@ -192,7 +192,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
 
 
             range = Ext.create("coon.core.data.pageMap.PageRange", {
-                pages : [3]
+                pages: [3]
             });
 
             arr = range.toArray();
@@ -206,7 +206,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("coon.core.data.pageMap.PageRange.create()", function (t) {
+        t.it("coon.core.data.pageMap.PageRange.create()", (t) => {
 
             var PageRange = coon.core.data.pageMap.PageRange,
                 exc, range,
@@ -270,9 +270,7 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
         });
 
 
-        t.it("coon.core.data.pageMap.PageRange.createFor()", function (t) {
-
-            t.isCalledNTimes("createRange", coon.core.Util, 2);
+        t.it("coon.core.data.pageMap.PageRange.createFor()", (t) => {
 
             var PageRange = coon.core.data.pageMap.PageRange,
                 range,
@@ -286,22 +284,22 @@ describe("coon.core.data.pageMap.PageRangeTest", function (t) {
             for (var i = 0, len = tests.length; i < len; i++) {
                 range = PageRange.createFor.apply(null, tests[i]);
                 t.expect(range instanceof coon.core.data.pageMap.PageRange).toBe(true);
+                t.expect(range.getPages()).toEqual(tests[i]);
             }
-
         });
 
 
-        t.it("contains()", function (t) {
+        t.it("contains()", (t) => {
 
 
             var PageRange      = coon.core.data.pageMap.PageRange,
                 RecordPosition = coon.core.data.pageMap.RecordPosition,
                 range, pos,
                 tests = [
-                    {range : [1, 2],  pos :  [1, 19], exp : true},
-                    {range : [1, 2],  pos :  [2, 22], exp : true},
-                    {range : [5, 12], pos :  [1, 3], exp : false},
-                    {range : [4, 9],  pos :  [6, 5], exp : true}
+                    {range: [1, 2],  pos: [1, 19], exp: true},
+                    {range: [1, 2],  pos: [2, 22], exp: true},
+                    {range: [5, 12], pos: [1, 3], exp: false},
+                    {range: [4, 9],  pos: [6, 5], exp: true}
                 ];
 
 

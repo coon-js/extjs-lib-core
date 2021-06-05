@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ConfigManagerTest", function (t) {
+describe("coon.core.ConfigManagerTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe("coon.core.ConfigManagerTest", function (t) {
 
     t.requireOk("coon.core.ConfigManager", function (){
 
-        t.it("register()", function (t) {
+        t.it("register()", (t) => {
 
             const ConfigManager = coon.core.ConfigManager;
 
@@ -40,7 +40,7 @@ describe("coon.core.ConfigManagerTest", function (t) {
 
             t.expect(ConfigManager.get("foo")).toBeUndefined();
 
-            let a = {a : 1, "sect" : {"foo" : "bar"}};
+            let a = {a: 1, "sect": {"foo": "bar"}};
             t.expect(ConfigManager.register("foo", a)).toBe(a);
             t.expect(ConfigManager.register("", {})).toBe(null);
             t.expect(ConfigManager.register(null, {})).toBe(null);
@@ -62,6 +62,7 @@ describe("coon.core.ConfigManagerTest", function (t) {
             }
 
             t.expect(exp.msg).toContain("was already registered");
+            t.isInstanceOf(exp, "coon.core.exception.AlreadyExistsException");
 
 
         });

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.field.BlobTest", function (t) {
+describe("coon.core.data.field.BlobTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Make sure class definition is as expected", function (t) {
+    t.it("Make sure class definition is as expected", (t) => {
 
         var field  = Ext.create("coon.core.data.field.Blob");
 
@@ -46,20 +46,20 @@ describe("coon.core.data.field.BlobTest", function (t) {
     });
 
 
-    t.it("Make sure constructor() work as expected", function (t) {
+    t.it("Make sure constructor() work as expected", (t) => {
 
         var field  = Ext.create("coon.core.data.field.Blob");
 
         field  = Ext.create("coon.core.data.field.Blob", {
-            defaultValue : "a"
+            defaultValue: "a"
         });
 
         t.expect(field.getDefaultValue()).toBe("a");
 
         Ext.define("testfield", {
-            extend : "coon.core.data.field.Blob",
+            extend: "coon.core.data.field.Blob",
 
-            defaultValue : "b"
+            defaultValue: "b"
         });
 
         // no callback for define so it's easier to track this test running
@@ -71,7 +71,7 @@ describe("coon.core.data.field.BlobTest", function (t) {
     });
 
 
-    t.it("Make sure convert() works as expected", function (t) {
+    t.it("Make sure convert() works as expected", (t) => {
         var field  = Ext.create("coon.core.data.field.Blob");
         t.expect(field.convert(null)).toEqual(null);
 
@@ -87,7 +87,7 @@ describe("coon.core.data.field.BlobTest", function (t) {
         t.expect(field.convert(blob)).toBe(blob);
     });
 
-    t.it("Make sure compare() works as expected", function (t) {
+    t.it("Make sure compare() works as expected", (t) => {
         var b1 = new Blob(),
             b2 = new Blob(["foo"], {type: "text/plain"}),
             b3 = new Blob(["foo"], {type: "text/plain"});
@@ -108,14 +108,14 @@ describe("coon.core.data.field.BlobTest", function (t) {
     });
 
 
-    t.it("Make sure field works in model as expected", function (t) {
+    t.it("Make sure field works in model as expected", (t) => {
 
         Ext.define("testmodel", {
-            extend : "Ext.data.Model",
+            extend: "Ext.data.Model",
 
-            fields : [{
-                name : "blob",
-                type : "cn_core-datafieldblob"
+            fields: [{
+                name: "blob",
+                type: "cn_core-datafieldblob"
             }]
 
         });

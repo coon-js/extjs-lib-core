@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -91,9 +91,9 @@
  */
 Ext.define("coon.core.data.field.EmailAddressCollection", {
 
-    extend : "Ext.data.field.Field",
+    extend: "Ext.data.field.Field",
 
-    alias : "data.field.cn_core-datafieldemailaddresscollection",
+    alias: "data.field.cn_core-datafieldemailaddresscollection",
 
     /**
      * @cfg {Array=[]} defaultValue
@@ -105,7 +105,7 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
      * Overridden to make sure defaultValue is set to [] and to make sure same
      * reference is not shared over various instances.
      */
-    constructor : function (config) {
+    constructor: function (config) {
 
         if (this.defaultValue === undefined &&
             (!config || !Object.prototype.hasOwnProperty.call(config,"defaultValue"))) {
@@ -119,7 +119,7 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
     /**
      * @inheritdoc
      */
-    convert : function (v) {
+    convert: function (v) {
 
         if (!Ext.isString(v) && !Ext.isArray(v)) {
             return [];
@@ -127,8 +127,8 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
 
         if (Ext.isString(v)) {
             return [{
-                address : v,
-                name    : v
+                address: v,
+                name: v
             }];
         }
 
@@ -137,8 +137,8 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
         for (var i = 0, len = v.length; i < len; i++) {
             if (Ext.isString(v[i])) {
                 v[i] = {
-                    address : v[i],
-                    name    : v[i]
+                    address: v[i],
+                    name: v[i]
                 };
             } else if (v[i] && !Object.prototype.hasOwnProperty.call(v[i], "name")) {
                 v[i]["name"] = v[i]["address"];
@@ -151,7 +151,7 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
     /**
      * @inheritdoc
      */
-    serialize : function (v) {
+    serialize: function (v) {
 
         if (!Ext.isArray(v)) {
             v = [];
@@ -179,7 +179,7 @@ Ext.define("coon.core.data.field.EmailAddressCollection", {
      *      [{name : '', address :'peterparker@dailynews.com'},
      *      {name : 'Karl', address :'karl.malden@yahooo.tld'}]
      */
-    compare : function (value1, value2) {
+    compare: function (value1, value2) {
 
         if (!Ext.isArray(value1) && !Ext.isArray(value2)) {
             return 0;

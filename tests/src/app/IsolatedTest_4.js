@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,72 +33,87 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest", function (t) {
+describe("coon.core.app.ApplicationTest", (t) => {
 
-    let app = null;
+    t.requireOk("coon.core.app.Application", () => {
+        let app = null;
 
+        const buildManifest = function () {
 
-    t.beforeEach(function () {
-        Ext.isModern && Ext.viewport.Viewport.setup();
-    });
+            const manifest = {};
 
-    t.afterEach(function () {
-
-        if (app) {
-            app.destroy();
-            app = null;
-        }
-
-        if (Ext.isModern && Ext.Viewport) {
-            Ext.Viewport.destroy();
-            Ext.Viewport = null;
-        }
-
-        coon.core.ConfigManager.configs = {};
-
-    });
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Unit Tests .~=
-    // +----------------------------------------------------------------------------
-    t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function () {
+            manifest.name = "ApplicationTest";
+            manifest["coon-js"] = {env: "dev"};
+            manifest.packages = {};
+            manifest.resources = {path: "./fixtures", shared: "../bar"};
+            return manifest;
+        };
 
 
-        t.it("Should create mainView based on ObjectConfig (classic only).", function (t) {
+        t.beforeEach(function () {
+            Ext.manifest = buildManifest();
+            coon.core.app.Application.prototype.onProfilesReady = Ext.app.Application.prototype.onProfilesReady;
+            Ext.isModern && Ext.viewport.Viewport.setup();
+        });
+        t.afterEach(function () {
 
-            let w;
-
-
-            try {
-                w = Ext.create("coon.core.app.Application", {
-                    name        : "test",
-                    mainView    : {
-                        xtype : "panel",
-                        viewModel : {
-                            data : {
-                                myTitle : "foo"
-                            }
-                        },
-                        bind : {
-                            title : "{myTitle}"
-                        }
-                    },
-                    controllers : [
-                        "coon.core.app.PackageController"
-                    ]
-                });
-            } catch(exc) {
-                if (Ext.isModern) {
-                    t.expect(exc).toBeDefined();
-                    return;
-                }
+            if (app) {
+                app.destroy();
+                app = null;
             }
-            w.getMainView().getViewModel().notify();
-            t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
-            t.expect(w.getMainView().getTitle()).toBe("foo");
-            w.destroy();
-            w = null;
+
+            if (Ext.isModern && Ext.Viewport) {
+                Ext.Viewport.destroy();
+                Ext.Viewport = null;
+            }
+
+            coon.core.ConfigManager.configs = {};
+
         });
 
+        // +----------------------------------------------------------------------------
+        // |                    =~. Unit Tests .~=
+        // +----------------------------------------------------------------------------
+        t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function () {
 
-    });});
+
+            t.it("Should create mainView based on ObjectConfig (classic only).", (t) => {
+
+                let w;
+
+
+                try {
+                    w = Ext.create("coon.core.app.Application", {
+                        name: "test",
+                        mainView: {
+                            xtype: "panel",
+                            viewModel: {
+                                data: {
+                                    myTitle: "foo"
+                                }
+                            },
+                            bind: {
+                                title: "{myTitle}"
+                            }
+                        },
+                        controllers: [
+                            "coon.core.app.PackageController"
+                        ]
+                    });
+                } catch (exc) {
+                    if (Ext.isModern) {
+                        t.expect(exc).toBeDefined();
+                        return;
+                    }
+                }
+                w.getMainView().getViewModel().notify();
+                t.expect(w.getMainView() instanceof Ext.Panel).toBeTruthy();
+                t.expect(w.getMainView().getTitle()).toBe("foo");
+                w.destroy();
+                w = null;
+            });
+
+        });
+
+    });
+});

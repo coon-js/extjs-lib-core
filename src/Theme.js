@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -83,20 +83,20 @@
 Ext.define("coon.core.Theme", {
 
 
-    config : {
+    config: {
 
         /**
          * The name of the entry in #modes that has it's property "default"
          * set to true.
          */
-        defaultMode : undefined,
+        defaultMode: undefined,
 
         /**
          * Switches between various theme modes during runtime.
          *
          * @type {String} The key from "modes" this theme should be using, if any.
          */
-        mode : undefined,
+        mode: undefined,
 
         /**
          * Allows for specifying different (color-)modes this theme can use.
@@ -133,7 +133,7 @@ Ext.define("coon.core.Theme", {
          * });
          *
          */
-        modes : undefined
+        modes: undefined
     },
 
 
@@ -142,7 +142,7 @@ Ext.define("coon.core.Theme", {
      *
      * @param {Object} cfg
      */
-    constructor : function (cfg) {
+    constructor: function (cfg) {
         const me = this;
 
         me.initConfig(cfg);
@@ -159,7 +159,7 @@ Ext.define("coon.core.Theme", {
      *
      * @see findDefaultMode
      */
-    updateModes : function () {
+    updateModes: function () {
 
         const me = this;
 
@@ -186,7 +186,7 @@ Ext.define("coon.core.Theme", {
      * @return {undefined|String} returns undefined if the mode is not available with
      * "getModes()", otherwise the name of the new mode.
      */
-    applyMode : function (mode) {
+    applyMode: function (mode) {
 
         const
             me = this,
@@ -219,7 +219,7 @@ Ext.define("coon.core.Theme", {
      *
      * @param {String} mode The mode that should be used as the default mode.
      */
-    applyDefaultMode : function (mode) {
+    applyDefaultMode: function (mode) {
 
         const
             me = this,
@@ -256,12 +256,13 @@ Ext.define("coon.core.Theme", {
      * Queries the key in the current mode set for this theme.
      *
      * @param {Mixed} key The key for which a value from this theme should
-     * be returned.
+     * be returned. If left empty, all key/value pairs for the current mode
+     * will be returned
      *
      * @return {Mixed} undefined if no value was found for the specified key,
      * otherwise the existing value.
      */
-    get : function (key) {
+    get: function (key) {
 
         const
             me = this,
@@ -272,7 +273,7 @@ Ext.define("coon.core.Theme", {
             return undefined;
         }
 
-        return modes[mode].config[key];
+        return key ? modes[mode].config[key] : modes[mode].config;
     },
 
     
@@ -286,7 +287,7 @@ Ext.define("coon.core.Theme", {
      *
      * @return {coon.core.Theme} this
      */
-    set : function (key, value) {
+    set: function (key, value) {
 
         const
             me = this,
@@ -301,7 +302,7 @@ Ext.define("coon.core.Theme", {
     },
 
 
-    privates : {
+    privates: {
         /**
          * Queries the entries of #modes and returns the first one which has its
          * "default"-property set to true.
@@ -312,7 +313,7 @@ Ext.define("coon.core.Theme", {
          * @return {Undefined|String} returns undefined if no default mode was found, otherwise
          * the name of the entry of the defualt mode.
          */
-        findDefaultMode : function () {
+        findDefaultMode: function () {
             const
                 me = this,
                 modes = me.getModes();

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,27 +23,27 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
+describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
 
     const TIMEOUT = 1250;
 
     Ext.define("TespropMock", {
-        extend : "Ext.data.Model",
-        fields : [{
-            name : "testPropForIndexLookup",
-            type : "int"
+        extend: "Ext.data.Model",
+        fields: [{
+            name: "testPropForIndexLookup",
+            type: "int"
         }]
     });
 
     var prop = function (testProperty) {
             return Ext.create("TespropMock", {
-                testPropForIndexLookup : testProperty
+                testPropForIndexLookup: testProperty
             });
         },
         createFeeder = function (cfg) {
 
             return Ext.create("coon.core.data.pageMap.PageMapFeeder", {
-                pageMap : createPageMap(cfg)
+                pageMap: createPageMap(cfg)
             });
         },
         createPageMap = function (cfg) {
@@ -51,19 +51,19 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
             var store;
 
             store = Ext.create("Ext.data.BufferedStore", {
-                autoLoad : true,
-                pageSize : 25,
-                fields : ["id", "testProp", "testPropForIndexLookup"],
+                autoLoad: true,
+                pageSize: 25,
+                fields: ["id", "testProp", "testPropForIndexLookup"],
                 sorters: cfg.sorters,
-                proxy : {
-                    type : "rest",
-                    url  : "cn_core/fixtures/PageMapItems",
-                    extraParams : {
-                        empty : cfg.empty
+                proxy: {
+                    type: "rest",
+                    url: "cn_core/fixtures/PageMapItems",
+                    extraParams: {
+                        empty: cfg.empty
                     },
-                    reader : {
-                        type         : "json",
-                        rootProperty : "data"
+                    reader: {
+                        type: "json",
+                        rootProperty: "data"
                     }
                 }
             });
@@ -84,7 +84,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
     t.requireOk("coon.core.fixtures.sim.ItemSim", function (){
 
 
-        t.it("prerequisites", function (t) {
+        t.it("prerequisites", (t) => {
 
             let ls = Ext.create("coon.core.data.pageMap.IndexLookup");
 
@@ -93,11 +93,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - exceptions", function (t) {
+        t.it("scanRangeForIndex() - exceptions", (t) => {
 
             var sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = Ext.emptyFn,
                 property  = "testPropForIndexLookup",
@@ -114,11 +114,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort ASC", function (t) {
+        t.it("scanRangeForIndex() - sort ASC", (t) => {
 
             var sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testProp", direction : "ASC"}]
+                    sorters: [{property: "testProp", direction: "ASC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup",
@@ -138,11 +138,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort DESC - page 1 (1)", function (t) {
+        t.it("scanRangeForIndex() - sort DESC - page 1 (1)", (t) => {
 
             var sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -162,11 +162,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort DESC - page 1 (2)", function (t) {
+        t.it("scanRangeForIndex() - sort DESC - page 1 (2)", (t) => {
 
             var sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -181,11 +181,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort DESC - page 2 - 4", function (t) {
+        t.it("scanRangeForIndex() - sort DESC - page 2 - 4", (t) => {
 
             var sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -206,12 +206,12 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort ASC - page 1", function (t) {
+        t.it("scanRangeForIndex() - sort ASC - page 1", (t) => {
 
             var dir    = "ASC",
                 sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : dir}]
+                    sorters: [{property: "testPropForIndexLookup", direction: dir}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -232,12 +232,12 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort ASC - page 2 - 4", function (t) {
+        t.it("scanRangeForIndex() - sort ASC - page 2 - 4", (t) => {
 
             var dir    = "ASC",
                 sorter = createSorter(),
                 feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : dir}]
+                    sorters: [{property: "testPropForIndexLookup", direction: dir}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -258,10 +258,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort DESC - page 1 (2)", function (t) {
+        t.it("scanRangeForIndex() - sort DESC - page 1 (2)", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -276,10 +276,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - sort DESC - page 2 - 4", function (t) {
+        t.it("scanRangeForIndex() - sort DESC - page 2 - 4", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -300,10 +300,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - ignoreId ASC", function (t) {
+        t.it("scanRangeForIndex() - ignoreId ASC", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "ASC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -317,10 +317,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - ignoreId DESC", function (t) {
+        t.it("scanRangeForIndex() - ignoreId DESC", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
@@ -334,12 +334,12 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - exception", function (t) {
+        t.it("findInsertIndex() - exception", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [
-                        {property : "testPropForIndexLookup", direction : "DESC"},
-                        {property : "foo", direction : "DESC"}
+                    sorters: [
+                        {property: "testPropForIndexLookup", direction: "DESC"},
+                        {property: "foo", direction: "DESC"}
                     ]
                 }),
                 exc;
@@ -353,10 +353,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - sort DESC -  between page 1 and page 3, page 2 not available", function (t) {
+        t.it("findInsertIndex() - sort DESC -  between page 1 and page 3, page 2 not available", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 pageMap = feeder.getPageMap();
 
@@ -376,10 +376,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - sort DESC - last page available", function (t) {
+        t.it("findInsertIndex() - sort DESC - last page available", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
             t.waitForMs(250, function () {
@@ -398,10 +398,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - sort DESC - last page not available", function (t) {
+        t.it("findInsertIndex() - sort DESC - last page not available", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
             t.waitForMs(TIMEOUT, function () {
@@ -414,10 +414,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - sort DESC -  page 1 not available", function (t) {
+        t.it("findInsertIndex() - sort DESC -  page 1 not available", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
             t.waitForMs(250, function () {
@@ -434,10 +434,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - feed (ASC) - A", function (t) {
+        t.it("scanRangeForIndex() - feed (ASC) - A", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "ASC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
                 }),
                 cmp       = compareFunction,
                 pageMap   = feeder.getPageMap(),
@@ -477,10 +477,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - feed (ASC)  - B", function (t) {
+        t.it("scanRangeForIndex() - feed (ASC)  - B", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "ASC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
                 }),
                 cmp       = compareFunction,
                 pageMap   = feeder.getPageMap(),
@@ -519,10 +519,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - feed (DESC) - C", function (t) {
+        t.it("scanRangeForIndex() - feed (DESC) - C", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 pageMap   = feeder.getPageMap(),
@@ -563,10 +563,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("scanRangeForIndex() - feed (DESC) - D", function (t) {
+        t.it("scanRangeForIndex() - feed (DESC) - D", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 pageMap   = feeder.getPageMap(),
@@ -607,10 +607,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - A", function (t) {
+        t.it("findInsertIndex() - Feeder - A", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 pageMap = feeder.getPageMap();
 
@@ -632,10 +632,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - B", function (t) {
+        t.it("findInsertIndex() - Feeder - B", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
             t.waitForMs(250, function () {
@@ -652,10 +652,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - C", function (t) {
+        t.it("findInsertIndex() - Feeder - C", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                sorters : [{property : "testPropForIndexLookup", direction : "ASC"}]
+                sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
             t.waitForMs(250, function () {
@@ -675,7 +675,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - D", function (t) {
+        t.it("findInsertIndex() - Feeder - D", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -691,7 +691,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - E", function (t) {
+        t.it("findInsertIndex() - Feeder - E", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -710,7 +710,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - F (1)", function (t) {
+        t.it("findInsertIndex() - Feeder - F (1)", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -733,7 +733,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - F (2)", function (t) {
+        t.it("findInsertIndex() - Feeder - F (2)", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -754,7 +754,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - G (1)", function (t) {
+        t.it("findInsertIndex() - Feeder - G (1)", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -777,7 +777,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - Feeder - G (2)", function (t) {
+        t.it("findInsertIndex() - Feeder - G (2)", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
@@ -801,10 +801,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - no sorter", function (t) {
+        t.it("findInsertIndex() - no sorter", (t) => {
 
             var sorter = createSorter(), exc,
-                feeder = createFeeder({empty : true});
+                feeder = createFeeder({empty: true});
 
             t.waitForMs(250, function () {
                 try{sorter.findInsertIndex(prop(1), feeder);}catch(e){exc = e;}
@@ -817,11 +817,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("findInsertIndex() - empty store", function (t) {
+        t.it("findInsertIndex() - empty store", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                empty   : true,
-                sorters : [{property: "testPropForIndexLookup", direction: "ASC"}]
+                empty: true,
+                sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
             t.waitForMs(250, function () {
@@ -832,10 +832,10 @@ describe("coon.core.data.pageMap.IndexLookupTest", function (t) {
         });
 
 
-        t.it("lib-cn_core#4", function (t) {
+        t.it("extjs-lib-core#4", (t) => {
 
             var sorter = createSorter(), feeder = createFeeder({
-                    sorters : [{property : "testPropForIndexLookup", direction : "DESC"}]
+                    sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
                 }),
                 cmp       = compareFunction,
                 pageMap   = feeder.getPageMap(),

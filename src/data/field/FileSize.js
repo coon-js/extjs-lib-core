@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -49,18 +49,18 @@
  */
 Ext.define("coon.core.data.field.FileSize", {
 
-    extend : "Ext.data.field.Field",
+    extend: "Ext.data.field.Field",
 
-    alias : "data.field.cn_core-datafieldfilesize",
+    alias: "data.field.cn_core-datafieldfilesize",
 
-    sortType : "asInt",
+    sortType: "asInt",
 
     /**
      * @inheritdoc
      *
      * @see {Ext.util.Format#fileSize}
      */
-    convert : Ext.util.Format.fileSize
+    convert: Ext.util.Format.fileSize
 
 
 });

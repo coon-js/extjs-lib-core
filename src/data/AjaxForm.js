@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,19 +48,19 @@
  */
 Ext.define("coon.core.data.AjaxForm", {
 
-    extend : "Ext.data.Connection",
+    extend: "Ext.data.Connection",
 
-    requires : [
+    requires: [
         "coon.core.data.request.FormData"
     ],
 
-    singleton : true,
+    singleton: true,
 
     /**
      * @property {Boolean} autoAbort
      * Whether a new request should abort any pending requests.
      */
-    autoAbort : false,
+    autoAbort: false,
 
 
     /**
@@ -68,7 +68,7 @@ Ext.define("coon.core.data.AjaxForm", {
      *
      * Makes sure the data prepared for the request is set to "formData".
      */
-    setOptions : function (options, scope) {
+    setOptions: function (options, scope) {
 
         var me         = this,
             newOptions = me.callParent(arguments);

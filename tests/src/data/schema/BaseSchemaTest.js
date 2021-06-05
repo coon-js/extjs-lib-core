@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,20 +23,20 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.schema.BaseSchemaTest", function (t) {
+describe("coon.core.data.schema.BaseSchemaTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should throw exception when no id configured", function (t) {
+    t.it("Should throw exception when no id configured", (t) => {
 
         var exc;
 
         try {
             Ext.create("coon.core.data.schema.BaseSchema", {
-                namespace : "mynamespace"
+                namespace: "mynamespace"
             });
         } catch (e) {
             exc = e;
@@ -48,14 +48,14 @@ describe("coon.core.data.schema.BaseSchemaTest", function (t) {
         t.expect(exc.id).toBeUndefined();
     });
 
-    t.it("Should throw exception when id configured to \"default\"", function (t) {
+    t.it("Should throw exception when id configured to \"default\"", (t) => {
 
         var exc;
 
         try {
             Ext.create("coon.core.data.schema.BaseSchema", {
-                id        : "default",
-                namespace : "mynamespace"
+                id: "default",
+                namespace: "mynamespace"
             });
         } catch (e) {
             exc = e;
@@ -66,13 +66,13 @@ describe("coon.core.data.schema.BaseSchemaTest", function (t) {
         t.expect(exc.id).toBe("default");
     });
 
-    t.it("Should throw exception when namespace is not configured", function (t) {
+    t.it("Should throw exception when namespace is not configured", (t) => {
 
         var exc;
 
         try {
             Ext.create("coon.core.data.schema.BaseSchema", {
-                id : "myId"
+                id: "myId"
             });
         } catch (e) {
             exc = e;
@@ -87,11 +87,11 @@ describe("coon.core.data.schema.BaseSchemaTest", function (t) {
     /**
      * Test create
      */
-    t.it("Should create an instance of coon.core.data.schema.BaseSchema", function (t) {
+    t.it("Should create an instance of coon.core.data.schema.BaseSchema", (t) => {
 
         var schema = Ext.create("coon.core.data.schema.BaseSchema", {
-            id        : "myId",
-            namespace : "myNamespace"
+            id: "myId",
+            namespace: "myNamespace"
         });
 
         t.expect(schema instanceof coon.core.data.schema.BaseSchema).toBeTruthy();

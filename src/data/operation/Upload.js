@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,23 +38,23 @@
  */
 Ext.define("coon.core.data.operation.Upload", {
 
-    extend : "Ext.data.operation.Create",
+    extend: "Ext.data.operation.Create",
 
-    alias : "data.operation.cn_core-dataoperationupload",
+    alias: "data.operation.cn_core-dataoperationupload",
 
-    config : {
+    config: {
 
         /**
          * @cfg {Function} progressCallback
          * The callback for the progress-event of an ongoing upload.
          */
-        progressCallback : undefined,
+        progressCallback: undefined,
 
         /**
          * @cfg {Object} progressScope
          * The scope for the progressCallback.
          */
-        progressScope : undefined
+        progressScope: undefined
 
     }
 

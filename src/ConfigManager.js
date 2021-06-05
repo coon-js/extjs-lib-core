@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2020-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,17 +39,19 @@
  */
 Ext.define("coon.core.ConfigManager", {
 
-    requires : [
-        "coon.core.Util"
+    requires: [
+        // @define l8.core
+        "l8.core",
+        "coon.core.exception.AlreadyExistsException"
     ],
 
-    singleton : true,
+    singleton: true,
 
     /**
      * @type {Object} object
      * @private
      */
-    configs : null,
+    configs: null,
 
 
     /**
@@ -61,9 +63,9 @@ Ext.define("coon.core.ConfigManager", {
      * @return {Object} The config applied for the domain, or null
      * if the domain was not a valid string
      *
-     * @throws if "domain" was already registered
+     * @throws {coon.core.exception.AlreadyExistsException} if "domain" was already registered
      */
-    register : function (domain, config) {
+    register: function (domain, config) {
 
         const me = this;
 
@@ -76,7 +78,7 @@ Ext.define("coon.core.ConfigManager", {
         }
 
         if (me.configs[domain]) {
-            Ext.raise("domain \"" + domain + "\" was already registered.");
+            throw new coon.core.exception.AlreadyExistsException("domain \"" + domain + "\" was already registered.");
         }
 
         me.configs[domain] = config;
@@ -98,7 +100,7 @@ Ext.define("coon.core.ConfigManager", {
      * otherwise the (default) value. Returns the complete configuration for the domain if only
      * the domain was specified.
      */
-    get : function (domain, key, defaultValue) {
+    get: function (domain, key, defaultValue) {
 
         const me = this;
 
@@ -109,7 +111,7 @@ Ext.define("coon.core.ConfigManager", {
         if (arguments.length === 1) {
             return me.configs[domain];
         }
-        const value = coon.core.Util.unchain(key, me.configs[domain]);
+        const value = l8.core.unchain(key, me.configs[domain]);
 
         if (value === undefined) {
             return defaultValue;

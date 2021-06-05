@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,13 +55,13 @@
  */
 Ext.define("coon.core.data.pageMap.IndexRange", {
 
-    requires : [
+    requires: [
         "coon.core.data.pageMap.RecordPosition"
     ],
 
-    config : {
-        start : undefined,
-        end   : undefined
+    config: {
+        start: undefined,
+        end: undefined
     },
 
 
@@ -80,7 +80,7 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
      * thrown by coon.core.data.pageMap.RecordPosition#create, or if
      * start is not leass than or not equal to end
      */
-    constructor : function (cfg) {
+    constructor: function (cfg) {
 
         var me = this;
 
@@ -88,15 +88,15 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
 
         if (!Object.prototype.hasOwnProperty.call(cfg,"start")) {
             Ext.raise({
-                msg : "'start' must be specified",
-                cfg : cfg
+                msg: "'start' must be specified",
+                cfg: cfg
             });
         }
 
         if (!Object.prototype.hasOwnProperty.call(cfg,"end")) {
             Ext.raise({
-                msg : "'end' must be specified",
-                cfg : cfg
+                msg: "'end' must be specified",
+                cfg: cfg
             });
         }
 
@@ -105,9 +105,9 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
         if (!me.getStart().lessThan(me.getEnd()) &&
             !me.getStart().equalTo(me.getEnd())) {
             Ext.raise({
-                msg   : "'start' must be less than or equal to 'end'",
-                start : cfg.start,
-                end   : cfg.end
+                msg: "'start' must be less than or equal to 'end'",
+                start: cfg.start,
+                end: cfg.end
             });
         }
     },
@@ -123,14 +123,14 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
      * @throws if start was already set, or any other exception thrown
      * by coon.core.data.pageMap.RecordPosition#create
      */
-    applyStart : function (start) {
+    applyStart: function (start) {
 
         var me = this;
 
         if (me.getStart() !== undefined) {
             Ext.raise({
-                msg   : "'start' was already defined",
-                start : me.getStart()
+                msg: "'start' was already defined",
+                start: me.getStart()
             });
         }
 
@@ -153,14 +153,14 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
      * @throws if end was already set, or any other exception thrown
      * by coon.core.data.pageMap.RecordPosition#create
      */
-    applyEnd : function (end) {
+    applyEnd: function (end) {
 
         var me = this;
 
         if (me.getEnd() !== undefined) {
             Ext.raise({
-                msg : "'end' was already defined",
-                end : me.getEnd()
+                msg: "'end' was already defined",
+                end: me.getEnd()
             });
         }
 
@@ -185,15 +185,15 @@ Ext.define("coon.core.data.pageMap.IndexRange", {
      * coon.core.data.pageMap.RecordPosition
      *
      */
-    contains : function (target) {
+    contains: function (target) {
 
         var me = this, start, end, targets = [].concat(target), i, len;
 
         for (i = 0, len = targets.length; i < len; i++) {
             if (!(targets[i] instanceof coon.core.data.pageMap.RecordPosition)) {
                 Ext.raise({
-                    msg     : "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
-                    targets : targets
+                    msg: "'target' must be an instance of coon.core.data.pageMap.RecordPosition",
+                    targets: targets
                 });
             }
         }

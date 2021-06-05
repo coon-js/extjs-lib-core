@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -81,21 +81,21 @@
  */
 Ext.define("coon.core.data.field.EmailAddress", {
 
-    extend : "Ext.data.field.Field",
+    extend: "Ext.data.field.Field",
 
-    alias : "data.field.cn_core-datafieldemailaddress",
+    alias: "data.field.cn_core-datafieldemailaddress",
 
     /**
      * @cfg {Array=[]} defaultValue
      * Set in the constructor.
      */
-    defaultValue : null,
+    defaultValue: null,
 
 
     /**
      * @inheritdoc
      */
-    convert : function (v) {
+    convert: function (v) {
 
         if (!Ext.isString(v) && !Ext.isObject(v)) {
             return null;
@@ -103,8 +103,8 @@ Ext.define("coon.core.data.field.EmailAddress", {
 
         if (Ext.isString(v)) {
             return {
-                address : v,
-                name    : v
+                address: v,
+                name: v
             };
         }
 
@@ -125,7 +125,7 @@ Ext.define("coon.core.data.field.EmailAddress", {
     /**
      * @inheritdoc
      */
-    serialize : function (v) {
+    serialize: function (v) {
 
         if (!Ext.isObject(v)) {
             return null;
@@ -152,7 +152,7 @@ Ext.define("coon.core.data.field.EmailAddress", {
      *      //value2:
      *      {name : 'peter', address :'peterparker@dailynews.com'}
      */
-    compare : function (value1, value2) {
+    compare: function (value1, value2) {
 
         if (!Ext.isObject(value1) && !Ext.isObject(value2)) {
             return 0;

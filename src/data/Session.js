@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,9 +29,9 @@
  */
 Ext.define("coon.core.data.Session", {
 
-    extend : "Ext.data.Session",
+    extend: "Ext.data.Session",
 
-    requires : [
+    requires: [
         "Ext.data.session.BatchVisitor"
     ],
 
@@ -39,7 +39,7 @@ Ext.define("coon.core.data.Session", {
      * @cfg {String=Ext.data.session.BatchVisitor } batchVisitorClassName
      * The class name of the BatchVisitor to use with this session.
      */
-    batchVisitorClassName : "Ext.data.session.BatchVisitor",
+    batchVisitorClassName: "Ext.data.session.BatchVisitor",
 
 
     /**
@@ -58,7 +58,7 @@ Ext.define("coon.core.data.Session", {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Creates and returns an instance of the class name specified
@@ -71,7 +71,7 @@ Ext.define("coon.core.data.Session", {
          * loaded or if the class specified in #batchVisitorClassName is not of type
          * Ext.data.session.BatchVisitor
          */
-        createVisitor : function () {
+        createVisitor: function () {
 
             var me  = this,
                 cls = me.batchVisitorClassName,
@@ -81,9 +81,9 @@ Ext.define("coon.core.data.Session", {
             if (!Ext.ClassManager.get(cls)) {
                 cn = Ext.getClassName(me);
                 Ext.raise({
-                    sourceClass           : cn,
-                    batchVisitorClassName : cls,
-                    msg                   : cn + " requires batchVisitorClassName to be loaded."
+                    sourceClass: cn,
+                    batchVisitorClassName: cls,
+                    msg: cn + " requires batchVisitorClassName to be loaded."
                 });
             }
 
@@ -92,9 +92,9 @@ Ext.define("coon.core.data.Session", {
             if (!(inst instanceof Ext.data.session.BatchVisitor)) {
                 cn = Ext.getClassName(me);
                 Ext.raise({
-                    sourceClass           : cn,
-                    batchVisitorClassName : cls,
-                    msg                   : cls +
+                    sourceClass: cn,
+                    batchVisitorClassName: cls,
+                    msg: cls +
                         " needs to inherit from Ext.data.session.BatchVisitor."
                 });
             }

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,7 +29,7 @@
 Ext.define("coon.core.util.Date", {
 
 
-    singleton : true,
+    singleton: true,
 
     /**
      * Returns a human readable date providing the written weekday and the time
@@ -40,7 +40,7 @@ Ext.define("coon.core.util.Date", {
      *
      * @return {String}
      */
-    getHumanReadableDate : function (date) {
+    getHumanReadableDate: function (date) {
 
         const today = new Date();
 

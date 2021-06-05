@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@
  */
 Ext.define("coon.core.data.pageMap.IndexLookup", {
 
-    requires : [
+    requires: [
         "coon.core.data.pageMap.PageMapUtil"
     ],
 
@@ -124,7 +124,7 @@ Ext.define("coon.core.data.pageMap.IndexLookup", {
      *
      * @throws if more than one sorter was configured
      */
-    findInsertIndex : function (record, pageMapFeeder) {
+    findInsertIndex: function (record, pageMapFeeder) {
 
         const
             me          = this,
@@ -139,8 +139,8 @@ Ext.define("coon.core.data.pageMap.IndexLookup", {
 
         if (sorters.length !== 1) {
             Ext.raise({
-                msg     : "there must be one sorter configured for the PageMap's store",
-                sorters : sorters
+                msg: "there must be one sorter configured for the PageMap's store",
+                sorters: sorters
             });
         }
 
@@ -154,8 +154,8 @@ Ext.define("coon.core.data.pageMap.IndexLookup", {
 
         if (!record.getField(property)) {
             Ext.raise({
-                msg      : "Unexpected missing field definition: \""+property+"\"",
-                property : property
+                msg: "Unexpected missing field definition: \""+property+"\"",
+                property: property
             });
         }
 
@@ -269,7 +269,7 @@ Ext.define("coon.core.data.pageMap.IndexLookup", {
      * @throws if start or end or anything in between is not available as a page
      * in the queried PageMap
      */
-    scanRangeForIndex : function (start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
+    scanRangeForIndex: function (start, end, value, property, direction, cmpFunc, ignoreId, pageMapFeeder, recordPosition) {
 
         const
             map = pageMapFeeder.getPageMap().map,
@@ -282,9 +282,9 @@ Ext.define("coon.core.data.pageMap.IndexLookup", {
         for (i = start; i <= end; i++) {
             if (!Object.prototype.hasOwnProperty.call(map, i) && !pageMapFeeder.getFeedAt(i)) {
                 Ext.raise({
-                    msg  : "page not available in PageMap and not available as Feed",
-                    page : i,
-                    map  : map
+                    msg: "page not available in PageMap and not available as Feed",
+                    page: i,
+                    map: map
                 });
             }
         }

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.util.MimeTest", function (t) {
+describe("coon.core.util.MimeTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -32,23 +32,23 @@ describe("coon.core.util.MimeTest", function (t) {
 
     t.requireOk("coon.core.util.Mime", function (){
 
-        t.it("Test isImage()", function (t) {
+        t.it("Test isImage()", (t) => {
 
             var testData = [{
-                value    : "IMAGE/",
-                expected : false
+                value: "IMAGE/",
+                expected: false
             }, {
-                value    : "IMAGE/gif",
-                expected : true
+                value: "IMAGE/gif",
+                expected: true
             }, {
-                value    : "image/foo",
-                expected : true
+                value: "image/foo",
+                expected: true
             }, {
-                value    : "IMAGE_bar",
-                expected : false
+                value: "IMAGE_bar",
+                expected: false
             }, {
-                value    : "IMAGE-PNG",
-                expected : false
+                value: "IMAGE-PNG",
+                expected: false
             }];
 
             for (var i = 0, len = testData.length; i < len; i++) {

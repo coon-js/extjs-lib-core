@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ThemeTest", function (t) {
+describe("coon.core.ThemeTest", (t) => {
 
     let themeConfig;
 
@@ -39,7 +39,10 @@ describe("coon.core.ThemeTest", function (t) {
             },
             indigo: {
                 default: true,
-                config: {}
+                config: {
+                    color: "indigo",
+                    background: "red"
+                }
             }
         };
     };
@@ -59,7 +62,7 @@ describe("coon.core.ThemeTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("functionality", function (t) {
+    t.it("functionality", (t) => {
 
         let theme = Ext.create("coon.core.Theme");
 
@@ -71,26 +74,25 @@ describe("coon.core.ThemeTest", function (t) {
 
         t.expect(theme.set("someKey", "1")).toBe(theme);
         t.expect(theme.get("someKey")).toBeUndefined();
-
     });
 
 
-    t.it("setModes()", function (t) {
+    t.it("setModes()", (t) => {
 
-        let theme = Ext.create("coon.core.Theme", {modes : themeConfig});
+        let theme = Ext.create("coon.core.Theme", {modes: themeConfig});
 
         t.expect(theme.getModes()).toEqual(themeConfig);
         t.expect(theme.getDefaultMode()).toBe("indigo");
         t.expect(theme.getMode()).toBe("indigo");
 
         let newModes = {
-            yellow : {
-                default : false,
-                config : {}
+            yellow: {
+                default: false,
+                config: {}
             },
-            light : {
-                default : false,
-                config : {}
+            light: {
+                default: false,
+                config: {}
             }
         };
 
@@ -104,9 +106,9 @@ describe("coon.core.ThemeTest", function (t) {
     });
 
 
-    t.it("setMode() / setDefaultMode()", function (t) {
+    t.it("setMode() / setDefaultMode()", (t) => {
 
-        let theme = Ext.create("coon.core.Theme", {modes : themeConfig});
+        let theme = Ext.create("coon.core.Theme", {modes: themeConfig});
 
         t.expect(theme.getMode()).toBe("indigo");
         theme.setMode("blue");
@@ -120,9 +122,9 @@ describe("coon.core.ThemeTest", function (t) {
     });
 
 
-    t.it("get() / set()", function (t) {
+    t.it("get() / set()", (t) => {
 
-        let theme = Ext.create("coon.core.Theme", {modes : themeConfig});
+        let theme = Ext.create("coon.core.Theme", {modes: themeConfig});
 
         t.expect(theme.getMode()).toBe("indigo");
 
@@ -131,5 +133,8 @@ describe("coon.core.ThemeTest", function (t) {
         t.expect(theme.set("someKey", "1")).toBe(theme);
         t.expect(theme.get("someKey")).toBe("1");
 
+        theme = Ext.create("coon.core.Theme", {modes: themeConfig});
+        t.isDeeply(theme.get(), themeConfig.indigo.config);
     });
+    
 });

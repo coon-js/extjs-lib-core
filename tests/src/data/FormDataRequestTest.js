@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.FormDataRequestTest", function (t) {
+describe("coon.core.data.FormDataRequestTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -31,14 +31,14 @@ describe("coon.core.data.FormDataRequestTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("Sanitize the FormDataRequest class", function (t) {
+    t.it("Sanitize the FormDataRequest class", (t) => {
 
         var c = Ext.create("coon.core.data.FormDataRequest", {
-            progressCallback : "foo",
+            progressCallback: "foo",
 
-            progressScope : "bar",
+            progressScope: "bar",
 
-            formData : "formData"
+            formData: "formData"
         });
 
         t.expect(c instanceof Ext.data.Request).toBe(true);
