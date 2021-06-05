@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@ describe("coon.core.FileLoaderTest", (t) => {
 
             t.isInstanceOf(coon.core.FileLoader, "coon.core.data.request.file.FileLoader");
 
-            t.isInstanceOf(coon.core.FileLoader.fileLoader, "coon.core.data.request.file.XmlHttpRequestFileLoader");
+            t.isInstanceOf(coon.core.FileLoader.fileLoader, "l8.core.request.FileLoader");
 
             const
                 RETURNMOCK = {},

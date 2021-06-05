@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ThemeManagerTest", function (t) {
+describe("coon.core.ThemeManagerTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe("coon.core.ThemeManagerTest", function (t) {
 
     t.requireOk("coon.core.ThemeManager", function () {
 
-        t.it("functionality", function (t) {
+        t.it("functionality", (t) => {
 
             const theme = Ext.create("coon.core.Theme");
 

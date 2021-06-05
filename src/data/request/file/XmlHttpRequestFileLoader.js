@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,9 +38,9 @@
 Ext.define("coon.core.data.request.file.XmlHttpRequestFileLoader", {
 
 
-    extend : "coon.core.data.request.file.FileLoader",
+    extend: "coon.core.data.request.file.FileLoader",
 
-    requires : [
+    requires: [
         "coon.core.data.request.HttpRequestException",
         "coon.core.exception.IllegalArgumentException"
     ],

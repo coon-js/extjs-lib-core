@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest_Isolated2", function (t) {
+describe("coon.core.app.ApplicationTest_Isolated2", (t) => {
 
     t.requireOk("coon.core.app.Application", () => {
         let app = null;
@@ -76,7 +76,7 @@ describe("coon.core.app.ApplicationTest_Isolated2", function (t) {
         // +----------------------------------------------------------------------------
 
 
-        t.it("Should throw an error when mainView is not loaded", function (t) {
+        t.it("Should throw an error when mainView is not loaded", (t) => {
             var exc = undefined;
 
             try {

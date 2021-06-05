@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,30 +31,30 @@
  */
 Ext.define("coon.core.data.pageMap.Operation", {
 
-    requires : [
+    requires: [
         "coon.core.data.pageMap.RecordPosition"
     ],
 
 
-    statics : {
+    statics: {
         /**
          * @type {Number}
          */
-        MOVE : 0,
+        MOVE: 0,
 
         /**
          * @type {Number}
          */
-        REMOVE : -1,
+        REMOVE: -1,
 
         /**
          * @type {Number}
          */
-        ADD : 1
+        ADD: 1
     },
 
 
-    config : {
+    config: {
         /**
          * @cfg {Object} the result for this operation.
          * Each result object must provide a success-property, whether the operation
@@ -65,12 +65,12 @@ Ext.define("coon.core.data.pageMap.Operation", {
          * REMOVE: from-RecordPosition, record
          * Some Information might not be available if success equals to false.
          */
-        result : null,
+        result: null,
 
         /**
          * @cfg {Number} type The type of this Operation, i.e. MOVE, ADD or REMOVE
          */
-        type : undefined
+        type: undefined
     },
 
 
@@ -81,7 +81,7 @@ Ext.define("coon.core.data.pageMap.Operation", {
      *
      * @throws if type is not set
      */
-    constructor : function (cfg) {
+    constructor: function (cfg) {
 
         const me = this;
 
@@ -89,8 +89,8 @@ Ext.define("coon.core.data.pageMap.Operation", {
 
         if (!Object.prototype.hasOwnProperty.call(cfg, "type")) {
             Ext.raise({
-                msg : "'type' is required for configuring this instance",
-                cfg : cfg
+                msg: "'type' is required for configuring this instance",
+                cfg: cfg
             });
         }
 
@@ -110,22 +110,22 @@ Ext.define("coon.core.data.pageMap.Operation", {
      * @throws if the type for this instance was already set, or it does not
      * equal to #MOVE, #ADD or #REMOVE
      */
-    applyType : function (type) {
+    applyType: function (type) {
 
         const me      = this,
             statics = me.statics();
 
         if ([statics.MOVE, statics.ADD, statics.REMOVE].indexOf(type) === -1) {
             Ext.raise({
-                msg  : "invalid value for 'type'",
-                type : type
+                msg: "invalid value for 'type'",
+                type: type
             });
         }
 
         if (me.getType() !== undefined) {
             Ext.raise({
-                msg  : "the 'type' for this operation was already set",
-                type : me.getType()
+                msg: "the 'type' for this operation was already set",
+                type: me.getType()
             });
         }
 
@@ -143,7 +143,7 @@ Ext.define("coon.core.data.pageMap.Operation", {
      * information in the result-object are missing. See #result.
      *
      */
-    applyResult : function (result) {
+    applyResult: function (result) {
 
         const me      = this,
             statics = me.statics(),
@@ -151,58 +151,58 @@ Ext.define("coon.core.data.pageMap.Operation", {
 
         if (type === undefined) {
             Ext.raise({
-                msg  : "Unexpected missing 'type' for this instance",
-                type : type
+                msg: "Unexpected missing 'type' for this instance",
+                type: type
             });
         }
 
         if (!Ext.isObject(result)) {
             Ext.raise({
-                msg    : "'result' must be an object",
-                result : result
+                msg: "'result' must be an object",
+                result: result
             });
         }
 
         if (me.getResult()) {
             Ext.raise({
-                msg     : "the 'result' for this operation was already set",
-                request : me.getResult()
+                msg: "the 'result' for this operation was already set",
+                request: me.getResult()
             });
         }
 
         if (!Object.prototype.hasOwnProperty.call(result,"success")) {
             Ext.raise({
-                msg    : "'success' is required for this result",
-                result : result
+                msg: "'success' is required for this result",
+                result: result
             });
         }
 
         if (Object.prototype.hasOwnProperty.call(result,"to") && !(result.to instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg : "'to' must be an instance of coon.core.data.pageMap.RecordPosition",
-                to  : result.to
+                msg: "'to' must be an instance of coon.core.data.pageMap.RecordPosition",
+                to: result.to
             });
         }
 
         if (Object.prototype.hasOwnProperty.call(result,"from") && !(result.from instanceof coon.core.data.pageMap.RecordPosition)) {
             Ext.raise({
-                msg  : "'from' must be an instance of coon.core.data.pageMap.RecordPosition",
-                from : result.from
+                msg: "'from' must be an instance of coon.core.data.pageMap.RecordPosition",
+                from: result.from
             });
         }
 
         if (Object.prototype.hasOwnProperty.call(result,"record") && !(result.record instanceof Ext.data.Model)) {
             Ext.raise({
-                msg    : "'record' must be an instance of Ext.data.Model",
-                record : result.record
+                msg: "'record' must be an instance of Ext.data.Model",
+                record: result.record
             });
         }
 
         if ([statics.MOVE, statics.REMOVE].indexOf(type) !== -1) {
             if (result.success && !Object.prototype.hasOwnProperty.call(result,"from")) {
                 Ext.raise({
-                    msg    : "'from' is required for this result",
-                    result : result
+                    msg: "'from' is required for this result",
+                    result: result
                 });
             }
         }
@@ -220,8 +220,8 @@ Ext.define("coon.core.data.pageMap.Operation", {
         if ([statics.MOVE, statics.REMOVE, statics.ADD].indexOf(type) !== -1) {
             if (!Object.prototype.hasOwnProperty.call(result,"record")) {
                 Ext.raise({
-                    msg    : "'record' is required for this result",
-                    result : result
+                    msg: "'record' is required for this result",
+                    result: result
                 });
             }
         }

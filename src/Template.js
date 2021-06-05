@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,13 +39,12 @@
  */
 Ext.define("coon.core.Template", {
 
-    singleton : true,
+    singleton: true,
 
-    requires : [
-        "coon.core.Util",
-        "coon.core.FileLoader",
-        "coon.core.template.TemplateException",
-        "coon.core.template.javaScript.StringTemplate"
+    requires: [
+        // @define l8.template.esix.StringTemplate
+        "l8.template.esix.StringTemplate",
+        "coon.core.FileLoader"
     ],
 
     /**
@@ -68,7 +67,7 @@ Ext.define("coon.core.Template", {
         "use strict";
         const me = this;
 
-        me.templateClass = coon.core.Util.unchain("coon.core.template.javaScript.StringTemplate");
+        me.templateClass = l8.template.esix.StringTemplate;
     },
 
 
@@ -80,9 +79,9 @@ Ext.define("coon.core.Template", {
      * @param {Boolean=true} cache True to cache the resulting load operation and to prevent further
      * loading of the same file
      *
-     * @return {Promise.<coon.core.template.javaScript.Template>}
+     * @return {Promise.<l8.template.esix.Template>}
      *
-     * @throws {coon.core.template.TemplateException} if any exception occurs
+     * @throws {Exception} if any exception occurs
      */
     async load (url, cache) {
         "use strict";
@@ -108,7 +107,7 @@ Ext.define("coon.core.Template", {
             }
             return inst;
         } catch (e) {
-            throw new coon.core.template.TemplateException(
+            throw new Error(
                 `An error occured while trying to load the template from ${url}`, e
             );
         }

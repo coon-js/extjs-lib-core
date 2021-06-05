@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.AjaxFormTest", function (t) {
+describe("coon.core.data.AjaxFormTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe("coon.core.data.AjaxFormTest", function (t) {
 
     t.requireOk("coon.core.data.AjaxForm", function () {
 
-        t.it("Sanitize the AjaxForm class", function (t) {
+        t.it("Sanitize the AjaxForm class", (t) => {
 
             t.expect(
                 coon.core.data.AjaxForm instanceof Ext.data.Connection
@@ -42,19 +42,19 @@ describe("coon.core.data.AjaxFormTest", function (t) {
         });
 
 
-        t.it("Test setOptions()", function (t) {
+        t.it("Test setOptions()", (t) => {
 
             var formData = new FormData(),
                 ret = coon.core.data.AjaxForm.setOptions({
-                    url      : "foo.bar",
-                    formData : formData
+                    url: "foo.bar",
+                    formData: formData
                 });
 
             t.expect(ret.data).toBe(formData);
         });
 
 
-        t.it("Test createRequest()", function (t) {
+        t.it("Test createRequest()", (t) => {
 
             var ret = coon.core.data.AjaxForm.createRequest({});
 

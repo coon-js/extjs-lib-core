@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -129,12 +129,13 @@ Ext.define("coon.core.app.Application",{
 
     extend: "Ext.app.Application",
 
-    requires : [
+    requires: [
+        // @define l8.core
+        "l8.core",
         "coon.core.app.ApplicationException",
         "coon.core.app.ApplicationUtil",
         "coon.core.app.PackageController",
         "coon.core.app.plugin.ApplicationPlugin",
-        "coon.core.Util",
         "coon.core.ConfigManager",
         "coon.core.Environment",
         "coon.core.env.ext.VendorBase"
@@ -218,7 +219,7 @@ Ext.define("coon.core.app.Application",{
 
         if (me.getMainView()) {
             Ext.raise({
-                msg : "mainView was already set."
+                msg: "mainView was already set."
             });
         }
 
@@ -232,13 +233,13 @@ Ext.define("coon.core.app.Application",{
 
         if (!view || Ext.Object.isEmpty(view)) {
             Ext.raise({
-                msg : "Unexpected empty value for view."
+                msg: "Unexpected empty value for view."
             });
         }
 
-        if (Ext.isString(view) && !coon.core.Util.unchain(view, window)) {
+        if (Ext.isString(view) && !l8.core.unchain(view, window)) {
             Ext.raise({
-                msg : "The class \"" + view + "\" was not loaded and cannot be used as the mainView."
+                msg: "The class \"" + view + "\" was not loaded and cannot be used as the mainView."
             });
         }
 
@@ -276,9 +277,9 @@ Ext.define("coon.core.app.Application",{
 
         if (me.getMainView()) {
             Ext.raise({
-                sourceClass : "coon.core.app.Application",
-                mainView    : me.getMainView(),
-                msg         : "coon.core.app.Application#preLaunchHookProcess cannot be run since mainView was already initialized."
+                sourceClass: "coon.core.app.Application",
+                mainView: me.getMainView(),
+                msg: "coon.core.app.Application#preLaunchHookProcess cannot be run since mainView was already initialized."
             });
         }
 
@@ -323,7 +324,7 @@ Ext.define("coon.core.app.Application",{
         var me = this;
 
         if (me.preLaunchHookProcess() !== false) {
-            me.setMainView({cn_prelaunch : true, view : me.applicationView});
+            me.setMainView({cn_prelaunch: true, view: me.applicationView});
             // this is usually done by initMainView,
             // but when the method is called, the mainview is not
             // available
@@ -424,7 +425,7 @@ Ext.define("coon.core.app.Application",{
      * @method
      * @template
      */
-    postLaunchHookProcess : Ext.emptyFn,
+    postLaunchHookProcess: Ext.emptyFn,
 
 
     /**
@@ -527,7 +528,7 @@ Ext.define("coon.core.app.Application",{
      *
      * @throws {coon.core.app.ApplicationException} if the class for the requested plugin could not be created.
      */
-    getController : function (name, preventCreate) {
+    getController: function (name, preventCreate) {
 
         const 
             me = this, 
@@ -617,7 +618,7 @@ Ext.define("coon.core.app.Application",{
      *
      * @see coon.core.app.plugin.ApplicationPlugin#run
      */
-    visitPlugins : function () {
+    visitPlugins: function () {
         const
             me = this,
             plugins = me.applicationPlugins || [];

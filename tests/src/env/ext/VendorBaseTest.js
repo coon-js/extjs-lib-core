@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.ext.VendorBaseTest", function (t) {
+describe("coon.core.env.ext.VendorBaseTest", (t) => {
 
     "use strict";
 
@@ -33,7 +33,7 @@ describe("coon.core.env.ext.VendorBaseTest", function (t) {
     t.beforeEach(function () {
 
         TMPMANIFEST = Ext.manifest;
-        Ext.manifest = {"resources" : {"path" : "foo", "shared" : "bar"}, "coon-js" : {"env" : "development"}, "packages" : {"mypackage" : {}}};
+        Ext.manifest = {"resources": {"path": "foo", "shared": "bar"}, "coon-js": {"env": "development"}, "packages": {"mypackage": {}}};
 
         vendorBase = Ext.create("coon.core.env.ext.VendorBase");
 
@@ -55,44 +55,44 @@ describe("coon.core.env.ext.VendorBaseTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("inheritance", function (t) {
+    t.it("inheritance", (t) => {
         t.isInstanceOf(vendorBase, "coon.core.env.VendorBase");
     });
 
 
-    t.it("get()", function (t) {
+    t.it("get()", (t) => {
         t.expect(vendorBase.get("manifest")).toBe(Ext.manifest);
     });
 
 
-    t.it("getEnvironment()", function (t) {
+    t.it("getEnvironment()", (t) => {
         t.expect(vendorBase.getEnvironment()).toBe(Ext);
     });
 
 
-    t.it("getManifest()", function (t) {
+    t.it("getManifest()", (t) => {
         t.expect(vendorBase.getManifest()).toBe(Ext.manifest);
     });
 
 
-    t.it("getManifest(\"coon-js\")", function (t) {
+    t.it("getManifest(\"coon-js\")", (t) => {
         t.expect(vendorBase.getManifest("coon-js")).toBe(Ext.manifest["coon-js"]);
     });
 
 
-    t.it("getPackages()", function (t) {
+    t.it("getPackages()", (t) => {
         t.expect(vendorBase.getPackages()).toBe(Ext.manifest.packages);
     });
 
 
-    t.it("getPackage()", function (t) {
+    t.it("getPackage()", (t) => {
         t.expect(vendorBase.getPackage("somepackage")).toBeUndefined();
 
         t.expect(vendorBase.getPackage("mypackage")).toBe(Ext.manifest.packages.mypackage);
     });
 
 
-    t.it("getPathForResource()", function (t) {
+    t.it("getPathForResource()", (t) => {
 
         let spy = t.spyOn(Ext, "getResourcePath");
 

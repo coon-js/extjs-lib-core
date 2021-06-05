@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest_Isolated1", function (t) {
+describe("coon.core.app.ApplicationTest_Isolated1", (t) => {
 
     t.requireOk("coon.core.app.Application", () => {
         let app = null;
@@ -43,7 +43,7 @@ describe("coon.core.app.ApplicationTest_Isolated1", function (t) {
             const manifest = {};
 
             manifest.name = "ApplicationTest";
-            manifest["coon-js"] = {env : "dev"};
+            manifest["coon-js"] = {env: "dev"};
             manifest.packages = {};
             manifest.resources = {path: "./fixtures", shared: "../bar"};
             return manifest;
@@ -74,13 +74,13 @@ describe("coon.core.app.ApplicationTest_Isolated1", function (t) {
         // |                    =~. Unit Tests .~=
         // +----------------------------------------------------------------------------
 
-        t.it("Should throw an error when mainView is not specified as string", function (t) {
+        t.it("Should throw an error when mainView is not specified as string", (t) => {
             var exc = undefined;
 
             try {
                 Ext.create("coon.core.app.Application", {
-                    name  : "test",
-                    mainView : {}
+                    name: "test",
+                    mainView: {}
                 });
 
             } catch(e) {exc = e;}

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,7 +34,7 @@
  */
 Ext.define("coon.core.data.session.SplitBatchVisitor", {
 
-    extend : "Ext.data.session.BatchVisitor",
+    extend: "Ext.data.session.BatchVisitor",
 
     /**
      * @inheritdoc
@@ -58,7 +58,7 @@ Ext.define("coon.core.data.session.SplitBatchVisitor", {
             for (var a = 0, lena = recs.length; a < lena; a++) {
                 proxy     = recs[a].getProxy();
                 operation = proxy.createOperation(ops[i].getAction(), {
-                    records : [recs[a]]
+                    records: [recs[a]]
                 });
                 operation.entityType = Ext.getClass(recs[a]);
                 nBatch.add(operation);

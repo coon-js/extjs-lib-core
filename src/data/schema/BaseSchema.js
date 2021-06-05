@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,15 +24,15 @@
  */
 
 /**
- * Base schema for lib-cn_core.
+ * Base schema for extjs-lib-core.
  * Each instance of this class needs to provide a unique id and a namespace
  * to work with.
  */
 Ext.define("coon.core.data.schema.BaseSchema", {
 
-    extend : "Ext.data.schema.Schema",
+    extend: "Ext.data.schema.Schema",
 
-    alias : "schema.cn_core-baseschema",
+    alias: "schema.cn_core-baseschema",
 
     /**
      * @inheritdoc
@@ -40,7 +40,7 @@ Ext.define("coon.core.data.schema.BaseSchema", {
      * @throws exception if id and/or namespace were not configured. if the id
      * is configured with "default", an exception will be thrown.
      */
-    constructor : function (config) {
+    constructor: function (config) {
 
         var me = this;
 
@@ -50,17 +50,17 @@ Ext.define("coon.core.data.schema.BaseSchema", {
 
         if (!config.id || (config.id + "").toLowerCase() === "default") {
             Ext.raise({
-                sourceClass : Ext.getClassName(this),
-                id          : config.id,
-                msg         : Ext.getClassName(this) +" requires id to be defined to anything other than \"default\""
+                sourceClass: Ext.getClassName(this),
+                id: config.id,
+                msg: Ext.getClassName(this) +" requires id to be defined to anything other than \"default\""
             });
         }
 
         if (!config.namespace && !me.defaultConfig.namespace) {
             Ext.raise({
-                sourceClass : Ext.getClassName(this),
-                namespace   : config.namespace,
-                msg         : Ext.getClassName(this) +" requires property \"namespace\" to be defined, either as class-property or constructor argument"
+                sourceClass: Ext.getClassName(this),
+                namespace: config.namespace,
+                msg: Ext.getClassName(this) +" requires property \"namespace\" to be defined, either as class-property or constructor argument"
             });
         }
 

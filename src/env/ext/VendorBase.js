@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,10 +42,11 @@
  */
 Ext.define("coon.core.env.ext.VendorBase", {
 
-    extend : "coon.core.env.VendorBase",
+    extend: "coon.core.env.VendorBase",
 
-    requires : [
-        "coon.core.Util",
+    requires: [
+        // @define l8.core
+        "l8.core",
         "Ext.Package"
     ],
 
@@ -54,7 +55,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     get (key) {
-        return coon.core.Util.unchain(key, this.getEnvironment());
+        return l8.core.unchain(key, this.getEnvironment());
     },
 
 
@@ -78,7 +79,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getManifest (key) {
-        return key ? coon.core.Util.unchain(key, Ext.manifest) : Ext.manifest;
+        return key ? l8.core.unchain(key, Ext.manifest) : Ext.manifest;
     },
 
 
@@ -86,7 +87,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackage (packageName) {
-        return coon.core.Util.unchain("packages." + packageName, this.getManifest());
+        return l8.core.unchain("packages." + packageName, this.getManifest());
     },
 
 
@@ -94,7 +95,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackages () {
-        return coon.core.Util.unchain("packages", this.getManifest());
+        return l8.core.unchain("packages", this.getManifest());
     },
 
 

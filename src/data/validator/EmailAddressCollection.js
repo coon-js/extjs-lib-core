@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,24 +31,24 @@
  */
 Ext.define("coon.core.data.validator.EmailAddressCollection", {
 
-    extend : "Ext.data.validator.Validator",
+    extend: "Ext.data.validator.Validator",
 
-    alias : "data.validator.cn_core-datavalidatoremailaddresscollection",
+    alias: "data.validator.cn_core-datavalidatoremailaddresscollection",
 
-    type : "cn_core-datavalidatoremailaddresscollection",
+    type: "cn_core-datavalidatoremailaddresscollection",
 
-    config : {
+    config: {
         /**
          * @cfg {String} message
          * The error message to return when the value is invalid.
          */
-        message : "Must be an array of objects containing an address property.",
+        message: "Must be an array of objects containing an address property.",
 
         /**
          * @cfg {Boolean} allowEmpty
          * `true` to allow empty array [] as a valid value.
          */
-        allowEmpty : false
+        allowEmpty: false
     },
 
 

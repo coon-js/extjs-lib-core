@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest", function (t) {
+describe("coon.core.app.ApplicationTest", (t) => {
 
     const TIMEOUT = 250;
 
@@ -47,23 +47,23 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
     const defineControllerMocks = function () {
         Ext.define("coon.test.app.mock.app.MockCtrlTrue", {
-            extend : "coon.core.app.PackageController",
-            preLaunchHook : function () {
+            extend: "coon.core.app.PackageController",
+            preLaunchHook: function () {
                 MOCKCTRLORDER.push("MockCtrlTrue");
                 return true;
             }
         });
         Ext.define("coon.test.app.mock.app.MockCtrlFalse", {
-            extend : "coon.core.app.PackageController",
-            preLaunchHook : function () {
+            extend: "coon.core.app.PackageController",
+            preLaunchHook: function () {
                 MOCKCTRLORDER.push("MockCtrlFalse");
                 return false;
             }
         });
 
         Ext.define("coon.test.app.mock.app.MockCtrlUndefined", {
-            extend : "coon.core.app.PackageController",
-            preLaunchHook : function () {
+            extend: "coon.core.app.PackageController",
+            preLaunchHook: function () {
                 MOCKCTRLORDER.push("MockCtrlUndefined");
                 return undefined;
             }
@@ -75,31 +75,31 @@ describe("coon.core.app.ApplicationTest", function (t) {
         const manifest = {};
 
         manifest.name = "ApplicationTest";
-        manifest["coon-js"] = {env : "dev"};
+        manifest["coon-js"] = {env: "dev"};
         manifest.packages = {
-            "p_foo" : {
-                included : false,
-                isLoaded : false,
-                namespace : "foo",
-                "coon-js" : {package  : {controller : true}}
+            "p_foo": {
+                included: false,
+                isLoaded: false,
+                namespace: "foo",
+                "coon-js": {package: {controller: true}}
             },
-            "p_bar" : {
-                included : true,
-                isLoaded : false,
-                namespace : "bar",
-                "coon-js" : {package  : {controller : true}}
+            "p_bar": {
+                included: true,
+                isLoaded: false,
+                namespace: "bar",
+                "coon-js": {package: {controller: true}}
             },
-            "p_foobar" : {
-                included : false,
-                isLoaded : false,
-                namespace : "foobar",
-                "cs" : {package  : {controller : true}}
+            "p_foobar": {
+                included: false,
+                isLoaded: false,
+                namespace: "foobar",
+                "cs": {package: {controller: true}}
             },
-            "t_snafu" : {
-                included : false,
-                isLoaded : false,
-                namespace : "snafu",
-                "coon-js" : {package  : {controller : true}}
+            "t_snafu": {
+                included: false,
+                isLoaded: false,
+                namespace: "snafu",
+                "coon-js": {package: {controller: true}}
             }
         };
         manifest.resources = {path: "./fixtures", shared: "../bar"};
@@ -182,8 +182,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
 
             let app = Ext.create("coon.core.app.Application", {
-                name : "test",
-                mainView : "Ext.Panel"
+                name: "test",
+                mainView: "Ext.Panel"
             });
 
             t.isInstanceOf(coon.core.Environment.getVendorBase(), "coon.core.env.ext.VendorBase");
@@ -198,8 +198,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
 
 
             var w = Ext.create("coon.test.app.mock.ApplicationMock2", {
-                name        : "test",
-                controllers : [
+                name: "test",
+                controllers: [
                     "coon.test.app.mock.PackageControllerMock"
                 ]
             });
@@ -225,10 +225,10 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("postLaunchHookProcess should be Ext.emptyFn", function (t) {
+        t.it("postLaunchHookProcess should be Ext.emptyFn", (t) => {
             var w = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Panel"
+                name: "test",
+                mainView: "Ext.Panel"
             });
 
             t.expect(w.postLaunchHookProcess).toBe(Ext.emptyFn);
@@ -237,11 +237,11 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should not create the mainView at first, then call launch() to make sure it is created", function (t) {
+        t.it("Should not create the mainView at first, then call launch() to make sure it is created", (t) => {
             var w = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     "coon.test.app.mock.PackageControllerMock"
                 ]
             });
@@ -253,11 +253,11 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should not create the mainView with controllers", function (t) {
+        t.it("Should not create the mainView with controllers", (t) => {
             var w = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     "coon.test.app.mock.PackageControllerMock"
                 ]
             });
@@ -267,12 +267,12 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should create the mainView with controllers", function (t) {
+        t.it("Should create the mainView with controllers", (t) => {
 
             var w = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     "coon.core.app.PackageController"
                 ]
             });
@@ -283,11 +283,11 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should throw an error when preLaunchHookProcess is triggered when mainView was created.", function (t) {
+        t.it("Should throw an error when preLaunchHookProcess is triggered when mainView was created.", (t) => {
             var w = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     "coon.core.app.PackageController"
                 ]
             });
@@ -305,14 +305,14 @@ describe("coon.core.app.ApplicationTest", function (t) {
             w = null;
         });
 
-        // @see https://github.com/conjoon/lib-cn_core/issues/1
-        // @see https://github.com/coon-js/lib-cn_core/issues/5
-        t.it("Test changes regarding lib-cn_core#5", function (t) {
+        // @see https://github.com/conjoon/extjs-lib-core/issues/1
+        // @see https://github.com/coon-js/extjs-lib-core/issues/5
+        t.it("Test changes regarding extjs-lib-core#5", (t) => {
 
             var app = Ext.create("coon.core.app.Application", {
-                    name     : "test",
-                    mainView : "Ext.Panel",
-                    controllers : [
+                    name: "test",
+                    mainView: "Ext.Panel",
+                    controllers: [
                         "coon.test.app.mock.PackageControllerMock"
                     ]
                 }),
@@ -335,7 +335,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
             resumed = 0;
             stopped = 0;
 
-            stack   = [{stop:function (){stopped++;}}, {stop:function (){stopped++;}}, {resume : function (){resumed++;}}];
+            stack   = [{stop: function (){stopped++;}}, {stop: function (){stopped++;}}, {resume: function (){resumed++;}}];
             t.expect(app.releaseLastRouteAction(stack)).toBe(true);
             t.expect(stopped).toBe(2);
             t.expect(stack).toEqual([]);
@@ -356,14 +356,14 @@ describe("coon.core.app.ApplicationTest", function (t) {
             // +---------------------------------------------
             // | shouldPackageRoute()
             // +---------------------------------------------
-            ctrlMock = {isActionRoutable : function (){return "A";}};
+            ctrlMock = {isActionRoutable: function (){return "A";}};
             t.expect(app.shouldPackageRoute(ctrlMock, {})).toBe("A");
 
             // +---------------------------------------------
             // | shouldPackageRoute()
             // +---------------------------------------------
             resumed = 0;
-            app.routeActionStack = [{resume : function (){resumed++;}}];
+            app.routeActionStack = [{resume: function (){resumed++;}}];
             app.launch();
             t.expect(app.routeActionStack).toEqual([]);
             t.expect(resumed).toBe(1);
@@ -382,8 +382,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
             let exc;
 
             let app = Ext.create("coon.core.app.Application", {
-                name     : "test",
-                mainView : "Ext.Panel"
+                name: "test",
+                mainView: "Ext.Panel"
             });
 
             try {
@@ -421,13 +421,13 @@ describe("coon.core.app.ApplicationTest", function (t) {
         t.it("visitPlugins()", (t) => {
 
             let applicationPluginMocks = [
-                    {run : (app) => {}},
-                    {run : (app) => {}}
+                    {run: (app) => {}},
+                    {run: (app) => {}}
                 ], spys = [];
 
             let app = Ext.create("coon.core.app.Application", {
-                name     : "test",
-                mainView : "Ext.Panel"
+                name: "test",
+                mainView: "Ext.Panel"
             });
 
             applicationPluginMocks.forEach((plug) => {
@@ -463,9 +463,9 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 loadPackagesSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadPackages").and.callFake(() => packageControllersMock),
                 addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {});
 
-            let app = Ext.create("coon.core.app.Application", {
-                name     : "test",
-                mainView : "Ext.Panel"
+            Ext.create("coon.core.app.Application", {
+                name: "test",
+                mainView: "Ext.Panel"
             });
 
             t.waitForMs(TIMEOUT, () => {
@@ -500,13 +500,16 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 getApplicationPluginsSpy.remove();
 
                 switchManifest(true);
-                app.destroy();
+                // @extjs bug 7.3.3
+                // tries to iterate over destroyed(?) items
+                // app.destroy();
+                t.expect(() => app.destroy()).toThrow();
                 app = null;
             });
         });
 
 
-        t.it("Should never call launch()", function (t) {
+        t.it("Should never call launch()", (t) => {
 
             var LAUNCHCALLED = false;
 
@@ -519,9 +522,9 @@ describe("coon.core.app.ApplicationTest", function (t) {
             };
 
             var app = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Container",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Container",
+                controllers: [
                     "coon.core.app.PackageController"
                 ]
             });
@@ -533,7 +536,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should call launch()", function (t) {
+        t.it("Should call launch()", (t) => {
 
             var LAUNCHCALLED = false;
 
@@ -546,9 +549,9 @@ describe("coon.core.app.ApplicationTest", function (t) {
             };
 
             var app = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Container",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Container",
+                controllers: [
                     "coon.core.app.PackageController"
                 ]
             });
@@ -560,7 +563,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Should call launch(), then postLaunchHook()", function (t) {
+        t.it("Should call launch(), then postLaunchHook()", (t) => {
 
             var i = 0;
             var LAUNCH = 0;
@@ -580,12 +583,12 @@ describe("coon.core.app.ApplicationTest", function (t) {
             };
 
             var app = Ext.create("coon.core.app.Application", {
-                name        : "test",
-                mainView    : "Ext.Container",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Container",
+                controllers: [
                     "coon.core.app.PackageController"
                 ],
-                postLaunchHookProcess : function () {
+                postLaunchHookProcess: function () {
                     this.getController("coon.core.app.PackageController").postLaunchHook();
                 }
             });
@@ -601,7 +604,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Tests with preLaunchHooks ", function (t) {
+        t.it("Tests with preLaunchHooks ", (t) => {
 
             defineControllerMocks();
 
@@ -631,7 +634,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("Tests with preLaunchHooks / return value undefined", function (t) {
+        t.it("Tests with preLaunchHooks / return value undefined", (t) => {
             // return value undefined
 
             defineControllerMocks();
@@ -662,18 +665,18 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("getController()", function (t) {
+        t.it("getController()", (t) => {
             switchManifest();
             app = Ext.create("coon.core.app.Application", {
-                name : "test",
-                mainView : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     "coon.test.app.mock.app.PackageController"
                 ]
             });
 
             let spy = t.spyOn(app.applicationUtil, "getControllerPlugins").and.callFake(() => ({
-                "coon.test.app.mock.app.PackageController" : ["coon.test.app.mock.app.ControllerPlugin"]
+                "coon.test.app.mock.app.PackageController": ["coon.test.app.mock.app.ControllerPlugin"]
             }));
 
             let controller = app.getController("coon.test.app.mock.app.PackageController");
@@ -694,7 +697,7 @@ describe("coon.core.app.ApplicationTest", function (t) {
         });
 
 
-        t.it("all controller plugins called regardless of preLaunchHook w/ proper default arguments", function (t) {
+        t.it("all controller plugins called regardless of preLaunchHook w/ proper default arguments", (t) => {
 
             defineControllerMocks();
 
@@ -715,6 +718,8 @@ describe("coon.core.app.ApplicationTest", function (t) {
                     plugin1 = Ext.create("coon.core.app.plugin.ControllerPlugin"),
                     plugin2 = Ext.create("coon.core.app.plugin.ControllerPlugin"),
                     plugin3 = Ext.create("coon.core.app.plugin.ControllerPlugin");
+
+                [plugin1, plugin2, plugin3].forEach((plug) => plug.run =  function () {});
 
                 const
                     plugin1Spy = t.spyOn(plugin1, "run"),
@@ -752,9 +757,9 @@ describe("coon.core.app.ApplicationTest", function (t) {
                 keyMock = "KEYMOCK";
 
             app = Ext.create("coon.core.app.Application", {
-                name : "test",
-                mainView : "Ext.Panel",
-                controllers : [
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
                     controllerFqn
                 ]
             });

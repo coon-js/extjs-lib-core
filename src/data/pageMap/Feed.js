@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -70,28 +70,28 @@
 Ext.define("coon.core.data.pageMap.Feed", {
 
 
-    mixins : [
+    mixins: [
         "coon.core.data.pageMap.ArgumentFilter"
     ],
 
 
-    config : {
+    config: {
 
         /**
          * @cfg {Number} size
          * The size of the feed, e.g. how many entries it can hold at once
          */
-        size : undefined,
+        size: undefined,
 
         /**
          * @cfg {Mixed} previous
          */
-        previous : undefined,
+        previous: undefined,
 
         /**
          * @cfg {Mixed} next
          */
-        next : undefined
+        next: undefined
     },
 
 
@@ -99,7 +99,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      * @type {array} data
      * @private
      */
-    data : null,
+    data: null,
 
 
     /**
@@ -110,7 +110,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if cfg.pageMap is not set
      */
-    constructor : function (cfg) {
+    constructor: function (cfg) {
 
         var me = this,
             hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -119,22 +119,22 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (!hasOwnProperty.call(cfg,"size")) {
             Ext.raise({
-                msg : "'size' is required for this class",
-                cfg : cfg
+                msg: "'size' is required for this class",
+                cfg: cfg
             });
         }
 
         if (!hasOwnProperty.call(cfg,"previous") && !hasOwnProperty.call(cfg,"next")) {
             Ext.raise({
-                msg : "'previous' or 'next' is required for this class",
-                cfg : cfg
+                msg: "'previous' or 'next' is required for this class",
+                cfg: cfg
             });
         }
 
         if (hasOwnProperty.call(cfg,"previous") && hasOwnProperty.call(cfg,"next")) {
             Ext.raise({
-                msg : "either 'previous' or 'next' must be set, but not both",
-                cfg : cfg
+                msg: "either 'previous' or 'next' must be set, but not both",
+                cfg: cfg
             });
         }
 
@@ -147,7 +147,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @return {Boolean}
      */
-    hasUndefined : function () {
+    hasUndefined: function () {
 
         const me = this;
 
@@ -177,7 +177,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @see #insertAt
      */
-    fill : function (records, reverseDirection = false) {
+    fill: function (records, reverseDirection = false) {
 
         const me      = this,
             size    = me.getSize(),
@@ -209,7 +209,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if record is not an instance of Ext.data.Model
      */
-    indexOf : function (record) {
+    indexOf: function (record) {
 
         const me      = this,
             isStart = !me.getPrevious();
@@ -254,7 +254,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if index is less than 0 or greater than #size - 1
      */
-    removeAt : function (index) {
+    removeAt: function (index) {
 
         const me     = this,
             size    = me.getSize(),
@@ -284,7 +284,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if the given index is not set in this target Feed
      */
-    replaceWith : function (index, record) {
+    replaceWith: function (index, record) {
 
         const me     = this,
             size    = me.getSize(),
@@ -299,8 +299,8 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (!me.data[index]) {
             Ext.raise({
-                msg   : "no record to replace at target index " + index,
-                index : index
+                msg: "no record to replace at target index " + index,
+                index: index
             });
         }
 
@@ -341,7 +341,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if index is less than 0 or greater than #size - 1
      */
-    insertAt : function (records, index, reverseDirection = false) {
+    insertAt: function (records, index, reverseDirection = false) {
 
         const me      = this,
             size    = me.getSize(),
@@ -412,7 +412,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if index is less than 1 or greater than page size
      */
-    extract : function (count, reverseDirection = false) {
+    extract: function (count, reverseDirection = false) {
 
         const
             me      = this,
@@ -427,8 +427,8 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (!Ext.isNumber(count) || (count < 1 || count > size)) {
             Ext.raise({
-                msg   : "'count' is out of bounds",
-                count : count
+                msg: "'count' is out of bounds",
+                count: count
             });
         }
 
@@ -458,7 +458,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @throws if index is less than 0 or greater than #size - 1
      */
-    getAt : function (index) {
+    getAt: function (index) {
 
         const me      = this,
             size    = me.getSize(),
@@ -468,8 +468,8 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (index < 0 || index > size -1) {
             Ext.raise({
-                msg   : "'index' is out of bounds",
-                index : index
+                msg: "'index' is out of bounds",
+                index: index
             });
         }
 
@@ -486,7 +486,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @return {Array}
      */
-    toArray : function () {
+    toArray: function () {
 
         const me = this;
 
@@ -500,7 +500,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @return {Number}
      */
-    getFreeSpace : function () {
+    getFreeSpace: function () {
 
         const me = this;
 
@@ -513,7 +513,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @return {Boolean}
      */
-    isEmpty : function () {
+    isEmpty: function () {
 
         const me = this;
 
@@ -531,14 +531,14 @@ Ext.define("coon.core.data.pageMap.Feed", {
      * @throws if size was already set, or if size is not a number or a number
      * less than 1
      */
-    applySize : function (size) {
+    applySize: function (size) {
 
         const me = this;
 
         if (me.getSize() !== undefined) {
             Ext.raise({
-                msg  : "'size' is already set",
-                size : me.getSize()
+                msg: "'size' is already set",
+                size: me.getSize()
             });
         }
 
@@ -546,8 +546,8 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (!Ext.isNumber(size) || size < 1) {
             Ext.raise({
-                msg  : "'size' must be a number greater than 0",
-                size : size
+                msg: "'size' must be a number greater than 0",
+                size: size
             });
         }
 
@@ -570,7 +570,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @see #next
      */
-    applyPrevious : function (previous) {
+    applyPrevious: function (previous) {
 
         const me = this;
 
@@ -591,7 +591,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
      *
      * @see #previous
      */
-    applyNext : function (next) {
+    applyNext: function (next) {
 
         const me = this;
 
@@ -602,7 +602,7 @@ Ext.define("coon.core.data.pageMap.Feed", {
     /**
      * @private
      */
-    setPageHint : function (type, value) {
+    setPageHint: function (type, value) {
 
         const me          = this,
             getter      = "get" + type[0].toUpperCase() + type.substring(1),
@@ -618,15 +618,15 @@ Ext.define("coon.core.data.pageMap.Feed", {
 
         if (me[getter]() !== undefined) {
             Ext.raise({
-                msg   : "'" + type + "' is already set",
-                value :me[getter]()
+                msg: "'" + type + "' is already set",
+                value: me[getter]()
             });
         }
 
         if (me[pendGetter]() !== undefined) {
             Ext.raise({
-                msg   : "'" + pend + "' is already set, cannot set both",
-                value : me[pendGetter]()
+                msg: "'" + pend + "' is already set, cannot set both",
+                value: me[pendGetter]()
             });
         }
 

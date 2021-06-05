@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.field.EmailAddressTest", function (t) {
+describe("coon.core.data.field.EmailAddressTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
 
     t.requireOk("coon.core.data.validator.EmailAddress", function () {
 
-        t.it("Make sure class definition is as expected", function (t) {
+        t.it("Make sure class definition is as expected", (t) => {
 
             var field  = Ext.create("coon.core.data.field.EmailAddress");
 
@@ -48,7 +48,7 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
         });
 
 
-        t.it("Make sure constructor() work as expected", function (t) {
+        t.it("Make sure constructor() work as expected", (t) => {
 
             var field  = Ext.create("coon.core.data.field.EmailAddress");
             var field2 = Ext.create("coon.core.data.field.EmailAddress");
@@ -58,15 +58,15 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
             t.expect(field.getDefaultValue() === field2.getDefaultValue()).toBe(true);
 
             field  = Ext.create("coon.core.data.field.EmailAddress", {
-                defaultValue : "a"
+                defaultValue: "a"
             });
 
             t.expect(field.getDefaultValue()).toBe("a");
 
             Ext.define("testfield", {
-                extend : "coon.core.data.field.EmailAddress",
+                extend: "coon.core.data.field.EmailAddress",
 
-                defaultValue : "b"
+                defaultValue: "b"
             });
 
             t.waitForMs(500, function () {
@@ -77,77 +77,77 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
         });
 
 
-        t.it("Make sure convert() works as expected", function (t) {
+        t.it("Make sure convert() works as expected", (t) => {
             var field  = Ext.create("coon.core.data.field.EmailAddress");
             t.expect(field.convert(null)).toBe(null);
 
             field  = Ext.create("coon.core.data.field.EmailAddress");
-            t.expect(field.convert({address : "a"})).toEqual({address : "a", name : "a"});
+            t.expect(field.convert({address: "a"})).toEqual({address: "a", name: "a"});
 
             field  = Ext.create("coon.core.data.field.EmailAddress");
             t.expect(field.convert("b")).toEqual(
-                {address : "b", name : "b"}
+                {address: "b", name: "b"}
             );
 
             field  = Ext.create("coon.core.data.field.EmailAddress");
-            t.expect(field.convert("foo")).toEqual({address : "foo", name : "foo"});
+            t.expect(field.convert("foo")).toEqual({address: "foo", name: "foo"});
 
         });
 
 
-        t.it("Make sure serialize() works as expected", function (t) {
+        t.it("Make sure serialize() works as expected", (t) => {
             var field  = Ext.create("coon.core.data.field.EmailAddress");
 
             t.expect(field.serialize("foo")).toBe(null);
 
-            t.expect(field.serialize({address : "a", name : "a"})).toBe(
+            t.expect(field.serialize({address: "a", name: "a"})).toBe(
                 "{\"address\":\"a\",\"name\":\"a\"}"
             );
 
         });
 
 
-        t.it("Make sure compare() works as expected", function (t) {
+        t.it("Make sure compare() works as expected", (t) => {
             var field  = Ext.create("coon.core.data.field.EmailAddress");
 
             t.expect(field.compare(null, "foo")).toBe(0);
 
             t.expect(field.compare({}, {})).toBe(0);
 
-            t.expect(field.compare(null, {address : "a"})).toBe(-1);
-            t.expect(field.compare({address : "a"}, {address : "a"})).toBe(0);
-            t.expect(field.compare({address : "a"}, null)).toBe(1);
+            t.expect(field.compare(null, {address: "a"})).toBe(-1);
+            t.expect(field.compare({address: "a"}, {address: "a"})).toBe(0);
+            t.expect(field.compare({address: "a"}, null)).toBe(1);
 
-            t.expect(field.compare({address : "a"}, {address : "a", name: "b"})).toBe(-1);
-            t.expect(field.compare({address : "b"}, {address : "a", name: "b"})).toBe(-1);
+            t.expect(field.compare({address: "a"}, {address: "a", name: "b"})).toBe(-1);
+            t.expect(field.compare({address: "b"}, {address: "a", name: "b"})).toBe(-1);
 
-            t.expect(field.compare({address : "b", name : "c"}, {address : "b"})).toBe(1);
+            t.expect(field.compare({address: "b", name: "c"}, {address: "b"})).toBe(1);
 
             t.expect(field.compare(
-                {address : "a", name : "A"}, {address : "a", name : "foo"}
+                {address: "a", name: "A"}, {address: "a", name: "foo"}
             )).toBe(1);
 
             t.expect(field.compare(
-                {address : "a", name : "A"}, {address : "A", name : "FoO"}
+                {address: "a", name: "A"}, {address: "A", name: "FoO"}
             )).toBe(1);
 
         });
 
 
-        t.it("Make sure field works in model as expected", function (t) {
+        t.it("Make sure field works in model as expected", (t) => {
 
             Ext.define("testmodel", {
-                extend : "Ext.data.Model",
+                extend: "Ext.data.Model",
 
-                fields : [{
-                    name : "address",
-                    type : "cn_core-datafieldemailaddress"
+                fields: [{
+                    name: "address",
+                    type: "cn_core-datafieldemailaddress"
                 }],
 
-                validators : {
-                    address : [{
-                        type : "cn_core-datavalidatoremailaddress",
-                        allowEmpty : true
+                validators: {
+                    address: [{
+                        type: "cn_core-datavalidatoremailaddress",
+                        allowEmpty: true
 
                     }]
                 }
@@ -156,10 +156,10 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
             t.waitForMs(500, function () {
 
                 var m = Ext.create("testmodel");
-                var d = {address : "g"};
+                var d = {address: "g"};
                 m.set("address", d);
                 d.address = "a";
-                t.expect(m.get("address")).toEqual({address : "g", name :"g"});
+                t.expect(m.get("address")).toEqual({address: "g", name: "g"});
 
                 m.isValid();
                 var vtors = m.getField("address")._validators;
@@ -172,27 +172,27 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
                 t.expect(m.get("address")).toEqual(null);
 
                 t.expect(m.dirty).toBe(false);
-                m.set("address", {address : "b", name : "abc"});
+                m.set("address", {address: "b", name: "abc"});
                 t.expect(m.isValid()).toBe(true);
                 t.expect(m.dirty).toBe(true);
                 t.expect(m.get("address")).toEqual(
-                    {address : "b", name : "abc"}
+                    {address: "b", name: "abc"}
                 );
                 m.commit();
                 t.expect(m.dirty).toBe(false);
                 t.expect(m.get("address")).toEqual(
-                    {address : "b", name : "abc"}
+                    {address: "b", name: "abc"}
                 );
                 m.set("address",
-                    {address : "b", name : "abc"}
+                    {address: "b", name: "abc"}
                 );
                 t.expect(m.dirty).toBe(false);
                 m.set("address",
-                    {address : "ab", name : "a"}
+                    {address: "ab", name: "a"}
                 );
                 t.expect(m.dirty).toBe(true);
                 m.set("address",
-                    {addressw : "ab", name : "a"}
+                    {addressw: "ab", name: "a"}
                 );
                 // gets converted to NULL since address is missing
                 t.expect(m.isValid()).toBe(true);
@@ -202,7 +202,7 @@ describe("coon.core.data.field.EmailAddressTest", function (t) {
 
                 m.set("address", "abc");
                 t.expect(m.get("address")).toEqual(
-                    {address : "abc", name : "abc"}
+                    {address: "abc", name: "abc"}
                 );
 
             });

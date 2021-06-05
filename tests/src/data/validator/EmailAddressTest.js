@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.validator.EmailAddressTest", function (t) {
+describe("coon.core.data.validator.EmailAddressTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Make sure class definition is as expected", function (t) {
+    t.it("Make sure class definition is as expected", (t) => {
 
         var vtor = Ext.create("coon.core.data.validator.EmailAddress");
 
@@ -42,25 +42,25 @@ describe("coon.core.data.validator.EmailAddressTest", function (t) {
         vtor = null;
     });
 
-    t.it("Make sure the validator works as expected", function (t) {
+    t.it("Make sure the validator works as expected", (t) => {
 
         var tests = [{
-            config   : {allowEmpty : true},
-            data     : null,
-            expected : true
+            config: {allowEmpty: true},
+            data: null,
+            expected: true
         }, {
-            config   : {allowEmpty : false},
-            data     : null,
-            expected : false
+            config: {allowEmpty: false},
+            data: null,
+            expected: false
         }, {
-            data     : null,
-            expected : false
+            data: null,
+            expected: false
         }, {
-            data     : {test : "test"},
-            expected : false
+            data: {test: "test"},
+            expected: false
         }, {
-            data     : {address : "mymailaddress"},
-            expected : true
+            data: {address: "mymailaddress"},
+            expected: true
         }];
 
         for (var i = 0, len = tests.length; i < len; i++) {

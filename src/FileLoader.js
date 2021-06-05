@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -32,12 +32,15 @@
  */
 Ext.define("coon.core.FileLoader", {
 
-    extend : "coon.core.data.request.file.FileLoader",
+    extend: "coon.core.data.request.file.FileLoader",
 
-    singleton : true,
+    singleton: true,
 
-    requires : [
+    requires: [
+        // @define l8.core.request.FileLoader
+        "l8.core.request.FileLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader"
+
     ],
 
     /**
@@ -52,7 +55,7 @@ Ext.define("coon.core.FileLoader", {
      * @constructor
      */
     constructor () {
-        this.fileLoader = new coon.core.data.request.file.XmlHttpRequestFileLoader;
+        this.fileLoader = new l8.core.request.FileLoader();
     },
 
 

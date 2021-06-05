@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.plugin.PluginTest", function (t) {
+describe("coon.core.app.plugin.PluginTest", (t) => {
 
     var plugin;
 
@@ -35,7 +35,7 @@ describe("coon.core.app.plugin.PluginTest", function (t) {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create an instance of coon.core.app.plugin.Plugin", function (t) {
+    t.it("Should create an instance of coon.core.app.plugin.Plugin", (t) => {
         t.isInstanceOf(plugin, "coon.core.app.plugin.Plugin");
     });
 
@@ -44,7 +44,7 @@ describe("coon.core.app.plugin.PluginTest", function (t) {
         let plugin = Ext.create("coon.core.app.plugin.Plugin");
         t.expect(plugin.getId()).toBe("coon.core.app.plugin.Plugin");
 
-        plugin = Ext.create("coon.core.app.plugin.Plugin", {id : "myId"});
+        plugin = Ext.create("coon.core.app.plugin.Plugin", {id: "myId"});
         t.expect(plugin.getId()).toBe("myId");
     });
 

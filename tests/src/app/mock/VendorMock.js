@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,11 +29,7 @@
  */
 Ext.define("coon.test.app.mock.VendorMock", {
 
-    extend : "coon.core.env.VendorBase",
-
-    requires : [
-        "coon.core.Util"
-    ],
+    extend: "coon.core.env.VendorBase",
 
     /**
      * @var mockedEnvironment
@@ -45,16 +41,16 @@ Ext.define("coon.test.app.mock.VendorMock", {
         this.mockedEnvironment = cfg;
     },
 
-    getPathForResource : (resource) => {
+    getPathForResource: (resource) => {
         return `fixtures/${resource}`;
     },
 
     get (key) {
-        return coon.core.Util.unchain(key, this.mockedEnvironment);
+        return l8.core.unchain(key, this.mockedEnvironment);
     },
 
     getManifest (key) {
-        return key ? coon.core.Util.unchain(key, this.mockedEnvironment.manifest) : this.mockedEnvironment.manifest;
+        return key ? l8.core.unchain(key, this.mockedEnvironment.manifest) : this.mockedEnvironment.manifest;
     },
 
     getEnvironment () {
@@ -62,7 +58,7 @@ Ext.define("coon.test.app.mock.VendorMock", {
     },
 
     getPackage (pack) {
-        return coon.core.Util.unchain(pack, this.mockedEnvironment.manifest.packages);
+        return l8.core.unchain(pack, this.mockedEnvironment.manifest.packages);
     },
 
     getPackages () {

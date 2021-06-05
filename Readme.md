@@ -1,35 +1,14 @@
-# lib-cn_core [![Build Status](https://travis-ci.org/coon-js/lib-cn_core.svg?branch=master)](https://travis-ci.org/coon-js/lib-cn_core)
-This **Sencha ExtJS** package contains core functionality for the coon.js 
-project.
-Files found herein represent "universal" code, i.e. there are no 
-view implementations in this package, but rather code that can
-support views.  
+# @coon-js/extjs-lib-core
+this NPM package provides core functionality needed in ExtJS projects, and allows for
+extended application configuration during runtime of an ExtJS-application.
+This library also contains enhancements made to teh PageMap-classes for dynamically adding/removing data from a BufferedStore.
 
-## Naming
-The following naming conventions apply:
+## Installation
+```
+npm install --save-dev @coon-js/extjs-lib-core
+```
 
-#### Namespace
-`coon.core.*`
-#### Package name
-`lib-cn_core`
-#### Shorthand to be used with providing aliases
-`cn_core`
-
-**Example:**
-Class `coon.core.data.proxy.RestForm` has the alias `proxy.cn_core-dataproxyrestform`
-
-## Requirements
-This Package needs ExtJS 6.7 for dynamic package loading. The PageMap-enhancements are
-working with ExtJS 6.2 and up.
-### Package Requirements
-This package requires the [package-loader](https://www.sencha.com/blog/create-a-smooth-loading-experience-for-large-enterprise-apps-with-sencha-cmd/) package from Sencha.
-
-## Tests
-Tests are written with [Siesta](https://bryntum.com/siesta)
-
-# Usage
-
-## Configuration Files
+## Usage
 ### Application configuration
 Application configuration files will be looked up in the ```resources```-folder, and then in the
 folder which's name can be configured in the ```coon-js```-section of the application's ```app.json```.
@@ -105,9 +84,9 @@ or
 "coon-js" : {"package" : {"config" : true}}
 ```
 
-This section can also hold configuration data that is then registered with the [coon.core.ConfigManager](https://github.com/coon-js/lib-cn_core/blob/master/src/ConfigManager.js).
+This section can also hold configuration data that is then registered with the [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js).
 It can then be queried using a call to ```coon.coore.ConfigManager.get("myPackage")```. For more information,
-refer to the docs of [coon.core.ConfigManager](https://github.com/coon-js/lib-cn_core/blob/master/src/ConfigManager.js).
+refer to the docs of [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js).
 If a package holds a configuration entry in the above described section, its configuration file
 will automatically be queried, resulting in a 404 if not specified. No further error-handling will happen when attempts
 to loading configuration-files result in a HTTP-error.
@@ -115,8 +94,8 @@ If the file exists, its configuration will override the default-configuration fo
 if any.
 
 ## Using plugins for PackageControllers
-[coon.core.app.PackageController](https://github.com/coon-js/lib-cn_core/blob/master/src/app/PackageController.js) 
-can have an arbitrary number of plugins of the type [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/lib-cn_core/blob/master/src/app/plugin/ControllerPlugin.js)
+[coon.core.app.PackageController](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/PackageController.js) 
+can have an arbitrary number of plugins of the type [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js)
 that are called by the application during the ```preLaunchHook```-process. Regardless of the
 state of the return-values of ```PackageController```'s ```preLaunchHook()```, all plugins will be executed during
 the ```preLaunchHookProcess```.
@@ -147,9 +126,42 @@ registered as a ```PackageController``` for the application and will therefor no
 You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
 the ```ControllerPlugins``` you'd like to use. 
 Note: You need to make sure that owning packages are required by the ```PackageController```'s package using them.
-For more information on ```PackageController```-plugins, see [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/lib-cn_core/blob/master/src/app/plugin/ControllerPlugin.js).
+For more information on ```PackageController```-plugins, see [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js).
 
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
-refer to the documentation of  [lib-cn_navport](https://github.com/coon-js/lib-cn_navport).
+refer to the documentation of  [extjs-comp-navport](https://github.com/coon-js/extjs-comp-navport).
 A large, extensible application built with *coon-js* can be found in the [conjoon](https://github.com/conjoon)\-repository.
+
+
+### Development notes
+
+#### Naming
+The following naming conventions apply:
+
+#### Namespace
+`coon.core.*`
+#### Package name
+`extjs-lib-core`
+#### Shorthand to be used with providing aliases
+`cn_core`
+
+**Example:**
+Class `coon.core.data.proxy.RestForm` has the alias `proxy.cn_core-dataproxyrestform`
+
+### Requirements
+This Package needs ExtJS 6.7 for dynamic package loading. The PageMap-enhancements are
+working with ExtJS 6.2 and up.
+
+### Package Requirements
+This package requires the [package-loader](https://www.sencha.com/blog/create-a-smooth-loading-experience-for-large-enterprise-apps-with-sencha-cmd/) package from Sencha.
+
+## Tests
+Tests are written with [Siesta](https://bryntum.com/siesta)
+
+```
+npm run build:tests
+npm test
+```
+
+

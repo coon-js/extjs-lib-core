@@ -1,46 +1,91 @@
 {
-    "name": "lib-cn_core",
-
-    "sencha": {
-
-        "namespace": "coon.core",
-        "type": "code",
-        "creator": "coon.js",
-        "summary": "Core functionality to be used with the coon.js Project",
-        "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
-        "version": "1.0.0",
-        "compatVersion": "1.0.0",
-        "format": "1",
-        "slicer": null,
-        "output": {
-            "base" : "${package.dir}/build",
-            "js": {
-                "version": "ES8"
-            }
-        },
-        "language": {
-            "js": {
-                "input": "ES8",
-                "output": "ES8"
-            }
-        },
-        "compressor": {
-            "type" : "closure",
-            "polyfills": "none"
-        },
-        "local": true,
-        "sass" : null,
-        "classpath": [
-            "${package.dir}/src"
-        ],
-        "overrides": [
-            "${package.dir}/overrides"
-        ],
-        "example": null,
-        "framework": "ext",
-        "requires": [
-            "core",
-            "package-loader"
-        ]
-    }
+  "name": "@coon-js/extjs-lib-core",
+  "sencha": {
+    "name": "extjs-lib-core",
+    "version": "0.0.1",
+    "compatVersion": "0.0.1",
+    "namespace": "coon.core",
+    "type": "code",
+    "creator": "coon.js",
+    "summary": "core library for rapic ExtJS application building",
+    "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
+    "format": "1",
+    "slicer": null,
+    "output": {
+      "base": "${package.dir}/build",
+      "js": {
+        "version": "ES8"
+      }
+    },
+    "language": {
+      "js": {
+        "input": "ES8",
+        "output": "ES8"
+      }
+    },
+    "compressor": {
+      "type": "closure",
+      "polyfills": "none"
+    },
+    "local": true,
+    "sass": null,
+    "classpath": [
+      "${package.dir}/src"
+    ],
+    "overrides": [
+      "${package.dir}/overrides"
+    ],
+    "example": null,
+    "framework": "ext",
+    "requires": [
+      "core",
+      "package-loader"
+    ]
+  },
+  "description": "This **Sencha ExtJS** package contains core functionality for the coon.js  project. Files found herein represent \"universal\" code, i.e. there are no  view implementations in this package, but rather code that can support views.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test" : "echo \"make sure you run 'npm run build:tests' before running the tests\" && npm run server",
+    "server": "npx ws --static.index tests.html --open",
+    "build:tests": "npx extjs-build -p ./tests/build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coon-js/extjs-lib-core.git"
+  },
+  "keywords": [
+    "ExtJS",
+    "Sencha",
+    "JavaScript",
+    "l8.js",
+    "l8js",
+    "coon.js",
+    "coonjs",
+    "coon-js",
+    "core",
+    "library"
+  ],
+  "author": "Thorsten Suckow-Homberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/coon-js/extjs-lib-core/issues"
+  },
+  "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
+  "devDependencies": {
+    "@coon-js/extjs-build": "file:../extjs-build",
+    "@coon-js/extjs-package-loader": "file:../extjs-package-loader",
+    "@coon-js/siesta-lib-helper": "file:../siesta-lib-helper",
+    "@l8js/l8": "file:../../l8js/l8",
+    "@sencha/ext-classic": "^7.4.0",
+    "@sencha/ext-classic-theme-triton": "^7.4.0",
+    "@sencha/ext-core": "^7.4.0",
+    "@sencha/ext-modern": "^7.4.0",
+    "@sencha/ext-modern-theme-triton": "^7.4.0",
+    "local-web-server": "^4.2.1",
+    "siesta-lite": "^5.5.2"
+  }
 }

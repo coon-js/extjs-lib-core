@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
+describe("coon.core.data.pageMap.operation.OperationTest", (t) => {
 
     var createRequest = function () {
 
@@ -33,8 +33,8 @@ describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
         createResult = function () {
 
             return Ext.create("coon.core.data.pageMap.operation.Result", {
-                success : true,
-                reason  : -1
+                success: true,
+                reason: -1
             });
 
         };
@@ -44,7 +44,7 @@ describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("prerequisites", function (t) {
+    t.it("prerequisites", (t) => {
 
         var op, exc, req, res;
 
@@ -55,7 +55,7 @@ describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
         t.expect(exc.msg.toLowerCase()).toContain("request");
         exc = undefined;
 
-        try {Ext.create("coon.core.data.pageMap.operation.Operation", {request : null});} catch (e) {exc = e;}
+        try {Ext.create("coon.core.data.pageMap.operation.Operation", {request: null});} catch (e) {exc = e;}
         t.expect(exc).toBeDefined();
         t.expect(exc.msg).toBeDefined();
         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
@@ -64,7 +64,7 @@ describe("coon.core.data.pageMap.operation.OperationTest", function (t) {
 
         req = createRequest();
         op = Ext.create("coon.core.data.pageMap.operation.Operation", {
-            request : req
+            request: req
         });
 
         t.expect(op instanceof coon.core.data.pageMap.operation.Operation).toBe(true);

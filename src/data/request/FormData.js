@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -33,9 +33,9 @@
  */
 Ext.define("coon.core.data.request.FormData", {
 
-    extend : "Ext.data.request.Ajax",
+    extend: "Ext.data.request.Ajax",
 
-    alias : "request.cn_core-datarequestformdata",
+    alias: "request.cn_core-datarequestformdata",
 
 
     /**
@@ -50,7 +50,7 @@ Ext.define("coon.core.data.request.FormData", {
      *
      * {@see #onProgress}
      */
-    openRequest : function (options, requestOptions) {
+    openRequest: function (options, requestOptions) {
 
         var me = this;
 
@@ -59,7 +59,7 @@ Ext.define("coon.core.data.request.FormData", {
         if (requestOptions.data instanceof FormData) {
 
             me.options.headers = Ext.applyIf(
-                {"Content-Type" : null}, me.options.headers
+                {"Content-Type": null}, me.options.headers
             );
 
             if (me.async && xhr.upload /* check needed for Sims */) {
@@ -71,7 +71,7 @@ Ext.define("coon.core.data.request.FormData", {
     },
 
 
-    privates : {
+    privates: {
 
 
         /**
@@ -83,7 +83,7 @@ Ext.define("coon.core.data.request.FormData", {
          *
          * @param evt
          */
-        onProgress : function (evt) {
+        onProgress: function (evt) {
             var me      = this,
                 options = me.options;
 

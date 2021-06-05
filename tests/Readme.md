@@ -1,6 +1,6 @@
-# lib-cn_core - Tests - Read Me
+# extjs-lib-core - Tests - Read Me
 
-lib-cn_core uses [Siesta](http://bryntum.com) for Unit/UI testing.
+extjs-lib-core uses [Siesta](http://bryntum.com) for Unit/UI testing.
 
 ## Configuration
 Make sure you download Siesta and set the paths to the resources properly 
@@ -17,4 +17,4 @@ tests.config.js.template -> tests.config.js
  - To run the tests with the modern toolkit, append the query string `toolkit=modern`
  
  *Example-URL:*
- `http://localhost:1841/packages/local/lib-cn_core/tests/?toolkit=modern`
+ `http://localhost:1841/packages/local/extjs-lib-core/tests/?toolkit=modern`

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,8 +31,9 @@
  */
 Ext.define("coon.core.app.ApplicationUtil",{
 
-    requires : [
-        "coon.core.Util",
+    requires: [
+        // @define l8.core
+        "l8.core",
         "coon.core.Environment",
         "coon.core.app.BatchConfigLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader",
@@ -116,7 +117,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         Object.entries(manifestPackages).forEach((entry) => {
 
             let [packageName, packageConfig] = entry,
-                coonPackage = coon.core.Util.unchain("coon-js.package", packageConfig);
+                coonPackage = l8.core.unchain("coon-js.package", packageConfig);
 
             if (coonPackage !== undefined) {
                 packages[packageName] = Ext.clone(packageConfig);
@@ -164,8 +165,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
             envPath = env ? "coon-js/" + [applicationName, ".", env, ".conf.json"].join("") : undefined;
 
         return {
-            default : Environment.getPathForResource("coon-js/" + applicationName + ".conf.json"),
-            environment : env ? Environment.getPathForResource(envPath) : undefined
+            default: Environment.getPathForResource("coon-js/" + applicationName + ".conf.json"),
+            environment: env ? Environment.getPathForResource(envPath) : undefined
         };
     },
 
@@ -256,7 +257,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             let [, packageConfig] = entry;
 
-            const plugins = [].concat(coon.core.Util.unchain(
+            const plugins = [].concat(l8.core.unchain(
                 "coon-js.package.config.plugins.controller",
                 packageConfig,
                 []
@@ -266,7 +267,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
                 return;
             }
 
-            const ctrl = coon.core.Util.unchain("coon-js.package.controller", packageConfig);
+            const ctrl = l8.core.unchain("coon-js.package.controller", packageConfig);
 
 
             plugins.forEach(function (plugin) {
@@ -326,7 +327,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         const
             me = this,
             coonPackages = me.getCoonPackages(manifestPackages),
-            plugins = coon.core.Util.unchain("application.plugins", applicationConfig, []),
+            plugins = l8.core.unchain("application.plugins", applicationConfig, []),
             fqns = [];
 
         plugins.forEach( (plugin) => {
@@ -459,8 +460,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         entries.forEach((entry) => {
             let [name, packageConfig] = entry,
-                controller = coon.core.Util.unchain("coon-js.package.controller", packageConfig),
-                config = coon.core.Util.unchain("coon-js.package.config", packageConfig);
+                controller = l8.core.unchain("coon-js.package.controller", packageConfig),
+                config = l8.core.unchain("coon-js.package.config", packageConfig);
 
             if (controller) {
                 controllers.push(controller);
@@ -489,7 +490,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
     /**
      * @private
      */
-    getFqnForPlugin : function (plugin, coonPackages, type) {
+    getFqnForPlugin: function (plugin, coonPackages, type) {
         "use strict";
 
         type = (""+type).toLowerCase();

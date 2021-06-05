@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.exception.ParseExceptionTest", function (t) {
+describe("coon.core.exception.ParseExceptionTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ describe("coon.core.exception.ParseExceptionTest", function (t) {
             t.expect(coon.core.exception.ParseException.prototype.alternateClassName).toBe("coon.core.ParseException");
         });
 
-        t.it("constructor()", function (t) {
+        t.it("constructor()", (t) => {
 
             let exc = Ext.create("coon.core.exception.ParseException");
             t.isInstanceOf(exc, "coon.core.exception.Exception");

@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,9 +25,9 @@
 
 Ext.define("coon.test.app.mock.MockConfigLoader", {
 
-    extend : "coon.core.app.ConfigLoader",
+    extend: "coon.core.app.ConfigLoader",
 
-    requires : [
+    requires: [
         "coon.core.ConfigManager",
         "coon.core.app.ConfigurationException",
         "coon.core.exception.ParseException",
@@ -44,7 +44,7 @@ Ext.define("coon.test.app.mock.MockConfigLoader", {
 
         case "bar":
         case "foo":
-            return coon.core.ConfigManager.register(domain,{domain : domain});
+            return coon.core.ConfigManager.register(domain,{domain: domain});
 
         case "HttpRequestException":
             throw new coon.core.app.ConfigurationException(domain, new coon.core.data.request.HttpRequestException(domain));

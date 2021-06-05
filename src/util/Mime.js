@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,7 +29,7 @@
 Ext.define("coon.core.util.Mime", {
 
 
-    singleton : true,
+    singleton: true,
 
     /**
      * Returns true if the passed argument is a Mime-type representing an image
@@ -39,7 +39,7 @@ Ext.define("coon.core.util.Mime", {
      *
      * @return {Boolean}
      */
-    isImage : function (mimeType) {
+    isImage: function (mimeType) {
 
         mimeType = mimeType + "";
 

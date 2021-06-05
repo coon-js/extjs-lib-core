@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.BatchConfigLoaderTest", function (t) {
+describe("coon.core.app.BatchConfigLoaderTest", (t) => {
 
 
     let batchLoader;
@@ -69,14 +69,14 @@ describe("coon.core.app.BatchConfigLoaderTest", function (t) {
 
         t.expect(batchLoader.domains).toBeUndefined();
 
-        t.expect(batchLoader.addDomain("foo", {foo : "bar"})).toBe(true);
-        t.expect(batchLoader.addDomain("foo", {some : "other"})).toBe(false);
+        t.expect(batchLoader.addDomain("foo", {foo: "bar"})).toBe(true);
+        t.expect(batchLoader.addDomain("foo", {some: "other"})).toBe(false);
 
-        t.expect(batchLoader.addDomain("bar", {bar : "foo"})).toBe(true);
+        t.expect(batchLoader.addDomain("bar", {bar: "foo"})).toBe(true);
 
         t.expect(batchLoader.domains).toEqual({
-            foo : {foo : "bar"},
-            bar : {bar : "foo"}
+            foo: {foo: "bar"},
+            bar: {bar: "foo"}
         });
     });
 
@@ -95,7 +95,7 @@ describe("coon.core.app.BatchConfigLoaderTest", function (t) {
         // | ParseException
         // +-------------------------------------
         try {
-            res = await batchLoader.loadDomain("ParseException", {test : "foobar"});
+            res = await batchLoader.loadDomain("ParseException", {test: "foobar"});
         } catch (e) {
             exception = e;
         }
@@ -107,15 +107,15 @@ describe("coon.core.app.BatchConfigLoaderTest", function (t) {
         // +-------------------------------------
         // | Ok
         // +-------------------------------------
-        expectedResult = {test : "foobar"};
+        expectedResult = {test: "foobar"};
         res = await batchLoader.loadDomain("foo", expectedResult);
-        t.expect(res).toEqual({domain : "foo"});
+        t.expect(res).toEqual({domain: "foo"});
         reset();
 
         // +-------------------------------------
         // | HttpRequestException
         // +-------------------------------------
-        expectedResult = {weshould : "havethisavilable"};
+        expectedResult = {weshould: "havethisavilable"};
         res = await batchLoader.loadDomain("HttpRequestException", expectedResult);
         t.expect(coon.core.ConfigManager.get("HttpRequestException")).toEqual(expectedResult);
         t.expect(res).toEqual(expectedResult);
@@ -129,11 +129,11 @@ describe("coon.core.app.BatchConfigLoaderTest", function (t) {
         let spy, batchResult;
 
         const tests = [[
-            "ParseException", {test : "foobar"}
+            "ParseException", {test: "foobar"}
         ], [
-            "foo", {test : "foobar"}
+            "foo", {test: "foobar"}
         ], [
-            "HttpRequestException", {used : "default"}
+            "HttpRequestException", {used: "default"}
         ]];
 
         tests.forEach((test) => {
@@ -152,8 +152,8 @@ describe("coon.core.app.BatchConfigLoaderTest", function (t) {
         });
 
         t.isInstanceOf(batchResult.ParseException, "coon.core.app.ConfigurationException");
-        t.expect(batchResult.foo).toEqual({domain : "foo"});
-        t.expect(batchResult.HttpRequestException).toEqual({used : "default"});
+        t.expect(batchResult.foo).toEqual({domain: "foo"});
+        t.expect(batchResult.HttpRequestException).toEqual({used: "default"});
     });
 
 

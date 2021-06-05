@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -40,19 +40,19 @@
  */
 Ext.define("coon.core.data.proxy.RestForm", {
 
-    extend : "Ext.data.proxy.Rest",
+    extend: "Ext.data.proxy.Rest",
 
-    requires : [
+    requires: [
         "coon.core.data.AjaxForm",
         "coon.core.data.FormDataRequest",
         "coon.core.data.operation.Upload",
         "coon.core.data.writer.FormData"
     ],
 
-    alias : "proxy.cn_core-dataproxyrestform",
+    alias: "proxy.cn_core-dataproxyrestform",
 
-    config : {
-        writer : "cn_core-datawriterformdata"
+    config: {
+        writer: "cn_core-datawriterformdata"
     },
 
 
@@ -72,7 +72,7 @@ Ext.define("coon.core.data.proxy.RestForm", {
      * @throws if the passed operation action is "create", but the operation itself
      * is not of the type {@link coon.core.data.operation.Upload}
      */
-    buildRequest : function (operation) {
+    buildRequest: function (operation) {
 
         const me = this;
 
@@ -83,16 +83,16 @@ Ext.define("coon.core.data.proxy.RestForm", {
 
             if (!(operation instanceof coon.core.data.operation.Upload)) {
                 Ext.raise({
-                    source : Ext.getClassName(this),
-                    msg    : Ext.getClassName(this) +
+                    source: Ext.getClassName(this),
+                    msg: Ext.getClassName(this) +
                             ".buildRequest() needs an operation of the type " +
                             "coon.core.data.operation.Upload"
                 });
             }
 
             config = Ext.apply({
-                progressCallback : operation.getProgressCallback(),
-                progressScope    : operation.getProgressScope()
+                progressCallback: operation.getProgressCallback(),
+                progressScope: operation.getProgressScope()
             }, request.getCurrentConfig());
 
             request = Ext.create(

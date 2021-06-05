@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.session.SplitBatchVisitorTest", function (t) {
+describe("coon.core.data.session.SplitBatchVisitorTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should successfully test class", function (t) {
+    t.it("Should successfully test class", (t) => {
 
         var visitor = Ext.create("coon.core.data.session.SplitBatchVisitor");
 
@@ -38,7 +38,7 @@ describe("coon.core.data.session.SplitBatchVisitorTest", function (t) {
     });
 
 
-    t.it("Test getBatch()", function (t) {
+    t.it("Test getBatch()", (t) => {
 
         // to make sure, same config with regular BatchVisitor
         var operations = [

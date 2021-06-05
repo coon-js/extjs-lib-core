@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.SessionTest", function (t) {
+describe("coon.core.data.SessionTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ describe("coon.core.data.SessionTest", function (t) {
     // +----------------------------------------------------------------------------
 
 
-    t.it("Sanitize the Session class", function (t) {
+    t.it("Sanitize the Session class", (t) => {
         var c = Ext.create("coon.core.data.Session");
 
         t.expect(c instanceof Ext.data.Session).toBe(true);
@@ -39,9 +39,9 @@ describe("coon.core.data.SessionTest", function (t) {
     });
 
 
-    t.it("Test createVisitor() with batchVisitorClassName not loaded yet.", function (t) {
+    t.it("Test createVisitor() with batchVisitorClassName not loaded yet.", (t) => {
         var c = Ext.create("coon.core.data.Session", {
-            batchVisitorClassName : "foo"
+            batchVisitorClassName: "foo"
         });
 
         var exc = undefined;
@@ -58,9 +58,9 @@ describe("coon.core.data.SessionTest", function (t) {
     });
 
 
-    t.it("Test createVisitor() with batchVisitorClassName being the wrong type.", function (t) {
+    t.it("Test createVisitor() with batchVisitorClassName being the wrong type.", (t) => {
         var c = Ext.create("coon.core.data.Session", {
-            batchVisitorClassName : "Ext.Panel"
+            batchVisitorClassName: "Ext.Panel"
         });
 
         var exc = undefined;
@@ -77,18 +77,18 @@ describe("coon.core.data.SessionTest", function (t) {
     });
 
 
-    t.it("Test getSaveBatch()", function (t) {
+    t.it("Test getSaveBatch()", (t) => {
 
         Ext.define("MockBatchVisitor", {
-            extend : "Ext.data.session.BatchVisitor",
+            extend: "Ext.data.session.BatchVisitor",
 
-            getBatch : function () {
+            getBatch: function () {
                 return "foo";
             }
         }, function () {
 
             var c = Ext.create("coon.core.data.Session", {
-                batchVisitorClassName : "MockBatchVisitor"
+                batchVisitorClassName: "MockBatchVisitor"
             });
 
             t.expect(c.getSaveBatch()).toBe("foo");
@@ -99,18 +99,18 @@ describe("coon.core.data.SessionTest", function (t) {
     });
 
 
-    t.it("createVisitor() not returning same instance", function (t) {
+    t.it("createVisitor() not returning same instance", (t) => {
 
         Ext.define("MockBatchVisitor", {
-            extend : "Ext.data.session.BatchVisitor",
+            extend: "Ext.data.session.BatchVisitor",
 
-            getBatch : function () {
+            getBatch: function () {
                 return "foo";
             }
         }, function () {
 
             var c = Ext.create("coon.core.data.Session", {
-                batchVisitorClassName : "MockBatchVisitor"
+                batchVisitorClassName: "MockBatchVisitor"
             });
 
             t.expect(c.createVisitor()).not.toBe(c.createVisitor());

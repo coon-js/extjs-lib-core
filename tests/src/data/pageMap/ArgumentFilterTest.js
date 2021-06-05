@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
+describe("coon.core.data.pageMap.ArgumentFilterTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterPageValue
      */
-        t.it("filterPageValue()", function (t) {
+        t.it("filterPageValue()", (t) => {
             let exc,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try {
@@ -58,7 +58,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterPageMapValue
      */
-        t.it("filterPageMapValue()", function (t) {
+        t.it("filterPageMapValue()", (t) => {
             let exc, pageMap,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try {
@@ -82,7 +82,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterRecordValue
      */
-        t.it("filterRecordValue()", function (t) {
+        t.it("filterRecordValue()", (t) => {
             let exc, arg,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try {
@@ -106,7 +106,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterRecordPositionValue
      */
-        t.it("filterRecordPositionValue()", function (t) {
+        t.it("filterRecordPositionValue()", (t) => {
             let exc, arg,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try {
@@ -160,7 +160,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterRecordValue
      */
-        t.it("filterIndexValue()", function (t) {
+        t.it("filterIndexValue()", (t) => {
             let exc, arg,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try{filter.filterIndexValue();}catch (e) {exc = e;}
@@ -200,7 +200,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterRecordsArray
      */
-        t.it("filterRecordsArray()", function (t) {
+        t.it("filterRecordsArray()", (t) => {
             let exc, arg,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
             try{filter.filterRecordsArray();}catch (e) {exc = e;}
@@ -233,7 +233,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterPageMapOrFeederValue
      */
-        t.it("filterPageMapOrFeederValue()", function (t) {
+        t.it("filterPageMapOrFeederValue()", (t) => {
             let exc, pageMap,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
 
@@ -244,11 +244,11 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
             t.expect(exc.msg.toLowerCase()).toContain("value");
             exc = undefined;
 
-            pageMap = Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.BufferedStore")});
+            pageMap = Ext.create("Ext.data.PageMap", {store: Ext.create("Ext.data.BufferedStore")});
             t.expect(filter.filterPageMapOrFeederValue(pageMap)).toBe(pageMap);
 
             let feeder = Ext.create("coon.core.data.pageMap.PageMapFeeder", {
-                pageMap : pageMap
+                pageMap: pageMap
             });
             t.expect(filter.filterPageMapOrFeederValue(feeder)).toBe(feeder);
         });
@@ -257,7 +257,7 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
         /**
      * filterFeederValue
      */
-        t.it("filterFeederValue()", function (t) {
+        t.it("filterFeederValue()", (t) => {
             let exc, pageMap,
                 filter = Ext.create("coon.core.data.pageMap.ArgumentFilter");
 
@@ -268,9 +268,9 @@ describe("coon.core.data.pageMap.ArgumentFilterTest", function (t) {
             t.expect(exc.msg.toLowerCase()).toContain("feeder");
             exc = undefined;
 
-            pageMap = Ext.create("Ext.data.PageMap", {store : Ext.create("Ext.data.BufferedStore")});
+            pageMap = Ext.create("Ext.data.PageMap", {store: Ext.create("Ext.data.BufferedStore")});
             let feeder = Ext.create("coon.core.data.pageMap.PageMapFeeder", {
-                pageMap : pageMap
+                pageMap: pageMap
             });
             t.expect(filter.filterFeederValue(feeder)).toBe(feeder);
         });

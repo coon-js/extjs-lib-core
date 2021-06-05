@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -50,20 +50,20 @@
  */
 Ext.define("coon.core.Environment", {
 
-    singleton : true,
+    singleton: true,
 
-    requires : [
+    requires: [
         "coon.core.env.VendorBase",
         "coon.core.exception.IllegalArgumentException",
         "coon.core.exception.UnsupportedOperationException",
         "coon.core.exception.MissingPropertyException"
     ],
 
-    config : {
+    config: {
         /**
          * @type {coon.core.env.VendorBase}
          */
-        vendorBase : undefined
+        vendorBase: undefined
     },
 
 
@@ -188,7 +188,7 @@ Ext.define("coon.core.Environment", {
         return await vendorBase.loadPackage(packageName);
     },
 
-    privates : {
+    privates: {
 
         /**
          * Delegates to the method from the VendorBase and returns its value.

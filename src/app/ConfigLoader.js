@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,9 @@
  */
 Ext.define("coon.core.app.ConfigLoader", {
 
-    requires : [
+    requires: [
+        // @define l8.core
+        "l8.core",
         "coon.core.ConfigManager",
         "coon.core.Environment",
         "coon.core.app.ConfigurationException",
@@ -70,9 +72,9 @@ Ext.define("coon.core.app.ConfigLoader", {
 
 
         Object.defineProperty(this, "fileLoader", {
-            value : fileLoader,
-            writable : false,
-            configurable : false
+            value: fileLoader,
+            writable: false,
+            configurable: false
         });
 
     },
@@ -117,7 +119,7 @@ Ext.define("coon.core.app.ConfigLoader", {
                 throw new coon.core.exception.ParseException(e);
             }
 
-            config = configPath ? coon.core.Util.unchain(configPath, config, {}) : config;
+            config = configPath ? l8.core.unchain(configPath, config, {}) : config;
 
             coon.core.ConfigManager.register(
                 domain, config
@@ -131,7 +133,7 @@ Ext.define("coon.core.app.ConfigLoader", {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Returns the expected configuration-file name for the specified domain.

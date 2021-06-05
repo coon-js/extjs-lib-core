@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -45,19 +45,19 @@
  */
 Ext.define("coon.core.data.field.CompoundKeyField", {
 
-    extend : "Ext.data.field.String",
+    extend: "Ext.data.field.String",
 
-    alias : "data.field.cn_core-datafieldcompoundkey",
+    alias: "data.field.cn_core-datafieldcompoundkey",
 
-    validators : "presence",
+    validators: "presence",
 
-    critical : true,
+    critical: true,
 
 
     /**
      * @inheritdoc
      */
-    convert    : function (v) {
+    convert: function (v) {
         if (v === "" || v === null || v === undefined) {
             return undefined;
         }

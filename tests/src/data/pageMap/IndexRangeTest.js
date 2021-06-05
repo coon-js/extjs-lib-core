@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
+describe("coon.core.data.pageMap.IndexRangeTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
     t.requireOk("coon.core.data.pageMap.RecordPosition", function () {
 
 
-        t.it("constructor()", function (t) {
+        t.it("constructor()", (t) => {
 
             var exc,
                 RecordPosition = coon.core.data.pageMap.RecordPosition;
@@ -45,50 +45,50 @@ describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
             exc = undefined;
 
             try {Ext.create("coon.core.data.pageMap.IndexRange",
-                {start : ""});} catch (e) {exc = e;}
+                {start: ""});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("must be specified");
             exc = undefined;
 
             try {Ext.create("coon.core.data.pageMap.IndexRange",
-                {end : "end"});} catch (e) {exc = e;}
+                {end: "end"});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("must be specified");
             exc = undefined;
 
             try {Ext.create("coon.core.data.pageMap.IndexRange",
-                {start : "foo", end : "bar"});} catch (e) {exc = e;}
+                {start: "foo", end: "bar"});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             exc = undefined;
 
             try {Ext.create("coon.core.data.pageMap.IndexRange",
-                {start : [2, 1], end : [1, 2]});} catch (e) {exc = e;}
+                {start: [2, 1], end: [1, 2]});} catch (e) {exc = e;}
             t.expect(exc).toBeDefined();
             t.expect(exc.msg).toBeDefined();
             t.expect(exc.msg.toLowerCase()).toContain("less than or equal");
             exc = undefined;
 
             t.expect(
-                Ext.create("coon.core.data.pageMap.IndexRange", {start:[1, 1], end : [1, 1]})
+                Ext.create("coon.core.data.pageMap.IndexRange", {start: [1, 1], end: [1, 1]})
                 instanceof coon.core.data.pageMap.IndexRange
             ).toBe(true);
 
             t.expect(
-                Ext.create("coon.core.data.pageMap.IndexRange", {start:[1, 1], end : [1, 2]})
+                Ext.create("coon.core.data.pageMap.IndexRange", {start: [1, 1], end: [1, 2]})
                     instanceof coon.core.data.pageMap.IndexRange
             ).toBe(true);
 
             t.expect(
-                Ext.create("coon.core.data.pageMap.IndexRange", {start:RecordPosition.create(1, 1), end : [1, 1]})
+                Ext.create("coon.core.data.pageMap.IndexRange", {start: RecordPosition.create(1, 1), end: [1, 1]})
                     instanceof coon.core.data.pageMap.IndexRange
             ).toBe(true);
 
             t.expect(
                 Ext.create("coon.core.data.pageMap.IndexRange", {
-                    start:RecordPosition.create(1, 1), end : RecordPosition.create(1, 2)})
+                    start: RecordPosition.create(1, 1), end: RecordPosition.create(1, 2)})
                     instanceof coon.core.data.pageMap.IndexRange
             ).toBe(true);
 
@@ -96,13 +96,13 @@ describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
         });
 
 
-        t.it("set*() / get*()", function (t) {
+        t.it("set*() / get*()", (t) => {
 
             var exc, range;
 
             range = Ext.create("coon.core.data.pageMap.IndexRange", {
-                start : [1, 9],
-                end   : [2, 2]
+                start: [1, 9],
+                end: [2, 2]
             });
 
             try {range.setStart([4, 5]);} catch (e) {exc = e;}
@@ -128,59 +128,59 @@ describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
         });
 
 
-        t.it("contains()", function (t) {
+        t.it("contains()", (t) => {
 
             var exc, range, test,
                 RecordPosition = coon.core.data.pageMap.RecordPosition,
                 tests = [{
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [2, 4],
-                    exp    : true
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [2, 4],
+                    exp: true
                 }, {
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [5, 6],
-                    exp    : true
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [5, 6],
+                    exp: true
                 }, {
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [3, 0],
-                    exp    : true
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [3, 0],
+                    exp: true
                 }, {
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [12, 4],
-                    exp    : false
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [12, 4],
+                    exp: false
                 }, {
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [5, 8],
-                    exp    : false
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [5, 8],
+                    exp: false
                 }, {
-                    multi  : true,
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [
+                    multi: true,
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [
                         RecordPosition.create(5, 8),
                         RecordPosition.create(1, 1)
                     ],
-                    exp : false
+                    exp: false
                 }, {
-                    multi  : true,
-                    start  : [2, 4],
-                    end    : [5, 6],
-                    target : [
+                    multi: true,
+                    start: [2, 4],
+                    end: [5, 6],
+                    target: [
                         RecordPosition.create(5, 8),
                         RecordPosition.create(1, 1),
                         RecordPosition.create(3, 12)
                     ],
-                    exp : true
+                    exp: true
                 }];
 
             range = Ext.create("coon.core.data.pageMap.IndexRange", {
-                start : [1, 9],
-                end   : [2, 2]
+                start: [1, 9],
+                end: [2, 2]
             });
 
             try {range.contains([4, 5]);} catch (e) {exc = e;}
@@ -199,8 +199,8 @@ describe("coon.core.data.pageMap.IndexRangeTest", function (t) {
                 test = tests[i];
 
                 range = Ext.create("coon.core.data.pageMap.IndexRange", {
-                    start : test.start,
-                    end   : test.end
+                    start: test.start,
+                    end: test.end
                 });
 
                 if (test.multi) {

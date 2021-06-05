@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@
  */
 Ext.define("coon.core.fixtures.sim.ItemSim", {
 
-    requires : [
+    requires: [
         "coon.core.fixtures.sim.Init"
     ]
 
@@ -38,16 +38,16 @@ Ext.define("coon.core.fixtures.sim.ItemSim", {
 
     for (var i = 0, len = 500; i < len; i++) {
         items.push({
-            id       : (i + 1) + "",
-            testProp : i,
-            testPropForIndexLookup : (i + 1)
+            id: (i + 1) + "",
+            testProp: i,
+            testPropForIndexLookup: (i + 1)
         });
     }
 
     Ext.ux.ajax.SimManager.register({
-        type : "json",
+        type: "json",
 
-        url  : /cn_core\/fixtures\/PageMapItems(\/\d+)?/,
+        url: /cn_core\/fixtures\/PageMapItems(\/\d+)?/,
 
 
         data: function (ctx) {
@@ -59,7 +59,7 @@ Ext.define("coon.core.fixtures.sim.ItemSim", {
 
             if (idPart) {
                 id = parseInt(idPart.substring(1), 10);
-                return {data : Ext.Array.findBy(
+                return {data: Ext.Array.findBy(
                     items,
                     function (item) {
                         return item.id === "" + id;

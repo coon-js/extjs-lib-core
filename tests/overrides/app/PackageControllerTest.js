@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,18 +27,18 @@
  * Tests for issue
  * https://www.sencha.com/forum/showthread.php?339006-Sencha-6-2-GPL-Commercial-auto-generated-id-of-App-Controller-is-NOT-FQN-of-class&p=1178063#post1178063
  */
-describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
+describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
 
-    t.it("Should compute the id of the PackageController erroneously", function (t) {
+    t.it("Should compute the id of the PackageController erroneously", (t) => {
 
         Ext.define("Test.subname.controller.ControllerName", {
-            extend : "coon.core.app.PackageController",
-            namespace : ["Test.subname"]
+            extend: "coon.core.app.PackageController",
+            namespace: ["Test.subname"]
         }, function () {
 
             var controller = Ext.create("Test.subname.controller.ControllerName");
@@ -47,8 +47,8 @@ describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
         });
 
         Ext.define("Test.subname.app.controller.ControllerName", {
-            extend : "coon.core.app.PackageController",
-            namespace : ["Test.subname"]
+            extend: "coon.core.app.PackageController",
+            namespace: ["Test.subname"]
         }, function () {
 
             var controller = Ext.create("Test.subname.app.controller.ControllerName");
@@ -64,11 +64,11 @@ describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
 
     t.requireOk("coon.core.overrides.core.app.PackageController", function () {
 
-        t.it("Should compute the id properly with override", function (t) {
+        t.it("Should compute the id properly with override", (t) => {
 
             Ext.define("Test.subname.controller.ControllerName", {
-                extend : "coon.core.app.PackageController",
-                namespace : ["Test.subname"]
+                extend: "coon.core.app.PackageController",
+                namespace: ["Test.subname"]
             }, function () {
 
                 var controller = Ext.create("Test.subname.controller.ControllerName");
@@ -77,8 +77,8 @@ describe("coon.core.overrides.core.app.PackageControllerTest", function (t) {
             });
 
             Ext.define("Test.subname.app.controller.ControllerName", {
-                extend : "coon.core.app.PackageController",
-                namespace : ["Test.subname"]
+                extend: "coon.core.app.PackageController",
+                namespace: ["Test.subname"]
             }, function () {
 
                 var controller = Ext.create("Test.subname.app.controller.ControllerName");

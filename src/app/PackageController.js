@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -61,10 +61,9 @@
  */
 Ext.define("coon.core.app.PackageController", {
 
-    extend : "Ext.app.Controller",
+    extend: "Ext.app.Controller",
 
-    requires : [
-        "coon.core.Util",
+    requires: [
         "coon.core.app.plugin.ControllerPlugin"
     ],
 
@@ -72,14 +71,14 @@ Ext.define("coon.core.app.PackageController", {
      * @private
      * @type {Array=coon.core.app.plugin.ControllerPlugin}
      */
-    plugins : null,
+    plugins: null,
 
 
     /**
      * @constructor
      * @param cfg
      */
-    constructor : function (cfg) {
+    constructor: function (cfg) {
 
         const me = this;
         me.callParent(arguments);
@@ -93,7 +92,7 @@ Ext.define("coon.core.app.PackageController", {
      * PackageController.
      * Parameters to this methods are arbitrary. The following list of
      * arguments are suggested. A default implementation can be found in
-     * the lib-cn_navport-package.
+     * the extjs-comp-navport-package.
      *
      * @param {Ext.Component} view The view to configure
      * @param {Boolean} created true if the view was just created, otherwise false,
@@ -103,7 +102,7 @@ Ext.define("coon.core.app.PackageController", {
      * @return {Ext.Component} view The view that was configured, or any other
      * {Ext.Component}
      */
-    configureView : Ext.emptyFn,
+    configureView: Ext.emptyFn,
 
 
     /**
@@ -119,7 +118,7 @@ Ext.define("coon.core.app.PackageController", {
      *
      * @throws if the submitted argument is not an instance of {coon.core.app.plugin.ControllerPlugin}
      */
-    addPlugin : function (plugin) {
+    addPlugin: function (plugin) {
 
         if (!(plugin instanceof coon.core.app.plugin.ControllerPlugin)) {
             Ext.raise("plugin must be an instance of coon.core.app.plugin.ControllerPlugin");
@@ -150,7 +149,7 @@ Ext.define("coon.core.app.PackageController", {
      *
      * @throws if any error occured during execution of the PluginController's run method
      */
-    visitPlugins : function (app) {
+    visitPlugins: function (app) {
 
         const me = this;
 
@@ -163,8 +162,8 @@ Ext.define("coon.core.app.PackageController", {
                 plugin.run(me);
             } catch (e) {
                 Ext.raise({
-                    msg : "Executing the PluginController failed.",
-                    reason : e
+                    msg: "Executing the PluginController failed.",
+                    reason: e
                 });
             }
 
@@ -185,7 +184,7 @@ Ext.define("coon.core.app.PackageController", {
      * @return {boolean} false to prevent the {@link coon.core.app.Application#applicationView}
      * from being rendered
      */
-    preLaunchHook : Ext.emptyFn,
+    preLaunchHook: Ext.emptyFn,
 
 
     /**
@@ -197,7 +196,7 @@ Ext.define("coon.core.app.PackageController", {
      *
      * @return {Object/undefined}
      */
-    postLaunchHook : Ext.emptyFn,
+    postLaunchHook: Ext.emptyFn,
 
 
     /**
@@ -214,7 +213,7 @@ Ext.define("coon.core.app.PackageController", {
      * @throws if the controller is not being used in an application context
      * and #getApplication is falsy
      */
-    isActionRoutable : function () {
+    isActionRoutable: function () {
         var me = this;
 
         return me.isMainViewAvailable();
@@ -234,15 +233,15 @@ Ext.define("coon.core.app.PackageController", {
      *
      * @see onBeforePackageRoute
      */
-    updateRoutes : function (routes) {
+    updateRoutes: function (routes) {
 
         var url;
 
         for (url in routes) {
             if (!Ext.isObject(routes[url])) {
                 routes[url] = {
-                    action : routes[url],
-                    before : "onBeforePackageRoute"
+                    action: routes[url],
+                    before: "onBeforePackageRoute"
                 };
             }
         }
@@ -264,14 +263,14 @@ Ext.define("coon.core.app.PackageController", {
      * @throws if the controller is not being used in an application context
      * and #getApplication is falsy
      */
-    isMainViewAvailable : function () {
+    isMainViewAvailable: function () {
         var me = this;
 
         if (!me.getApplication()) {
             Ext.raise({
-                source      : Ext.getClassName(me),
-                application : me.getApplication(),
-                msg         : Ext.getClassName(me) + " is apparently not used in an application"
+                source: Ext.getClassName(me),
+                application: me.getApplication(),
+                msg: Ext.getClassName(me) + " is apparently not used in an application"
             });
         }
 
@@ -279,7 +278,7 @@ Ext.define("coon.core.app.PackageController", {
     },
 
 
-    privates : {
+    privates: {
 
         /**
          * Callback for the before-action of a route. Checks whether the Application
@@ -299,7 +298,7 @@ Ext.define("coon.core.app.PackageController", {
          * @throws if the controller is not being used in an application context
          * and #getApplication is falsy
          */
-        onBeforePackageRoute : function () {
+        onBeforePackageRoute: function () {
 
             var me     = this,
                 action = arguments[arguments.length - 1],
@@ -307,9 +306,9 @@ Ext.define("coon.core.app.PackageController", {
 
             if (!me.getApplication()) {
                 Ext.raise({
-                    source      : Ext.getClassName(me),
-                    application : me.getApplication(),
-                    msg         : Ext.getClassName(me) + " is apparently not used in an application"
+                    source: Ext.getClassName(me),
+                    application: me.getApplication(),
+                    msg: Ext.getClassName(me) + " is apparently not used in an application"
                 });
             }
 

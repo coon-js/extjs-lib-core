@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -35,25 +35,25 @@ Ext.define("coon.core.data.FormDataRequest", {
 
     extend: "Ext.data.Request",
 
-    config : {
+    config: {
 
         /**
          * @cfg {Function} progressCallback
          * The method to call during the progress event fired by a xhr connection.
          */
-        progressCallback : undefined,
+        progressCallback: undefined,
 
         /**
          * @cfg {Object} progressScope
          * The scope for #progressCallback
          */
-        progressScope : undefined,
+        progressScope: undefined,
 
         /**
          * @cfg {FormData} formData the Javascript native FormData to send to
          * the server
          */
-        formData : undefined
+        formData: undefined
     }
 
 });

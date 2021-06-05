@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.exception.ExceptionTest", function (t) {
+describe("coon.core.exception.ExceptionTest", (t) => {
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
@@ -41,7 +41,7 @@ describe("coon.core.exception.ExceptionTest", function (t) {
             let exc;
 
             exc = Ext.create("coon.core.exception.Exception", {
-                msg : "Exception"
+                msg: "Exception"
             });
 
             t.expect(Object.isFrozen(exc)).toBe(true);

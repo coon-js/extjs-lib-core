@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2017-2020 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,31 +23,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.writer.FormDataTest", function (t) {
+describe("coon.core.data.writer.FormDataTest", (t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Sanitize the writer", function (t) {
+    t.it("Sanitize the writer", (t) => {
         var writer = Ext.create("coon.core.data.writer.FormData");
 
         t.expect(writer instanceof Ext.data.writer.Json).toBe(true);
         t.expect(writer.alias).toContain("writer.cn_core-datawriterformdata");
     });
 
-    t.it("Test writeRecords()", function (t) {
+    t.it("Test writeRecords()", (t) => {
         var jsonwr = Ext.create("Ext.data.writer.Json"),
             writer = Ext.create("coon.core.data.writer.FormData"),
-            b1     = new Blob(["foo"], {type : "text/plain"}),
-            b2     = new Blob(["bar"], {type : "text/plain"}),
+            b1     = new Blob(["foo"], {type: "text/plain"}),
+            b2     = new Blob(["bar"], {type: "text/plain"}),
             data   = [{
-                fileName : "foo",
-                blob     : b1
+                fileName: "foo",
+                blob: b1
             }, {
-                fileName : "bar",
-                blob     : b2
+                fileName: "bar",
+                blob: b2
             }],
             regularRequest  = Ext.create("Ext.data.Request"),
             formDataRequest = Ext.create("coon.core.data.FormDataRequest");

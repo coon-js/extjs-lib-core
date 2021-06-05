@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,17 +46,17 @@
  */
 Ext.define("coon.core.ThemeManager", {
 
-    singleton : true,
+    singleton: true,
 
-    requires : [
+    requires: [
         "coon.core.Theme"
     ],
 
-    config : {
+    config: {
         /**
          * @type coon.core.Theme
          */
-        theme : undefined
+        theme: undefined
     },
 
     /**
@@ -67,7 +67,7 @@ Ext.define("coon.core.ThemeManager", {
      * @throws if theme is not an instance of coon.core.Theme or if a
      * theme was already set for this manager.
      */
-    applyTheme : function (theme) {
+    applyTheme: function (theme) {
 
         const me = this;
 

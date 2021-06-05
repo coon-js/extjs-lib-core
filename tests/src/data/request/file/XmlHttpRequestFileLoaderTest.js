@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", function (t) {
+describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", (t) => {
 
 
     const
@@ -99,8 +99,8 @@ describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", function (t
             t.expect(exc).toBeUndefined();
             t.expect(typeof responseText).toBe("string");
             t.expect(JSON.parse(responseText)).toEqual({
-                "config" : {
-                    "foo" : "bar"
+                "config": {
+                    "foo": "bar"
                 }
             });
         });
@@ -116,8 +116,8 @@ describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", function (t
 
         t.expect(typeof responseText).toBe("string");
         t.expect(JSON.parse(responseText)).toEqual({
-            "config" : {
-                "foo" : "bar"
+            "config": {
+                "foo": "bar"
             }
         });
     });

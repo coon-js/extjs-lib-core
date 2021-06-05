@@ -1,7 +1,7 @@
 /**
  * coon.js
- * lib-cn_core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/lib-cn_core
+ * extjs-lib-core
+ * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,7 +39,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
             },
             loadApplicationConfigExceptionTemplate = async (t, env) => {
                 const appName = "envfilefound";
-                setupEnvironment({manifest: {name : appName, "coon-js" : {env : env}}});
+                setupEnvironment({manifest: {name: appName, "coon-js": {env: env}}});
 
                 let configurationException = new coon.core.app.ConfigurationException(new coon.core.exception.Exception());
                 applicationUtil.configLoader.load = function () {
@@ -92,33 +92,33 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("getCoonPackages()", (t) => {
 
             const manifestPackages = {
-                    foo : {
-                        included : false,
-                        namespace : "foo",
-                        "coon-js" : {package  : true}
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: true}
                     },
-                    bar : {
-                        included : true,
-                        namespace : "com.bar",
-                        "coon-js" : {package  : {controller : true}}
+                    bar: {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {package: {controller: true}}
                     },
-                    snafu : {
-                        included : true,
-                        namespace : "snafu"
+                    snafu: {
+                        included: true,
+                        namespace: "snafu"
                     }
                 },
                 result = {
-                    foo : {
-                        included : false,
-                        namespace : "foo",
-                        "coon-js" : {package  : true}
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: true}
                     },
-                    "bar" : {
-                        included : true,
-                        namespace : "com.bar",
-                        "coon-js" : {
-                            package  : {
-                                controller : "com.bar.app.PackageController"
+                    "bar": {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {
+                            package: {
+                                controller: "com.bar.app.PackageController"
                             }
                         }
                     }
@@ -134,38 +134,38 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         });
 
 
-        t.it("getApplicationConfigUrls()", function (t) {
+        t.it("getApplicationConfigUrls()", (t) => {
 
-            setupEnvironment({manifest : {name : "appname", "coon-js" : {env : "testing"}}});
+            setupEnvironment({manifest: {name: "appname", "coon-js": {env: "testing"}}});
 
             let defaultPath = "fixtures/coon-js/appname.conf.json",
                 envPath =  "fixtures/coon-js/appname.testing.conf.json";
 
             t.expect(applicationUtil.getApplicationConfigUrls()).toEqual({
                 default: defaultPath,
-                environment:  envPath
+                environment: envPath
             });
 
         });
 
 
-        t.it("getPackageNameForController()", function (t) {
+        t.it("getPackageNameForController()", (t) => {
 
             const manifest =  {
-                foo : {
-                    included : false,
-                    namespace : "foo",
-                    "coon-js" : {package  : {controller : "FOOBAR"}}
+                foo: {
+                    included: false,
+                    namespace: "foo",
+                    "coon-js": {package: {controller: "FOOBAR"}}
                 },
-                bar : {
-                    included : true,
-                    namespace : "com.bar",
-                    "coon-js" : {package  : {controller : true}}
+                bar: {
+                    included: true,
+                    namespace: "com.bar",
+                    "coon-js": {package: {controller: true}}
                 },
-                snafu : {
-                    included : false,
-                    namespace : "snafu",
-                    "coon-js" : {package  : true}
+                snafu: {
+                    included: false,
+                    namespace: "snafu",
+                    "coon-js": {package: true}
                 }
             };
 
@@ -176,40 +176,40 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         });
 
 
-        t.it("getControllerPlugins()", function (t) {
+        t.it("getControllerPlugins()", (t) => {
 
             const manifestPackages =  {
-                    foo : {
-                        included : false,
-                        namespace : "foo",
-                        "coon-js" : {package  : {controller : true, config : {plugins : {controller : ["bar", "snafu.Controller"]}}}}
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
                     },
-                    bar : {
-                        included : true,
-                        namespace : "com.bar",
-                        "coon-js" : {package  : true}
+                    bar: {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {package: true}
                     },
-                    acme : {
-                        namespace : "some.acme",
-                        "coon-js" : {package : true}
+                    acme: {
+                        namespace: "some.acme",
+                        "coon-js": {package: true}
                     },
-                    snafu : {
-                        included : false,
-                        namespace : "snafu",
-                        "coon-js" : {package : {controller : "mycustom.Controller", config : {plugins : {controller : "some.acme.controller.Plugin"}}}}
+                    snafu: {
+                        included: false,
+                        namespace: "snafu",
+                        "coon-js": {package: {controller: "mycustom.Controller", config: {plugins: {controller: "some.acme.controller.Plugin"}}}}
                     }
                 },
                 result = {
-                    "foo.app.PackageController" : [
+                    "foo.app.PackageController": [
                         "com.bar.app.plugin.ControllerPlugin",
                         "snafu.Controller"
                     ],
-                    "mycustom.Controller" : [
+                    "mycustom.Controller": [
                         "some.acme.controller.Plugin"
                     ]
                 };
 
-            setupEnvironment({manifest : {packages : manifestPackages}});
+            setupEnvironment({manifest: {packages: manifestPackages}});
 
             Object.freeze(manifestPackages);
             Object.freeze(result);
@@ -217,16 +217,16 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
             t.isDeeply(applicationUtil.getControllerPlugins(manifestPackages), result);
 
 
-            t.isDeeply(applicationUtil.getControllerPlugins({foobar : {}}), {});
+            t.isDeeply(applicationUtil.getControllerPlugins({foobar: {}}), {});
         });
 
 
-        t.it("getApplicationPlugins()", function (t) {
+        t.it("getApplicationPlugins()", (t) => {
 
             const
                 applicationConfig = {
-                    "application" : {
-                        "plugins" : [
+                    "application": {
+                        "plugins": [
                             "ApplicationPluginCustomWONamespace",
                             "application.plugin.custom.w.Namespace",
                             "foo"
@@ -234,24 +234,24 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                     }
                 },
                 manifestPackages =  {
-                    foo : {
-                        included : false,
-                        namespace : "foo",
-                        "coon-js" : {package  : true}
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: true}
                     },
-                    bar : {
-                        included : true,
-                        namespace : "com.bar",
-                        "coon-js" : {package  : true}
+                    bar: {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {package: true}
                     },
-                    acme : {
-                        namespace : "some.acme",
-                        "coon-js" : {package : true}
+                    acme: {
+                        namespace: "some.acme",
+                        "coon-js": {package: true}
                     },
-                    snafu : {
-                        included : false,
-                        namespace : "application.plugin",
-                        "coon-js" : {package : true}
+                    snafu: {
+                        included: false,
+                        namespace: "application.plugin",
+                        "coon-js": {package: true}
                     }
                 },
                 result = [
@@ -259,7 +259,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                     "foo.app.plugin.ApplicationPlugin"
                 ];
 
-            setupEnvironment({manifest : {packages : manifestPackages}});
+            setupEnvironment({manifest: {packages: manifestPackages}});
 
             Object.freeze(manifestPackages);
             Object.freeze(result);
@@ -270,7 +270,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
         t.it("loadApplicationConfig() - no env-property in manifest available", async t => {
             const appName = "foo";
-            setupEnvironment({manifest : {name : appName}});
+            setupEnvironment({manifest: {name: appName}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callFake(async () => {});
 
@@ -285,7 +285,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but both files not found", async t => {
 
             const appName = "foo";
-            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -302,11 +302,11 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but only default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile : "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(2);
             t.expect(spy.calls.all()[0].args[0]).toBe(appName);
@@ -319,11 +319,11 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadApplicationConfig() - env-property (dev)  not available, default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({manifest : {name : appName}});
+            setupEnvironment({manifest: {name: appName}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile : "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(1);
             t.expect(spy.calls.all()[0].args[0]).toBe(appName);
@@ -333,11 +333,11 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
 
         t.it("loadApplicationConfig() - env-property (dev) available, env file found", async t => {
             const appName = "envfilefound";
-            setupEnvironment({manifest : {name : appName, "coon-js" : {env : "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({envfile : "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({envfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(1);
             t.expect(spy.calls.all()[0].args[0]).toBe(appName);
@@ -346,7 +346,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         });
 
         t.it("loadApplicationConfig() - env-property (dev) available, exception thrown", async t => {
-            await loadApplicationConfigExceptionTemplate(t, {env : "dev"});
+            await loadApplicationConfigExceptionTemplate(t, {env: "dev"});
         });
 
 
@@ -358,9 +358,9 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
         t.it("loadPackages()", async (t) => {
             const appName = "testapp";
 
-            setupEnvironment({manifest : {
-                name : appName,
-                packages : {
+            setupEnvironment({manifest: {
+                name: appName,
+                packages: {
                     foo: {
                         name: "foo",
                         namespace: "foo",
@@ -380,7 +380,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
                         "coon-js": {
                             package: {
                                 config: {
-                                    conf : "set"
+                                    conf: "set"
                                 }
                             }
                         }
@@ -394,7 +394,7 @@ describe("coon.core.app.ApplicationUtilTest", (t) => {
             let ctrls = await applicationUtil.loadPackages(coon.core.Environment.getPackages());
 
             t.isDeeply(applicationUtil.batchConfigLoader.domains, {
-                "bar" : {conf : "set"}
+                "bar": {conf: "set"}
             });
 
             t.isDeeply(ctrls, ["foo.app.PackageController"]);
