@@ -39,7 +39,7 @@ export default {
         css: {
             extjs: {
                 modern: "../build/extjs-build/modern/theme-triton/resources/theme-triton-all.css",
-                classic: "../build/extjs-build/classic/theme-triton/resources/theme-triton-all.css",
+                classic: "../build/extjs-build/classic/theme-triton/resources/theme-triton-all.css"
             }
         },
         js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js", {
