@@ -1,12 +1,19 @@
 # @coon-js/extjs-lib-core
-this NPM package provides core functionality needed in ExtJS projects, and allows for
+This NPM package provides core functionality needed in ExtJS projects, and allows for
 extended application configuration during runtime of an ExtJS-application.
-This library also contains enhancements made to teh PageMap-classes for dynamically adding/removing data from a BufferedStore.
+This library also contains enhancements made to the PageMap-classes for dynamically adding/removing data from a BufferedStore.
 
 ## Installation
 ```
 npm install --save-dev @coon-js/extjs-lib-core
 ```
+## Post-Install
+[@coon-js/extjs-link](https://npmjs.org/coon-js/extjs-link) will start once the package was installed and guide you
+through the process of creating symlinks to an existing ExtJS sdk installation. 
+This is only required if you want to run the tests (`./tests`), as [Siesta](https//npmjs.org/siesta-lite) relies on 
+an existing ExtJS installation.
+You can quit the tool safely with `/q` if you do not wish to set up symlinks.
+
 
 ## Usage
 ### Application configuration

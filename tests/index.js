@@ -25,12 +25,12 @@
 
 import testConfig from "./tests.config.js";
 import groups from "./groups.config.js";
-import {getPaths} from "../node_modules/@coon-js/siesta-lib-helper/dist/siesta-lib-helper.runtime.esm.js";
+import {configureWithExtJsLinkPaths} from "../node_modules/@coon-js/siesta-lib-helper/dist/siesta-lib-helper.runtime.esm.js";
 
 const 
     browser = new Siesta.Harness.Browser.ExtJS(),
     isModern = window.location.href.indexOf("toolkit=modern") !== -1,
-    paths = getPaths(testConfig, isModern);
+    paths = await configureWithExtJsLinkPaths(testConfig, "../.extjs-link.conf.json", isModern);
 
 browser.configure(Object.assign({
     title: "extjs-lib-core - " + (isModern ? "modern" : "classic"),

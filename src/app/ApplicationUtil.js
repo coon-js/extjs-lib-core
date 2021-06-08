@@ -32,8 +32,8 @@
 Ext.define("coon.core.app.ApplicationUtil",{
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.Environment",
         "coon.core.app.BatchConfigLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader",
@@ -117,7 +117,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         Object.entries(manifestPackages).forEach((entry) => {
 
             let [packageName, packageConfig] = entry,
-                coonPackage = l8.core.unchain("coon-js.package", packageConfig);
+                coonPackage = l8.unchain("coon-js.package", packageConfig);
 
             if (coonPackage !== undefined) {
                 packages[packageName] = Ext.clone(packageConfig);
@@ -257,7 +257,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             let [, packageConfig] = entry;
 
-            const plugins = [].concat(l8.core.unchain(
+            const plugins = [].concat(l8.unchain(
                 "coon-js.package.config.plugins.controller",
                 packageConfig,
                 []
@@ -267,7 +267,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
                 return;
             }
 
-            const ctrl = l8.core.unchain("coon-js.package.controller", packageConfig);
+            const ctrl = l8.unchain("coon-js.package.controller", packageConfig);
 
 
             plugins.forEach(function (plugin) {
@@ -327,7 +327,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         const
             me = this,
             coonPackages = me.getCoonPackages(manifestPackages),
-            plugins = l8.core.unchain("application.plugins", applicationConfig, []),
+            plugins = l8.unchain("application.plugins", applicationConfig, []),
             fqns = [];
 
         plugins.forEach( (plugin) => {
@@ -460,8 +460,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         entries.forEach((entry) => {
             let [name, packageConfig] = entry,
-                controller = l8.core.unchain("coon-js.package.controller", packageConfig),
-                config = l8.core.unchain("coon-js.package.config", packageConfig);
+                controller = l8.unchain("coon-js.package.controller", packageConfig),
+                config = l8.unchain("coon-js.package.config", packageConfig);
 
             if (controller) {
                 controllers.push(controller);

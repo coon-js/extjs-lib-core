@@ -33,7 +33,7 @@ describe("coon.core.data.pageMap.PageMapFeederTest", (t) => {
         }]
     });
 
-    const TIMEOUT = 1TIMEOUT,
+    const TIMEOUT = 250,
         loadPages = function (store, pages) {
 
             store.loadPage(pages.shift(), {

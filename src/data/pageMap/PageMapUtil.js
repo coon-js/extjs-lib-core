@@ -41,8 +41,8 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
     ],
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.data.pageMap.RecordPosition",
         "coon.core.data.pageMap.PageRange",
         "coon.core.data.pageMap.IndexRange"
@@ -499,7 +499,7 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
      * instance of {Ext.data.Model}, or if the record cannot be found in the
      * current data set
      *
-     * @see l8.core.listNeighbours
+     * @see l8.listNeighbours
      * @see #getRangeForRecord
      */
     getPageRangeForRecord: function (record, pageMapOrFeeder) {
@@ -520,7 +520,7 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
      *
      * @return {coon.core.data.pageMap.PageRange}
      *
-     * @see l8.core.listNeighbours
+     * @see l8.listNeighbours
      *
      * @throws if pageMap is not an instance of {Ext.data.PageMap}, or if record
      * is not an instance of {Ext.data.Model}, or if record is not found in the
@@ -597,7 +597,7 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
             }
 
             let toPage     = position.getPage(),
-                tmpPages   = l8.core.listNeighbours(pages, toPage),
+                tmpPages   = l8.listNeighbours(pages, toPage),
                 finalPages = [], feed, prev, next, curr;
 
             for (let i = tmpPages.indexOf(toPage), len = tmpPages.length; i < len; i++) {
@@ -654,7 +654,7 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
         }
 
 
-        return l8.core.listNeighbours(pages, position.getPage());
+        return l8.listNeighbours(pages, position.getPage());
     },
 
     /**
@@ -818,7 +818,7 @@ Ext.define("coon.core.data.pageMap.PageMapUtil", {
             ranges.push(i);
         }
 
-        ranges = l8.core.groupIndices(ranges);
+        ranges = l8.groupIndices(ranges);
         for (i = 0, len = ranges.length; i < len; i++) {
             pageRanges.push(Ext.create("coon.core.data.pageMap.PageRange", {
                 pages: ranges[i]

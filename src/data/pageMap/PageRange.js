@@ -61,8 +61,8 @@ Ext.define("coon.core.data.pageMap.PageRange", {
 
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.data.pageMap.RecordPosition"
     ],
 
@@ -121,12 +121,12 @@ Ext.define("coon.core.data.pageMap.PageRange", {
          *
          * @return {coon.core.data.pageMap.PageRange}
          *
-         * @throws any exception thrown by {l8.core#createRange}
+         * @throws any exception thrown by {l8#createRange}
          * or by this class constructor
          */
         createFor: function (start, end) {
             return Ext.create("coon.core.data.pageMap.PageRange", {
-                pages: l8.core.createRange(start, end)
+                pages: l8.createRange(start, end)
             });
         }
 

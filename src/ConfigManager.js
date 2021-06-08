@@ -40,8 +40,8 @@
 Ext.define("coon.core.ConfigManager", {
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.exception.AlreadyExistsException"
     ],
 
@@ -111,7 +111,7 @@ Ext.define("coon.core.ConfigManager", {
         if (arguments.length === 1) {
             return me.configs[domain];
         }
-        const value = l8.core.unchain(key, me.configs[domain]);
+        const value = l8.unchain(key, me.configs[domain]);
 
         if (value === undefined) {
             return defaultValue;

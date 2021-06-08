@@ -37,7 +37,7 @@ describe("coon.core.FileLoaderTest", (t) => {
 
             t.isInstanceOf(coon.core.FileLoader, "coon.core.data.request.file.FileLoader");
 
-            t.isInstanceOf(coon.core.FileLoader.fileLoader, "l8.core.request.FileLoader");
+            t.isInstanceOf(coon.core.FileLoader.fileLoader, "l8.request.FileLoader");
 
             const
                 RETURNMOCK = {},

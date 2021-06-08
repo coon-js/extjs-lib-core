@@ -45,8 +45,8 @@ Ext.define("coon.core.env.ext.VendorBase", {
     extend: "coon.core.env.VendorBase",
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "Ext.Package"
     ],
 
@@ -55,7 +55,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     get (key) {
-        return l8.core.unchain(key, this.getEnvironment());
+        return l8.unchain(key, this.getEnvironment());
     },
 
 
@@ -79,7 +79,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getManifest (key) {
-        return key ? l8.core.unchain(key, Ext.manifest) : Ext.manifest;
+        return key ? l8.unchain(key, Ext.manifest) : Ext.manifest;
     },
 
 
@@ -87,7 +87,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackage (packageName) {
-        return l8.core.unchain("packages." + packageName, this.getManifest());
+        return l8.unchain("packages." + packageName, this.getManifest());
     },
 
 
@@ -95,7 +95,7 @@ Ext.define("coon.core.env.ext.VendorBase", {
      * @inheritdoc
      */
     getPackages () {
-        return l8.core.unchain("packages", this.getManifest());
+        return l8.unchain("packages", this.getManifest());
     },
 
 

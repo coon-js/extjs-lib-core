@@ -24,9 +24,7 @@
  */
 
 /**
- * The following paths are the default paths available after "npm test" has run the scripts for the production
- * builds of extjs classic/modern.
- * Adjust to your needs if necessary.
+ *
  */
 export default {
     loaderPath: {
@@ -40,19 +38,20 @@ export default {
     preload: {
         css: {
             extjs: {
-                modern: [
-                    "../node_modules/@sencha/ext-modern-runtime/material/material-all_1.css",
-                    "../node_modules/@sencha/ext-modern-runtime/material/material-all_2.css"
-                ],
-                classic: [
-                    "./build/extjs/classic/theme-triton/theme-triton-all-debug.css"
-                ]
+                modern: "../build/extjs-build/modern/theme-triton/resources/theme-triton-all.css",
+                classic: "../build/extjs-build/classic/theme-triton/resources/theme-triton-all.css",
             }
         },
         js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js", {
             extjs: {
-                modern: "./build/extjs/modern/ext-modern-all-debug.js",
-                classic: "./build/extjs/classic/ext-all-debug.js"
+                classic: [
+                    "../build/extjs-build/ext-all-debug.js",
+                    "../build/extjs-build/packages/ux/classic/ux-debug.js"
+                ],
+                modern: [
+                    "../build/extjs-build/ext-modern-all-debug.js",
+                    "../build/extjs-build/packages/ux/modern/ux-debug.js"
+                ]
             }
         }]
     }
