@@ -80,7 +80,6 @@
     "@coon-js/siesta-lib-helper": "file:../siesta-lib-helper",
     "@l8js/l8": "file:../../@l8js/l8",
     "local-web-server": "^4.2.1",
-    "siesta-lite": "^5.5.2",
-    "symlink-dir": "^5.0.1"
+    "siesta-lite": "^5.5.2"
   }
 }

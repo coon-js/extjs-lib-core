@@ -36,23 +36,6 @@ export default {
         "coon.test": "./src"
     },
     preload: {
-        css: {
-            extjs: {
-                modern: "../build/extjs-build/modern/theme-triton/resources/theme-triton-all.css",
-                classic: "../build/extjs-build/classic/theme-triton/resources/theme-triton-all.css"
-            }
-        },
-        js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js", {
-            extjs: {
-                classic: [
-                    "../build/extjs-build/ext-all-debug.js",
-                    "../build/extjs-build/packages/ux/classic/ux-debug.js"
-                ],
-                modern: [
-                    "../build/extjs-build/ext-modern-all-debug.js",
-                    "../build/extjs-build/packages/ux/modern/ux-debug.js"
-                ]
-            }
-        }]
+        js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js"]
     }
 };
