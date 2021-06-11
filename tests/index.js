@@ -27,16 +27,20 @@ import testConfig from "./tests.config.js";
 import groups from "./groups.config.js";
 import {configureWithExtJsLinkPaths} from "../node_modules/@coon-js/siesta-lib-helper/dist/siesta-lib-helper.runtime.esm.js";
 
-const 
+let toolkitGroups,
+    toolkit = (new URLSearchParams( document.location.search.substring(1))).get("toolkit") ?? "classic";
+
+const
     browser = new Siesta.Harness.Browser.ExtJS(),
-    isModern = window.location.href.indexOf("toolkit=modern") !== -1,
-    paths = await configureWithExtJsLinkPaths(testConfig, "../.extjs-link.conf.json", isModern);
+    paths = await configureWithExtJsLinkPaths(testConfig, "../.extjs-link.conf.json", toolkit === "modern");
+
+toolkitGroups = groups.filter(entry => ["universal", toolkit].indexOf(entry.group) !== -1);
+toolkit       = toolkitGroups.length ? toolkit : "universal";
 
 browser.configure(Object.assign({
-    title: "extjs-lib-core - " + (isModern ? "modern" : "classic"),
+    title: `${testConfig.name} [${toolkit}]`,
     isEcmaModule: true,
     disableCaching: true
 }, paths));
 
-
-browser.start(...groups);
+browser.start(toolkitGroups.length ? toolkitGroups : groups);
