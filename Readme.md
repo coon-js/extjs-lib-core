@@ -12,7 +12,6 @@ npm install --save-dev @coon-js/extjs-lib-core
 through the process of creating symlinks to an existing ExtJS sdk installation. 
 This is only required if you want to run the tests (`./tests`), as [Siesta](https//npmjs.org/siesta-lite) relies on 
 an existing ExtJS installation.
-You can quit the tool safely with `/q` if you do not wish to set up symlinks.
 
 
 ## Usage
