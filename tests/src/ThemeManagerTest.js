@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.ThemeManagerTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.ThemeManager", function () {
+    t.requireOk("coon.core.ThemeManager", () => {
 
         t.it("functionality", (t) => {
 

@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.FileLoaderTest", (t) => {
+StartTest((t) => {
     "use strict";
 
 

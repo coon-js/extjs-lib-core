@@ -28,7 +28,9 @@ import groups from "./groups.config.js";
 import {configureWithExtJsLinkPaths} from "../node_modules/@coon-js/siesta-lib-helper/dist/siesta-lib-helper.runtime.esm.js";
 
 let toolkitGroups,
-    toolkit = (new URLSearchParams( document.location.search.substring(1))).get("toolkit") ?? "classic";
+    urlParams = new URLSearchParams(document.location.search.substring(1)),
+    timeout =  urlParams.get("timeout") ? parseInt(urlParams.get("timeout")) : testConfig.timeout,
+    toolkit = urlParams.get("toolkit") ?? "classic";
 
 const
     browser = new Siesta.Harness.Browser.ExtJS(),
@@ -40,7 +42,27 @@ toolkit       = toolkitGroups.length ? toolkit : "universal";
 browser.configure(Object.assign({
     title: `${testConfig.name} [${toolkit}]`,
     isEcmaModule: true,
-    disableCaching: true
+    disableCaching: true,
+    config : {
+        TIMEOUT : timeout
+    }
 }, paths));
 
 browser.start(toolkitGroups.length ? toolkitGroups : groups);
+
+// classic | modern | timeout options
+document.getElementById("cn_timeout").value = timeout;
+if (["classic", "modern"].indexOf(toolkit) !== -1) {
+    document.getElementById(`cn_${toolkit}`).checked = true;
+} else {
+    ["classic", "modern"].forEach(toolkit => document.getElementById(`cn_${toolkit}`).disabled = true);
+}
+document.getElementById("cn_configBtn").onclick = () => {
+    let timeout = document.getElementById("cn_timeout").value,
+        toolkit = document.getElementById("cn_classic").checked
+                  ? "classic"
+                    : document.getElementById("cn_modern").checked
+                      ? "modern"
+                      : "";
+    window.location.href = `./index.html?toolkit=${toolkit}&timeout=${timeout}`;
+};

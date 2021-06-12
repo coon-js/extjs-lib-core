@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.SessionTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ describe("coon.core.data.SessionTest", (t) => {
             getBatch: function () {
                 return "foo";
             }
-        }, function () {
+        }, () => {
 
             var c = Ext.create("coon.core.data.Session", {
                 batchVisitorClassName: "MockBatchVisitor"
@@ -107,7 +107,7 @@ describe("coon.core.data.SessionTest", (t) => {
             getBatch: function () {
                 return "foo";
             }
-        }, function () {
+        }, () => {
 
             var c = Ext.create("coon.core.data.Session", {
                 batchVisitorClassName: "MockBatchVisitor"

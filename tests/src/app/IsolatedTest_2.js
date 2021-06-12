@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest_Isolated2", (t) => {
+StartTest((t) => {
 
     t.requireOk("coon.core.app.Application", () => {
         let app = null;

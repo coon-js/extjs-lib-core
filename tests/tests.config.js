@@ -30,6 +30,8 @@ export default {
 
     name: "extjs-lib-core",
 
+    timeout: 750,
+
     loaderPath: {
         "Ext.Package": "../node_modules/@coon-js/extjs-package-loader/packages/package-loader/src/Package.js",
         "Ext.package": "../node_modules/@coon-js/extjs-package-loader/packages/package-loader/src/package",

@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.IndexRangeTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.pageMap.RecordPosition", function () {
+    t.requireOk("coon.core.data.pageMap.RecordPosition", () => {
 
 
         t.it("constructor()", (t) => {

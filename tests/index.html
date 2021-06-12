@@ -32,7 +32,23 @@
     <link rel="stylesheet" type="text/css" href="../node_modules/siesta-lite/resources/css/siesta-all.css">
     <script type="text/javascript" src="../node_modules/siesta-lite/siesta-all.js"></script>
     <script type="module" src="index.js"></script>
+
 </head>
 <body>
+<div style="color:#35baf6!important;height:24px;background:#303030;position:absolute;bottom:0;right:0;padding:2px;width:190px;z-index:90000">
+    <input style="height:10px;margin:2px 0 0 0" type="radio" name="toolkit" value="modern" id="cn_modern"><label for="vmodern">M</label></input> |
+    <input style="height:10px;margin:2px 0 0 0" type="radio" name="toolkit" value="classic" id="cn_classic"><label for="vclassic">C</label></input> |
+    <select id="cn_timeout" style="height:14px;width:60px;font-size:10px">
+        <option>250</option>
+        <option>500</option>
+        <option>750</option>
+        <option>1000</option>
+        <option>1250</option>
+        <option>1500</option>
+        <option>1750</option>
+        <option>2000</option>
+    </select> |
+    <input style="width:40px;height:16px;font-size:10px" type="button" id="cn_configBtn" value="go">
+</div>
 </body>
 </html>

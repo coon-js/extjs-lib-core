@@ -23,11 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", (t) => {
-
-
-    const
-        TIMEOUT = 250;
+StartTest((t) => {
 
     let loader;
 
@@ -63,7 +59,7 @@ describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", (t) => {
         loader.load("someurl")
             .then((json) => CALLED = true, (e) => {exc = e;});
 
-        t.waitForMs(TIMEOUT, () => {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             t.expect(CALLED).toBeUndefined();
             t.isInstanceOf(exc, "coon.core.data.request.HttpRequestException");
             t.expect(exc.getMessage()).toContain("404");
@@ -94,7 +90,7 @@ describe("coon.core.data.request.file.XmlHttpRequestFileLoaderTest", (t) => {
         loader.load("./fixtures/coon-js/mockdomain.conf.json")
             .then((txt) => responseText = txt, (e) => exc = true);
 
-        t.waitForMs(TIMEOUT, () => {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
             t.expect(exc).toBeUndefined();
             t.expect(typeof responseText).toBe("string");

@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
+StartTest((t) => {
 
     var createPageMap = function (cfg) {
 
@@ -155,8 +155,8 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
     // +----------------------------------------------------------------------------
 
     t.requireOk("coon.core.fixtures.sim.ItemSim", function (){
-        t.requireOk("coon.core.data.pageMap.PageMapUtil", function () {
-            t.requireOk("coon.core.data.pageMap.PageMapFeeder", function () {
+        t.requireOk("coon.core.data.pageMap.PageMapUtil", () => {
+            t.requireOk("coon.core.data.pageMap.PageMapFeeder", () => {
 
 
                 t.it("positionToStoreIndex()", (t) => {
@@ -244,7 +244,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         }];
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         try {PageMapUtil.storeIndexToPosition(null, pageMap);} catch (e) {exc = e;}
                         t.expect(exc).toBeDefined();
@@ -405,7 +405,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(PageMapUtil.getRecordAt(sourcePosition, pageMap)).toBe(map[4].value[5]);
 
                         try {PageMapUtil.getRecordAt(impossiblePosition, pageMap);}catch(e){exc=e;}
@@ -428,7 +428,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         try{PageMapUtil.getRecordAt(
                             RecordPosition.create(3, 29), feeder);}catch(e){exc=e;}
@@ -491,7 +491,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("pagemap");
                     exc = undefined;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(5);
 
@@ -514,7 +514,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         map         = pageMap.map,
                         range, fakeIndex = 9999, i, a, len, lena;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         range = [1, 2, 3];
 
@@ -557,7 +557,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         map         = pageMap.map,
                         range, fakeIndex, i, a, len, lena;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         range = [4, 5, 6];
 
@@ -617,7 +617,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                             index: 0
                         });
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         try {PageMapUtil.moveRecord(null, targetPosition, pageMap);} catch (e) {exc = e;}
                         t.expect(exc).toBeDefined();
                         t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
@@ -668,7 +668,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         sourceRecord;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
 
                         t.expect(PageMapUtil.moveRecord(sourcePosition, targetPosition, pageMap)).toBe(true);
@@ -696,7 +696,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         sourceRecord;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
 
                         t.expect(sourceRecord.get("id")).toBe(
@@ -751,7 +751,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         targetPosition  = createPos(1, 18),
                         sourceRecord, left, right;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
                         left  = PageMapUtil.getRecordAt(createPos(targetPosition.getPage(), targetPosition.getIndex() - 1), pageMap);
                         right = PageMapUtil.getRecordAt(targetPosition, pageMap);
@@ -802,7 +802,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         targetPosition  = createPos(1, 12),
                         sourceRecord, left, right;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         left  = PageMapUtil.getRecordAt(createPos(targetPosition.getPage(), targetPosition.getIndex() - 1), pageMap);
                         right = PageMapUtil.getRecordAt(targetPosition, pageMap);
 
@@ -870,7 +870,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         }), sourceRecord, leftRecord, rightRecord, a, i , len;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         leftRecord   = PageMapUtil.getRecordAt(targetPositionLeft, pageMap);
                         rightRecord   = PageMapUtil.getRecordAt(targetPosition, pageMap);
                         sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
@@ -939,7 +939,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         sourceRecord, targetRecordLeft, targetRecordRight;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         sourceRecord = PageMapUtil.getRecordAt(sourcePosition, pageMap);
 
                         targetRecordLeft  = PageMapUtil.getRecordAt(targetPositionLeft, pageMap);
@@ -1022,7 +1022,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                         expected = [[1, 2, 3], [5], [7, 8, 9], [11, 12]];
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         try{PageMapUtil.getAvailableRanges();}catch(e){exc = e;}
                         t.expect(exc).toBeDefined();
@@ -1080,7 +1080,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         t.expect(pageMap.getStore().getTotalCount()).toBe(500);
                         t.expect(pageMap.map[1]).toBeDefined();
@@ -1088,7 +1088,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
 
                         pageMap.getStore().loadPage(20);
 
-                        t.waitForMs(250, function () {
+                        t.waitForMs(t.parent.TIMEOUT, () => {
                             t.expect(PageMapUtil.isLastPageLoaded(pageMap)).toBe(true);
                         });
                     });
@@ -1106,7 +1106,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(pageMap.getStore().getTotalCount()).toBe(500);
                         t.expect(PageMapUtil.getLastPossiblePageNumber(pageMap)).toBe(20);
                     });
@@ -1144,7 +1144,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
                     exc = undefined;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(
                             PageMapUtil.storeIndexToRange(3, 4, pageMap) instanceof coon.core.data.pageMap.IndexRange
                         ).toBe(true);
@@ -1177,7 +1177,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be an instance of");
                     exc = undefined;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(2);
                         pageMap.removeAtKey(6);
@@ -1199,7 +1199,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         range;
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(2);
                         pageMap.removeAtKey(6);
@@ -1223,7 +1223,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.isCalled("filterPageValue", PageMapUtil);
                     t.isCalled("filterPageMapValue", PageMapUtil);
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(2);
                         pageMap.removeAtKey(6);
@@ -1255,7 +1255,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = createPageMap(),
                         range;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(2);
                         pageMap.removeAtKey(6);
@@ -1286,7 +1286,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         feeder      = createFeeder(),
                         pageMap     = feeder.getPageMap(), pos;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(2, 1);
                         pageMap.removeAtKey(3);
@@ -1315,7 +1315,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = feeder.getPageMap(),
                         pageSize    = pageMap.getPageSize();
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(4);
                         pageMap.removeAtKey(5);
@@ -1357,7 +1357,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = feeder.getPageMap(),
                         range;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         pageMap.removeAtKey(2);
@@ -1383,7 +1383,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = feeder.getPageMap(),
                         range;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         pageMap.removeAtKey(2);
@@ -1414,7 +1414,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         }), exc;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -1436,7 +1436,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -1468,7 +1468,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 5);
 
@@ -1500,7 +1500,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 5);
 
@@ -1534,7 +1534,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -1570,7 +1570,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -1608,7 +1608,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
                         feeder.swapMapToFeed(2, 3);
@@ -1645,7 +1645,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let rec1    = map[4].value[3],
                             rec4_0  = map[3].value[24],
@@ -1673,7 +1673,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let rec1    = map[4].value[15],
                             rec4_0  = map[3].value[24],
@@ -1702,7 +1702,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -1737,7 +1737,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         RecordPosition = coon.core.data.pageMap.RecordPosition;
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let rec1 = map[2].value[15];
 
@@ -1768,7 +1768,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = feeder.getPageMap(),
                         range;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         // [1, 2] (3:2) (4:5) [5, 6] ....
@@ -1857,7 +1857,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     var PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                         feeder      = createFeeder(true);
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(PageMapUtil.getAvailableRanges(feeder)).toEqual([]);
                     });
 
@@ -1871,7 +1871,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = createPageMap(),
                         range;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         range = [4, 5, 6];
 
@@ -1896,7 +1896,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = createPageMap({empty: true}),
                         map         = pageMap.map;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         pageMap.addPage(1, [prop(1)]);
@@ -1916,7 +1916,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = createPageMap({empty: true}),
                         map         = pageMap.map;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         pageMap.addPage(1, [prop(1)]);
@@ -1935,7 +1935,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     var PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                         pageMap     = createPageMap({empty: true});
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                         pageMap.addPage(1, [prop(1)]);
@@ -1955,7 +1955,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         invalid  = 1000000000;
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let pos = PageMapUtil.storeIndexToPosition(invalid, pageMap, true);
                         t.expect(pos.getPage()).toBe(40000001);
@@ -1971,7 +1971,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         invalid  = 1000000000;
 
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         let range = PageMapUtil.storeIndexToRange(invalid, invalid + 1, pageMap, true);
 
@@ -1992,7 +1992,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         PageMapUtil = coon.core.data.pageMap.PageMapUtil,
                         rec;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         pageMap.removeAtKey(4);
                         pageMap.removeAtKey(5);
@@ -2015,7 +2015,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                         pageMap     = feeder.getPageMap(),
                         PageMapUtil = coon.core.data.pageMap.PageMapUtil;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -2055,7 +2055,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
                     t.expect(exc.msg.toLowerCase()).toContain("must be a function");
                     exc = undefined;
 
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
 
                         feeder.swapMapToFeed(4, 3);
 
@@ -2103,7 +2103,7 @@ describe("coon.core.data.pageMap.PageMapUtilTest", (t) => {
 
 
                     // wait for storeload
-                    t.waitForMs(250, function () {
+                    t.waitForMs(t.parent.TIMEOUT, () => {
                         t.expect(PageMapUtil.getRecordAt(sourcePosition, pageMap)).toBe(map[4].value[5]);
 
                         t.expect(PageMapUtil.getNeighbour(sourcePosition, pageMap, true)).toBe(map[4].value[4]);

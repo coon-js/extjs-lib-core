@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.ConfigLoaderTest", (t) => {
+StartTest((t) => {
 
-    t.requireOk("coon.core.Environment", function () {
+    t.requireOk("coon.core.Environment", () => {
 
         const
             DOMAIN = "mymockdomain",

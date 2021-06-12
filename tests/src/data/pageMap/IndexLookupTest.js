@@ -23,9 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
-
-    const TIMEOUT = 1250;
+StartTest((t) => {
 
     Ext.define("TespropMock", {
         extend: "Ext.data.Model",
@@ -103,7 +101,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 property  = "testPropForIndexLookup",
                 exc;
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 feeder.getPageMap().removeAtKey(1);
                 t.expect(feeder.getPageMap().map[1]).not.toBeDefined();
 
@@ -124,11 +122,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 property  = "testPropForIndexLookup",
                 pageMap   = feeder.getPageMap() ;
 
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(9);
 
-                t.waitForMs(TIMEOUT, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(pageMap.map[9].value[0].get("testProp")).toBe(200);
                     t.expect(sorter.scanRangeForIndex(1, 19, 203, property, "ASC", cmp, undefined, feeder)).toEqual([9, 2]);
 
@@ -147,7 +145,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
                 t.expect(sorter.scanRangeForIndex(1, 1, 8000, property, "DESC", cmp, undefined, feeder)).toBe(-1);
                 t.expect(sorter.scanRangeForIndex(1, 1, 500.5, property, "DESC", cmp, undefined, feeder)).toBe(-1);
@@ -171,7 +169,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(sorter.scanRangeForIndex(1, 1, 476, property, "DESC", cmp, undefined, feeder)).toEqual([1, 24]);
                 t.expect(sorter.scanRangeForIndex(1, 1, 475, property, "DESC", cmp, undefined, feeder)).toBe(1);
@@ -190,7 +188,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(feeder.getPageMap().map[2]).toBeDefined();
                 t.expect(feeder.getPageMap().map[3]).toBeDefined();
@@ -216,7 +214,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
                 t.expect(sorter.scanRangeForIndex(1, 1, -1, property, dir, cmp, undefined, feeder)).toBe(-1);
                 t.expect(sorter.scanRangeForIndex(1, 1, -1.5, property, dir, cmp, undefined, feeder)).toBe(-1);
@@ -242,7 +240,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(feeder.getPageMap().map[2]).toBeDefined();
                 t.expect(feeder.getPageMap().map[3]).toBeDefined();
@@ -266,7 +264,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(sorter.scanRangeForIndex(1, 1, 476, property, "DESC", cmp, undefined, feeder)).toEqual([1, 24]);
                 t.expect(sorter.scanRangeForIndex(1, 1, 475, property, "DESC", cmp, undefined, feeder)).toBe(1);
@@ -284,7 +282,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(feeder.getPageMap().map[2]).toBeDefined();
                 t.expect(feeder.getPageMap().map[3]).toBeDefined();
@@ -308,7 +306,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
                 t.expect(sorter.scanRangeForIndex(1, 1, 1, property, "ASC", cmp, "1", feeder)).toEqual([1, 1]);
@@ -325,7 +323,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 cmp       = compareFunction,
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
                 t.expect(sorter.scanRangeForIndex(1, 1, 500, property, "DESC", cmp, "500", feeder)).toEqual([1, 1]);
@@ -344,7 +342,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 }),
                 exc;
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 try {sorter.findInsertIndex(prop(476), feeder);}catch(e){exc = e;}
                 t.expect(exc).toBeDefined();
@@ -360,7 +358,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 }),
                 pageMap = feeder.getPageMap();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 pageMap.removeAtKey(2);
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
@@ -382,11 +380,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     t.expect(feeder.getPageMap().map[20]).toBeDefined();
                     t.expect(sorter.findInsertIndex(prop(0), feeder)).toEqual([21, 0]);
 
@@ -404,7 +402,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
-            t.waitForMs(TIMEOUT, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(feeder.getPageMap().map[20]).not.toBeDefined();
 
                 t.expect(sorter.findInsertIndex(prop(0), feeder)).toBe(1);
@@ -420,7 +418,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(feeder.getPageMap().map[1]).toBeDefined();
                 feeder.getPageMap().removeAtKey(1);
                 t.expect(feeder.getPageMap().map[1]).toBeUndefined();
@@ -443,7 +441,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 pageMap   = feeder.getPageMap(),
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                 pageMap.removeAtKey(3);
@@ -486,7 +484,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 pageMap   = feeder.getPageMap(),
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                 pageMap.removeAtKey(3);
@@ -528,7 +526,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 pageMap   = feeder.getPageMap(),
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                 pageMap.removeAtKey(3);
@@ -572,7 +570,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 pageMap   = feeder.getPageMap(),
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
 
                 pageMap.removeAtKey(3);
@@ -614,7 +612,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 }),
                 pageMap = feeder.getPageMap();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 pageMap.removeAtKey(2);
                 feeder.swapMapToFeed(3, 4);
@@ -638,11 +636,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "DESC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     feeder.swapMapToFeed(20, 19);
                     t.expect(feeder.getPageMap().map[20]).not.toBeDefined();
                     t.expect(sorter.findInsertIndex(prop(0), feeder)).toEqual([21, 0]);
@@ -658,7 +656,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.swapMapToFeed(3, 2);
 
@@ -681,7 +679,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.swapMapToFeed(1, 2);
                 t.expect(sorter.findInsertIndex(prop(-1), feeder)).toBe(-1);
@@ -697,7 +695,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.swapMapToFeed(1, 2);
                 feeder.getFeedAt(1).removeAt(0);
@@ -716,11 +714,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     feeder.swapMapToFeed(20, 19);
                     t.expect(feeder.getPageMap().map[21]).not.toBeDefined();
                     let rec = feeder.getPageMap().map[1].value[0];
@@ -739,11 +737,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     feeder.swapMapToFeed(20, 19);
                     t.expect(feeder.getPageMap().map[21]).not.toBeDefined();
 
@@ -760,11 +758,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     feeder.swapMapToFeed(20, 19);
                     feeder.getFeedAt(20).removeAt(24);
                     t.expect(feeder.getFeedAt(20).getAt(24)).toBeUndefined();
@@ -783,11 +781,11 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 feeder.getPageMap().getStore().loadPage(20);
 
-                t.waitForMs(250, function () {
+                t.waitForMs(t.parent.TIMEOUT, () => {
                     feeder.swapMapToFeed(20, 19);
                     feeder.getFeedAt(20).removeAt(24);
                     let rec = feeder.getFeedAt(20).getAt(0);
@@ -806,7 +804,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
             var sorter = createSorter(), exc,
                 feeder = createFeeder({empty: true});
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 try{sorter.findInsertIndex(prop(1), feeder);}catch(e){exc = e;}
                 t.expect(exc).toBeDefined();
                 t.expect(exc.msg).toBeDefined();
@@ -824,7 +822,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 sorters: [{property: "testPropForIndexLookup", direction: "ASC"}]
             });
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(feeder.getPageMap().map).toEqual({});
                 t.expect(sorter.findInsertIndex(prop(1), feeder)).toBe(1);
             });
@@ -841,7 +839,7 @@ describe("coon.core.data.pageMap.IndexLookupTest", (t) => {
                 pageMap   = feeder.getPageMap(),
                 property  = "testPropForIndexLookup";
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 let pos = coon.core.data.pageMap.RecordPosition.create(1, 4);
 

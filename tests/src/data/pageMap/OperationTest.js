@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.OperationTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.pageMap.Operation", function () {
+    t.requireOk("coon.core.data.pageMap.Operation", () => {
 
         t.it("prerequisites", (t) => {
 

@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.FeedTest", (t) => {
+StartTest((t) => {
 
     const
 
@@ -67,7 +67,7 @@ describe("coon.core.data.pageMap.FeedTest", (t) => {
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.pageMap.Feed", function () {
+    t.requireOk("coon.core.data.pageMap.Feed", () => {
 
         t.it("constructor()", (t) => {
 

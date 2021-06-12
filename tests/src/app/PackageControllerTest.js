@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.PackageControllerTest", (t) => {
+StartTest((t) => {
 
     var controller;
 
@@ -185,7 +185,7 @@ describe("coon.core.app.PackageControllerTest", (t) => {
             }
         });
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             var controller = Ext.create("Issue1.nomainview.PackageController"),
                 resumed;
             // +---------------------------------------------

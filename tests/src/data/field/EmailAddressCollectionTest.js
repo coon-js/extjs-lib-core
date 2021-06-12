@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.field.EmailAddressCollectionTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ describe("coon.core.data.field.EmailAddressCollectionTest", (t) => {
             defaultValue: "b"
         });
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             var tf = Ext.create("testfield");
             t.expect(tf.getDefaultValue()).toBe("b");
         });
@@ -127,7 +127,7 @@ describe("coon.core.data.field.EmailAddressCollectionTest", (t) => {
     });
 
 
-    t.requireOk("coon.core.data.validator.EmailAddressCollection", function () {
+    t.requireOk("coon.core.data.validator.EmailAddressCollection", () => {
 
         t.it("Make sure field works in model as expected", (t) => {
 
@@ -148,7 +148,7 @@ describe("coon.core.data.field.EmailAddressCollectionTest", (t) => {
                 }
             });
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 var m = Ext.create("testmodel");
                 var d = [{address: "g"}];

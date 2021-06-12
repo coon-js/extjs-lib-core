@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.operation.ResultReasonTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------

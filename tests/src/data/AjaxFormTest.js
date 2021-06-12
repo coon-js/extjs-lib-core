@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.AjaxFormTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.AjaxForm", function () {
+    t.requireOk("coon.core.data.AjaxForm", () => {
 
         t.it("Sanitize the AjaxForm class", (t) => {
 

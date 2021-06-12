@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.plugin.ApplicationPluginTest", (t) => {
+StartTest((t) => {
 
     var plugin;
 

@@ -27,7 +27,7 @@
  * Tests for issue
  * https://www.sencha.com/forum/showthread.php?339006-Sencha-6-2-GPL-Commercial-auto-generated-id-of-App-Controller-is-NOT-FQN-of-class&p=1178063#post1178063
  */
-describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
+StartTest((t) => {
 
     // +----------------------------------------------------------------------------
     // |                    =~. Unit Tests .~=
@@ -39,7 +39,7 @@ describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
         Ext.define("Test.subname.controller.ControllerName", {
             extend: "coon.core.app.PackageController",
             namespace: ["Test.subname"]
-        }, function () {
+        }, () => {
 
             var controller = Ext.create("Test.subname.controller.ControllerName");
 
@@ -49,7 +49,7 @@ describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
         Ext.define("Test.subname.app.controller.ControllerName", {
             extend: "coon.core.app.PackageController",
             namespace: ["Test.subname"]
-        }, function () {
+        }, () => {
 
             var controller = Ext.create("Test.subname.app.controller.ControllerName");
 
@@ -57,19 +57,19 @@ describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
         });
 
         // prevent "Adding assertions after the test has finished"
-        t.waitForMs(250, () => {});
+        t.waitForMs(t.parent.TIMEOUT, () => {});
 
     });
 
 
-    t.requireOk("coon.core.overrides.core.app.PackageController", function () {
+    t.requireOk("coon.core.overrides.core.app.PackageController", () => {
 
         t.it("Should compute the id properly with override", (t) => {
 
             Ext.define("Test.subname.controller.ControllerName", {
                 extend: "coon.core.app.PackageController",
                 namespace: ["Test.subname"]
-            }, function () {
+            }, () => {
 
                 var controller = Ext.create("Test.subname.controller.ControllerName");
 
@@ -79,7 +79,7 @@ describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
             Ext.define("Test.subname.app.controller.ControllerName", {
                 extend: "coon.core.app.PackageController",
                 namespace: ["Test.subname"]
-            }, function () {
+            }, () => {
 
                 var controller = Ext.create("Test.subname.app.controller.ControllerName");
 
@@ -87,7 +87,7 @@ describe("coon.core.overrides.core.app.PackageControllerTest", (t) => {
             });
 
             // prevent "Adding assertions after the test has finished"
-            t.waitForMs(250, () => {});
+            t.waitForMs(t.parent.TIMEOUT, () => {});
 
         });
 
