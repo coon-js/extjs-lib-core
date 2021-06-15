@@ -3,3 +3,5 @@
 /node_modules
 /tests/build
 /.extjs-link.conf.json
+/tests.redirect.html
+/tests/index.extjs-browser.html

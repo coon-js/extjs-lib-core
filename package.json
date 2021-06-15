@@ -2,8 +2,8 @@
   "name": "@coon-js/extjs-lib-core",
   "sencha": {
     "name": "extjs-lib-core",
-    "version": "0.0.2",
-    "compatVersion": "0.0.2",
+    "version": "0.0.3",
+    "compatVersion": "0.0.3",
     "namespace": "coon.core",
     "type": "code",
     "creator": "coon.js",
@@ -49,8 +49,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npx ws --port 8060 --static.index tests.html --open",
-    "postinstall" : "npx extjs-link"
+    "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
+    "postinstall": "npm run setup:tests",
+    "setup:tests": "npx extjs-link && siesta-lib-helper"
   },
   "repository": {
     "type": "git",
