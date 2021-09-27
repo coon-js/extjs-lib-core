@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.field.BlobTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ describe("coon.core.data.field.BlobTest", (t) => {
         });
 
         // no callback for define so it's easier to track this test running
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             var tf = Ext.create("testfield");
             t.expect(tf.getDefaultValue()).toBe("b");
         });
@@ -120,7 +120,7 @@ describe("coon.core.data.field.BlobTest", (t) => {
 
         });
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
 
             var m = Ext.create("testmodel"),
                 b1 = new Blob(["foo"], {type: "text/plain"}),

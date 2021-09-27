@@ -36,8 +36,8 @@
 Ext.define("coon.core.data.pageMap.PageMapFeeder", {
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.data.pageMap.Feed",
         "coon.core.data.pageMap.PageRange",
         "coon.core.data.pageMap.PageMapUtil",
@@ -463,7 +463,7 @@ Ext.define("coon.core.data.pageMap.PageMapFeeder", {
                 type: coon.core.data.pageMap.Operation.ADD
             }),
             pageSize       = pageMap.getPageSize(),
-            l8core         = l8.core,
+            l8core         = l8,
             PageRange      = coon.core.data.pageMap.PageRange,
             PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
             maintainRanges = [],
@@ -605,7 +605,7 @@ Ext.define("coon.core.data.pageMap.PageMapFeeder", {
             op           = Ext.create("coon.core.data.pageMap.Operation", {
                 type: coon.core.data.pageMap.Operation.REMOVE
             }),
-            l8core         = l8.core,
+            l8core         = l8,
             PageRange      = coon.core.data.pageMap.PageRange,
             PageMapUtil    = coon.core.data.pageMap.PageMapUtil,
             maintainRanges = [],

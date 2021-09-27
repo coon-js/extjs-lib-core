@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.env.ext.VendorBaseTest", (t) => {
+StartTest((t) => {
 
     "use strict";
 

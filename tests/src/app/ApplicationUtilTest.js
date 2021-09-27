@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.app.ApplicationUtilTest", (t) => {
+StartTest((t) => {
     "use strict";
 
     t.requireOk("coon.core.Environment", () => {

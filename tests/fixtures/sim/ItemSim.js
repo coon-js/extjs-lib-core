@@ -32,7 +32,7 @@ Ext.define("coon.core.fixtures.sim.ItemSim", {
         "coon.core.fixtures.sim.Init"
     ]
 
-}, function () {
+}, () => {
 
     var items = [];
 

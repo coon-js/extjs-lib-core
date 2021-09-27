@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.field.EmailAddressTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.validator.EmailAddress", function () {
+    t.requireOk("coon.core.data.validator.EmailAddress", () => {
 
         t.it("Make sure class definition is as expected", (t) => {
 
@@ -69,7 +69,7 @@ describe("coon.core.data.field.EmailAddressTest", (t) => {
                 defaultValue: "b"
             });
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 var tf = Ext.create("testfield");
                 t.expect(tf.getDefaultValue()).toBe("b");
             });
@@ -153,7 +153,7 @@ describe("coon.core.data.field.EmailAddressTest", (t) => {
                 }
             });
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 var m = Ext.create("testmodel");
                 var d = {address: "g"};

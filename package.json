@@ -2,8 +2,8 @@
   "name": "@coon-js/extjs-lib-core",
   "sencha": {
     "name": "extjs-lib-core",
-    "version": "0.0.1",
-    "compatVersion": "0.0.1",
+    "version": "0.0.3",
+    "compatVersion": "0.0.3",
     "namespace": "coon.core",
     "type": "code",
     "creator": "coon.js",
@@ -42,16 +42,17 @@
       "package-loader"
     ]
   },
-  "description": "This **Sencha ExtJS** package contains core functionality for the coon.js  project. Files found herein represent \"universal\" code, i.e. there are no  view implementations in this package, but rather code that can support views.",
-  "version": "0.0.1",
+  "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
+  "version": "0.0.2",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test" : "echo \"make sure you run 'npm run build:tests' before running the tests\" && npm run server",
-    "server": "npx ws --static.index tests.html --open",
-    "build:tests": "npx extjs-build -p ./tests/build"
+    "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
+    "prepare": "npm run setup:tests && npx node-git-hooks",
+    "setup:tests": "npx extjs-link && npx siesta-lib-helper",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -75,17 +76,16 @@
     "url": "https://github.com/coon-js/extjs-lib-core/issues"
   },
   "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
+  "dependencies": {
+    "@coon-js/extjs-package-loader": "^0.1.0",
+    "@l8js/l8": "^0.3.6"
+  },
   "devDependencies": {
-    "@coon-js/extjs-build": "file:../extjs-build",
-    "@coon-js/extjs-package-loader": "file:../extjs-package-loader",
-    "@coon-js/siesta-lib-helper": "file:../siesta-lib-helper",
-    "@l8js/l8": "file:../../l8js/l8",
-    "@sencha/ext-classic": "^7.4.0",
-    "@sencha/ext-classic-theme-triton": "^7.4.0",
-    "@sencha/ext-core": "^7.4.0",
-    "@sencha/ext-modern": "^7.4.0",
-    "@sencha/ext-modern-theme-triton": "^7.4.0",
+    "@coon-js/siesta-lib-helper": "^0.1.0",
+    "@coon-js/extjs-link": "^0.1.0",
+    "eslint": "^7.32.0",
     "local-web-server": "^4.2.1",
+    "node-git-hooks": "^1.0.6",
     "siesta-lite": "^5.5.2"
   }
 }

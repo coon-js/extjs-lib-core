@@ -33,9 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-describe("coon.core.app.ApplicationTest", (t) => {
-
-    const TIMEOUT = 250;
+StartTest((t) => {
 
     let app = null,
         ORIGINAL_MANIFEST,
@@ -203,7 +201,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
                     "coon.test.app.mock.PackageControllerMock"
                 ]
             });
-            t.waitForMs(500, () => {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 t.expect(w.pluginMap).toEqual({});
 
                 var VIEW = null;
@@ -396,7 +394,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
             t.expect(exc.getMessage()).toContain("Could not find");
 
             t.requireOk("coon.test.app.mock.app.ApplicationPlugin",
-                "coon.test.app.mock.app.ControllerPlugin", function () {
+                "coon.test.app.mock.app.ControllerPlugin", () => {
 
                     try {
                         app.addApplicationPlugin(ctrlPlug);
@@ -468,7 +466,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
                 mainView: "Ext.Panel"
             });
 
-            t.waitForMs(TIMEOUT, () => {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 t.expect(loadApplicationConfigSpy).toHaveBeenCalled(1);
 
@@ -608,7 +606,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
 
             defineControllerMocks();
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 app = Ext.create("coon.core.app.Application", {
                     name: "test",
@@ -639,7 +637,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
 
             defineControllerMocks();
 
-            t.waitForMs(500, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
                 app = Ext.create("coon.core.app.Application", {
                     name: "test_undefined",
                     mainView: "Ext.Panel",
@@ -701,7 +699,7 @@ describe("coon.core.app.ApplicationTest", (t) => {
 
             defineControllerMocks();
 
-            t.waitForMs(250, function () {
+            t.waitForMs(t.parent.TIMEOUT, () => {
 
                 app = Ext.create("coon.core.app.Application", {
                     name: "test_undefined",

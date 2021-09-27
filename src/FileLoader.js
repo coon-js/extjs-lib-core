@@ -37,8 +37,8 @@ Ext.define("coon.core.FileLoader", {
     singleton: true,
 
     requires: [
-        // @define l8.core.request.FileLoader
-        "l8.core.request.FileLoader",
+        // @define l8.request.FileLoader
+        "l8.request.FileLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader"
 
     ],
@@ -55,7 +55,7 @@ Ext.define("coon.core.FileLoader", {
      * @constructor
      */
     constructor () {
-        this.fileLoader = new l8.core.request.FileLoader();
+        this.fileLoader = new l8.request.FileLoader();
     },
 
 

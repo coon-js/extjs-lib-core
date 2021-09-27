@@ -24,11 +24,14 @@
  */
 
 /**
- * The following paths are the default paths available after "npm test" has run the scripts for the production
- * builds of extjs classic/modern.
- * Adjust to your needs if necessary.
+ *
  */
 export default {
+
+    name: "extjs-lib-core",
+
+    timeout: 750,
+
     loaderPath: {
         "Ext.Package": "../node_modules/@coon-js/extjs-package-loader/packages/package-loader/src/Package.js",
         "Ext.package": "../node_modules/@coon-js/extjs-package-loader/packages/package-loader/src/package",
@@ -38,22 +41,6 @@ export default {
         "coon.test": "./src"
     },
     preload: {
-        css: {
-            extjs: {
-                modern: [
-                    "../node_modules/@sencha/ext-modern-runtime/material/material-all_1.css",
-                    "../node_modules/@sencha/ext-modern-runtime/material/material-all_2.css"
-                ],
-                classic: [
-                    "./build/extjs/classic/theme-triton/theme-triton-all-debug.css"
-                ]
-            }
-        },
-        js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js", {
-            extjs: {
-                modern: "./build/extjs/modern/ext-modern-all-debug.js",
-                classic: "./build/extjs/classic/ext-all-debug.js"
-            }
-        }]
+        js: ["../node_modules/@l8js/l8/dist/l8.runtime.umd.js"]
     }
 };

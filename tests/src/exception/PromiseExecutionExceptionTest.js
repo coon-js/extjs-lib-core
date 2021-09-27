@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.exception.PromiseExecutionExceptionTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------

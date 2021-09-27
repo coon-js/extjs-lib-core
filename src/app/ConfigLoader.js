@@ -39,8 +39,8 @@
 Ext.define("coon.core.app.ConfigLoader", {
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.ConfigManager",
         "coon.core.Environment",
         "coon.core.app.ConfigurationException",
@@ -119,7 +119,7 @@ Ext.define("coon.core.app.ConfigLoader", {
                 throw new coon.core.exception.ParseException(e);
             }
 
-            config = configPath ? l8.core.unchain(configPath, config, {}) : config;
+            config = configPath ? l8.unchain(configPath, config, {}) : config;
 
             coon.core.ConfigManager.register(
                 domain, config

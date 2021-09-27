@@ -130,8 +130,8 @@ Ext.define("coon.core.app.Application",{
     extend: "Ext.app.Application",
 
     requires: [
-        // @define l8.core
-        "l8.core",
+        // @define l8
+        "l8",
         "coon.core.app.ApplicationException",
         "coon.core.app.ApplicationUtil",
         "coon.core.app.PackageController",
@@ -237,7 +237,7 @@ Ext.define("coon.core.app.Application",{
             });
         }
 
-        if (Ext.isString(view) && !l8.core.unchain(view, window)) {
+        if (Ext.isString(view) && !l8.unchain(view, window)) {
             Ext.raise({
                 msg: "The class \"" + view + "\" was not loaded and cannot be used as the mainView."
             });

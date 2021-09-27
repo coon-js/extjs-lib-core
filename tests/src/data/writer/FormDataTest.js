@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.writer.FormDataTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ describe("coon.core.data.writer.FormDataTest", (t) => {
         readerB1Form.readAsText(retForm.getFormData().get("file[0][0]"));
         readerB2Form.readAsText(retForm.getFormData().get("file[1][0]"));
 
-        t.waitForMs(500, function () {
+        t.waitForMs(t.parent.TIMEOUT, () => {
             t.expect(readerB1.result).toBe(readerB1Form.result);
             t.expect(readerB2.result).toBe(readerB2Form.result);
         });

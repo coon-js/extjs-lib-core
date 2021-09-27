@@ -23,14 +23,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe("coon.core.data.pageMap.PageRangeTest", (t) => {
+StartTest((t) => {
 
 
     // +----------------------------------------------------------------------------
     // |                    =~. Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.data.pageMap.PageRange", function () {
+    t.requireOk("coon.core.data.pageMap.PageRange", () => {
 
 
         t.it("constructor()", (t) => {
