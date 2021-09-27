@@ -41,7 +41,7 @@ jobs:
           prerelease: false
 
   publish:
-    needs: build
+    needs: release_git
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
