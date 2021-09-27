@@ -99,7 +99,42 @@ to loading configuration-files result in a HTTP-error.
 If the file exists, its configuration will override the default-configuration found in the```package.json```,
 if any.
 
-## Using plugins for PackageControllers
+### Application configuration 
+<a name="app_conf"></a>
+An application based upon the `coon-js`-library can also be dynamically configured using `json`-files.
+For this purpose, config files can be differentiated according to the environment the application is used in. 
+The configuration files need to be in `json`-Format.
+
+The following example shows how to specify the `env`-value - which represents the environment the application is used in -
+and the folder that is used to store the configuration file. This must be written in the `app.json`, in the `development`
+section:
+```
+"development": {
+    "coon-js" : {
+      "env": "dev",
+      "resources" : "coon-js"
+    },
+```
+
+A `coon-js`-application will now query the `resource/coon-js` folder, looking up the configuration file given the following
+naming pattern:
+
+`[application_name].[coon-js.env].conf.json`
+
+Given the example above, the configuration must be saved within the following location, if the application´s name is `conjoon`.
+
+`resources/coon-js/conjoon.dev.conf.json`
+
+This file will be loaded if the build for the application is based upon the `development`-section. 
+If this file does not exist, the application will fall back to querying a file named
+
+`[application_name].conf.json`
+
+This allows for build-specific configurations.
+
+## Using plugins 
+
+### ...with PackageControllers
 [coon.core.app.PackageController](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/PackageController.js) 
 can have an arbitrary number of plugins of the type [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js)
 that are called by the application during the ```preLaunchHook```-process. Regardless of the
@@ -133,6 +168,27 @@ You can add as many plugins as you'd like in the configuration, and mix and matc
 the ```ControllerPlugins``` you'd like to use. 
 Note: You need to make sure that owning packages are required by the ```PackageController```'s package using them.
 For more information on ```PackageController```-plugins, see [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js).
+
+### ...with the Application
+An application based upon the `coon-js`-library can also be configured with plugins. These plugins are loaded globally into the application.
+Please use the application configuration for this, [as described above](#app_conf). The following is an example configuration for
+loading the [coon.plugin.themeutil.app.plugin.ApplicationPlugin](https://github.com/coon-js/extjs-plug-themeutil/blob/master/src/app/plugin/ApplicationPlugin.js):
+
+```
+{
+  "conjoon" : {
+    "config" : {
+      "application" : {
+        "plugins" : [
+          "extjs-plug-themeutil"
+        ]
+      }
+    }
+  }
+}
+```
+
+Note how the configuration has to be introduced with the name of the application the config is used in, in this case `conjoon`.
 
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
