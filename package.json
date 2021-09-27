@@ -50,7 +50,7 @@
   },
   "scripts": {
     "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
-    "prepare": "npm run setup:tests && npx node-git-hooks",
+    "postinstall": "npm run setup:tests && npx node-git-hooks",
     "setup:tests": "npx extjs-link && npx siesta-lib-helper",
     "postversion": "git push && git push --tags"
   },
