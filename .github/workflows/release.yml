@@ -23,7 +23,7 @@ jobs:
       - run: npm run build --if-present
 
   release_git:
-    needs: test
+    needs: build
     name: Create Release
     runs-on: ubuntu-latest
     steps:
