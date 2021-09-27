@@ -43,7 +43,7 @@
     ]
   },
   "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
-  "version": "0.0.2",
+  "version": "0.5.0",
   "main": "index.js",
   "directories": {
     "test": "tests"
