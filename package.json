@@ -43,14 +43,14 @@
     ]
   },
   "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "build:dev" : "npm run build:deps && npm run build:test",
-    "build:deps" : "npm explore @coon-js/siesta-lib-helper npm run build:dev",
+    "build:dev": "npm run build:deps && npm run build:test",
+    "build:deps": "npm explore @coon-js/siesta-lib-helper npm run build:dev",
     "build:test": "npx extjs-link && npx siesta-lib-helper",
     "postversion": "git push && git push --tags",
     "test": "npx ws --port 8060 --static.index tests.redirect.html --open"
@@ -77,7 +77,6 @@
     "url": "https://github.com/coon-js/extjs-lib-core/issues"
   },
   "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
-
   "dependencies": {
     "@coon-js/extjs-package-loader": "^0.1.0",
     "@l8js/l8": "^0.4.1"
