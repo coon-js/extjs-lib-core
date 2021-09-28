@@ -49,7 +49,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build:dev": "npm run build:deps && npm run build:test",
+    "build:dev": "npm run build:deps && npm run build:test && npx node-git-hooks",
     "build:deps": "npm explore @coon-js/siesta-lib-helper npm run build:dev",
     "build:test": "npx extjs-link && npx siesta-lib-helper",
     "postversion": "git push && git push --tags",
