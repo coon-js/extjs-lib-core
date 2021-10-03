@@ -156,10 +156,21 @@ Ext.define("coon.core.app.ConfigLoader", {
          * Note: This method does not check if the file is existing.
          *
          * @example
-         *     // coon.core.Environment.getManifest("coon-js.resources"); // returns "coon-js/files";
-         *     // coon.core.Environment.getPathForResource(""); // returns "./resources"
-         *     // this.getFileNameForDomain("mydomain"); // returns "mydomain.conf.json"
-         *     this.getPathFormDomain("mydomain"); // returns "./resources/coon.js/files/mydomain.conf.json"
+         *
+         *    // app.json:
+         *    {    ...
+         *        "production": {
+         *            "coon-js": {
+         *                "resources": "coon-js/files"
+         *            }
+         *        }
+         *        ...
+         *    }
+         *
+         *      coon.core.Environment.getManifest("coon-js.resources"); // returns "coon-js/files";
+         *      coon.core.Environment.getPathForResource(""); // returns "./resources"
+         *      this.getFileNameForDomain("mydomain"); // returns "mydomain.conf.json"
+         *     this.getPathFormDomain("mydomain"); // returns "./resources/coon-js/files/mydomain.conf.json"
          *
          * @param {String} domain
          *
