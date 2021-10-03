@@ -179,15 +179,22 @@ Ext.define("coon.core.app.ApplicationUtil",{
      * @param {Object} manifestPackages object with package information out of the manifest
      *
      * @return {undefined|String}
+     *
+     * @throws if manifestPackages is not an Object.
      */
     getPackageNameForController (controller, manifestPackages) {
         "use strict";
+
+        if (!l8.isObject(manifestPackages)) {
+            throw("\"manifestPackages\" must be an object");
+        }
 
         const
             me  = this,
             packages = me.getCoonPackages(manifestPackages);
 
-        let found = undefined;
+        let found;
+
         Object.entries(packages).some((entry) => {
 
             let [packageName, config] = entry;

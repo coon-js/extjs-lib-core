@@ -442,7 +442,12 @@ Ext.define("coon.core.app.Application",{
     getPackageConfig (controller, key) {
         const me            = this,
             ConfigManager = coon.core.ConfigManager,
-            args          = [me.applicationUtil.getPackageNameForController(Ext.getClassName(controller))];
+            args          = [
+                me.applicationUtil.getPackageNameForController(
+                    Ext.getClassName(controller),
+                    coon.core.Environment.getPackages()
+                )
+            ];
 
         if (key !== undefined) {
             args.push(key);
