@@ -34,6 +34,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
     requires: [
         // @define l8
         "l8",
+        "coon.core.FileLoader",
         "coon.core.Environment",
         "coon.core.app.BatchConfigLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader",
@@ -58,7 +59,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
         const me = this;
 
         me.configLoader = new coon.core.app.ConfigLoader(
-            new coon.core.data.request.file.XmlHttpRequestFileLoader()
+            coon.core.FileLoader
         );
         me.batchConfigLoader = new coon.core.app.BatchConfigLoader(me.configLoader);
 
@@ -382,45 +383,21 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *
      * @see getApplicationConfigUrls
      *
-     * @throws throws the coon.core.app.ConfigurationException that might be thrown
-     * by the used ConfigLoader.
+     * @throws throws any expection from the used ConfigLoader's load
+     *
+     * @see coon.core.ConfigLoader#load
      */
     async loadApplicationConfig () {
         "use strict";
 
         const
             me = this,
-            urls = me.getApplicationConfigUrls(),
-            envUrl = urls.environment,
-            defaultUrl = urls.default,
             appName = coon.core.Environment.getManifest("name"),
-            configPath = `${appName}.config`;
-
-        let skipDefault = !!envUrl,
-            loadedConfig;
-
-        if (skipDefault) {
-            try {
-                loadedConfig = await me.configLoader.load(appName, envUrl, configPath);
-            } catch (e) {
-                if (typeof e.getCause === "function" && (e.getCause() instanceof coon.core.data.request.HttpRequestException)) {
-                    skipDefault = false;
-                } else {
-                    throw e;
-                }
-                skipDefault = false;
-            }
-        }
-
-        if (!skipDefault) {
-            try {
-                loadedConfig = await me.configLoader.load(appName, defaultUrl, configPath);
-            } catch (e) {
-                if (typeof e.getCause === "function" && !(e.getCause() instanceof coon.core.data.request.HttpRequestException)) {
-                    throw e;
-                }
-            }
-        }
+            loadedConfig = await me.configLoader.load(
+                appName,
+                undefined,
+                `${appName}.config`
+            );
 
         return loadedConfig;
     },

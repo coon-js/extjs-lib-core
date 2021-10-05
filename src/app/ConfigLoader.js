@@ -86,11 +86,13 @@ Ext.define("coon.core.app.ConfigLoader", {
      *
      * @param {String} domain The domain for which the configuration should be loaded.
      * @param {String} url The url where the configuration file for exactly this domain can be found.
-     *                     Will fall back to #getPathForDomain if not specified
+     *                     Will fall back to #getPathForDomain if not specified, of which first the environment
+     *                     related config will be loaded. If this file does not exist, the default configuration
+     *                     file will be loaded..
      * @param {String} configPath a path in the loaded json that should be used as the configuration object.
      * empty object will be registered if a path is specified and the target does noct exist.
      *
-     * @returns {Object|Promise}
+     * @returns {Object|Promise|undefined} undefined if the url to use is not existing
      *
      * @throws IllegalArgumentException, PromiseExecutionException
      *
@@ -105,7 +107,16 @@ Ext.define("coon.core.app.ConfigLoader", {
 
         const me = this;
 
-        url = url ? url : me.getPathForDomain(domain) ;
+        if (!url) {
+            const paths = me.getPathForDomain(domain);
+            let exists = await me.fileLoader.ping(paths.environment);
+
+            url = url ? url : exists ? paths.environment : paths.default;
+
+            if (url !== paths.environment && await me.fileLoader.ping(url) === false) {
+                return undefined;
+            }
+        }
 
         let config = {};
 
@@ -126,7 +137,7 @@ Ext.define("coon.core.app.ConfigLoader", {
             );
 
         } catch (e) {
-            throw new coon.core.app.ConfigurationException(e.getMessage(), e);
+            throw new coon.core.app.ConfigurationException(e, e);
         }
 
         return config;
@@ -136,23 +147,52 @@ Ext.define("coon.core.app.ConfigLoader", {
     privates: {
 
         /**
-         * Returns the expected configuration-file name for the specified domain.
+         * Returns an object that contains file names for the domain configuration.
+         * The object contains a key/value-pair for the default-name of the domain, i.e.
+         * {default : [domain].conf.json}
+         *  and the name of the configuration file that depends on the application's coon-js.env-setting
+         * {environment : [domain].[coon-js.env].conf.json}
+         * Will leave the environment-value undefined if no entry in the app.json could be found for it.
          *
          * @example
-         *  loader.getFileNameForDomain("app-cn_mail"); // "app-cn_mail.conf.json"
+         *
+         *  // app.json
+         *  // sencha app build --dev --uses
+         *  // {"development" : {"coon-js" : {"env" : "development"}}}
+         *  const urlObj = this.getApplicationConfigUrls();
+         *  console.log(urlObj);
+         *  // outputs
+         *  // {default : "[path]/resources/coon-js/[application_name].conf.json",
+         *  // environment : "[path]/resources/coon-js/[application_name].development.conf.json"}
+         *
+         * @example
+         *  // app.json
+         *  // {"development" : {"coon-js" : {"env" : "development"}}}
+         *  loader.getFileNameForDomain("app-cn_mail"); // {default : "app-cn_mail.conf.json", 
+         *                                              // environment: "app-cn_mail.development.conf.json"}
          *
          *
          * @param {String} domain
          *
-         * @return {String}
+         * @return {Object} fileInfo The object containing information about the configuration files
+         * @return {Object} fileInfo.default domain + ".conf.json"
+         * @return {Object} fileInfo.environment domain + ".conf.json"
          */
         getFileNameForDomain (domain) {
-            return domain + ".conf.json";
+
+            const
+                Environment = coon.core.Environment,
+                env =  Environment.getManifest("coon-js.env");
+
+            return {
+                default: domain + ".conf.json",
+                environment: env ? domain + "." + env + ".conf.json" : undefined
+            };
         },
 
 
         /**
-         * Returns the path to the resource the domain is representing.
+         * Returns the paths to the resource the domain is representing.
          * Note: This method does not check if the file is existing.
          *
          * @example
@@ -161,35 +201,46 @@ Ext.define("coon.core.app.ConfigLoader", {
          *    {    ...
          *        "production": {
          *            "coon-js": {
+         *                "env" : "production",
          *                "resources": "coon-js/files"
          *            }
          *        }
          *        ...
          *    }
          *
-         *      coon.core.Environment.getManifest("coon-js.resources"); // returns "coon-js/files";
-         *      coon.core.Environment.getPathForResource(""); // returns "./resources"
-         *      this.getFileNameForDomain("mydomain"); // returns "mydomain.conf.json"
-         *     this.getPathFormDomain("mydomain"); // returns "./resources/coon-js/files/mydomain.conf.json"
+         *     coon.core.Environment.getManifest("coon-js.resources"); // returns "coon-js/files";
+         *     coon.core.Environment.getPathForResource(""); // returns "./resources"
+         *     this.getFileNameForDomain("mydomain").default; // returns "mydomain.conf.json"
+         *     this.getFileNameForDomain("mydomain").environment; // returns "mydomain.production.conf.json"
+         *     this.getPathFormDomain("mydomain").default; // returns "./resources/coon-js/files/mydomain.conf.json"
+         *     this.getPathFormDomain("mydomain").environment; // returns "./resources/coon-js/files/mydomain.production.conf.json"
          *
          * @param {String} domain
          *
-         * @return {String} The relative path to the resource from the location
+         * @return {Object} pathInfo The relative path to the resource from the location
          * this script was executed. Will weave the value found in the "coon-js.resources"-environment
          * in if available.
+         * @return {Object} pathInfo.default
+         * @return {Object} pathInfo.environment
          *
          * @see getFileNameForDomain
          * @see {coon.core.Environment#getPathForResource}
          */
         getPathForDomain (domain) {
 
-            const Environment = coon.core.Environment;
+            const 
+                me = this,
+                Environment = coon.core.Environment,
+                fileInfo    = me.getFileNameForDomain(domain);
 
             let resourcePath = Environment.getManifest("coon-js.resources");
 
             resourcePath = resourcePath ? resourcePath +"/" : "";
 
-            return Environment.getPathForResource(resourcePath + this.getFileNameForDomain(domain));
+            return {
+                default: Environment.getPathForResource(resourcePath + fileInfo.default),
+                environment: fileInfo.environment ? Environment.getPathForResource(resourcePath + fileInfo.environment) : undefined
+            };
         }
 
 

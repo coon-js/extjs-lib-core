@@ -14,9 +14,9 @@ This is only required if you want to run the tests (`./tests`), as [Siesta](http
 an existing ExtJS installation.
 
 
-## Usage
-### Application configuration
-Application configuration files will be looked up in the ```resources```-folder, and then in the
+## Configuration
+### Environment-specific configuration files
+Application and Package configuration files will be looked up in the ```resources```-folder, and then in the
 folder which's name can be configured in the ```coon-js```-section of the application's ```app.json```.
 Example (*app.json*):
 ```
@@ -30,13 +30,13 @@ Example (*app.json*):
 Depending on the build you are using (in this case either the "production"- or the "development"-build), configuration-files
 will be looked up in "resources/files" (note that the "resources"-folder is the folder-name/path returned by a
 call to ```Ext.getResourcePath()```). A coon.js-Application will first query configuration files for the build that
-is being used (by using the name pattern ```[application_name].[coon-js.env].conf.json```), and if that file could
-not be loaded and results in a HTTP error-code, the mechanism will fall back to ```[application_name].conf.json```.
+is being used (by using the name pattern ```[application_name|package_name].[coon-js.env].conf.json```), and if that file could
+not be loaded and results in a HTTP error-code, the mechanism will fall back to ```[application_name|package_name].conf.json```.
 In short, environment-specific configuration files will always be given precedence over the default-configuration files.
 
-For using specific package configuration files, see the section about **Dynamic Package Loading**.
+For using specific package configuration files, see the section about **[Dynamic Package Loading](#dynpackload)**.
 
-#### Layout of an application-configuration file
+#### Layout of an application-configuration file <a name="app_conf"></a>
 An application's configuration file need to contain valid json. The configuration needs to be an object
 keyed under `[application_name].config`. For an application with the name `conjoon`, the layout needs to be 
 as follows: 
@@ -50,7 +50,7 @@ as follows:
 }
 ```
 
-## Dynamic Package Loading
+## Dynamic Package Loading <a name="dynpackload"></a>
 This Application implementation queries ```Ext.manifest``` for packages which are defined as
 "used" in ```app.json``` and have the ```coon-js``` section configured with an entry ```packageController```
 configured:
@@ -98,39 +98,6 @@ will automatically be queried, resulting in a 404 if not specified. No further e
 to loading configuration-files result in a HTTP-error.
 If the file exists, its configuration will override the default-configuration found in the```package.json```,
 if any.
-
-### Application configuration 
-<a name="app_conf"></a>
-An application based upon the `coon-js`-library can also be dynamically configured using `json`-files.
-For this purpose, config files can be differentiated according to the environment the application is used in. 
-The configuration files need to be in `json`-Format.
-
-The following example shows how to specify the `env`-value - which represents the environment the application is used in -
-and the folder that is used to store the configuration file. This must be written in the `app.json`, in the `development`
-section:
-```
-"development": {
-    "coon-js" : {
-      "env": "dev",
-      "resources" : "coon-js"
-    },
-```
-
-A `coon-js`-application will now query the `resource/coon-js` folder, looking up the configuration file given the following
-naming pattern:
-
-`[application_name].[coon-js.env].conf.json`
-
-Given the example above, the configuration must be saved within the following location, if the application´s name is `conjoon`.
-
-`resources/coon-js/conjoon.dev.conf.json`
-
-This file will be loaded if the build for the application is based upon the `development`-section. 
-If this file does not exist, the application will fall back to querying a file named
-
-`[application_name].conf.json`
-
-This allows for build-specific configurations.
 
 ## Using plugins 
 
@@ -193,7 +160,7 @@ Note how the configuration has to be introduced with the name of the application
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
 refer to the documentation of  [extjs-comp-navport](https://github.com/coon-js/extjs-comp-navport).
-A large, extensible application built with *coon-js* can be found in the [conjoon](https://github.com/conjoon)\-repository.
+A large configurable application built with *coon-js* can be found in the [conjoon](https://github.com/conjoon/conjoon)\-repository.
 
 
 ### Development notes

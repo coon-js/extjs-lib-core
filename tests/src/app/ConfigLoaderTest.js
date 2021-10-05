@@ -25,7 +25,7 @@
 
 StartTest((t) => {
 
-    t.requireOk("coon.core.Environment", () => {
+    t.requireOk("coon.core.env.VendorBase", "coon.core.FileLoader", "coon.core.Environment", () => {
 
         const
             DOMAIN = "mymockdomain",
@@ -33,16 +33,31 @@ StartTest((t) => {
 
         let loader;
 
-        t.beforeEach(function () {
-
-            loader = Ext.create("coon.core.app.ConfigLoader", Ext.create("coon.core.data.request.file.XmlHttpRequestFileLoader"));
+        const setupVendorBase = (keyfunc) => {
+            coon.core.Environment._vendorBase = undefined;
 
             let vendorBase = Ext.create("coon.core.env.VendorBase");
             vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
-            vendorBase.getManifest = (key) => {if (key === "coon-js.resources") {return "coon-js";}};
+            vendorBase.getManifest = keyfunc;
             coon.core.Environment.setVendorBase(vendorBase);
-        });
+        };
 
+        t.beforeEach(function () {
+
+            loader = Ext.create(
+                "coon.core.app.ConfigLoader",
+                coon.core.FileLoader
+            );
+
+            setupVendorBase((key) => {
+                switch (key) {
+                case "coon-js.resources":
+                    return "coon-js";
+                case "coon-js.env":
+                    return "testing";
+                }
+            });
+        });
 
         t.afterEach(function () {
 
@@ -61,7 +76,7 @@ StartTest((t) => {
         t.it("defaults", (t) => {
 
             t.isInstanceOf(loader, "coon.core.app.ConfigLoader");
-            t.isInstanceOf(loader.fileLoader, "coon.core.data.request.file.XmlHttpRequestFileLoader");
+            t.isInstanceOf(loader.fileLoader, "coon.core.data.request.file.FileLoader");
 
             let exc;
 
@@ -77,7 +92,10 @@ StartTest((t) => {
 
 
         t.it("getFileNameForDomain", (t) => {
-            t.expect(loader.getFileNameForDomain("mymockdomain")).toBe("mymockdomain.conf.json");
+            t.expect(loader.getFileNameForDomain("mymockdomain")).toEqual({
+                "default": "mymockdomain.conf.json",
+                "environment": "mymockdomain.testing.conf.json"
+            });
         });
 
 
@@ -85,12 +103,30 @@ StartTest((t) => {
 
             let spy = t.spyOn(loader, "getFileNameForDomain");
 
-            t.expect(loader.getPathForDomain(DOMAIN)).toBe(
-                coon.core.Environment.getPathForResource(
-                    coon.core.Environment.getManifest("coon-js.resources") + "/" + loader.getFileNameForDomain(DOMAIN)
+            const pathInfo = loader.getFileNameForDomain(DOMAIN);
+
+            t.expect(loader.getPathForDomain(DOMAIN)).toEqual({
+                default: coon.core.Environment.getPathForResource(
+                    coon.core.Environment.getManifest("coon-js.resources") + "/" + pathInfo.default
+                ),
+                environment: coon.core.Environment.getPathForResource(
+                    coon.core.Environment.getManifest("coon-js.resources") + "/" + pathInfo.environment
                 )
-            );
+            });
+
             t.expect(spy.calls.mostRecent().args[0]).toBe(DOMAIN);
+
+            setupVendorBase((key) => {
+                switch (key) {
+                case "coon-js.resources":
+                    return "coon-js";
+                case "coon-js.env":
+                    return undefined;
+                }
+            });
+
+            t.expect(loader.getPathForDomain(DOMAIN).environment).toBeUndefined();
+            t.expect(loader.getPathForDomain(DOMAIN).default).toBeDefined();
         });
 
 
@@ -106,7 +142,7 @@ StartTest((t) => {
 
         t.it("load() - does not call getPathForDomain() if url specified", async t => {
 
-            let mockdomainPath = loader.getPathForDomain("mockdomain"),
+            let mockdomainPath = loader.getPathForDomain("mockdomain").default,
                 spy = t.spyOn(loader, "getPathForDomain");
 
             await loader.load("mockdomain", mockdomainPath);
@@ -115,18 +151,8 @@ StartTest((t) => {
         });
 
 
-        t.it("load() - 404", async (t) => {
-
-            let exc;
-
-            try {
-                await loader.load("notexistingurl");
-            } catch (e) {
-                exc = e;
-            }
-
-            t.isInstanceOf(exc, "coon.core.app.ConfigurationException");
-            t.expect(exc.getMessage()).toContain("404");
+        t.it("load() - undefined", async (t) => {
+            t.expect(await loader.load("notexistingurl")).toBeUndefined();
         });
 
 
