@@ -30,6 +30,7 @@
 Ext.define("coon.core.data.request.file.FileLoader", {
 
     /**
+     * @method load
      * Initiates loading the file specified with the given url and returns a
      * Promise or a mixed value representing the file contents if used with async/await.
      *
@@ -39,9 +40,22 @@ Ext.define("coon.core.data.request.file.FileLoader", {
      *
      * @throws {coon.core.data.request.HttpRequestException} if any exception occured,
      * or {coon.core.exception.IllegalArgumentException} if url was not a string
+     *
+     * @abstract
      */
-    async load (url) {}
 
+
+    /**
+     * @method ping
+     *
+     * Pings a resource and returns true if status=200 was returned in the response.
+     *
+     * @param {String} url The location to ping
+     *
+     * @return {Boolean|Promise}
+     *
+     * @abstract
+     */
 
 });
 

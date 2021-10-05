@@ -38,15 +38,13 @@ Ext.define("coon.core.FileLoader", {
 
     requires: [
         // @define l8.request.FileLoader
-        "l8.request.FileLoader",
-        "coon.core.data.request.file.XmlHttpRequestFileLoader"
-
+        "l8.request.FileLoader"
     ],
 
     /**
      * The FileLoader used.
      * @var fileLoader
-     * @type coon.core.data.request.file.XmlHttpRequestFileLoader
+     * @type l8.request.FileLoader
      * @private
      */
 
@@ -64,7 +62,15 @@ Ext.define("coon.core.FileLoader", {
      */
     async load (url) {
         return await this.fileLoader.load(url);
+    },
+
+    /**
+     * @inheritdoc
+     */
+    async ping (url) {
+        return await this.fileLoader.ping(url);
     }
+
 
 });
 
