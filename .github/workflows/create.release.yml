@@ -6,12 +6,11 @@ on:
 name: Create Release
 
 jobs:
-
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.x ]
+        node-version: [16.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -19,11 +18,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci --ignore-scripts
+      - run: npm ci
       - run: npm run build --if-present
 
-  release_git:
-    needs: build
+  build:
+    needs: test
     name: Create Release
     runs-on: ubuntu-latest
     steps:
@@ -39,18 +38,3 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-
-  publish:
-    needs: release_git
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.release.target_commitish }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          registry-url: "https://registry.npmjs.org"
-      - run: npm publish --access-public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
