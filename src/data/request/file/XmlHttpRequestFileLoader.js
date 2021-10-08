@@ -34,6 +34,7 @@
  *    const res = await fileLoader.load();
  *    console.log(res); // plain text contents of the file on success
  *
+ * @deprecated use coon.core.FileLoader
  */
 Ext.define("coon.core.data.request.file.XmlHttpRequestFileLoader", {
 

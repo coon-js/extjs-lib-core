@@ -56,7 +56,7 @@ StartTest((t) => {
 
                 t.expect(spy).toHaveBeenCalled(1);
                 t.expect(spy.calls.all()[0].args[0]).toBe(appName);
-                t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls()[env ? "environment" : "default"]);
+                t.expect(spy.calls.all()[0].args[1]).toBeUndefined();
                 t.expect(spy.calls.all()[0].args[2]).toBe(`${appName}.config`);
 
                 t.expect(exc).toBe(configurationException);
@@ -278,7 +278,8 @@ StartTest((t) => {
 
             t.expect(spy).toHaveBeenCalled(1);
             t.expect(spy.calls.mostRecent().args[0]).toBe(appName);
-            t.expect(spy.calls.mostRecent().args[1]).toBe(applicationUtil.getApplicationConfigUrls().default);
+            t.expect(spy.calls.mostRecent().args[1]).toBeUndefined();
+            t.expect(spy.calls.mostRecent().args[2]).toBe(appName + ".config");
         });
 
 
@@ -291,33 +292,26 @@ StartTest((t) => {
 
             t.expect(await applicationUtil.loadApplicationConfig()).toBeUndefined();
 
-            t.expect(spy).toHaveBeenCalled(2);
-            t.expect(spy.calls.all()[0].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls().environment);
-            t.expect(spy.calls.all()[1].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[1].args[1]).toBe(applicationUtil.getApplicationConfigUrls().default);
+            t.expect(spy).toHaveBeenCalled(1);
         });
 
 
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but only default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {env: "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resources": "coon-js", env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
             t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
 
-            t.expect(spy).toHaveBeenCalled(2);
-            t.expect(spy.calls.all()[0].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls().environment);
-            t.expect(spy.calls.all()[1].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[1].args[1]).toBe(applicationUtil.getApplicationConfigUrls().default);
+            t.expect(spy).toHaveBeenCalled(1);
         });
 
 
-        t.it("loadApplicationConfig() - env-property (dev)  not available, default file found", async t => {
+        t.it("loadApplicationConfig() - env-property (dev)  not available, default file found in default resources", async t => {
 
+            // mock will have default path set tp "fixtures"
             const appName = "defaultfilefound";
             setupEnvironment({manifest: {name: appName}});
 
@@ -326,22 +320,18 @@ StartTest((t) => {
             t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(1);
-            t.expect(spy.calls.all()[0].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls().default);
         });
 
 
         t.it("loadApplicationConfig() - env-property (dev) available, env file found", async t => {
             const appName = "envfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {env: "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resources": "coon-js", "env": "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
             t.expect(await applicationUtil.loadApplicationConfig()).toEqual({envfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(1);
-            t.expect(spy.calls.all()[0].args[0]).toBe(appName);
-            t.expect(spy.calls.all()[0].args[1]).toBe(applicationUtil.getApplicationConfigUrls().environment);
             
         });
 

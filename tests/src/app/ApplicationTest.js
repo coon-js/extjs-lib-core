@@ -744,6 +744,23 @@ StartTest((t) => {
         });
 
 
+        t.it("getPackageConfig() - proper arguments passed to ApplicationUtil#getPackageNameForController", (t) => {
+
+            const
+                controllerFqn = "coon.test.app.mock.app.PackageController";
+
+            app = Ext.create("coon.core.app.Application", {
+                name: "test",
+                mainView: "Ext.Panel",
+                controllers: [
+                    controllerFqn
+                ]
+            });
+
+            t.expect(app.getPackageConfig("somecontroller")).toBeUndefined();
+        });
+
+
         t.it("getPackageConfig()", (t) => {
 
             switchManifest();
