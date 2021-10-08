@@ -37,20 +37,15 @@ StartTest((t) => {
 
             t.isInstanceOf(coon.core.FileLoader, "coon.core.data.request.file.FileLoader");
 
-            t.isInstanceOf(coon.core.FileLoader.fileLoader, "l8.request.FileLoader");
-
             const
-                RETURNMOCK = {},
                 url = "./fixtures/coon-js/mockdomain.conf.json",
-                spy = t.spyOn(coon.core.FileLoader.fileLoader, "load").and.callFake(async () => {return RETURNMOCK;}),
                 res = await coon.core.FileLoader.load(url);
 
-            t.expect(spy.calls.mostRecent().args[0]).toBe(url);
+            let resp = await fetch(url);
 
-            t.expect(res).toBe(RETURNMOCK);
+            t.expect(res).toBe(await resp.text());
 
-            spy.remove();
-           
+            t.expect(await coon.core.FileLoader.ping(url)).toBe((await fetch(url, {method: "HEAD"})).status === 200);
         });
     });
 });

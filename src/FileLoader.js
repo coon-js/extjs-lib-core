@@ -26,7 +26,7 @@
 
 /**
  * Convenient singleton file loader interface.
- * Uses a coon.core.data.request.file.XmlHttpRequestFileLoader internally.
+ * Uses l8 internally.
  *
  * @singleton
  */
@@ -37,38 +37,23 @@ Ext.define("coon.core.FileLoader", {
     singleton: true,
 
     requires: [
-        // @define l8.request.FileLoader
-        "l8.request.FileLoader"
+        // @define l8
+        "l8"
     ],
-
-    /**
-     * The FileLoader used.
-     * @var fileLoader
-     * @type l8.request.FileLoader
-     * @private
-     */
-
-
-    /**
-     * @constructor
-     */
-    constructor () {
-        this.fileLoader = new l8.request.FileLoader();
-    },
 
 
     /**
      * @inheritdoc
      */
     async load (url) {
-        return await this.fileLoader.load(url);
+        return await l8.load(url);
     },
 
     /**
      * @inheritdoc
      */
     async ping (url) {
-        return await this.fileLoader.ping(url);
+        return await l8.ping(url);
     }
 
 

@@ -78,7 +78,7 @@
   "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
   "dependencies": {
     "@coon-js/extjs-package-loader": "^0.1.0",
-    "@l8js/l8": "^0.3.6"
+    "@l8js/l8": "^0.5.2"
   },
   "devDependencies": {
     "@coon-js/siesta-lib-helper": "^0.1.0",
