@@ -1,12 +1,31 @@
-# @coon-js/extjs-lib-core
+# @coon-js/extjs-lib-core ![MIT](https://img.shields.io/npm/l/@coon-js/extjs-lib-core) [![npm version](https://badge.fury.io/js/@coon-js%2Fextjs-lib-core.svg)](https://badge.fury.io/js/@coon-js%2Fextjs-lib-core)
+
 This NPM package provides core functionality needed in ExtJS projects, and allows for
 extended application configuration during runtime of an ExtJS-application.
 This library also contains enhancements made to the PageMap-classes for dynamically adding/removing data from a BufferedStore.
 
 ## Installation
+```bash
+$ npm install --save-dev @coon-js/extjs-lib-core
 ```
-npm install --save-dev @coon-js/extjs-lib-core
+
+For using the package as an external dependency in an application, use
+```bash
+$ npm install --save-prod @coon-js/extjs-lib-core
 ```
+In your `app.json`, add this package as a requirement, and make sure your ExtJS `workspace.json`
+is properly configured to look up local repositories in the `node_modules`-directory.
+
+Example (`workspace.json`) :
+```json 
+{
+  "packages": {
+    "dir": "${workspace.dir}/node_modules/@l8js,${workspace.dir}/node_modules/@conjoon,${workspace.dir}/node_modules/@coon-js,${workspace.dir}/packages/local,${workspace.dir}/packages,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name},${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-treegrid,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-base,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-ios,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-material,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-aria,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-neutral,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-classic,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-gray,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-crisp,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-crisp-touch,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-neptune,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-neptune-touch,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-triton,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-graphite,${workspace.dir}/node_modules/@sencha/ext-${toolkit.name}-theme-material,${workspace.dir}/node_modules/@sencha/ext-calendar,${workspace.dir}/node_modules/@sencha/ext-charts,${workspace.dir}/node_modules/@sencha/ext-d3,${workspace.dir}/node_modules/@sencha/ext-exporter,${workspace.dir}/node_modules/@sencha/ext-pivot,${workspace.dir}/node_modules/@sencha/ext-pivot-d3,${workspace.dir}/node_modules/@sencha/ext-ux,${workspace.dir}/node_modules/@sencha/ext-font-ios",
+    "extract": "${workspace.dir}/packages/remote"
+  }
+}
+```
+
 ## Post-Install
 [@coon-js/extjs-link](https://npmjs.org/coon-js/extjs-link) will start once the package was installed and guide you
 through the process of creating symlinks to an existing ExtJS sdk installation. 
@@ -19,11 +38,11 @@ an existing ExtJS installation.
 Application and Package configuration files will be looked up in the ```resources```-folder, and then in the
 folder which's name can be configured in the ```coon-js```-section of the application's ```app.json```.
 Example (*app.json*):
-```
-"production" : {
+```json
+"production": {
     "coon-js" : {"resources" : "files", "env" : "prod"}
 },
-"development" : {
+"development": {
     "coon-js" : {"resources" : "files", "env" : "dev"}
 },
 ```
@@ -40,7 +59,7 @@ For using specific package configuration files, see the section about **[Dynamic
 An application's configuration file need to contain valid json. The configuration needs to be an object
 keyed under `[application_name].config`. For an application with the name `conjoon`, the layout needs to be 
 as follows: 
-```
+```json
 {
     "conjoon" : {
         "config" : {
@@ -55,7 +74,7 @@ This Application implementation queries ```Ext.manifest``` for packages which ar
 "used" in ```app.json``` and have the ```coon-js``` section configured with an entry ```packageController```
 configured:
 ```
-"coon-js" : {"package" : {"controller" : true}}
+"coon-js": {"package" : {"controller" : true}}
 ```
 Theses packages will be loaded by this application implementation dynamically, and
 this application will make sure that all packages are loaded before the regular 
@@ -75,7 +94,7 @@ of the owning application, e.g. for the package ```myPackage``` and the app ```m
 Please note the ```coon-js```-directory name. This is adjustable by specifying a ```coon-js```-section
 in your ```app.json``` file:
 ```
-"coon-js" : {"resources" : "coon-js"}
+"coon-js": {"resources" : "coon-js"}
 ```
 If you omit this setting, configuration files will be looked up directly in the ```resources```-folder.
 This folder serves as the root for all configuration files for an **extjs-cn_core**-application.  
@@ -83,11 +102,11 @@ This folder serves as the root for all configuration files for an **extjs-cn_cor
 Configuration files will be looked up if a package has the following section configured in its
 package.json:
 ```
-"coon-js" : {"package" : {"config" : {}}}
+"coon-js": {"package" : {"config" : {}}}
 ```
 or
 ```
-"coon-js" : {"package" : {"config" : true}}
+"coon-js": {"package" : {"config" : true}}
 ```
 
 This section can also hold configuration data that is then registered with the [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js).
@@ -114,17 +133,17 @@ packages "app"-folder under the classname ```[package-namespace].app.plugin.Cont
 of the ControllerPlugins to load:
 
 package.json:
-```
+```json
 // plug-coon_themeutil has the namespace coon.plugin.themeutil
 // tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup, must therefore be existing in memory
-"coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
+"coon-js": {"package" : {"config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
 ```
 
 or
 
-```
+```json
 // tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup, must therefore be existing in memory
-"coon-js" : {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]}}}}
+"coon-js": {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]}}}}
 ```
 
 In order for a ```PackageController``` to use one or more ```ControllerPlugin```(s), you need to set the
@@ -141,7 +160,7 @@ An application based upon the `coon-js`-library can also be configured with plug
 Please use the application configuration for this, [as described above](#app_conf). The following is an example configuration for
 loading the [coon.plugin.themeutil.app.plugin.ApplicationPlugin](https://github.com/coon-js/extjs-plug-themeutil/blob/master/src/app/plugin/ApplicationPlugin.js):
 
-```
+```json
 {
   "conjoon" : {
     "config" : {
@@ -188,9 +207,9 @@ This package requires the [package-loader](https://www.sencha.com/blog/create-a-
 ## Tests
 Tests are written with [Siesta](https://bryntum.com/siesta)
 
-```
-npm run build:tests
-npm test
+```bash
+$ npm run setup:tests
+$ npm test
 ```
 
 
