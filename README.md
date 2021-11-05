@@ -68,6 +68,7 @@ as follows:
     }
 }
 ```
+Note how the configuration has to be introduced with the name of the application the config is used in, in this case `conjoon`.
 
 ## Dynamic Package Loading <a name="dynpackload"></a>
 This Application implementation queries ```Ext.manifest``` for packages which are defined as
@@ -174,7 +175,36 @@ loading the [coon.plugin.themeutil.app.plugin.ApplicationPlugin](https://github.
 }
 ```
 
-Note how the configuration has to be introduced with the name of the application the config is used in, in this case `conjoon`.
+### ... with Components
+**extjs-lib-core** provides funtionality to specify component-plugins using the application configuration file. Plugins
+referenced here need to be loaded via packages (i.e. by using `uses` in the `app.json`), or they need to have been made
+generally available over the application itself, i.e. by bundling those plugins in the build.<br>
+A plugin configuration itself in the application-configruation has teh following key/value-pairs:
+- `cmp`: A valid component query the application uses to look up the represented component. 
+- `event`: The name of the event that should be listened to for instantiating and registering the plugin
+- `pclass`/`fclass`: The fqn (i.e. class name, including namespaces) for the plugin to use. If you are using a plugin that
+extends `Ext.plugin.Abstract`, use `pclass`. If you are referencing a grid-feature (i.e. extending `Ext.grid.feature.Feature`), 
+use `fclass`. 
+```json
+{
+    "conjoon" : {
+        "config": {
+            "plugins": [
+                {
+                    "cmp": "cn_navport-tbar",
+                    "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
+                    "event": "beforerender"
+                },
+                {
+                    "cmp": "cn_mail-mailmessagegrid",
+                    "fclass": "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
+                    "event": "cn_init"
+                }
+            ]
+        }
+    }
+}
+```
 
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
@@ -208,5 +238,3 @@ Tests are written with [Siesta](https://bryntum.com/siesta)
 $ npm run setup:tests
 $ npm test
 ```
-
-

@@ -61,7 +61,7 @@ StartTest((t) => {
 
                 t.expect(exc).toBe(configurationException);
             };
-        
+
 
         t.beforeEach(() => {
             applicationUtil = Ext.create("coon.core.app.ApplicationUtil");
@@ -175,6 +175,17 @@ StartTest((t) => {
 
         });
 
+
+        t.it("getComponentPlugins()", t => {
+
+            const PLUGINCFG = {};
+            t.expect(applicationUtil.getComponentPlugins({})).toEqual({});
+            t.expect(applicationUtil.getComponentPlugins({
+                "plugins": PLUGINCFG
+            })).toBe(PLUGINCFG);
+
+
+        });
 
         t.it("getControllerPlugins()", (t) => {
 
@@ -332,7 +343,7 @@ StartTest((t) => {
             t.expect(await applicationUtil.loadApplicationConfig()).toEqual({envfile: "found"});
 
             t.expect(spy).toHaveBeenCalled(1);
-            
+
         });
 
         t.it("loadApplicationConfig() - env-property (dev) available, exception thrown", async t => {

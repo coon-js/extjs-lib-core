@@ -352,6 +352,21 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
 
     /**
+     * Returns the component plugin configuration from the application config-file.
+     * Returns an empty object if not found.
+     *
+     * @param {Object} applicationConfig
+     *
+     * @returns {*[]}
+     */
+    getComponentPlugins (applicationConfig) {
+        "use strict";
+
+        return l8.unchain("plugins", applicationConfig, {});
+    },
+
+
+    /**
      * Loads the application config - if available - and registers it with the ConfigManager
      * given the application name as the domain.
      * Will compute an url for the config based on the environment the application is used,
