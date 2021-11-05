@@ -28,102 +28,7 @@
  * advanced routing and launch hooks. For a reference implementation, see
  * https://github.com/conjoon.
  *
- * Application configuration
- * -------------------------
- * Application configuration files will be looked up in the "resources"-folder, and then in the
- * folder which's name can be configured in the "coon-js"-section of the application's "app.json".
- * Example (app.json):
- * "production" : {
- *    "coon-js" : {"resources" : "files", "env" : "prod"}
- * },
- * "development" : {
- *    "coon-js" : {"resources" : "files", "env" : "dev"}
- * },
- *
- * Depending on the build you are using (in this case either the "production"- or the "development"-build), configuration-files
- * will be looked up in "resources/files" (note that the "resources"-folder is the folder-name/path returned by a
- * call to "Ext.getResourcePath()"). A coon.js-Application will first query configuration files for the build that
- * is being used (by using the name pattern "[application_name].[coon-js.env].conf.json"), and if that file could
- * not be loaded and results in a HTTP error-code, the mechanism will fall back to "[application_name].conf.json".
- * In short, environment-specific configuration files will always be given precedence over the default-configuration files.
- *
- * Layout of an application(!)-configuration file
- * -----------------------------------------------
- * An application's configuration file need to contain valid json. The configuration needs to be an object
- * keyed under "[application_name].config":
- * {
- *     [application_name] : {
- *         config : {
- *          // this is the actual object that gets looked up and registered with the ConfigManager.
- *         }
- *     }
- * }
- *
- * Dynamically loaded packages
- * ----------------------------
- * This implementation queries Ext.manifest for packages which are defined as
- * "used" in app.json and have the "coon-js" section configured with an entry "packageController"
- * configured:
- * @examples
- *    "coon-js" : {"package" : {"controller" : true}}
- *
- * Theses packages will dynamically get loaded by this application implementation.
- *
- * Any predefined launch()-method will only be called if the preLaunchHook()-process
- * returns true.
- * preLaunchHook() will also take care of properly setting the mainView up if, and only
- * if all associated PackageController will return true in their preLaunchHook().
- *
- * Dynamically loaded package configurations
- * ---------------------------------
- * You can add configuration files to your packages which must follow the naming scheme
- * [package_name].conf.json. These configuration files must be placed in the "resources"-folder
- * of the owning application, e.g. for the package "myPackage" and the app "myApp" using the following path:
- * /myApp/resources/myPackage.conf.json.
- * Configuration files will be looked up if a package has the following section configured in its
- * package.json:
- *   "coon-js" : {"package" : {"config" : {}}}
- * Additionally, if there is a coon-js.resources-property found in the environment, this will be used as the 
- * owning folder of the configuration-file:
- * app.json:
- *   "coon-js" :{"resources" : "files"}
- * Will look up configuration-files in "myApp/resources/files"
- * 
- * This section can also hold configuration data that is then registered with the coon.core.ConfigManager.
- * It can be queried using a call to coon.core.ConfigManager.get("myPackage"). For more information,
- * refer to the docs of coon.core.ConfigManager.
- * If a package holds a configuration entry in the above described section, its configuration file
- * will automatically be queried, resulting in a 404 if not specified (no further error handling at this point).
- * If the file exists, its configuration will override the configuration found in the corresponding package.json.
- *
- * Using ApplicationController plugins
- * -----------------------------------
- * coon.core.app.PackageController can have plugins of the type coon.core.app.plugin.ControllerPlugin
- * that are called by the application during the preLaunchHook-process. Regardless of the
- * state of the return-values of PackageController's preLaunchHook(), all plugins will be executed during
- * the preLaunchHookProcess.
- * For registering PluginControllers, either create them and add them to the PackageController by hand
- * by calling coon.core.app.PackageController#addPlugin, or use the package configuration as described above.
- * You can use the package-name to specify a single ControllerPlugin out of this package (it will be looked up in the
- * packages "app"-folder under the classname [package-namespace].app.plugin.ControllerPlugin), or by specifying the fqn
- * of the ControllerPlugins to load:
- *
- * package.json:
- * // plug-coon_themeutil has the namespace coon.plugin.themeutil
- * // tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup
- * "coon-js" : {"package" : {"controller" : true, "config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
- *
- * // tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup
- * "coon-js" : {"package" : {"controller" : true, "config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]}}}}
- *
- * In order for a PackageController to use ControllerPlugins, the PackageController must be flagged as used in the
- * configuration by specifying the "coon-js.package.controller" property as true.
- * You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
- * the ControllerPlugins you'd like to use.
- * Note: You need to make sure that owning packages are required by the PackageController's package using them.
- * For more information on PackageController-plugins, see coon.core.app.plugin.ControllerPlugin.
- *
- *
+ * Refer to the documentation over at github.com/coon-js/extjs-lib-core
  */
 Ext.define("coon.core.app.Application",{
 
@@ -487,20 +392,26 @@ Ext.define("coon.core.app.Application",{
      * @private
      */
     async initApplicationConfigurationAndPlugins () {
+        "use strict";
 
-        const me = this;
-
-        let conf = await me.applicationUtil.loadApplicationConfig();
-
-        let applicationPlugins = me.applicationUtil.getApplicationPlugins(
-            conf, coon.core.Environment.getPackages()
-        );
+        const
+            me = this,
+            conf = await me.applicationUtil.loadApplicationConfig(),
+            applicationPlugins = me.applicationUtil.getApplicationPlugins(
+                conf, coon.core.Environment.getPackages()
+            ),
+            componentPlugins = me.applicationUtil.getComponentPlugins(conf);
 
         await applicationPlugins.forEach(async (plugin) => await me.addApplicationPlugin(plugin));
 
+        componentPlugins.forEach((pluginCfg) => me.registerComponentPlugin(pluginCfg));
+
         Ext.app.addNamespaces(applicationPlugins);
 
-        return applicationPlugins;
+        return {
+            applicationPlugins: applicationPlugins,
+            componentPlugins: componentPlugins
+        };
     },
 
 
@@ -535,8 +446,8 @@ Ext.define("coon.core.app.Application",{
      */
     getController: function (name, preventCreate) {
 
-        const 
-            me = this, 
+        const
+            me = this,
             controller = me.callParent(arguments);
 
         if (preventCreate !== true && (controller instanceof coon.core.app.PackageController)) {
@@ -611,6 +522,57 @@ Ext.define("coon.core.app.Application",{
         me.applicationPlugins.push(plugin);
 
         return me;
+    },
+
+
+    /**
+     * Adds component plugins or grid features based on the specified plugin configuration.
+     * The plugin configuration is an object keyed "cmp", "pclass"/"fclass" and "eventHook".
+     * pclass should be used whenever the plugin is installed as a "plugin" extending {Ext.plugin.Abstract},
+     * while "ftype" is reserved for grid-features extending {Ext.grid.feature.Feature}.
+     *
+     * @example
+     *    // adds the ModeSwitchPlugin to the component identified by using the ComponentQuery
+     *    // for the xtype "cn_navport-tbar". The plugin will be installed when the component
+     *    // fires the "beforerender"-event
+     *    this.addComponentPlugin({
+     *      "cmp": "cn_navport-tbar",
+     *      "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
+     *      "event": "beforerender"
+     *   });
+     *
+     *
+     * @param {Object} plugin A valid plugin configuration for the application.
+     *
+     * @returns {Object} returns the object that was used to create the control for the application
+     *
+     * @throws {coon.core.app.ApplicationException} if the class was not found
+     */
+    registerComponentPlugin (pluginCfg) {
+
+        const
+            me = this,
+            cmp = pluginCfg.cmp,
+            eventHook = pluginCfg.event,
+            isPlugin = !!pluginCfg.pclass,
+            fqn = isPlugin ? pluginCfg.pclass : pluginCfg.fclass;
+
+        if (!Ext.ClassManager.get(fqn)) {
+            throw new coon.core.app.ApplicationException(
+                `Could not find the ${isPlugin ? "plugin" : "feature"} "${fqn}". ` +
+                "Make sure it is loaded with it's owning package."
+            );
+        }
+
+        const
+            cb = isPlugin
+                ? cmp => cmp.addPlugin(Ext.create(fqn))
+                : cmp => cmp.features.push(Ext.create(fqn)),
+            ctrl = l8.chain(`${cmp}.${eventHook}`, {}, () => cb);
+
+        me.control(ctrl);
+
+        return ctrl;
     },
 
 
