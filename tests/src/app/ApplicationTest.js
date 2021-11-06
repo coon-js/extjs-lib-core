@@ -810,7 +810,7 @@ StartTest((t) => {
                 [packageNameMock, undefined]
             );
 
-            t.expect(configSpy).toHaveBeenCalled(1);
+            t.expect(configSpy).toHaveBeenCalled(4);
             t.expect(configSpy.calls.mostRecent().args[0]).toBe(packageNameMock);
             t.expect(configSpy.calls.mostRecent().args[1]).toBeUndefined();
 
