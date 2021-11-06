@@ -28,7 +28,20 @@
  */
 Ext.define("coon.test.app.mock.app.ControllerPlugin", {
 
-    extend: "coon.core.app.plugin.ControllerPlugin"
+    extend: "coon.core.app.plugin.ControllerPlugin",
 
+    constructor () {
+
+        const me = this;
+
+        me.callParent(arguments);
+
+        Array.prototype.slice.call(arguments, 0).forEach(arg => {
+            if (typeof arg === "object") {
+                Object.assign(me, arg);
+            }
+        });
+
+    }
 
 });
