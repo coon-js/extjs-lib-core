@@ -33,7 +33,7 @@
  * In most of the test cases we rely on the fact that there is no main view
  * created until we call launch() by hand.
  */
-StartTest((t) => {
+StartTest(t => {
 
     let app = null,
         ORIGINAL_MANIFEST,
@@ -176,13 +176,15 @@ StartTest((t) => {
     // +----------------------------------------------------------------------------
     t.requireOk("coon.core.app.PackageController", "coon.core.app.Application",  function () {
 
-        t.it("constructor sets up properly", (t) => {
+        t.it("constructor sets up properly", t => {
 
 
             let app = Ext.create("coon.core.app.Application", {
                 name: "test",
                 mainView: "Ext.Panel"
             });
+
+            t.expect(app.mixins["coon.core.app.plugin.ComponentPluginMixin"]).toBeDefined();
 
             t.isInstanceOf(coon.core.Environment.getVendorBase(), "coon.core.env.ext.VendorBase");
             t.isInstanceOf(app.applicationUtil, "coon.core.app.ApplicationUtil");
@@ -192,7 +194,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should create the mainView of an extended class properly", async (t) => {
+        t.it("Should create the mainView of an extended class properly", async t => {
 
 
             var w = Ext.create("coon.test.app.mock.ApplicationMock2", {
@@ -223,7 +225,7 @@ StartTest((t) => {
         });
 
 
-        t.it("postLaunchHookProcess should be Ext.emptyFn", (t) => {
+        t.it("postLaunchHookProcess should be Ext.emptyFn", t => {
             var w = Ext.create("coon.core.app.Application", {
                 name: "test",
                 mainView: "Ext.Panel"
@@ -235,7 +237,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should not create the mainView at first, then call launch() to make sure it is created", (t) => {
+        t.it("Should not create the mainView at first, then call launch() to make sure it is created", t => {
             var w = Ext.create("coon.core.app.Application", {
                 name: "test",
                 mainView: "Ext.Panel",
@@ -251,7 +253,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should not create the mainView with controllers", (t) => {
+        t.it("Should not create the mainView with controllers", t => {
             var w = Ext.create("coon.core.app.Application", {
                 name: "test",
                 mainView: "Ext.Panel",
@@ -265,7 +267,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should create the mainView with controllers", (t) => {
+        t.it("Should create the mainView with controllers", t => {
 
             var w = Ext.create("coon.core.app.Application", {
                 name: "test",
@@ -281,7 +283,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should throw an error when preLaunchHookProcess is triggered when mainView was created.", (t) => {
+        t.it("Should throw an error when preLaunchHookProcess is triggered when mainView was created.", t => {
             var w = Ext.create("coon.core.app.Application", {
                 name: "test",
                 mainView: "Ext.Panel",
@@ -305,7 +307,7 @@ StartTest((t) => {
 
         // @see https://github.com/conjoon/extjs-lib-core/issues/1
         // @see https://github.com/coon-js/extjs-lib-core/issues/5
-        t.it("Test changes regarding extjs-lib-core#5", (t) => {
+        t.it("Test changes regarding extjs-lib-core#5", t => {
 
             var app = Ext.create("coon.core.app.Application", {
                     name: "test",
@@ -371,7 +373,7 @@ StartTest((t) => {
         });
 
 
-        t.it("addApplicationPlugin()", (t) => {
+        t.it("addApplicationPlugin()", t => {
 
             const
                 appPlug = "coon.test.app.mock.app.ApplicationPlugin",
@@ -416,7 +418,7 @@ StartTest((t) => {
         });
 
 
-        t.it("visitPlugins()", (t) => {
+        t.it("visitPlugins()", t => {
 
             let applicationPluginMocks = [
                     {run: (app) => {}},
@@ -442,7 +444,7 @@ StartTest((t) => {
         });
 
 
-        t.it("onProfilesReady() - make sure methods are called", async (t) => {
+        t.it("onProfilesReady() - make sure methods are called", async t => {
             switchManifest();
             switchOnProfilesReady(true);
             switchInitPackagesAndConfiguration(true);
@@ -451,7 +453,7 @@ StartTest((t) => {
             let packageControllersMock = [],
                 applicationPluginsMock = [1, 2, 3],
                 componentPluginsMock =[{}],
-                applicationConfigMock = {}; // can be left empty
+                applicationConfigMock = {plugins: [{}]}; // can be left empty
 
             let profileSpy = t.spyOn(Ext.app.Application.prototype, "onProfilesReady").and.callFake(async () => {}),
                 findPackageControllersSpy = t.spyOn(coon.core.app.Application.prototype, "initPackagesAndConfiguration").and.callThrough(),
@@ -459,7 +461,7 @@ StartTest((t) => {
                 registerComponentPluginMock = t.spyOn(coon.core.app.Application.prototype, "registerComponentPlugin").and.callFake(() => {}),
                 findApplicationPluginsSpy = t.spyOn(coon.core.app.Application.prototype, "initApplicationConfigurationAndPlugins").and.callThrough(),
                 getApplicationPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getApplicationPlugins").and.callFake(() => applicationPluginsMock),
-                getComponentPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getComponentPlugins").and.callFake(() => componentPluginsMock),
+                getComponentPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getComponentPlugins"),
                 loadApplicationConfigSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadApplicationConfig").and.callFake(async () => applicationConfigMock),
                 loadPackagesSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadPackages").and.callFake(() => packageControllersMock),
                 addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {});
@@ -477,8 +479,7 @@ StartTest((t) => {
                 t.expect(getApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock);
                 t.isDeeply(getApplicationPluginsSpy.calls.mostRecent().args[1], coon.core.Environment.getPackages());
 
-                t.expect(getComponentPluginsSpy).toHaveBeenCalled(1);
-                t.expect(getComponentPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock);
+                t.expect(getComponentPluginsSpy).toHaveBeenCalled(0);
 
                 t.expect(loadPackagesSpy).toHaveBeenCalled(1);
                 t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  coon.core.Environment.getPackages());
@@ -506,6 +507,7 @@ StartTest((t) => {
                 getComponentPluginsSpy.remove();
                 registerComponentPluginMock.remove();
 
+
                 switchManifest(true);
                 // @extjs bug 7.3.3
                 // tries to iterate over destroyed(?) items
@@ -516,7 +518,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should never call launch()", (t) => {
+        t.it("Should never call launch()", t => {
 
             var LAUNCHCALLED = false;
 
@@ -543,7 +545,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should call launch()", (t) => {
+        t.it("Should call launch()", t => {
 
             var LAUNCHCALLED = false;
 
@@ -570,7 +572,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Should call launch(), then postLaunchHook()", (t) => {
+        t.it("Should call launch(), then postLaunchHook()", t => {
 
             var i = 0;
             var LAUNCH = 0;
@@ -611,7 +613,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Tests with preLaunchHooks ", (t) => {
+        t.it("Tests with preLaunchHooks ", t => {
 
             defineControllerMocks();
 
@@ -641,7 +643,7 @@ StartTest((t) => {
         });
 
 
-        t.it("Tests with preLaunchHooks / return value undefined", (t) => {
+        t.it("Tests with preLaunchHooks / return value undefined", t => {
             // return value undefined
 
             defineControllerMocks();
@@ -672,7 +674,8 @@ StartTest((t) => {
         });
 
 
-        t.it("getController()", (t) => {
+        t.it("getController()", t => {
+
             switchManifest();
             app = Ext.create("coon.core.app.Application", {
                 name: "test",
@@ -682,9 +685,14 @@ StartTest((t) => {
                 ]
             });
 
-            let spy = t.spyOn(app.applicationUtil, "getControllerPlugins").and.callFake(() => ({
-                "coon.test.app.mock.app.PackageController": ["coon.test.app.mock.app.ControllerPlugin"]
-            }));
+            let
+                componentPlugins = [{}, {}],
+                spy = t.spyOn(app.applicationUtil, "getControllerPlugins").and.callFake(() => ({
+                    "coon.test.app.mock.app.PackageController": ["coon.test.app.mock.app.ControllerPlugin"]
+                })),
+                cmpSpy = t.spyOn(app.applicationUtil, "getComponentPlugins").and.callFake(() => ({
+                    "coon.test.app.mock.app.PackageController": componentPlugins
+                }));
 
             let controller = app.getController("coon.test.app.mock.app.PackageController");
 
@@ -697,8 +705,21 @@ StartTest((t) => {
             let plugin = controller.plugins[0];
             t.isInstanceOf(plugin, "coon.test.app.mock.app.ControllerPlugin");
 
+            let registerSpy = t.spyOn(
+                coon.test.app.mock.app.PackageController.prototype,
+                "registerComponentPlugin"
+            ).and.callFake(() => {});
             let controller2 = app.getController("coon.test.app.mock.app.PackageController");
+
+            t.expect(spy.calls.mostRecent().args[0]).toBe(coon.core.Environment.getPackages());
             t.expect(spy.calls.mostRecent().args[1]).toBe("coon.test.app.mock.app.PackageController");
+            t.expect(cmpSpy.calls.mostRecent().args[0]).toBe(coon.core.Environment.getPackages());
+            t.expect(cmpSpy.calls.mostRecent().args[1]).toBe("coon.test.app.mock.app.PackageController");
+
+            t.expect(registerSpy.calls.count()).toBe(2);
+            t.expect(registerSpy.calls.all()[0].args[0]).toBe(componentPlugins[0]);
+            t.expect(registerSpy.calls.all()[1].args[0]).toBe(componentPlugins[1]);
+
             t.expect(controller2).toBe(controller);
             t.expect(controller.plugins.length).toBe(1);
             t.expect(controller.plugins[0]).toBe(plugin);
@@ -717,10 +738,12 @@ StartTest((t) => {
             t.expect(plugin.opt).toBe("two");
 
             spy.remove();
+            cmpSpy.remove();
+            registerSpy.remove();
         });
 
 
-        t.it("all controller plugins called regardless of preLaunchHook w/ proper default arguments", (t) => {
+        t.it("all controller plugins called regardless of preLaunchHook w/ proper default arguments", t => {
 
             defineControllerMocks();
 
@@ -769,7 +792,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getPackageConfig() - proper arguments passed to ApplicationUtil#getPackageNameForController", (t) => {
+        t.it("getPackageConfig() - proper arguments passed to ApplicationUtil#getPackageNameForController", t => {
 
             const
                 controllerFqn = "coon.test.app.mock.app.PackageController";
@@ -786,7 +809,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getPackageConfig()", (t) => {
+        t.it("getPackageConfig()", t => {
 
             switchManifest();
             switchOnProfilesReady();
@@ -804,14 +827,20 @@ StartTest((t) => {
                 ]
             });
 
-            let configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake((packageName, key) => [packageName, key]),
-                packageNameForControllerSpy = t.spyOn(app.applicationUtil, "getPackageNameForController").and.callFake(() => packageNameMock);
+            let configSpy = t.spyOn(
+                    coon.core.ConfigManager,
+                    "get"
+                ).and.callFake((packageName, key) => [packageName, key]),
+                packageNameForControllerSpy = t.spyOn(
+                    app.applicationUtil,
+                    "getPackageNameForController"
+                ).and.callFake(() => packageNameMock);
 
             t.expect(app.getPackageConfig(app.getController(controllerFqn))).toEqual(
                 [packageNameMock, undefined]
             );
 
-            t.expect(configSpy).toHaveBeenCalled(4);
+            t.expect(configSpy).toHaveBeenCalled(7);
             t.expect(configSpy.calls.mostRecent().args[0]).toBe(packageNameMock);
             t.expect(configSpy.calls.mostRecent().args[1]).toBeUndefined();
 
@@ -827,55 +856,6 @@ StartTest((t) => {
 
             packageNameForControllerSpy.remove();
             configSpy.remove();
-        });
-
-        t.it("registerComponentPlugin()", t => {
-
-            app = Ext.create("coon.core.app.Application", {
-                name: "test",
-                mainView: "Ext.Panel"
-            });
-
-            /*Could not find the plugin*/
-            t.expect(() => app.registerComponentPlugin({pclass: "not.available"})).toThrow();
-            /*Could not find the feature*/
-            t.expect(() => app.registerComponentPlugin({fclass: "not.available"})).toThrow();
-
-
-            const
-                featureMock = {features: []},
-                pluginMock = {plugs: [], addPlugin: function (plug) {this.plugs.push(plug);}},
-                controlSpy = t.spyOn(app, "control").and.callThrough();
-
-            let ctrl = app.registerComponentPlugin({
-                "cmp": "foo",
-                "pclass": "Ext.plugin.Abstract",
-                "event": "render"
-            });
-
-            t.expect(l8.isFunction(ctrl.foo.render));
-
-            t.expect(pluginMock.plugs.length).toBe(0);
-            ctrl.foo.render(pluginMock);
-            t.expect(controlSpy.calls.count()).toBe(1);
-            t.expect(controlSpy.calls.mostRecent().args[0]).toBe(ctrl);
-            t.expect(pluginMock.plugs.length).toBe(1);
-            t.isInstanceOf(pluginMock.plugs[0], "Ext.plugin.Abstract");
-
-            ctrl = app.registerComponentPlugin({
-                "cmp": "foo",
-                "fclass": "Ext.plugin.Abstract",
-                "event": "render"
-            });
-
-            t.expect(featureMock.features.length).toBe(0);
-            ctrl.foo.render(featureMock);
-            t.expect(controlSpy.calls.count()).toBe(2);
-            t.expect(controlSpy.calls.mostRecent().args[0]).toBe(ctrl);
-            t.expect(featureMock.features.length).toBe(1);
-            t.isInstanceOf(featureMock.features[0], "Ext.plugin.Abstract");
-
-            controlSpy.remove();
         });
 
 

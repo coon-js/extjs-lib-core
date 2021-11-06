@@ -40,6 +40,8 @@ StartTest((t) => {
      */
     t.it("Should create an instance of coon.core.app.PackageController", (t) => {
         t.expect(controller instanceof coon.core.app.PackageController).toBeTruthy();
+
+        t.expect(controller.mixins["coon.core.app.plugin.ComponentPluginMixin"]).toBeDefined();
     });
 
     /**

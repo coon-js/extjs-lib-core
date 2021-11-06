@@ -67,6 +67,11 @@ Ext.define("coon.core.app.PackageController", {
         "coon.core.app.plugin.ControllerPlugin"
     ],
 
+    mixins: [
+        "coon.core.app.plugin.ComponentPluginMixin"
+    ],
+
+
     /**
      * @private
      * @type {Array=coon.core.app.plugin.ControllerPlugin}

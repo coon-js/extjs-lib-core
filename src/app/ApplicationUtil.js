@@ -212,7 +212,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
     /**
      * Iterates through the packages, picks any as coon.js-package declared entries and checks
-     * their "coon-js"-section (if any) for any ControllerPlugins configured.
+     * their "coon-js"-section (if any) for any ControllerPlugins configured. Will first check the
+     * ConfigManager for configuration of packages, then fall back to the PackageConfiguration.
      * Will map the class-names (fqn) of the ControllerPlugins to the class-name of the Controller
      * (fqn).
      * Controller plugins can be configured in several ways: either set an entry to the package-name the
@@ -266,7 +267,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *
      *
      *
-     * @param {Object} packages The object containing all packlage informations available in the environment.
+     * @param {Object} packages The object containing all package informations available in the environment.
      * @param {String} forController The fqn of the controller for which the pluginMap should be created. If undefined,
      * the pluginMap for all existing package controllers will be created
      *
@@ -276,6 +277,68 @@ Ext.define("coon.core.app.ApplicationUtil",{
      */
     getControllerPlugins (manifestPackages, forController) {
         "use strict";
+
+        return this.getPluginsForType("controller", manifestPackages, forController);
+    },
+
+
+    /**
+     * Iterates through the packages, picks any as coon.js-package declared entries and checks
+     * their "coon-js"-section (if any) for any ComponentPlugins configured. Will first check the
+     * ConfigManager for configuration of packages, then fall back to the PackageConfiguration.
+     * Will map the class-names (fqn) of the ComponentPlugins to the class-name of the Controller
+     * (fqn).
+     * A plugin configuration itself in the application-configuration has the following key/value-pairs:
+     * - cmp: A valid component query the application uses to look up the represented component.
+     * - event: The name of the event that should be listened to for instantiating and registering the plugin
+     * - pclass/fclass: The fqn (i.e. class name, including namespaces) for the plugin to use. For a
+     * plugin that extends Ext.plugin.Abstract, "pclass" should be used. If a grid-feature is referenced (i.e.
+     * extending Ext.grid.feature.Feature), "fclass" should be used.
+     *
+     * @example
+     *      "components": [
+     *      {
+     *          "cmp": "cn_navport-tbar",
+     *          "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
+     *          "event": "beforerender"
+     *      }]
+     *
+     * @param {Object} packages The object containing all package informations available in the environment.
+     * @param {String} forController The fqn of the controller for which the pluginMap should be created. If undefined,
+     * the pluginMap for all existing package controllers will be created
+     *
+     * @return {Object} an object where all controllers are mapped with an array of plugins they should be using
+     *
+     * @private
+     */
+    getComponentPlugins (manifestPackages, forController) {
+        "use strict";
+
+        return this.getPluginsForType("components", manifestPackages, forController);
+    },
+
+
+    /**
+     * Queries PackageConfiguration for plugins. Type of plugin can be specified
+     * with "pluginType". Supported types are "controller" and "components".
+     *
+     * @param {String} pluginType
+     * @param {Object} manifestPackages
+     * @param {String} forController
+     *
+     * @returns {Object} an object with keys being the fqn of the controller and the value
+     * being the queried plugins.
+     *
+     * @private
+     */
+    getPluginsForType (pluginType, manifestPackages, forController ) {
+        "use strict";
+
+        const types = ["controller", "components"];
+
+        if (!types.includes(pluginType)) {
+            throw new Error(`"pluginType" must be one of ${types.join(", ")}`);
+        }
 
         const
             me = this,
@@ -287,8 +350,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
             let [packageName, packageConfig] = entry;
 
             const plugins = [].concat(
-                coon.core.ConfigManager.get(packageName, "plugins.controller", null) ||
-                l8.unchain("coon-js.package.config.plugins.controller", packageConfig, [])
+                coon.core.ConfigManager.get(packageName, `plugins.${pluginType}`, null) ||
+                l8.unchain(`coon-js.package.config.plugins.${pluginType}`, packageConfig, [])
             );
 
             if (!plugins.length) {
@@ -374,21 +437,6 @@ Ext.define("coon.core.app.ApplicationUtil",{
         });
 
         return fqns;
-    },
-
-
-    /**
-     * Returns the component plugin configuration from the application config-file.
-     * Returns an empty object if not found.
-     *
-     * @param {Object} applicationConfig
-     *
-     * @returns {*[]}
-     */
-    getComponentPlugins (applicationConfig) {
-        "use strict";
-
-        return l8.unchain("plugins", applicationConfig, {});
     },
 
 

@@ -46,6 +46,9 @@ Ext.define("coon.core.app.Application",{
         "coon.core.env.ext.VendorBase"
     ],
 
+    mixins: [
+        "coon.core.app.plugin.ComponentPluginMixin"
+    ],
 
     /**
      * @var applicationUtil
@@ -357,6 +360,7 @@ Ext.define("coon.core.app.Application",{
         if (key !== undefined) {
             args.push(key);
         }
+
         return coon.core.ConfigManager.get.apply(ConfigManager, args);
     },
 
@@ -400,7 +404,7 @@ Ext.define("coon.core.app.Application",{
             applicationPlugins = me.applicationUtil.getApplicationPlugins(
                 conf, coon.core.Environment.getPackages()
             ),
-            componentPlugins = me.applicationUtil.getComponentPlugins(conf);
+            componentPlugins =  l8.unchain("plugins", conf, []);
 
         await applicationPlugins.forEach(async (plugin) => await me.addApplicationPlugin(plugin));
 
@@ -431,9 +435,8 @@ Ext.define("coon.core.app.Application",{
 
 
     /**
-     * Overridden to make sure each controller gets its addPlugin()-method called
-     * if there are any plugins registered in the Applications pluginMap.
-     * Will delete each assigned controller from the pluginMap afterwards to prevent doubles.
+     * Overridden to make sure each controller gets its addPlugin()/registerComponentPlugin()-method called
+     * if there are any plugins registered the pluginMap of the application or the packages.
      *
      * @param {String} name
      * @param {Boolean} preventCreate
@@ -454,15 +457,15 @@ Ext.define("coon.core.app.Application",{
 
             const
                 fqn = Ext.getClassName(controller),
-                plugins = me.applicationUtil.getControllerPlugins(
-                    coon.core.Environment.getPackages() || {}, fqn
-                );
+                pckgs = coon.core.Environment.getPackages() || {},
+                ctrlPlugins = me.applicationUtil.getControllerPlugins(pckgs, fqn),
+                cmpPlugins = me.applicationUtil.getComponentPlugins(pckgs, fqn);
 
-            if (!plugins[fqn]) {
+            if (!ctrlPlugins[fqn] && !cmpPlugins[fqn]) {
                 return controller;
             }
 
-            plugins[fqn].forEach ((plugin) => {
+            ctrlPlugins[fqn].forEach (plugin => {
                 let inst,
                     xclass = l8.isString(plugin) ? plugin : plugin.xclass,
                     args = l8.isString(plugin) ? [] : plugin.args;
@@ -478,6 +481,8 @@ Ext.define("coon.core.app.Application",{
 
                 controller.addPlugin(inst);
             });
+
+            cmpPlugins[fqn].forEach (pluginCfg => controller.registerComponentPlugin(pluginCfg));
 
         }
 
@@ -530,57 +535,6 @@ Ext.define("coon.core.app.Application",{
         me.applicationPlugins.push(plugin);
 
         return me;
-    },
-
-
-    /**
-     * Adds component plugins or grid features based on the specified plugin configuration.
-     * The plugin configuration is an object keyed "cmp", "pclass"/"fclass" and "eventHook".
-     * pclass should be used whenever the plugin is installed as a "plugin" extending {Ext.plugin.Abstract},
-     * while "ftype" is reserved for grid-features extending {Ext.grid.feature.Feature}.
-     *
-     * @example
-     *    // adds the ModeSwitchPlugin to the component identified by using the ComponentQuery
-     *    // for the xtype "cn_navport-tbar". The plugin will be installed when the component
-     *    // fires the "beforerender"-event
-     *    this.addComponentPlugin({
-     *      "cmp": "cn_navport-tbar",
-     *      "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
-     *      "event": "beforerender"
-     *   });
-     *
-     *
-     * @param {Object} plugin A valid plugin configuration for the application.
-     *
-     * @returns {Object} returns the object that was used to create the control for the application
-     *
-     * @throws {coon.core.app.ApplicationException} if the class was not found
-     */
-    registerComponentPlugin (pluginCfg) {
-
-        const
-            me = this,
-            cmp = pluginCfg.cmp,
-            eventHook = pluginCfg.event,
-            isPlugin = !!pluginCfg.pclass,
-            fqn = isPlugin ? pluginCfg.pclass : pluginCfg.fclass;
-
-        if (!Ext.ClassManager.get(fqn)) {
-            throw new coon.core.app.ApplicationException(
-                `Could not find the ${isPlugin ? "plugin" : "feature"} "${fqn}". ` +
-                "Make sure it is loaded with it's owning package."
-            );
-        }
-
-        const
-            cb = isPlugin
-                ? cmp => cmp.addPlugin(Ext.create(fqn))
-                : cmp => cmp.features.push(Ext.create(fqn)),
-            ctrl = l8.chain(`${cmp}.${eventHook}`, {}, () => cb);
-
-        me.control(ctrl);
-
-        return ctrl;
     },
 
 
