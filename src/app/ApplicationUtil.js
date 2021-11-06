@@ -215,10 +215,14 @@ Ext.define("coon.core.app.ApplicationUtil",{
      * their "coon-js"-section (if any) for any ControllerPlugins configured.
      * Will map the class-names (fqn) of the ControllerPlugins to the class-name of the Controller
      * (fqn).
-     * Controller plugins can be configured in two ways: either set an entry to the package-name the
+     * Controller plugins can be configured in several ways: either set an entry to the package-name the
      * controller can be found in (the fqn will be computed by this class then) or specify the fqn by hand.
      * Note: controllers specified with their fqn must have their corresponding "coon-js"-packages in the
      * environment.
+     * A controller plugin can also be configured with arguments that get applied to the constructor of
+     * the ControllerPlugin. For specifying constructor arguments, the configuration for the controller
+     * plugin has to be an object with the keys "xclass" holding the fqn of the controller plugin, and
+     * "args", which is an array of argument that get passed to the constructor.
      *
      * @example
      *     // package.json of "app-cn_user" with the namespace "conjoon.cn_user"
@@ -238,11 +242,26 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *    {
      *         "coon-js" : {
      *             "plugins" : {
-     *                 "controller" : "conjoon.cn_material.app.plugin.ControllerPlugin"
+     *                 "controller" : ["conjoon.cn_material.app.plugin.ControllerPlugin"]
      *             }
      *         }
      *     }
+     *    // or
+     *    {
+     *        "coon-js": {
+     *            "plugins": {
+     *                 "controller" : [{
+     *                     "xclass": "conjoon.cn_material.app.plugin.ControllerPlugin",
+     *                     "args": [{property: "value"}] // {property: "value"} is passed as the first argument to
+     *                                                   // the constructor
+     *                 }]
+     *            }
      *
+     *        }
+     *
+     *
+     *
+     *    }
      *     this.getControllerPlugins(pck); // returns {"conjoon.cn_user.app.PackageController" : ["conjoon.cn_material.app.plugin.ControllerPlugin"]}
      *
      *
@@ -277,10 +296,12 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             const ctrl = l8.unchain("coon-js.package.controller", packageConfig);
 
-
             plugins.forEach(function (plugin) {
 
-                let fqn = me.getFqnForPlugin(plugin, coonPackages, "controller");
+                let fqn = plugin;
+                if (l8.isString(plugin)) {
+                    fqn = me.getFqnForPlugin(plugin, coonPackages, "controller");
+                }
 
                 if (fqn) {
                     pluginMap[ctrl] = pluginMap[ctrl] || [];

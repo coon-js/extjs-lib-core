@@ -461,11 +461,17 @@ Ext.define("coon.core.app.Application",{
             }
 
             plugins[fqn].forEach ((plugin) => {
-                let inst;
+                let inst,
+                    xclass = l8.isString(plugin) ? plugin : plugin.xclass,
+                    args = l8.isString(plugin) ? [] : plugin.args;
+
                 try {
-                    inst = Ext.create(plugin);
+                    inst = Ext.create(xclass, ...args);
                 } catch (e) {
-                    throw new coon.core.app.ApplicationException("Could not create instance for specified PluginController \"" + plugin + "\"", e);
+                    throw new coon.core.app.ApplicationException(
+                        `Could not create instance for specified PluginController "${xclass}"`,
+                        e
+                    );
                 }
 
                 controller.addPlugin(inst);

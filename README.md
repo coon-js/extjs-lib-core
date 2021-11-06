@@ -146,15 +146,39 @@ or
 // tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup, must therefore be existing in memory
 "coon-js": {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]}}}}
 ```
+A controller plugin can also be configured with arguments that get applied to the constructor of
+the ControllerPlugin. For specifying constructor arguments, the configuration for the controller
+plugin has to be an object with the keys `xclass` holding the fqn of the controller plugin, and
+`args`, which is an array of argument that get passed to the constructor.
 
-In order for a ```PackageController``` to use one or more ```ControllerPlugin```(s), you need to set the
-```coon-js.package.controller```\-property in the configuration to ```true```. Otherwise, the controller will not get
-registered as a ```PackageController``` for the application and will therefor not be loaded.
+In the following example, `{property: "value"}` is passed as the first argument to the constructor:
+```json
+ {
+    "coon-js": {
+        "plugins": {
+            "controller": [
+                {
+                    "xclass": "conjoon.cn_material.app.plugin.ControllerPlugin",
+                    "args": [
+                        {
+                            "property": "value"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+In order for a `PackageController` to use one or more `ControllerPlugin`(s), you need to set the
+`coon-js.package.controller`\-property in the configuration to `true`. Otherwise, the controller will not get
+registered as a `PackageController` for the application and will therefor not be loaded.
 
 You can add as many plugins as you'd like in the configuration, and mix and match package names with fqns of
-the ```ControllerPlugins``` you'd like to use.
-Note: You need to make sure that owning packages are required by the ```PackageController```'s package using them.
-For more information on ```PackageController```-plugins, see [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js).
+the `ControllerPlugins` you'd like to use.
+Note: You need to make sure that owning packages are required by the `PackageController`'s package using them.
+For more information on `PackageController`-plugins, see [coon.core.app.plugin.ControllerPlugin](https://github.com/coon-js/extjs-lib-core/blob/master/src/app/plugin/ControllerPlugin.js).
 
 ### ...with the Application
 An application based upon the `coon-js`-library can also be configured with plugins. These plugins are loaded globally into the application.

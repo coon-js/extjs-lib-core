@@ -701,6 +701,21 @@ StartTest((t) => {
             t.expect(controller2).toBe(controller);
             t.expect(controller.plugins.length).toBe(1);
             t.expect(controller.plugins[0]).toBe(plugin);
+
+            spy = t.spyOn(app.applicationUtil, "getControllerPlugins").and.callFake(() => ({
+                "coon.test.app.mock.app.PackageController": [{
+                    xclass: "coon.test.app.mock.app.ControllerPlugin",
+                    args: [{id: "newOneToAddSameClassAsPlugin", cfg: "submitted"}, {opt: "two"}]
+                }]
+            }));
+
+            controller = app.getController("coon.test.app.mock.app.PackageController");
+            plugin = controller.plugins[controller.plugins.length -1 ];
+            t.isInstanceOf(plugin, "coon.test.app.mock.app.ControllerPlugin");
+            t.expect(plugin.cfg).toBe("submitted");
+            t.expect(plugin.opt).toBe("two");
+
+            spy.remove();
         });
 
 

@@ -208,6 +208,14 @@ StartTest((t) => {
                         included: false,
                         namespace: "snafu",
                         "coon-js": {package: {controller: "mycustom.Controller", config: {plugins: {controller: "some.acme.controller.Plugin"}}}}
+                    },
+                    mail: {
+                        included: false,
+                        namespace: "cn_mail",
+                        "coon-js": {package: {controller: true, config: {plugins: {controller: [{
+                            xclass: "xclassedplugin",
+                            args: [{one: 1}, {two: 2}]
+                        }]}}}}
                     }
                 },
                 result = {
@@ -217,7 +225,11 @@ StartTest((t) => {
                     ],
                     "mycustom.Controller": [
                         "some.acme.controller.Plugin"
-                    ]
+                    ],
+                    "cn_mail.app.PackageController": [{
+                        xclass: "xclassedplugin",
+                        args: [{one: 1}, {two: 2}]
+                    }]
                 };
 
             setupEnvironment({manifest: {packages: manifestPackages}});
