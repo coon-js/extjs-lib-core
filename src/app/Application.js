@@ -454,7 +454,9 @@ Ext.define("coon.core.app.Application",{
 
             const
                 fqn = Ext.getClassName(controller),
-                plugins = me.applicationUtil.getControllerPlugins(coon.core.Environment.getPackages() || {});
+                plugins = me.applicationUtil.getControllerPlugins(
+                    coon.core.Environment.getPackages() || {}, fqn
+                );
 
             if (!plugins[fqn]) {
                 return controller;
