@@ -45,7 +45,9 @@ Ext.define("coon.core.app.plugin.Plugin", {
     constructor (cfg) {
         const me = this;
 
-        me.id = cfg && cfg.id;
+        cfg = cfg || {};
+
+        Object.assign(me, cfg);
     },
 
 
