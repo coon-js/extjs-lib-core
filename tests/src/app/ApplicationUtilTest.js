@@ -246,6 +246,10 @@ StartTest((t) => {
 
         t.it("getApplicationPlugins()", (t) => {
 
+            // register here package in config manager to make sure
+            // package configuration from env is used
+            coon.core.ConfigManager.register("foo", {"controller": {"plugins": {}}});
+
             const
                 applicationConfig = {
                     "application": {
@@ -417,6 +421,42 @@ StartTest((t) => {
             t.expect(envLoaderSpy.calls.all()[1].args[0]).toBe("bar");
 
             envLoaderSpy.remove();
+
+        });
+
+
+        t.it("extjs-lib-core#47", t => {
+
+            coon.core.ConfigManager.register("foo", {
+                plugins: {
+                    controller: ["com.bar.fromConfigController"]
+                }
+            });
+
+            const manifestPackages =  {
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
+                    },
+                    bar: {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {package: true}
+                    }
+                },
+                result = {
+                    "foo.app.PackageController": [
+                        "com.bar.fromConfigController"
+                    ]
+                };
+
+            setupEnvironment({manifest: {packages: manifestPackages}});
+
+            Object.freeze(manifestPackages);
+            Object.freeze(result);
+
+            t.isDeeply(applicationUtil.getControllerPlugins(manifestPackages), result);
 
         });
 

@@ -282,13 +282,12 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
         Object.entries(coonPackages).forEach( (entry) => {
 
-            let [, packageConfig] = entry;
+            let [packageName, packageConfig] = entry;
 
-            const plugins = [].concat(l8.unchain(
-                "coon-js.package.config.plugins.controller",
-                packageConfig,
-                []
-            ));
+            const plugins = [].concat(
+                coon.core.ConfigManager.get(packageName, "plugins.controller", null) ||
+                l8.unchain("coon-js.package.config.plugins.controller", packageConfig, [])
+            );
 
             if (!plugins.length) {
                 return;
