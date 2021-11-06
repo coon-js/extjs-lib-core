@@ -35,9 +35,19 @@ StartTest((t) => {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", (t) => {
+    t.it("Should create an instance of coon.core.app.plugin.ControllerPlugin", t => {
         t.isInstanceOf(plugin, "coon.core.app.plugin.Plugin");
     });
 
+    t.it("extjs-lib-core#49", t => {
+        plugin = Ext.create("coon.core.app.plugin.ControllerPlugin", {
+            "key": "prop",
+            "property": "value"
+        });
+
+        t.expect(plugin.key).toBe("prop");
+        t.expect(plugin.property).toBe("value");
+
+    });
 
 });
