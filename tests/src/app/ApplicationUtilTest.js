@@ -176,18 +176,20 @@ StartTest((t) => {
         });
 
 
-        t.it("getComponentPlugins()", t => {
+        t.it("delegates to getPluginsForType", t => {
 
-            const PLUGINCFG = {};
-            t.expect(applicationUtil.getComponentPlugins({})).toEqual({});
-            t.expect(applicationUtil.getComponentPlugins({
-                "plugins": PLUGINCFG
-            })).toBe(PLUGINCFG);
+            const delegateSpy = t.spyOn(applicationUtil, "getPluginsForType").and.callFake(() => {});
 
+            applicationUtil.getControllerPlugins("a", "b");
+            t.expect(delegateSpy.calls.mostRecent().args).toEqual(["controller", "a", "b"]);
+
+            applicationUtil.getComponentPlugins("c", "d");
+            t.expect(delegateSpy.calls.mostRecent().args).toEqual(["components", "c", "d"]);
 
         });
 
-        t.it("getControllerPlugins()", (t) => {
+
+        t.it("getPluginsForType() - controller", (t) => {
 
             const manifestPackages =  {
                     foo: {
@@ -237,10 +239,10 @@ StartTest((t) => {
             Object.freeze(manifestPackages);
             Object.freeze(result);
 
-            t.isDeeply(applicationUtil.getControllerPlugins(manifestPackages), result);
+            t.isDeeply(applicationUtil.getPluginsForType("controller", manifestPackages), result);
 
 
-            t.isDeeply(applicationUtil.getControllerPlugins({foobar: {}}), {});
+            t.isDeeply(applicationUtil.getPluginsForType("controller", {foobar: {}}), {});
         });
 
 
@@ -456,7 +458,7 @@ StartTest((t) => {
             Object.freeze(manifestPackages);
             Object.freeze(result);
 
-            t.isDeeply(applicationUtil.getControllerPlugins(manifestPackages), result);
+            t.isDeeply(applicationUtil.getPluginsForType("controller", manifestPackages), result);
         });
 
 
@@ -515,9 +517,48 @@ StartTest((t) => {
 
             pluginMap = applicationUtil.getControllerPlugins(manifestPackages, "notExisting");
             t.isDeeply(pluginMap, {});
-
         });
 
+
+        t.it("getComponentPlugins", t => {
+
+            const manifestPackages =  {
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {
+                            package: {
+                                controller: true,
+                                config: {
+                                    plugins: {
+                                        components: [{
+                                            cmp: "panel",
+                                            event: "render",
+                                            pclass: "pclass"
+                                        }]}}}}
+                    }
+                },
+                result = {
+                    "foo.app.PackageController": [{
+                        cmp: "panel",
+                        event: "render",
+                        pclass: "pclass"
+                    }]
+                };
+
+            setupEnvironment({manifest: {packages: manifestPackages}});
+
+            Object.freeze(manifestPackages);
+            Object.freeze(result);
+
+
+            let pluginMap = applicationUtil.getComponentPlugins(manifestPackages);
+            t.isDeeply(pluginMap, result);
+
+            pluginMap = applicationUtil.getComponentPlugins(manifestPackages,"foo.app.PackageController");
+            t.isDeeply(pluginMap, result);
+
+        });
 
     });
 

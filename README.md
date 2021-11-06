@@ -199,16 +199,18 @@ loading the [coon.plugin.themeutil.app.plugin.ApplicationPlugin](https://github.
 }
 ```
 
-### ... with Components
-**extjs-lib-core** provides funtionality to specify component-plugins using the application configuration file. Plugins
-referenced here need to be loaded via packages (i.e. by using `uses` in the `app.json`), or they need to have been made
+#### ComponentPlugins
+**extjs-lib-core** provides funtionality to specify component-plugins using the application configuration file, or package configurations. 
+Plugins referenced here need to be loaded via packages (i.e. by using `uses` in the `app.json`), or they need to have been made
 generally available over the application itself, i.e. by bundling those plugins in the build.<br>
-A plugin configuration itself in the application-configruation has teh following key/value-pairs:
+A plugin configuration itself in the application-configuration has the following key/value-pairs:
 - `cmp`: A valid component query the application uses to look up the represented component. 
 - `event`: The name of the event that should be listened to for instantiating and registering the plugin
 - `pclass`/`fclass`: The fqn (i.e. class name, including namespaces) for the plugin to use. If you are using a plugin that
 extends `Ext.plugin.Abstract`, use `pclass`. If you are referencing a grid-feature (i.e. extending `Ext.grid.feature.Feature`), 
 use `fclass`. 
+  
+_Example for specifying component plugins using the application configuration:_
 ```json
 {
     "conjoon" : {
@@ -230,6 +232,34 @@ use `fclass`.
 }
 ```
 
+_Example for specifying component plugins using a package configuration:_
+```json
+{
+    "coon-js": {
+        "package" : {
+            "config" : {
+                "plugins" : {
+                    "controller" : [
+                        "plug-cn_themeutil"
+                    ],
+                    "components": [
+                        {
+                            "cmp": "cn_navport-tbar",
+                            "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
+                            "event": "beforerender"
+                        },
+                        {
+                            "cmp": "cn_mail-mailmessagegrid",
+                            "fclass": "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
+                            "event": "cn_init"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
 refer to the documentation of  [extjs-comp-navport](https://github.com/coon-js/extjs-comp-navport).

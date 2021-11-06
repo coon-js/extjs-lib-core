@@ -66,9 +66,10 @@ export default [{
         "src/app/IsolatedTest_4.js", {
             group: "plugin",
             items: [
-                "src/app/plugin/PluginTest.js",
                 "src/app/plugin/ApplicationPluginTest.js",
-                "src/app/plugin/ControllerPluginTest.js"
+                "src/app/plugin/ComponentPluginMixinTest.js",
+                "src/app/plugin/ControllerPluginTest.js",
+                "src/app/plugin/PluginTest.js"
             ]
         }
     ]
