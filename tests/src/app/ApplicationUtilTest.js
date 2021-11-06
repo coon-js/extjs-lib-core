@@ -457,6 +457,64 @@ StartTest((t) => {
             Object.freeze(result);
 
             t.isDeeply(applicationUtil.getControllerPlugins(manifestPackages), result);
+        });
+
+
+        t.it("extjs-lib-core#48", t => {
+
+            const manifestPackages =  {
+                    foo: {
+                        included: false,
+                        namespace: "foo",
+                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
+                    },
+                    anotherFoo: {
+                        included: false,
+                        namespace: "anotherFoo",
+                        "coon-js": {package: {controller: true, config: {plugins: {controller: "bar"}}}}
+                    },
+                    snafu: {
+                        included: false,
+                        namespace: "snafu",
+                        "coon-js": {package: {controller: "mycustom.Controller", config: {plugins: {controller: "some.acme.controller.Plugin"}}}}
+                    },
+                    bar: {
+                        included: true,
+                        namespace: "com.bar",
+                        "coon-js": {package: true}
+                    }
+                },
+                result = {
+                    "foo.app.PackageController": [
+                        "com.bar.app.plugin.ControllerPlugin",
+                        "snafu.Controller"
+                    ],
+                    "anotherFoo.app.PackageController": [
+                        "com.bar.app.plugin.ControllerPlugin"
+                    ]
+                };
+
+            setupEnvironment({manifest: {packages: manifestPackages}});
+
+            Object.freeze(manifestPackages);
+            Object.freeze(result);
+
+
+            let pluginMap = applicationUtil.getControllerPlugins(manifestPackages);
+            t.isDeeply(pluginMap, result);
+
+            pluginMap = applicationUtil.getControllerPlugins(manifestPackages, "foo.app.PackageController");
+            t.isDeeply(pluginMap, {
+                "foo.app.PackageController": ["com.bar.app.plugin.ControllerPlugin", "snafu.Controller"]
+            });
+
+            pluginMap = applicationUtil.getControllerPlugins(manifestPackages, "anotherFoo.app.PackageController");
+            t.isDeeply(pluginMap, {
+                "anotherFoo.app.PackageController": ["com.bar.app.plugin.ControllerPlugin"]
+            });
+
+            pluginMap = applicationUtil.getControllerPlugins(manifestPackages, "notExisting");
+            t.isDeeply(pluginMap, {});
 
         });
 

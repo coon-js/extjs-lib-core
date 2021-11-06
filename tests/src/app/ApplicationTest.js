@@ -698,6 +698,7 @@ StartTest((t) => {
             t.isInstanceOf(plugin, "coon.test.app.mock.app.ControllerPlugin");
 
             let controller2 = app.getController("coon.test.app.mock.app.PackageController");
+            t.expect(spy.calls.mostRecent().args[1]).toBe("coon.test.app.mock.app.PackageController");
             t.expect(controller2).toBe(controller);
             t.expect(controller.plugins.length).toBe(1);
             t.expect(controller.plugins[0]).toBe(plugin);

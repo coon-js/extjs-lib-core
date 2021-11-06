@@ -267,12 +267,14 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *
      *
      * @param {Object} packages The object containing all packlage informations available in the environment.
+     * @param {String} forController The fqn of the controller for which the pluginMap should be created. If undefined,
+     * the pluginMap for all existing package controllers will be created
      *
      * @return {Object} an object where all controllers are mapped with an array of plugins they should be using
      *
      * @private
      */
-    getControllerPlugins (manifestPackages) {
+    getControllerPlugins (manifestPackages, forController) {
         "use strict";
 
         const
@@ -294,6 +296,10 @@ Ext.define("coon.core.app.ApplicationUtil",{
             }
 
             const ctrl = l8.unchain("coon-js.package.controller", packageConfig);
+
+            if (forController !== undefined && ctrl !== forController) {
+                return;
+            }
 
             plugins.forEach(function (plugin) {
 
