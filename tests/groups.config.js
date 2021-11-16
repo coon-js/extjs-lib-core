@@ -24,6 +24,15 @@
  */
 
 export default [{
+    group: "_issues_",
+    items: [{
+        group: "feat",
+        items: [{
+            name: "conjoon/extjs-app-webmail#189",
+            url: "src/_issues_/feat/extjs-app-webmail%23189.js"
+        }]
+    }]
+},{
     group: "overrides",
     items: [{
         group: "app",
