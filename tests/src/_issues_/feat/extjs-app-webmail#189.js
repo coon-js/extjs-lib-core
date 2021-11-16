@@ -34,13 +34,31 @@ StartTest(t => {
         let loader, batchLoader;
 
         const setupVendorBase = (keyFunc) => {
-            coon.core.Environment._vendorBase = undefined;
+                coon.core.Environment._vendorBase = undefined;
 
-            let vendorBase = Ext.create("coon.core.env.VendorBase");
-            vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
-            vendorBase.getManifest = keyFunc;
-            coon.core.Environment.setVendorBase(vendorBase);
-        };
+                let vendorBase = Ext.create("coon.core.env.VendorBase");
+                vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
+                vendorBase.getManifest = keyFunc;
+                coon.core.Environment.setVendorBase(vendorBase);
+            },
+            createApplicationUtilSpies = () => {
+                const
+                    applicationUtil = Ext.create("coon.core.app.ApplicationUtil"),
+                    batchLoader = applicationUtil.batchConfigLoader,
+                    batchSpy = t.spyOn(batchLoader, "load").and.callFake(() => ({})),
+                    domainSpy = t.spyOn(batchLoader, "addDomain"),
+                    configSpy = t.spyOn(coon.core.ConfigManager, "register"),
+                    loadPkgSpy = t.spyOn(coon.core.Environment, "loadPackage");
+
+                return {
+                    applicationUtil,
+                    batchLoader,
+                    batchSpy,
+                    domainSpy,
+                    configSpy,
+                    loadPkgSpy
+                };
+            };
 
         t.beforeEach(function () {
 
@@ -103,6 +121,67 @@ StartTest(t => {
             loadSpy.remove();
         });
 
+
+        t.it("ApplicationUtil.loadPackages() - loadFromFile=false", async t => {
+
+            const {
+                    applicationUtil,
+                    loadPkgSpy,
+                    batchSpy,
+                    domainSpy,
+                    configSpy
+                } = createApplicationUtilSpies(),
+                config = {"property": "value"};
+
+            t.expect(await applicationUtil.loadPackages({
+                "conjoon": {
+                    "namespace": "org.conjoon",
+                    "coon-js": {
+                        "package": {
+                            "autoLoad": false,
+                            "loadFromFile": false,
+                            "config": config
+                        }
+                    }
+                }})).toEqual([]);
+
+            t.expect(configSpy.calls.mostRecent().args).toEqual(["conjoon", config]);
+            t.expect(loadPkgSpy.calls.count()).toBe(0);
+            t.expect(coon.core.ConfigManager.get("conjoon")).toEqual(config);
+            t.expect(domainSpy.calls.count()).toBe(0);
+
+            [loadPkgSpy, batchSpy, domainSpy, configSpy].map(spy => spy.remove());
+        });
+
+
+        t.it("ApplicationUtil.loadPackages() - config is fileName", async t => {
+
+            const {
+                applicationUtil,
+                loadPkgSpy,
+                batchSpy,
+                domainSpy,
+                configSpy
+            } = createApplicationUtilSpies();
+
+            t.expect(await applicationUtil.loadPackages({
+                "conjoon": {
+                    "namespace": "org.conjoon",
+                    "coon-js": {
+                        "package": {
+                            "config": "fileName"
+                        }
+                    }
+                }})).toEqual([]);
+
+            t.expect(configSpy.calls.count()).toBe(0);
+            t.expect(loadPkgSpy.calls.count()).toBe(1);
+            t.expect(domainSpy.calls.mostRecent().args).toEqual([
+                "conjoon", {}, "fileName"
+            ]);
+
+            [loadPkgSpy, batchSpy, domainSpy, configSpy].map(spy => spy.remove());
+        });
 
     });
 

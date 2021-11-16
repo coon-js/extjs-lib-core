@@ -58,10 +58,10 @@ Ext.define("coon.core.app.ApplicationUtil",{
     constructor () {
         const me = this;
 
-        me.configLoader = new coon.core.app.ConfigLoader(
+        me.configLoader = Ext.create("coon.core.app.ConfigLoader",
             coon.core.FileLoader
         );
-        me.batchConfigLoader = new coon.core.app.BatchConfigLoader(me.configLoader);
+        me.batchConfigLoader = Ext.create("coon.core.app.BatchConfigLoader", me.configLoader);
 
     },
 
@@ -73,7 +73,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *  - has a property named "coon-js" which is an object
      *  - the "coon-js"-property's value holds a "package" property that is either set to true or is
      *  an object containing further information to consume the package by this application.
-     * If there is a "controller" property in "coon.js.package", and its value is set to true,
+     * If there is a "registerController" property in "coon-js.package.autoLoad", and its value is set to true,
      * it will be automatically computed to a string given the following pattern: [namespace].app.PackageController
      *
      *
@@ -92,17 +92,6 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *            }
      *        }
      *    }
-     *
-     *    // not consumed by this method :
-     *    foo : {
-     *        "coon-js" : true
-     *    }
-     *    //or
-     *    bar : {
-     *        "coon-js" : "packageinfo"
-     *    }
-     *
-     *
      *
      * @param {Object} manifest an object providing package manifest information
      *
@@ -123,7 +112,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
             if (coonPackage !== undefined) {
                 packages[packageName] = Ext.clone(packageConfig);
 
-                if (coonPackage.controller === true) {
+                if (l8.isObject(coonPackage.autoLoad) && coonPackage.autoLoad.registerController === true) {
                     packages[packageName]["coon-js"].package.controller = `${packageConfig.namespace}.app.PackageController`;
                 }
 
@@ -399,13 +388,11 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *
      *     {
      *         "conjoon" : {
-     *             "config" : {
-     *                 "application" : {
-     *                     "plugins" : [
-     *                         "theme-cn_material", // will compute the fqn to "conjoon.cn_material.app.plugin.ApplicationPlugin"
-     *                         "some.other.plugins.Fqn"
-     *                     ]
-     *                 }
+     *             "application" : {
+     *                 "plugins" : [
+     *                     "theme-cn_material", // will compute the fqn to "conjoon.cn_material.app.plugin.ApplicationPlugin"
+     *                     "some.other.plugins.Fqn"
+     *                  ]
      *             }
      *         }
      *     }
@@ -443,6 +430,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
     /**
      * Loads the application config - if available - and registers it with the ConfigManager
      * given the application name as the domain.
+     * The configuration registered with the ConfigManager is the value of the "application"-property
+     * found in the configuration file.
      * Will compute an url for the config based on the environment the application is used,
      * which can be specified in the app.json by configuring a "coon-js"-object with an "env"-property.
      * The value of this property will be used as an additional token in the file-name the loader looks up.
@@ -485,8 +474,13 @@ Ext.define("coon.core.app.ApplicationUtil",{
             loadedConfig = await me.configLoader.load(
                 appName,
                 undefined,
-                `${appName}.config`
+                `${appName}`,
+                false
             );
+
+        coon.core.ConfigManager.register(
+            appName, loadedConfig && loadedConfig.application
+        );
 
         return loadedConfig;
     },
@@ -501,7 +495,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
      * @example
      *
      *     "coon-js" : {
-     *         "package" : {"controller" : true, "config" : true}
+     *         "package" : {"autoLoad" : true, "config" : true}
      *     }
      *
      * It's contents will be made available to the coon.core.ConfigManager by the used BatchConfigLoader.
@@ -513,6 +507,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
      * This method will also take care of adding the namespaces of the packages to Ext.app and
      * pushes the controller-names found in the package-configuration to the collection
      * of controllers used by the application, if the package was configured with a PackageController.
+     * Packages will not get loaded if they are either already included, or if their "autoLoad"-property
+     * is set to "false".
      *
      * @param {Array} packages The array containing the package informations
      *
@@ -534,13 +530,23 @@ Ext.define("coon.core.app.ApplicationUtil",{
         entries.forEach((entry) => {
             let [name, packageConfig] = entry,
                 controller = l8.unchain("coon-js.package.controller", packageConfig),
-                config = l8.unchain("coon-js.package.config", packageConfig);
+                config = l8.unchain("coon-js.package.config", packageConfig),
+                loadFromFile = l8.unchain("coon-js.package.loadFromFile", packageConfig);
 
             if (controller) {
                 controllers.push(controller);
             }
-            if (config) {
-                batchLoader.addDomain(name, typeof config === "object" ? config : undefined);
+
+            if (!config) {
+                return;
+            }
+
+            if (l8.isObject(config) && loadFromFile === false) {
+                coon.core.ConfigManager.register(name, config);
+            } else if (l8.isString(config)) {
+                batchLoader.addDomain(name, {}, config);
+            } else if (config === true || l8.isObject(config)) {
+                batchLoader.addDomain(name, l8.isObject(config) ? config : undefined);
             }
         });
 
@@ -550,7 +556,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             let [name, config] = entry;
 
-            if (config.included) {
+            if (config.included || l8.unchain("coon-js.package.autoLoad", config) === false) {
                 return;
             }
             return await coon.core.Environment.loadPackage(name);
@@ -581,7 +587,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
             // check first if a package can be identified under the name of the plugin
             // this will be given precedence
             if (coon.core.Environment.getPackage(plugin)) {
-                fqn = `${coon.core.Environment.getPackage(plugin).namespace}.app.plugin.${type === "application" ? "Application" : "Controller"}Plugin`;
+                fqn = `${coon.core.Environment.getPackage(plugin).namespace}.app.plugin.`+
+                      `${type === "application" ? "Application" : "Controller"}Plugin`;
                 return true;
             }
 

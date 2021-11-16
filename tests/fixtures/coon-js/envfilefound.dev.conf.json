@@ -1,6 +1,6 @@
 {
   "envfilefound" : {
-    "config" : {
+    "application" : {
       "envfile" : "found"
     }
   }
