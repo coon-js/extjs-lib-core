@@ -31,7 +31,7 @@ StartTest(t => {
         const
             RESOURCE_PATH = "./fixtures/";
 
-        let loader;
+        let loader, batchLoader;
 
         const setupVendorBase = (keyFunc) => {
             coon.core.Environment._vendorBase = undefined;
@@ -48,6 +48,8 @@ StartTest(t => {
                 "coon.core.app.ConfigLoader",
                 coon.core.FileLoader
             );
+
+            batchLoader = Ext.create("coon.core.app.BatchConfigLoader", loader);
 
             setupVendorBase((key) => {
                 switch (key) {
@@ -84,6 +86,21 @@ StartTest(t => {
             let config = await loader.load("mockDomain", undefined, undefined, false);
             t.expect(config).toEqual(expected);
             t.expect(coon.core.ConfigManager.get("mockDomain")).toBeUndefined();
+        });
+
+
+        t.it("BatchConfigLoader.loadDomain() - fileName in config", async (t) => {
+            const
+                loadSpy = t.spyOn(batchLoader.configLoader, "load").and.callFake(() => ({})),
+                Environment = coon.core.Environment;
+
+            await batchLoader.loadDomain("domain", {fileName: "configFile"});
+
+            t.expect(loadSpy.calls.mostRecent().args[1]).toBe(
+                Environment.getPathForResource(Environment.getManifest("coon-js.resourceFolder") + "/configFile")
+            );
+
+            loadSpy.remove();
         });
 
 
