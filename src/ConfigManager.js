@@ -24,14 +24,14 @@
  */
 
 /**
- * Utility class for covenient access to configurations.
+ * Utility class for convenient access to configurations.
  * Configurations are identified by domains which hold a specific block of configuration-
  * options.
  *
  * @example
  *
  *      coon.core.ConfigManager.register("dev-cn_imapusersim", {authUrl : "/foo/bar", "section" : {"a" : "b"}});
- *      coon.core.ConfigManager.register("dev-cn_imapusersim", {authUrl : "/foo/bar"}); // throws exceptin
+ *      coon.core.ConfigManager.register("dev-cn_imapusersim", {authUrl : "/foo/bar"}); // throws exception
  *      coon.core.ConfigManager.get("dev-cn_imapusersim"); // {authUrl : "/foo/bar"}
  *      coon.core.ConfigManager.get("dev-cn_imapusersim", "section.a"); // "b"
  *      coon.core.ConfigManager.get("dev-cn_imapusersim", "prop"); // undefined
@@ -91,12 +91,12 @@ Ext.define("coon.core.ConfigManager", {
      * Returns the configuration object/value for the specified arguments
      *
      * @param {String} domain The domain for which the config should be returned
-     * @param {String} key the property to look up. If the value contain ".", it will be assumed
+     * @param {String} [key] the property to look up. If the value contain ".", it will be assumed
      * the key is a path to a config value
-     * @param {Mixed} defaultValue The value to return if no configuration for the domain and
+     * @param {String} [defaultValue] The value to return if no configuration for the domain and
      * key was found
      *
-     * @returns {Mixed} undefined if no configuration was found for the specified domain and key,
+     * @returns {*} undefined if no configuration was found for the specified domain and key,
      * otherwise the (default) value. Returns the complete configuration for the domain if only
      * the domain was specified.
      */
