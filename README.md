@@ -268,9 +268,8 @@ _Example for specifying component plugins using a package configuration:_
 ## Configuration best practices
 It is recommended to use the `packages`-section of the application configuration to make sure the application
 itself handles all the packages.<br>
-For this, specifying the `packages`-section in the configuration file will make sure that no configuration from 
-individual packages is used, except for looking up packages that are required by dynamically added plugins and/or 
-controllers. <br>
+For this, specifying the `packages`-section in the configuration file will make sure that packages defined here
+completely overwrite the settings found in their original `package.json`. <br> 
 Configuration of packages in the application configuration is the same as configuring packages in the associated
 `package.json`, except for section keys used.
 
