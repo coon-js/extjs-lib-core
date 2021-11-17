@@ -79,25 +79,25 @@ StartTest(t => {
                 included: false,
                 isLoaded: false,
                 namespace: "foo",
-                "coon-js": {package: {controller: true}}
+                "coon-js": {package: {autoLoad: {registerController: true}}}
             },
             "p_bar": {
                 included: true,
                 isLoaded: false,
                 namespace: "bar",
-                "coon-js": {package: {controller: true}}
+                "coon-js": {package: {autoLoad: {registerController: true}}}
             },
             "p_foobar": {
                 included: false,
                 isLoaded: false,
                 namespace: "foobar",
-                "cs": {package: {controller: true}}
+                "cs": {package: {autoLoad: {registerController: true}}}
             },
             "t_snafu": {
                 included: false,
                 isLoaded: false,
                 namespace: "snafu",
-                "coon-js": {package: {controller: true}}
+                "coon-js": {package: {autoLoad: {registerController: true}}}
             }
         };
         manifest.resources = {path: "./fixtures", shared: "../bar"};
@@ -463,6 +463,7 @@ StartTest(t => {
                 getApplicationPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getApplicationPlugins").and.callFake(() => applicationPluginsMock),
                 getComponentPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getComponentPlugins"),
                 loadApplicationConfigSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadApplicationConfig").and.callFake(async () => applicationConfigMock),
+                configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(domain => domain === "test" ? applicationConfigMock : undefined),
                 loadPackagesSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadPackages").and.callFake(() => packageControllersMock),
                 addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {});
 
@@ -482,7 +483,19 @@ StartTest(t => {
                 t.expect(getComponentPluginsSpy).toHaveBeenCalled(0);
 
                 t.expect(loadPackagesSpy).toHaveBeenCalled(1);
-                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  coon.core.Environment.getPackages());
+                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  {
+                    "p_foo": {
+                        namespace: "foo",
+                        "coon-js": {package: {autoLoad: {registerController: true}}}
+                    },
+                    "p_bar": {
+                        namespace: "bar",
+                        "coon-js": {package: {autoLoad: {registerController: true}}}
+                    },
+                    "t_snafu": {
+                        namespace: "snafu",
+                        "coon-js": {package: {autoLoad: {registerController: true}}}
+                    }});
 
                 t.expect(findApplicationPluginsSpy).toHaveBeenCalled(1);
 
@@ -506,6 +519,7 @@ StartTest(t => {
                 getApplicationPluginsSpy.remove();
                 getComponentPluginsSpy.remove();
                 registerComponentPluginMock.remove();
+                configSpy.remove();
 
 
                 switchManifest(true);
