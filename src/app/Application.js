@@ -366,25 +366,24 @@ Ext.define("coon.core.app.Application",{
 
 
     /**
-     * Overridden to make sure that all coon.js PackageControllers found in
-     * Ext.manifest are loaded before the application is started.
-     * Starts loading the application-configuration, continues with the
-     * required packages by calling "loadPackages()" and will then call the parent's
-     * implementation.
-     * Will also make sure that package-controllers are added to THIS applications
+     * Overridden to make sure that all PackageControllers registered via the application configuration
+     * are loaded before the application is started.
+     * Will also make sure that PackageControllers are added to THIS applications
      * #controllers-list.
      *
-     * @see getCoonPackages
-     * @see loadPackages
      * @see loadApplicationConfig
      *
      * @throws coon.core.app.ApplicationException if mapping the controller plugins failed
      */
     async onProfilesReady () {
 
-        const me = this;
+        const
+            me = this,
+            conf = await me.applicationUtil.loadApplicationConfig();
 
-        me.controllers = (me.controllers || []).concat(await me.initPackagesAndConfiguration());
+        me.controllers = (me.controllers || []).concat(await me.initPackagesAndConfiguration(
+            conf.packages
+        ));
 
         await me.initApplicationConfigurationAndPlugins();
 
@@ -400,7 +399,7 @@ Ext.define("coon.core.app.Application",{
 
         const
             me = this,
-            conf = await me.applicationUtil.loadApplicationConfig(),
+            conf = coon.core.ConfigManager.get(me.getName()),
             applicationPlugins = me.applicationUtil.getApplicationPlugins(
                 conf, coon.core.Environment.getPackages()
             ),
@@ -422,11 +421,53 @@ Ext.define("coon.core.app.Application",{
     /**
      * @private
      */
-    async initPackagesAndConfiguration () {
+    async initPackagesAndConfiguration (appConfiguredPackages) {
+        "use strict";
 
-        const me = this;
+        appConfiguredPackages = appConfiguredPackages || {};
 
-        let packageControllers = await me.applicationUtil.loadPackages(coon.core.Environment.getPackages());
+        const
+            me = this,
+            envPackages = coon.core.Environment.getPackages(),
+            res = {},
+            appPackages = appConfiguredPackages && Object.keys(appConfiguredPackages);
+
+        Object.entries(envPackages).forEach(entry => {
+            const [key, value] = entry;
+
+            if (!appConfiguredPackages[key]) {
+                appConfiguredPackages[key] = value;
+            }
+        });
+
+        Object.entries(appConfiguredPackages).forEach((entry) => {
+            const
+                pckg = entry[0],
+                config = l8.unchain("coon-js.package", entry[1], entry[1]);
+
+            if (config.autoLoad === true || l8.isObject(config.autoLoad)) {
+                let namespace = envPackages[pckg].namespace;
+
+                l8.chain(`${pckg}.coon-js.package`, res, {});
+
+                if (config.autoLoad) {
+                    l8.chain(`${pckg}.coon-js.package.autoLoad`, res, config.autoLoad);
+                }
+
+                if (config.config) {
+                    l8.chain(`${pckg}.coon-js.package.config`, res, config.config);
+                    // do not load from file if config was part of app config
+                    if (appPackages.includes(pckg)) {
+                        l8.chain(`${pckg}.coon-js.package.loadFromFile`, res, !l8.isObject(config.config));
+                    }
+                }
+
+                l8.chain(`${pckg}.namespace`, res, namespace);
+            }
+        });
+
+
+        const packageControllers = await me.applicationUtil.loadPackages(res);
 
         Ext.app.addNamespaces(packageControllers);
 

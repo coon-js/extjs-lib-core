@@ -25,7 +25,7 @@
 
 
 /**
- * Loader for batching the laoding of multiple configuration files represented by different domains.
+ * Loader for batching the loading of multiple configuration files represented by different domains.
  * The found configurations for the domain will be registered with the coon.core.ConfigManager.
  * Actual loading will be delegated to the {coon.core.app.ConfigLoader} an instance of this class
  * was configured with.
@@ -58,7 +58,7 @@
  *    //
  *    //    {
  *    //     "app-cn_mail" : {[The configuration as found at [resource_path]/app-cn_mail.conf.json]},
- *    //     "foobar" : {"not" : "found"}, // this is the defaultConfig as specified when callign add()
+ *    //     "foobar" : {"not" : "found"}, // this is the defaultConfig as specified when calling add()
  *    //     "snafu" : [an exception of the type coon.core.exception.ConfigurationException, wrapping an
  *    //                exception of the type coon.core.exception.ParseException]
  *    //    }
@@ -69,6 +69,8 @@
 Ext.define("coon.core.app.BatchConfigLoader", {
 
     requires: [
+        // @define
+        "l8",
         "coon.core.app.ConfigLoader",
         "coon.core.ConfigManager",
         "coon.core.exception.IllegalArgumentException"
@@ -113,12 +115,16 @@ Ext.define("coon.core.app.BatchConfigLoader", {
      * loading.
      * If the file for the domain could not be loaded, the
      * specified defaultConfig will be registered with the domain name.
+     * If a fileName is specified, _this_ file will be loaded (after being resolved to
+     * its proper path) for the configuration, instead of relying on auto computing the
+     * filename.
      *
      * @param {String} domain
-     * @param {Object} defaultConfig
+     * @param {Object} [defaultConfig]
+     * @param {String} [fileName]
      *
      */
-    addDomain (domain, defaultConfig = {}) {
+    addDomain (domain, defaultConfig , fileName) {
 
         const me = this;
 
@@ -130,7 +136,13 @@ Ext.define("coon.core.app.BatchConfigLoader", {
             return false;
         }
 
-        me.domains[domain] = defaultConfig;
+        me.domains[domain] = {
+            defaultConfig: defaultConfig
+        };
+
+        if (l8.isString(fileName)) {
+            me.domains[domain].fileName = fileName;
+        }
 
         return true;
     },
@@ -163,13 +175,13 @@ Ext.define("coon.core.app.BatchConfigLoader", {
         // assign the [domain, defaultConfig] manually
         batchResult = await Promise.all(entries.map( async entry => {
 
-            let result, domain, defaultConfig;
+            let result, domain, domainConfig;
 
             domain = entry[0];
-            defaultConfig = entry[1];
+            domainConfig = entry[1];
 
             try {
-                result = await me.loadDomain(domain, defaultConfig);
+                result = await me.loadDomain(domain, domainConfig);
             } catch (e) {
                 result = e;
             }
@@ -190,7 +202,11 @@ Ext.define("coon.core.app.BatchConfigLoader", {
      * a coon.core.data.request.HttpRequestException.
      *
      * @param {String} domain
-     * @param {Object} defaultConfig
+     * @param {Object} domainConfig
+     * @param {Object} [domainConfig.defaultConfig] The default config used for the domain
+     * @param {String} [domainConfig.fileName] if this attribute is present and holds a value,
+     * _this_ file will be loaded for the configuration, instead of a file name computed given the
+     * package and the environment. See #addDomain.
      *
      * @return {Object} either the config loaded by the used ConfigLoader, or the defaultConfig
      * if a HttpRequestException during the attempt to load the configuration file for
@@ -201,15 +217,26 @@ Ext.define("coon.core.app.BatchConfigLoader", {
      * @throws {coon.core.app.ConfigurationException} re-throws any ConfigurationException thrown
      * by the ConfigLoader is the cause was not a HttpRequestException
      */
-    async loadDomain (domain, defaultConfig= {}) {
+    async loadDomain (domain, domainConfig) {
 
         const
             me = this,
             Manager = coon.core.ConfigManager,
-            configLoader = me.configLoader;
+            configLoader = me.configLoader,
+            Environment = coon.core.Environment,
+            getResourcePath = (file) =>
+                Environment.getPathForResource(Environment.getManifest("coon-js.resourceFolder") + "/" + file);
 
         try {
-            await configLoader.load(domain);
+            let
+                url,
+                fileName = domainConfig.fileName;
+
+            if (fileName) {
+                url = getResourcePath(fileName);
+            }
+
+            await configLoader.load(domain, url);
         } catch (e) {
             let cause = e.getCause() || {};
             if (!(cause instanceof coon.core.data.request.HttpRequestException)) {
@@ -220,10 +247,10 @@ Ext.define("coon.core.app.BatchConfigLoader", {
 
         // the ConfigLoader will have registered the domain with the config already
         // if it could be successfully loaded and parsed as a JSON Object.
-        // We will check for the domain here and apply defaultConfig if it does not exist, 
+        // We will check for the domain here and apply defaultConfig if it does not exist,
         // otherwise, we will return the loaded configuration as an object.
         // This will be wrapped in a resolved promise.
-        return Manager.get(domain) || Manager.register(domain, defaultConfig);
+        return Manager.get(domain) || Manager.register(domain, domainConfig.defaultConfig);
     }
 
 });

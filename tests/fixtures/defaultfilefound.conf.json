@@ -1,6 +1,6 @@
 {
   "defaultfilefound" : {
-    "config" : {
+    "application" : {
       "defaultfile" : "found"
     }
   }

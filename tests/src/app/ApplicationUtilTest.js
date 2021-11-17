@@ -57,7 +57,7 @@ StartTest((t) => {
                 t.expect(spy).toHaveBeenCalled(1);
                 t.expect(spy.calls.all()[0].args[0]).toBe(appName);
                 t.expect(spy.calls.all()[0].args[1]).toBeUndefined();
-                t.expect(spy.calls.all()[0].args[2]).toBe(`${appName}.config`);
+                t.expect(spy.calls.all()[0].args[2]).toBe(appName);
 
                 t.expect(exc).toBe(configurationException);
             };
@@ -95,12 +95,12 @@ StartTest((t) => {
                     foo: {
                         included: false,
                         namespace: "foo",
-                        "coon-js": {package: true}
+                        "coon-js": {package: {autoLoad: {registerController: true}}}
                     },
                     bar: {
                         included: true,
                         namespace: "com.bar",
-                        "coon-js": {package: {controller: true}}
+                        "coon-js": {package: {autoLoad: {registerController: true}}}
                     },
                     snafu: {
                         included: true,
@@ -111,13 +111,21 @@ StartTest((t) => {
                     foo: {
                         included: false,
                         namespace: "foo",
-                        "coon-js": {package: true}
+                        "coon-js": {
+                            package: {
+                                controller: "foo.app.PackageController",
+                                autoLoad: {
+                                    registerController: true
+                                }
+                            }
+                        }
                     },
                     "bar": {
                         included: true,
                         namespace: "com.bar",
                         "coon-js": {
                             package: {
+                                autoLoad: {registerController: true},
                                 controller: "com.bar.app.PackageController"
                             }
                         }
@@ -160,12 +168,12 @@ StartTest((t) => {
                 bar: {
                     included: true,
                     namespace: "com.bar",
-                    "coon-js": {package: {controller: true}}
+                    "coon-js": {package: {autoLoad: {registerController: true}}}
                 },
                 snafu: {
                     included: false,
                     namespace: "snafu",
-                    "coon-js": {package: true}
+                    "coon-js": {package: {autoLoad: true}}
                 }
             };
 
@@ -195,7 +203,7 @@ StartTest((t) => {
                     foo: {
                         included: false,
                         namespace: "foo",
-                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
                     },
                     bar: {
                         included: true,
@@ -214,7 +222,7 @@ StartTest((t) => {
                     mail: {
                         included: false,
                         namespace: "cn_mail",
-                        "coon-js": {package: {controller: true, config: {plugins: {controller: [{
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {plugins: {controller: [{
                             xclass: "xclassedplugin",
                             args: [{one: 1}, {two: 2}]
                         }]}}}}
@@ -308,7 +316,7 @@ StartTest((t) => {
             t.expect(spy).toHaveBeenCalled(1);
             t.expect(spy.calls.mostRecent().args[0]).toBe(appName);
             t.expect(spy.calls.mostRecent().args[1]).toBeUndefined();
-            t.expect(spy.calls.mostRecent().args[2]).toBe(appName + ".config");
+            t.expect(spy.calls.mostRecent().args[2]).toBe(appName);
         });
 
 
@@ -328,11 +336,11 @@ StartTest((t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but only default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {"resources": "coon-js", env: "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resourceFolder": "coon-js", env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({application: {defaultfile: "found"}});
 
             t.expect(spy).toHaveBeenCalled(1);
         });
@@ -346,7 +354,7 @@ StartTest((t) => {
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({defaultfile: "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({application: {defaultfile: "found"}});
 
             t.expect(spy).toHaveBeenCalled(1);
         });
@@ -354,11 +362,11 @@ StartTest((t) => {
 
         t.it("loadApplicationConfig() - env-property (dev) available, env file found", async t => {
             const appName = "envfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {"resources": "coon-js", "env": "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resourceFolder": "coon-js", "env": "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
-            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({envfile: "found"});
+            t.expect(await applicationUtil.loadApplicationConfig()).toEqual({application: {envfile: "found"}});
 
             t.expect(spy).toHaveBeenCalled(1);
 
@@ -385,7 +393,7 @@ StartTest((t) => {
                         namespace: "foo",
                         "coon-js": {
                             package: {
-                                controller: true
+                                autoLoad: {registerController: true}
                             }
                         }
                     },
@@ -413,7 +421,7 @@ StartTest((t) => {
             let ctrls = await applicationUtil.loadPackages(coon.core.Environment.getPackages());
 
             t.isDeeply(applicationUtil.batchConfigLoader.domains, {
-                "bar": {conf: "set"}
+                "bar": {defaultConfig: {conf: "set"}}
             });
 
             t.isDeeply(ctrls, ["foo.app.PackageController"]);
@@ -439,7 +447,7 @@ StartTest((t) => {
                     foo: {
                         included: false,
                         namespace: "foo",
-                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
                     },
                     bar: {
                         included: true,
@@ -468,12 +476,12 @@ StartTest((t) => {
                     foo: {
                         included: false,
                         namespace: "foo",
-                        "coon-js": {package: {controller: true, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {plugins: {controller: ["bar", "snafu.Controller"]}}}}
                     },
                     anotherFoo: {
                         included: false,
                         namespace: "anotherFoo",
-                        "coon-js": {package: {controller: true, config: {plugins: {controller: "bar"}}}}
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {plugins: {controller: "bar"}}}}
                     },
                     snafu: {
                         included: false,
@@ -528,7 +536,7 @@ StartTest((t) => {
                         namespace: "foo",
                         "coon-js": {
                             package: {
-                                controller: true,
+                                autoLoad: {registerController: true},
                                 config: {
                                     plugins: {
                                         components: [{

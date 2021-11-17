@@ -33,13 +33,13 @@
  * // its implementation.
  * // Following examples assume an ExtJS-vendor is configured:
  * // Ext // namespace
- * // Ext.manifest = {"name" : "myapp", "coon-js" : {"env" : "development"}, "packages" : {"mypackage" : {}}}
+ * // Ext.manifest = {"name" : "myapp", "coon-js" : {"env" : "development"}, "packages" : {"package" : {}}}
  * let vendor = Ext.create("coon.core.env.ext.VendorBase");
  * coon.core.Environment.setVendor(vendor);
  * coon.core.Environment.getName(); // "myapp"
  * coon.core.Environment.get("base"); // Ext.base
  * coon.core.Environment.getEnvironment(); // Ext
- * coon.core.Environment.getPackage("mypackage"); // Ext.manifest.packages.mypackage
+ * coon.core.Environment.getPackage("package"); // Ext.manifest.packages.package
  * coon.core.Environment.getPackages(); // Ext.manifest.packages
  * coon.core.Environment.getManifest(); // Ext.manifest
  * coon.core.Environment.getManifest("coon-js.env"); // "development"
@@ -99,7 +99,7 @@ Ext.define("coon.core.Environment", {
      *
      * @param {String} key
      *
-     * @returns {Mixed} Either the value or undefined if the value is not defined or
+     * @returns {*} Either the value or undefined if the value is not defined or
      * the environment is not available
      */
     get (key) {
@@ -114,11 +114,11 @@ Ext.define("coon.core.Environment", {
      * when computing the resource path.
      *
      * @param {String} path
-     * @param {String} pckg optional name of the package the resource belongs to
+     * @param {String} [pkg] optional name of the package the resource belongs to
      *
      * @return {String}
      */
-    getPathForResource (path, pckg) {
+    getPathForResource (path, pkg) {
         return this.delegate("getPathForResource", arguments);
     },
 
@@ -137,7 +137,7 @@ Ext.define("coon.core.Environment", {
      * Returns all manifest information available.
      * If a key is specified, only the value for the key from the manifest will be returned, if available.
      *
-     * @return  {Mixed}
+     * @return  {*}
      */
     getManifest (key) {
         return this.delegate("getManifest", arguments);
@@ -157,7 +157,7 @@ Ext.define("coon.core.Environment", {
 
 
     /**
-     * Returns all package informations available in the current environment.
+     * Returns all package information available in the current environment.
      *
      * @return {Object} keyed with the package names available, their values providing
      * further information.
@@ -173,7 +173,7 @@ Ext.define("coon.core.Environment", {
      *
      * @param {String} packageName
      *
-     * @returns {Promise<Mixed>}
+     * @returns {Promise<*>}
      */
     async loadPackage (packageName) {
 
@@ -194,9 +194,9 @@ Ext.define("coon.core.Environment", {
          * Delegates to the method from the VendorBase and returns its value.
          *
          * @param {String} fnName
-         * @param {Object} arguments The arguments passed to this method from the source calls
+         * @param {Object} args The arguments passed to this method from the source calls
          *
-         * @return {Mixed}
+         * @return {*}
          *
          * @private
          *

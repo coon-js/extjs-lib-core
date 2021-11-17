@@ -75,8 +75,8 @@ StartTest((t) => {
         t.expect(batchLoader.addDomain("bar", {bar: "foo"})).toBe(true);
 
         t.expect(batchLoader.domains).toEqual({
-            foo: {foo: "bar"},
-            bar: {bar: "foo"}
+            foo: {defaultConfig: {foo: "bar"}},
+            bar: {defaultConfig: {bar: "foo"}}
         });
     });
 
@@ -95,7 +95,9 @@ StartTest((t) => {
         // | ParseException
         // +-------------------------------------
         try {
-            res = await batchLoader.loadDomain("ParseException", {test: "foobar"});
+            res = await batchLoader.loadDomain(
+                "ParseException", {defaultConfig: {test: "foobar"}}
+            );
         } catch (e) {
             exception = e;
         }
@@ -107,7 +109,7 @@ StartTest((t) => {
         // +-------------------------------------
         // | Ok
         // +-------------------------------------
-        expectedResult = {test: "foobar"};
+        expectedResult = {defaultConfig: {test: "foobar"}};
         res = await batchLoader.loadDomain("foo", expectedResult);
         t.expect(res).toEqual({domain: "foo"});
         reset();
@@ -115,10 +117,10 @@ StartTest((t) => {
         // +-------------------------------------
         // | HttpRequestException
         // +-------------------------------------
-        expectedResult = {weshould: "havethisavilable"};
-        res = await batchLoader.loadDomain("HttpRequestException", expectedResult);
-        t.expect(coon.core.ConfigManager.get("HttpRequestException")).toEqual(expectedResult);
-        t.expect(res).toEqual(expectedResult);
+        expectedResult = {defaultConfig: {weShould: "haveThisAvailable"}};
+        res = await batchLoader.loadDomain("someDomain", expectedResult);
+        t.expect(coon.core.ConfigManager.get("someDomain")).toEqual(expectedResult.defaultConfig);
+        t.expect(res).toEqual(expectedResult.defaultConfig);
         reset();
 
     });
@@ -147,7 +149,7 @@ StartTest((t) => {
         tests.forEach((test, index) => {
             // pretest the order so we can safely check for deeply for the 2nd argument
             t.expect(spy.calls.all()[index].args[0]).toBe(test[0]);
-            t.expect(spy.calls.all()[index].args[1]).toEqual(test[1]);
+            t.expect(spy.calls.all()[index].args[1]).toEqual({defaultConfig: test[1]});
             t.expect(spy).toHaveBeenCalledWith(test[0], t.any());
         });
 
