@@ -40,7 +40,7 @@ StartTest(t => {
                     coon.core.Environment._vendorBase = undefined;
 
                     let vendorBase = Ext.create("coon.core.env.VendorBase");
-                    vendorBase.getPathForResource = (resource) => RESOURCE_PATH + "/" + resource;
+                    vendorBase.getPathForResource = (resource, pkg) => `${RESOURCE_PATH}/${pkg ? pkg + "/" : ""}${resource}`;
                     vendorBase.getManifest = keyFunc;
                     coon.core.Environment.setVendorBase(vendorBase);
                 },
@@ -118,7 +118,7 @@ StartTest(t => {
                 await batchLoader.loadDomain("domain", {fileName: "configFile"});
 
                 t.expect(loadSpy.calls.mostRecent().args[1]).toBe(
-                    Environment.getPathForResource(Environment.getManifest("coon-js.resourceFolder") + "/configFile")
+                    Environment.getPathForResource( "configFile", "domain")
                 );
 
                 loadSpy.remove();

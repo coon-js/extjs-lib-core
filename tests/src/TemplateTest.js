@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest((t) => {
+StartTest(t => {
     "use strict";
 
 
@@ -33,7 +33,7 @@ StartTest((t) => {
 
     t.requireOk("coon.core.Template", () => {
 
-        t.it("functionality", async (t) => {
+        t.it("functionality", async t => {
 
             const LOAD_RETURN_MOCK = "text";
 
@@ -60,7 +60,7 @@ StartTest((t) => {
             t.expect(loadSpy).toHaveBeenCalled(2);
 
             loadSpy.remove();
-           
+
         });
     });
 });

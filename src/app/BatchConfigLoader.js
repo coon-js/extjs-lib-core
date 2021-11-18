@@ -222,10 +222,7 @@ Ext.define("coon.core.app.BatchConfigLoader", {
         const
             me = this,
             Manager = coon.core.ConfigManager,
-            configLoader = me.configLoader,
-            Environment = coon.core.Environment,
-            getResourcePath = (file) =>
-                Environment.getPathForResource(Environment.getManifest("coon-js.resourceFolder") + "/" + file);
+            configLoader = me.configLoader;
 
         try {
             let
@@ -233,7 +230,7 @@ Ext.define("coon.core.app.BatchConfigLoader", {
                 fileName = domainConfig.fileName;
 
             if (fileName) {
-                url = getResourcePath(fileName);
+                url = me.resolveFileLocation(fileName, domain);
             }
 
             await configLoader.load(domain, url);
@@ -251,6 +248,37 @@ Ext.define("coon.core.app.BatchConfigLoader", {
         // otherwise, we will return the loaded configuration as an object.
         // This will be wrapped in a resolved promise.
         return Manager.get(domain) || Manager.register(domain, domainConfig.defaultConfig);
+    },
+
+
+    /**
+     * Looks up any signs of path-related tokens in the submitted file argument
+     * and tries to resolve template-variables with either "coon-js" settings
+     * out of the environment or the "package.dir", if required.
+     * Will fall back to the package-dir of the owning pkg (package) if no path-related
+     * information as specified.
+     *
+     * @param {String} file
+     * @param {String} pkg
+     *
+     * @return {String}
+     */
+    resolveFileLocation (file, pkg) {
+        const Environment = coon.core.Environment;
+
+        if (file.indexOf("/") !== -1) {
+            file = file.replace("${coon-js.resourcePath}", "${coon_js.resourcePath}");
+            let tpl = l8.template.esix.make(file);
+
+            return tpl.render({
+                "coon_js": {
+                    "resourcePath": Environment.getPathForResource(Environment.getManifest("coon-js.resourcePath"))
+                },
+                "package": {"dir": Environment.getPathForResource(pkg)}
+            });
+        }
+
+        return Environment.getPathForResource(file, pkg);
     }
 
 });

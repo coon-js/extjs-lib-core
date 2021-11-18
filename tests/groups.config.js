@@ -30,6 +30,9 @@ export default [{
         items: [{
             name: "conjoon/extjs-app-webmail#189",
             url: "src/_issues_/feat/extjs-app-webmail%23189.js"
+        }, {
+            name: "conjoon/extjs-lib-core#58",
+            url: "src/_issues_/feat/extjs-lib-core%2358.js"
         }]
     }]
 },{
