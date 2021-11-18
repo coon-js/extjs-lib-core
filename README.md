@@ -35,19 +35,25 @@ an existing ExtJS installation.
 
 ## Configuration
 ### Environment-specific configuration files <a name="env_files"></a>
-Application and Package configuration files will be looked up in the `resourceFolder`-folder, and then in the
+Application and Package configuration files will be looked up in the `resource path`, and then in the
 folder that was configured with the `coon-js`-section of the application's `app.json`.
 Example (*app.json*):
 ```json
 "production": {
-"coon-js" : {"resourceFolder" : "files", "env" : "prod"}
+    "coon-js" : {
+        "resourcePath": "files", 
+        "env": "prod"
+    }
 },
 "development": {
-"coon-js" : {"resourceFolder" : "files", "env" : "dev"}
+    "coon-js" : {
+        "resourcePath": "files", 
+        "env": "dev"
+    }
 },
 ```
 Depending on the build you are using (in this case either the `production`- or the `development`-build), configuration-files
-will be looked up in `resources/files` (note that the `resourceFolder`-folder is the folder-name/path returned by a
+will be looked up in `resources/files` (note that the `resources`-folder is the folder-name/path returned by a
 call to `Ext.getResourcePath()`). A **coon.js**-Application will first query configuration files for the build that
 is being used (by using the name pattern `[application_name|package_name].[coon-js.env].conf.json`), and if that file could
 not be loaded and results in a **HTTP error**-code, loading will fall back to ```[application_name|package_name].conf.json```.
@@ -65,7 +71,7 @@ keyed under `[application_name].config`. For an application with the name `conjo
 as follows:
 ```json
 {
-    "conjoon" : {
+    "conjoon": {
     }
 }
 ```
@@ -82,15 +88,24 @@ The following sections are considered when reading out a **coon.js**-application
 **Note**: This is only available when the `packages`-section of the **[Application configuration](#apppackages)** was not set.
 This Application implementation queries ```Ext.manifest``` for packages which are part of the `used`-configuration in
 an application's `app.json`. Those packages need to have a `coon-js` section configured with a `package`-entry:
-```
-"coon-js": {"package" : {"autoLoad" : true}}
+```json
+"coon-js": {
+    "package" : {
+        "autoLoad" : true
+    }
+}
 ```
 If `autoLoad` is set to `true`, theses packages will be loaded by this application implementation dynamically upon 
 startup.
-<br> If the `packageConfiguration` is configured with the `registerController` set to `true`, this package#s 
+<br> If the `packageConfiguration` is configured with the `registerController` set to `true`, this package's 
 `PackageController` - if any - will be registered with the application, and during startup, it's `preLaunchHook`-method
 is called when the application is ready to settle into its `launch()`-method. If any of the registered `PackageController`s
 `preLaunchHook` method returns `false`, the application's `launch()` will not be called.
+```json
+{
+    "coon-js": {"package" : {"autoLoad" : {"registerController": true}}}
+}
+```
 
 ### Package Configurations
 You can add configuration files to your packages which must follow the naming scheme
@@ -100,23 +115,76 @@ This folder now serves as the root for all configuration files for an **coon-js*
 
 Configuration files will be looked up if a package has the following section configured in its
 package.json:
-```
-"coon-js": {"package" : {"config" : {}}}
+```json
+{
+    "coon-js": {
+        "package" : {
+            "config" : {}
+        }
+    }
+}
 ```
 or
-```
-"coon-js": {"package" : {"config" : true}}
+```json
+{
+    "coon-js": {
+        "package" : {
+            "config" : true
+        }
+    }
+}
 ```
 or
-```
-"coon-js": {"package" : {"config" : "filename"}}
+```json
+{
+    "coon-js": {
+        "package" : {
+            "config" : "filename"
+        }
+    }
+}
 ```
 While the first two entries will fall back to the file name computed as described with the [coon-js\.env-section](#env_files),
 the last example will define the file-name holding the application's configuration. This is convenient for larger
 configurations that need to be separated from either the `package.json` of the owning package or the application-configuration
-file.
+file. By default, the file will be looked up in the package's resource-folder. If a path is specified, this path is interpreted 
+and resolved given the following template variables:
 <br>
-This section's data is then registered with the [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js)
+1. The following resolves to the resource-path of the owning package, depending on the build environment:
+```json
+{
+    "autoLoad": {
+        "registerController": true
+    }, 
+    "config": "extjs-app-webmail.conf.json"
+}
+```
+
+```json
+{
+    "autoLoad": {
+        "registerController": true
+    }, 
+    "config": "${package.resourcePath}/extjs-app-webmail.conf.json"
+}
+```
+
+
+2. The following resolves to `resources/[coon-js.resourcePath]/extjs-app-webmail.conf.json` and represents a file available from the application's resources folder itself:
+```json
+{
+    "autoLoad": {
+        "registerController": true
+    }, 
+    "config": "${coon-js.resourcePath}/extjs-app-webmail.conf.json"
+}
+```
+(in this case, configuration will be read out from the resources-folder of the application, not the package itself.)
+
+
+
+<br>
+The configuration's data is then registered with the [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js)
 and can be queried calling `coon.coore.ConfigManager.get([package_name])`. (For more information,
 refer to the docs of [coon.core.ConfigManager](https://github.com/coon-js/extjs-lib-core/blob/master/src/ConfigManager.js).)
 <br>
@@ -137,18 +205,39 @@ You can use the package-name to specify a single `ControllerPlugin` out of this 
 packages "app"-folder under the classname `[package-namespace].app.plugin.ControllerPlugin`), or by specifying the fqn
 of the ControllerPlugins to load:
 
-package.json:
+_package.json:_
+<br>
+(`plug-coon_themeutil` has the namespace `coon.plugin.themeutil`;
+tries to create `coon.plugin.themeutil.app.plugin.ControllerPlugin` during application startup, must therefore be existing in memory)
 ```json
-// plug-coon_themeutil has the namespace coon.plugin.themeutil
-// tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup, must therefore be existing in memory
-"coon-js": {"package" : {"config" : {"plugins" : {"controller" : ["plug-cn_themeutil"]}}}}
+{
+    "coon-js": {
+        "package" : {
+            "config" : {
+                "plugins" : {
+                    "controller" : ["plug-cn_themeutil"]
+                }
+            }
+        }
+    }
+}
 ```
 
-or
-
+**or**
+<br>
+(tries to create `coon.plugin.themeutil.app.plugin.ControllerPlugin` during application startup, must therefore be existing in memory)
 ```json
-// tries to create coon.plugin.themeutil.app.plugin.ControllerPlugin during application startup, must therefore be existing in memory
-"coon-js": {"package" : {"config" : {"plugins" : {"controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]}}}}
+{
+    "coon-js": {
+        "package" : {
+            "config" : {
+                "plugins" : {
+                    "controller" : ["coon.plugin.themeutil.app.plugin.ControllerPlugin"]
+                }
+            }
+        }
+    }
+}
 ```
 A controller plugin can also be configured with arguments that get applied to the constructor of
 the ControllerPlugin. For specifying constructor arguments, the configuration for the controller
@@ -282,7 +371,7 @@ _Example for package configuration in the application configuration file:_
                 "autoLoad": {
                     "registerController": true
                 },
-                "config": "extjs-app-webmail.conf.json"
+                "config": "${coon-js.resourcePath}/extjs-app-webmail.conf.json"
             },
             "extjs-app-imapuser": {
                 "autoLoad": {
@@ -305,7 +394,7 @@ _Example for package configuration in the application configuration file:_
 ## Real world examples
 For an in-depth look at how to use the Application-classes found within this package,
 refer to the documentation of  [extjs-comp-navport](https://github.com/coon-js/extjs-comp-navport).
-A large configurable application built with *coon-js* can be found in the [conjoon](https://github.com/conjoon/conjoon)\-repository.
+A large configurable application built with *coon-js* can be found in the [conjoon](https://github.com/conjoon/conjoon)-repository.
 
 
 ### Development notes
