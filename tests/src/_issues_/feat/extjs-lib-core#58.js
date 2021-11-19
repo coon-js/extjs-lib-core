@@ -91,7 +91,7 @@ StartTest(t => {
                 ).toBe("./fixtures/external_package/filename");
 
                 t.expect(
-                    batchLoader.resolveFileLocation("${package.dir}/filename", "external_package")
+                    batchLoader.resolveFileLocation("${package.resourcePath}/filename", "external_package")
                 ).toBe("./fixtures/external_package/filename");
 
                 t.expect(
