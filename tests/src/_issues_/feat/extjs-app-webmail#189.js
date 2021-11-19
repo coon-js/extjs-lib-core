@@ -74,7 +74,7 @@ StartTest(t => {
 
                 setupVendorBase((key) => {
                     switch (key) {
-                    case "coon-js.resourceFolder":
+                    case "coon-js.resourcePath":
                         return "coon-js";
                     case "coon-js.env":
                         return "testing";

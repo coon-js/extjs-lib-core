@@ -51,7 +51,7 @@ StartTest(t => {
 
             setupVendorBase((key) => {
                 switch (key) {
-                case "coon-js.resourceFolder":
+                case "coon-js.resourcePath":
                     return "coon-js";
                 case "coon-js.env":
                     return "testing";
@@ -107,10 +107,10 @@ StartTest(t => {
 
             t.expect(loader.getPathForDomain(DOMAIN)).toEqual({
                 default: coon.core.Environment.getPathForResource(
-                    coon.core.Environment.getManifest("coon-js.resourceFolder") + "/" + pathInfo.default
+                    coon.core.Environment.getManifest("coon-js.resourcePath") + "/" + pathInfo.default
                 ),
                 environment: coon.core.Environment.getPathForResource(
-                    coon.core.Environment.getManifest("coon-js.resourceFolder") + "/" + pathInfo.environment
+                    coon.core.Environment.getManifest("coon-js.resourcePath") + "/" + pathInfo.environment
                 )
             });
 
@@ -118,7 +118,7 @@ StartTest(t => {
 
             setupVendorBase((key) => {
                 switch (key) {
-                case "coon-js.resourceFolder":
+                case "coon-js.resourcePath":
                     return "coon-js";
                 case "coon-js.env":
                     return undefined;

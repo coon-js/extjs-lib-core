@@ -30,7 +30,7 @@
  * Base-paths for domains are computed via the return value of {coon.core.Environment#getPathForResource}.
  *
  * * @example
- *    // existing json-file at [resource_path]/[coon-js.resourceFolder]/app-cn_mail.conf.json
+ *    // existing json-file at [resource_path]/[coon-js.resourcePath]/app-cn_mail.conf.json
  *    const configLoader = new coon.core.app.ConfigLoader(new coon.core.data.request.file.XmlHttpRequestFileLoader());
  *    const res = await configLoader.load("app-cn_mail");
  *    console.log(res); // json-decoded contents of the json file on success
@@ -95,7 +95,7 @@ Ext.define("coon.core.app.ConfigLoader", {
      * empty object will be registered if a path is specified and the target does not exist.
      * @param {Boolean|undefined} registerConfig optional argument to specify whether the config
      * loaded should be registered with the ConfigManager, or simply returned
-     * 
+     *
      * @returns {Object|Promise|undefined} undefined if the url to use is not existing
      *
      * @throws IllegalArgumentException, PromiseExecutionException
@@ -129,7 +129,7 @@ Ext.define("coon.core.app.ConfigLoader", {
         } catch (e) {
             throw new coon.core.app.ConfigurationException(e, e);
         }
-        
+
         try {
             if (txt) {
                 config = JSON.parse(txt);
@@ -145,7 +145,7 @@ Ext.define("coon.core.app.ConfigLoader", {
                 domain, config
             );
         }
-            
+
 
         return config;
     },
@@ -209,13 +209,13 @@ Ext.define("coon.core.app.ConfigLoader", {
          *        "production": {
          *            "coon-js": {
          *                "env" : "production",
-         *                "resourceFolder": "coon-js/files"
+         *                "resourcePath": "coon-js/files"
          *            }
          *        }
          *        ...
          *    }
          *
-         *     coon.core.Environment.getManifest("coon-js.resourceFolder"); // returns "coon-js/files";
+         *     coon.core.Environment.getManifest("coon-js.resourcePath"); // returns "coon-js/files";
          *     coon.core.Environment.getPathForResource(""); // returns "./resources"
          *     this.getFileNameForDomain("domain").default; // returns "domain.conf.json"
          *     this.getFileNameForDomain("domain").environment; // returns "domain.production.conf.json"
@@ -225,7 +225,7 @@ Ext.define("coon.core.app.ConfigLoader", {
          * @param {String} domain
          *
          * @return {Object} pathInfo The relative path to the resource from the location
-         * this script was executed. Will weave the value found in the "coon-js.resourceFolder"-environment
+         * this script was executed. Will weave the value found in the "coon-js.resourcePath"-environment
          * in if available.
          * @return {Object} pathInfo.default
          * @return {Object} pathInfo.environment
@@ -240,7 +240,7 @@ Ext.define("coon.core.app.ConfigLoader", {
                 Environment = coon.core.Environment,
                 fileInfo    = me.getFileNameForDomain(domain);
 
-            let resourcePath = Environment.getManifest("coon-js.resourceFolder");
+            let resourcePath = Environment.getManifest("coon-js.resourcePath");
 
             resourcePath = resourcePath ? resourcePath +"/" : "";
 
