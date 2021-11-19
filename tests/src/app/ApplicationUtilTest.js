@@ -336,7 +336,7 @@ StartTest((t) => {
         t.it("loadApplicationConfig() - env-property (dev) in manifest available(!), but only default file found", async t => {
 
             const appName = "defaultfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {"resourceFolder": "coon-js", env: "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resourcePath": "coon-js", env: "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
@@ -362,7 +362,7 @@ StartTest((t) => {
 
         t.it("loadApplicationConfig() - env-property (dev) available, env file found", async t => {
             const appName = "envfilefound";
-            setupEnvironment({manifest: {name: appName, "coon-js": {"resourceFolder": "coon-js", "env": "dev"}}});
+            setupEnvironment({manifest: {name: appName, "coon-js": {"resourcePath": "coon-js", "env": "dev"}}});
 
             let spy = t.spyOn(applicationUtil.configLoader, "load").and.callThrough();
 
