@@ -556,6 +556,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
 
             let [name, config] = entry;
 
+            // packages might have autoLoad=true, but are already included, such as themes
             if (config.included || l8.unchain("coon-js.package.autoLoad", config) === false) {
                 return;
             }

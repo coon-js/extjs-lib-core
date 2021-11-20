@@ -38,6 +38,16 @@ StartTest(t => {
                 coon.core.Environment._vendorBase = undefined;
 
                 let vendorBase = Ext.create("coon.core.env.VendorBase");
+                vendorBase.getPackage = pkg => {
+                    switch (pkg) {
+                    case "internal":
+                        return {
+                            included: true,
+                            required: true
+                        };
+                    }
+                    return {};
+                };
                 vendorBase.getPathForResource = (resource, pkg) => `${RESOURCE_PATH}/${pkg ? pkg + "/" : ""}${resource}`;
                 vendorBase.getManifest = keyFunc;
                 coon.core.Environment.setVendorBase(vendorBase);
@@ -65,6 +75,9 @@ StartTest(t => {
                     case "coon-js.env":
                         return "testing";
                     }
+
+
+                    return "";
                 });
             });
 
@@ -116,6 +129,14 @@ StartTest(t => {
 
                 loadSpy.remove();
             });
+
+
+            t.it("BatchConfigLoader.resolveFileLocation() (extjs-lib-core#63)", async t => {
+                t.expect(
+                    batchLoader.resolveFileLocation("${package.resourcePath}/filename", "internal")
+                ).toBe("./fixtures//filename");
+            });
+
         });
 
 });
