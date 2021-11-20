@@ -39,18 +39,21 @@ Application and Package configuration files will be looked up in the `resource p
 folder that was configured with the `coon-js`-section of the application's `app.json`.
 Example (*app.json*):
 ```json
-"production": {
-    "coon-js" : {
-        "resourcePath": "files", 
-        "env": "prod"
-    }
-},
-"development": {
-    "coon-js" : {
-        "resourcePath": "files", 
-        "env": "dev"
-    }
-},
+{
+    "production": {
+        "coon-js" : {
+            "resourcePath": "files",
+            "env": "prod"
+        }
+    },
+    "development": {
+        "coon-js" : {
+            "resourcePath": "files",
+            "env": "dev"
+        }
+    }    
+}
+
 ```
 Depending on the build you are using (in this case either the `production`- or the `development`-build), configuration-files
 will be looked up in `resources/files` (note that the `resources`-folder is the folder-name/path returned by a

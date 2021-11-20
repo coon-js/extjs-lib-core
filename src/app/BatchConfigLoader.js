@@ -257,6 +257,9 @@ Ext.define("coon.core.app.BatchConfigLoader", {
      * out of the environment or the "package.resourcePath", if required.
      * Will fall back to the package-dir of the owning pkg (package) if no path-related
      * information as specified.
+     * If the package is included and required and not dynamically loaded, the method assumes
+     * that the file cannot be found in a named package-folder. Instead, the method resolves
+     * to the resource folder then.
      *
      * @param {String} file
      * @param {String} pkg
@@ -270,11 +273,17 @@ Ext.define("coon.core.app.BatchConfigLoader", {
             file = file.replace("${coon-js.resourcePath}", "${coon_js.resourcePath}");
             let tpl = l8.template.esix.make(file);
 
+            const
+                pkgInfo = Environment.getPackage(pkg),
+                resourcePath = pkgInfo.included === true && pkgInfo.required === true ?
+                    Environment.getPathForResource("") :
+                    Environment.getPathForResource(pkg);
+
             return tpl.render({
                 "coon_js": {
                     "resourcePath": Environment.getPathForResource(Environment.getManifest("coon-js.resourcePath"))
                 },
-                "package": {"resourcePath": Environment.getPathForResource(pkg)}
+                "package": {"resourcePath": resourcePath}
             });
         }
 
