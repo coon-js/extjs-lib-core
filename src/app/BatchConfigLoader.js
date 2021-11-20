@@ -254,7 +254,7 @@ Ext.define("coon.core.app.BatchConfigLoader", {
     /**
      * Looks up any signs of path-related tokens in the submitted file argument
      * and tries to resolve template-variables with either "coon-js" settings
-     * out of the environment or the "package.dir", if required.
+     * out of the environment or the "package.resourcePath", if required.
      * Will fall back to the package-dir of the owning pkg (package) if no path-related
      * information as specified.
      *
@@ -274,7 +274,7 @@ Ext.define("coon.core.app.BatchConfigLoader", {
                 "coon_js": {
                     "resourcePath": Environment.getPathForResource(Environment.getManifest("coon-js.resourcePath"))
                 },
-                "package": {"dir": Environment.getPathForResource(pkg)}
+                "package": {"resourcePath": Environment.getPathForResource(pkg)}
             });
         }
 
