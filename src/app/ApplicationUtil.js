@@ -388,30 +388,30 @@ Ext.define("coon.core.app.ApplicationUtil",{
      *
      *     {
      *         "conjoon" : {
-     *             "application" : {
-     *                 "plugins" : [
-     *                     "theme-cn_material", // will compute the fqn to "conjoon.cn_material.app.plugin.ApplicationPlugin"
+     *              "plugins": {
+     *                  "application": [
+     *                      "theme-cn_material", // will compute the fqn to "conjoon.cn_material.app.plugin.ApplicationPlugin"
      *                     "some.other.plugins.Fqn"
      *                  ]
-     *             }
+     *              }
      *         }
      *     }
      *
      *     this.getApplicationPlugins(pck); // returns ["conjoon.cn_material.app.plugin.ApplicationPlugin", "some.other.plugins.Fqn"]
      *
-     * @param {Object} packages The object containing all package informations available in the environment.
+     * @param {Array} plugins
+     * @param {Object} manifestPackages The object containing all package informations available in the environment.
      *
      * @return {Array} an array containing all fqns of the plugins found based on the information available in applicationConfig
      *
      * @private
      */
-    getApplicationPlugins (applicationConfig, manifestPackages) {
+    getApplicationPlugins (plugins, manifestPackages) {
         "use strict";
 
         const
             me = this,
             coonPackages = me.getCoonPackages(manifestPackages),
-            plugins = l8.unchain("application.plugins", applicationConfig, []),
             fqns = [];
 
         plugins.forEach( (plugin) => {

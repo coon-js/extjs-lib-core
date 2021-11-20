@@ -385,7 +385,7 @@ Ext.define("coon.core.app.Application",{
             conf.packages
         ));
 
-        await me.initApplicationConfigurationAndPlugins();
+        await me.initApplicationConfigurationAndPlugins(l8.unchain("plugins", conf, []));
 
         return Ext.app.Application.prototype.onProfilesReady.call(me);
     },
@@ -394,16 +394,15 @@ Ext.define("coon.core.app.Application",{
     /**
      * @private
      */
-    async initApplicationConfigurationAndPlugins () {
+    async initApplicationConfigurationAndPlugins (conf) {
         "use strict";
 
         const
             me = this,
-            conf = coon.core.ConfigManager.get(me.getName()),
             applicationPlugins = me.applicationUtil.getApplicationPlugins(
-                conf, coon.core.Environment.getPackages()
+                l8.unchain("application", conf, []), coon.core.Environment.getPackages()
             ),
-            componentPlugins =  l8.unchain("plugins", conf, []);
+            componentPlugins =  l8.unchain("components", conf, []);
 
         await applicationPlugins.forEach(async (plugin) => await me.addApplicationPlugin(plugin));
 

@@ -89,11 +89,14 @@ The following sections are considered when reading out a **coon.js**-application
 This Application implementation queries ```Ext.manifest``` for packages which are part of the `used`-configuration in
 an application's `app.json`. Those packages need to have a `coon-js` section configured with a `package`-entry:
 ```json
-"coon-js": {
-    "package" : {
-        "autoLoad" : true
-    }
+{
+    "coon-js": {
+        "package" : {
+            "autoLoad" : true
+        }
+    }    
 }
+
 ```
 If `autoLoad` is set to `true`, theses packages will be loaded by this application implementation dynamically upon 
 startup.
@@ -283,12 +286,11 @@ configuration for loading the [coon.plugin.themeutil.app.plugin.ApplicationPlugi
 ```json
 {
     "conjoon" : {
-        "application" : {
-            "plugins" : [
+        "plugins": {
+            "application" : [
                 "extjs-plug-themeutil"
             ]
         }
-    
     }
 }
 ```
@@ -309,18 +311,20 @@ _Example for specifying component plugins using the application configuration:_
 ```json
 {
     "conjoon" : {
-        "plugins": [
-            {
-                "cmp": "cn_navport-tbar",
-                "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
-                "event": "beforerender"
-            },
-            {
-                "cmp": "cn_mail-mailmessagegrid",
-                "fclass": "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
-                "event": "cn_init"
-            }
-        ]
+        "plugins": {
+            "components": [
+                {
+                    "cmp": "cn_navport-tbar",
+                    "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
+                    "event": "beforerender"
+                },
+                {
+                    "cmp": "cn_mail-mailmessagegrid",
+                    "fclass": "conjoon.cn_mail.view.mail.message.grid.feature.PreviewTextLazyLoad",
+                    "event": "cn_init"
+                }
+            ]
+        }
     }
 }
 ```
