@@ -295,10 +295,12 @@ StartTest(t => {
                     appPrototype = coon.core.app.Application.prototype,
                     mock = {
                         applicationUtil: {
-                            loadPackages: function () {}
+                            loadPackages: function () {},
+                            getCoonPackages: function () {}
                         }
                     },
                     envSpy = t.spyOn(coon.core.Environment, "getPackages").and.callFake(() => manifestPackages),
+                    coonPkgSpy = t.spyOn(mock.applicationUtil, "getCoonPackages").and.callFake(pkgs => pkgs),
                     loadPkgSpy = t.spyOn(mock.applicationUtil, "loadPackages").and.callFake(() => packageControllers);
 
                 t.expect(await appPrototype.initPackagesAndConfiguration.call(mock, appConfPackages)).toBe(packageControllers);
@@ -346,7 +348,7 @@ StartTest(t => {
                     "namespace": "conjoon.contacts"
                 });
 
-                [loadPkgSpy, envSpy].map(spy => spy.remove());
+                [loadPkgSpy, envSpy, coonPkgSpy].map(spy => spy.remove());
             });
 
         });
