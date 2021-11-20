@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest((t) => {
+StartTest(t => {
     "use strict";
 
     t.requireOk("coon.core.Environment", () => {
@@ -80,7 +80,7 @@ StartTest((t) => {
         // |                    =~. Tests .~=
         // +----------------------------------------------------------------------------
 
-        t.it("constructor sets up properly", (t) => {
+        t.it("constructor sets up properly", t => {
 
             t.isInstanceOf(applicationUtil.batchConfigLoader, "coon.core.app.BatchConfigLoader");
             t.isInstanceOf(applicationUtil.configLoader, "coon.core.app.ConfigLoader");
@@ -89,7 +89,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getCoonPackages()", (t) => {
+        t.it("getCoonPackages()", t => {
 
             const manifestPackages = {
                     foo: {
@@ -142,7 +142,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getApplicationConfigUrls()", (t) => {
+        t.it("getApplicationConfigUrls()", t => {
 
             setupEnvironment({manifest: {name: "appname", "coon-js": {env: "testing"}}});
 
@@ -157,7 +157,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getPackageNameForController()", (t) => {
+        t.it("getPackageNameForController()", t => {
 
             const manifest =  {
                 foo: {
@@ -197,7 +197,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getPluginsForType() - controller", (t) => {
+        t.it("getPluginsForType() - controller", t => {
 
             const manifestPackages =  {
                     foo: {
@@ -254,7 +254,7 @@ StartTest((t) => {
         });
 
 
-        t.it("getApplicationPlugins()", (t) => {
+        t.it("getApplicationPlugins()", t => {
 
             // register here package in config manager to make sure
             // package configuration from env is used
@@ -262,8 +262,8 @@ StartTest((t) => {
 
             const
                 applicationConfig = {
-                    "application": {
-                        "plugins": [
+                    "plugins": {
+                        "application": [
                             "ApplicationPluginCustomWONamespace",
                             "application.plugin.custom.w.Namespace",
                             "foo"
@@ -301,7 +301,7 @@ StartTest((t) => {
             Object.freeze(manifestPackages);
             Object.freeze(result);
 
-            t.isDeeply(applicationUtil.getApplicationPlugins(applicationConfig, manifestPackages), result);
+            t.isDeeply(applicationUtil.getApplicationPlugins(applicationConfig.plugins.application, manifestPackages), result);
         });
 
 
@@ -382,7 +382,7 @@ StartTest((t) => {
         });
 
 
-        t.it("loadPackages()", async (t) => {
+        t.it("loadPackages()", async t => {
             const appName = "testapp";
 
             setupEnvironment({manifest: {

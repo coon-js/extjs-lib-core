@@ -453,7 +453,12 @@ StartTest(t => {
             let packageControllersMock = [],
                 applicationPluginsMock = [1, 2, 3],
                 componentPluginsMock =[{}],
-                applicationConfigMock = {plugins: [{}]}; // can be left empty
+                applicationConfigMock = {
+                    "plugins": {
+                        "application": applicationPluginsMock,
+                        "components": componentPluginsMock
+                    }
+                }; // can be left empty
 
             let profileSpy = t.spyOn(Ext.app.Application.prototype, "onProfilesReady").and.callFake(async () => {}),
                 findPackageControllersSpy = t.spyOn(coon.core.app.Application.prototype, "initPackagesAndConfiguration").and.callThrough(),
@@ -462,7 +467,9 @@ StartTest(t => {
                 findApplicationPluginsSpy = t.spyOn(coon.core.app.Application.prototype, "initApplicationConfigurationAndPlugins").and.callThrough(),
                 getApplicationPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getApplicationPlugins").and.callFake(() => applicationPluginsMock),
                 getComponentPluginsSpy  = t.spyOn(coon.core.app.ApplicationUtil.prototype, "getComponentPlugins"),
-                loadApplicationConfigSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadApplicationConfig").and.callFake(async () => applicationConfigMock),
+                loadApplicationConfigSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadApplicationConfig").and.callFake(
+                    async () => applicationConfigMock
+                ),
                 configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(domain => domain === "test" ? applicationConfigMock : undefined),
                 loadPackagesSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadPackages").and.callFake(() => packageControllersMock),
                 addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {});
@@ -477,7 +484,7 @@ StartTest(t => {
                 t.expect(loadApplicationConfigSpy).toHaveBeenCalled(1);
 
                 t.expect(getApplicationPluginsSpy).toHaveBeenCalled(1);
-                t.expect(getApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock);
+                t.expect(getApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationPluginsMock);
                 t.isDeeply(getApplicationPluginsSpy.calls.mostRecent().args[1], coon.core.Environment.getPackages());
 
                 t.expect(getComponentPluginsSpy).toHaveBeenCalled(0);
@@ -498,6 +505,8 @@ StartTest(t => {
                     }});
 
                 t.expect(findApplicationPluginsSpy).toHaveBeenCalled(1);
+                t.expect(findApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock.plugins);
+
 
                 t.expect(findPackageControllersSpy).toHaveBeenCalled(1);
                 t.expect(profileSpy).toHaveBeenCalled(1);

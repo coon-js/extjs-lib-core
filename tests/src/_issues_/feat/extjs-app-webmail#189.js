@@ -215,7 +215,9 @@ StartTest(t => {
                     manifestPackages = {},
                     appConf = {
                         "application": {},
-                        "plugins": [],
+                        "plugins": {
+                            "application": []
+                        },
                         "packages": {}
                     },
                     confSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(
@@ -228,12 +230,11 @@ StartTest(t => {
                     nameSpy = t.spyOn(app, "getName").and.returnValue(appName),
                     plugSpy = t.spyOn(app.applicationUtil, "getApplicationPlugins").and.callFake(() => []);
 
-                app.initApplicationConfigurationAndPlugins();
+                app.initApplicationConfigurationAndPlugins(appConf.plugins);
 
-                t.expect(confSpy.calls.count()).toBe(1);
-                t.expect(confSpy.calls.mostRecent().args[0]).toBe(app.getName());
+                t.expect(confSpy.calls.count()).toBe(0);
 
-                t.expect(plugSpy.calls.mostRecent().args).toEqual([appConf, manifestPackages]);
+                t.expect(plugSpy.calls.mostRecent().args).toEqual([appConf.plugins.application, manifestPackages]);
 
                 [envSpy, nameSpy, plugSpy, protSpyProf, protSpyCons].map(spy => spy.remove());
             });
