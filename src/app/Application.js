@@ -427,7 +427,7 @@ Ext.define("coon.core.app.Application",{
 
         const
             me = this,
-            envPackages = coon.core.Environment.getPackages(),
+            envPackages =  me.applicationUtil.getCoonPackages(coon.core.Environment.getPackages()),
             res = {},
             appPackages = appConfiguredPackages && Object.keys(appConfiguredPackages);
 
