@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/coon-js/extjs-lib-core/compare/v0.7.1...v0.7.2) (2022-01-14)
+
+
+### Bug Fixes
+
+* fix wrong version prefix for allowing broader range of version compatibility ([a0fa764](https://github.com/coon-js/extjs-lib-core/commit/a0fa764d934eb591e9230cbef5223ed7a33b8db4))
+
 ### [0.7.1](https://github.com/coon-js/extjs-lib-core/compare/v0.7.0...v0.7.1) (2022-01-14)
 
 ## [0.7.0](https://github.com/coon-js/extjs-lib-core/compare/v0.6.1...v0.7.0) (2022-01-13)
