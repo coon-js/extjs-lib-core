@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest((t) => {
+StartTest(t => {
 
 
     t.it("registerComponentPlugin()", t => {
@@ -66,8 +66,11 @@ StartTest((t) => {
         ctrl = mixin.registerComponentPlugin({
             "cmp": "foo",
             "fclass": "Ext.plugin.Abstract",
-            "event": "render"
+            "event": "render",
+            args: [{testKey: "testValue"}, {arg2: "param2"}]
         });
+
+        let createSpy = t.spyOn(Ext, "create").and.callThrough();
 
         t.expect(featureMock.features.length).toBe(0);
         ctrl.foo.render(featureMock);
@@ -76,7 +79,15 @@ StartTest((t) => {
         t.expect(featureMock.features.length).toBe(1);
         t.isInstanceOf(featureMock.features[0], "Ext.plugin.Abstract");
 
+        t.expect(createSpy.calls.all().length).toBe(1);
+        let args = createSpy.calls.mostRecent().args;
+        t.expect(args.length).toBe(3);
+        t.expect(args[0]).toBe("Ext.plugin.Abstract");
+        t.expect(args[1]).toEqual({testKey: "testValue"});
+        t.expect(args[2]).toEqual({arg2: "param2"});
+        
         controlSpy.remove();
+        createSpy.remove();
     });
 
 });
