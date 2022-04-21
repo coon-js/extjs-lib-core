@@ -58,13 +58,9 @@ Example (*app.json*):
 Depending on the build you are using (in this case either the `production`- or the `development`-build), configuration-files
 will be looked up in `resources/files` (note that the `resources`-folder is the folder-name/path returned by a
 call to `Ext.getResourcePath()`). A **coon.js**-Application will first query configuration files for the build that
-is being used (by using the name pattern `[application_name|package_name].[coon-js.env].conf.json`), and if that file could
-not be loaded and results in a **HTTP error**-code, loading will fall back to ```[application_name|package_name].conf.json```.
+is being used (by using the name pattern `[application_name].[coon-js.env].conf.json`), and if that file could
+not be loaded and results in a **HTTP error**-code, loading will fall back to ```[application_name].conf.json```.
 In short, environment-specific configuration files will always be given precedence over the default-configuration files.
-
-**Note:** A **coon.js**-application will not look for a file that was configured for the `production`-environment given 
-the `[application_name|package_name].[coon-js.env].conf.json`-pattern. Instead, production will look up files given the
-naming pattern `[application_name|package_name].conf.json`. 
 
 For using specific package configuration files, see the section about **[Dynamic Package Loading](#dynpackload)**.
 
@@ -101,7 +97,7 @@ an application's `app.json`. Those packages need to have a `coon-js` section con
 }
 
 ```
-If `autoLoad` is set to `true`, theses packages will be loaded by this application implementation dynamically upon 
+If `autoLoad` is set to `true`, these packages will be loaded by this application implementation dynamically upon 
 startup.
 <br> If the `packageConfiguration` is configured with the `registerController` set to `true`, this package's 
 `PackageController` - if any - will be registered with the application, and during startup, it's `preLaunchHook`-method

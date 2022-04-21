@@ -474,7 +474,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
             loadedConfig = await me.configLoader.load(
                 appName,
                 undefined,
-                `${appName}`,
+                appName,
                 false
             );
 
