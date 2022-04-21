@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -46,11 +46,12 @@ Ext.define("coon.core.app.plugin.ComponentPluginMixin", {
      * @example
      *    // adds the ModeSwitchPlugin to the component identified by using the ComponentQuery
      *    // for the xtype "cn_navport-tbar". The plugin will be installed when the component
-     *    // fires the "beforerender"-event
+     *    // fires the "beforerender"-event, its constructor will be called with "args" as the arguments
      *    this.addComponentPlugin({
      *      "cmp": "cn_navport-tbar",
      *      "pclass": "conjoon.theme.material.plugin.ModeSwitchPlugin",
-     *      "event": "beforerender"
+     *      "event": "beforerender",
+     *      "args": [{key: "value"}]
      *   });
      *
      *
@@ -64,6 +65,7 @@ Ext.define("coon.core.app.plugin.ComponentPluginMixin", {
 
         const
             me = this,
+            args = pluginCfg.args || [],
             cmp = pluginCfg.cmp,
             eventHook = pluginCfg.event,
             isPlugin = !!pluginCfg.pclass,
@@ -77,9 +79,10 @@ Ext.define("coon.core.app.plugin.ComponentPluginMixin", {
         }
 
         const
+
             cb = isPlugin ?
-                cmp => cmp.addPlugin(Ext.create(fqn)) :
-                cmp => cmp.features.push(Ext.create(fqn)),
+                cmp => cmp.addPlugin(Ext.create(fqn, ...args)) :
+                cmp => cmp.features.push(Ext.create(fqn, ...args)),
             ctrl = l8.chain(`${cmp}.${eventHook}`, {}, () => cb);
 
         me.control(ctrl);
