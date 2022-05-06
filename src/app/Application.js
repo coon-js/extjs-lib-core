@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,7 +43,8 @@ Ext.define("coon.core.app.Application",{
         "coon.core.app.plugin.ApplicationPlugin",
         "coon.core.ConfigManager",
         "coon.core.Environment",
-        "coon.core.env.ext.VendorBase"
+        "coon.core.env.ext.VendorBase",
+        "coon.core.ServiceProvider"
     ],
 
     mixins: [
@@ -370,10 +371,12 @@ Ext.define("coon.core.app.Application",{
      * are loaded before the application is started.
      * Will also make sure that PackageControllers are added to THIS applications
      * #controllers-list.
-     *
-     * @see loadApplicationConfig
+     * Additionally, looks up the "services"-config and registers any services, if applicable
      *
      * @throws coon.core.app.ApplicationException if mapping the controller plugins failed
+     *
+     * @see loadApplicationConfig
+     * @see registerService
      */
     async onProfilesReady () {
 
@@ -386,6 +389,7 @@ Ext.define("coon.core.app.Application",{
         ));
 
         await me.initApplicationConfigurationAndPlugins(l8.unchain("plugins", conf, []));
+        Object.entries(conf.services || {}).forEach(([serviceKey, cfg]) => me.registerService(serviceKey, cfg));
 
         return Ext.app.Application.prototype.onProfilesReady.call(me);
     },
@@ -593,6 +597,34 @@ Ext.define("coon.core.app.Application",{
             plugins = me.applicationPlugins || [];
 
         plugins.forEach((plugin) => plugin.run(me));
+    },
+
+
+    /**
+     * Registers the service under the specified className representing its
+     * abstract.
+     *
+     * @param {String} className
+     * @param {Object} cfg
+     *
+     * @returns {coon.core.service.Service}
+     */
+    registerService (className, cfg) {
+
+        const
+            args = cfg.args || [],
+            fqn = cfg.xclass;
+
+        if (!Ext.ClassManager.get(fqn)) {
+            throw new coon.core.app.ApplicationException(
+                `Could not find the service "${fqn}". ` +
+                "Make sure it is loaded with it's owning package."
+            );
+        }
+
+        const service = Ext.create(fqn, ...args);
+
+        return coon.core.ServiceProvider.register(className, service);
     }
 
 });

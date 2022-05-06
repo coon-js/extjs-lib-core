@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -444,6 +444,46 @@ StartTest(t => {
         });
 
 
+        t.it("registerService()", t => {
+
+            let EXISTS = false, exc;
+
+            const
+                app = Ext.create("coon.core.app.Application", {
+                    name: "test",
+                    mainView: "Ext.Panel"
+                }),
+                serviceMock ={},
+                createSpy = t.spyOn(Ext, "create").and.callFake(() => serviceMock),
+                extSpy = t.spyOn(Ext.ClassManager, "get").and.callFake(() => EXISTS),
+                providerSpy = t.spyOn(coon.core.ServiceProvider, "register").and.callFake(() => serviceMock);
+
+            try {
+                app.registerService("abstract", {xclass: "service", args: [{value: "property"}]});
+            } catch (e) {
+                exc = e;
+            }
+
+            t.expect(exc.getMessage().toLowerCase()).toContain("could not find the service");
+
+            EXISTS = true;
+
+            t.expect(app.registerService(
+                "abstract",
+                {xclass: "service", args: [{property: "value"}, "anotherValue"]})
+            ).toBe(serviceMock);
+
+            t.expect(createSpy.calls.mostRecent().args[0]).toBe("service");
+            t.expect(createSpy.calls.mostRecent().args[1]).toEqual({property: "value"});
+            t.expect(createSpy.calls.mostRecent().args[2]).toBe("anotherValue");
+
+            t.expect(providerSpy.calls.mostRecent().args[0]).toBe("abstract");
+            t.expect(providerSpy.calls.mostRecent().args[1]).toBe(serviceMock);
+
+            [extSpy, createSpy, providerSpy].map(spy => spy.remove());
+        });
+
+
         t.it("onProfilesReady() - make sure methods are called", async t => {
             switchManifest();
             switchOnProfilesReady(true);
@@ -454,13 +494,22 @@ StartTest(t => {
                 applicationPluginsMock = [1, 2, 3],
                 componentPluginsMock =[{}],
                 applicationConfigMock = {
+                    "services": {
+                        "interface": {
+                            xclass: "concrete"
+                        },
+                        "another_interface": {
+                            xclass: "another_concrete"
+                        }
+                    },
                     "plugins": {
                         "application": applicationPluginsMock,
                         "components": componentPluginsMock
                     }
                 }; // can be left empty
 
-            let profileSpy = t.spyOn(Ext.app.Application.prototype, "onProfilesReady").and.callFake(async () => {}),
+            let registerServiceSpy = t.spyOn(coon.core.app.Application.prototype, "registerService").and.callFake(() => {}),
+                profileSpy = t.spyOn(Ext.app.Application.prototype, "onProfilesReady").and.callFake(async () => {}),
                 findPackageControllersSpy = t.spyOn(coon.core.app.Application.prototype, "initPackagesAndConfiguration").and.callThrough(),
                 addApplicationPluginMock = t.spyOn(coon.core.app.Application.prototype, "addApplicationPlugin").and.callFake(() => {}),
                 registerComponentPluginMock = t.spyOn(coon.core.app.Application.prototype, "registerComponentPlugin").and.callFake(() => {}),
@@ -480,6 +529,14 @@ StartTest(t => {
             });
 
             t.waitForMs(t.parent.TIMEOUT, () => {
+
+                t.expect(registerServiceSpy).toHaveBeenCalled(2);
+                t.expect(registerServiceSpy.calls.all()[0].args).toEqual([
+                    "interface", applicationConfigMock.services.interface
+                ]);
+                t.expect(registerServiceSpy.calls.all()[1].args).toEqual([
+                    "another_interface", applicationConfigMock.services.another_interface
+                ]);
 
                 t.expect(loadApplicationConfigSpy).toHaveBeenCalled(1);
 
@@ -529,7 +586,7 @@ StartTest(t => {
                 getComponentPluginsSpy.remove();
                 registerComponentPluginMock.remove();
                 configSpy.remove();
-
+                registerServiceSpy.remove();
 
                 switchManifest(true);
                 // @extjs bug 7.3.3

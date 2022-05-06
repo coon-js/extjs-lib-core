@@ -79,9 +79,37 @@ Note how the configuration has to be introduced with the name of the application
 #### Sections considered within an application configuration file
 The following sections are considered when reading out a **coon.js**-application configuration file:
 
+ * `services`: services shared amongst modules, registered with `coon.core.ServiceProvider`
  * `application`: runtime related configuration for the application. Will be available via `coon.core.ConfigManager.get([application_name])`
  * `plugins`: Controller-/Component-Plugins that need to be registered for various targets
  * `packages`: Configuration for packages used by the application. Can also be used to disable/enable applications <a name="apppackages"></a>
+
+#### Registering Services
+
+Configuration for services that get registered with the `coon.core.ServiceProvider` is done by providing the abstract under which 
+a concrete service can be found. Both the abstract and the concrete must extend `coon.core.service.Service`.
+
+The following makes sure that during runtime an instance of `coon.core.service.GravatarService` is returned
+for `coon.core.ServiceProvider.get("coon.core.service.UserImageService")`. This instance is a shared instance.
+
+```json
+{
+  "conjoon": {
+    "services": {
+      "coon.core.service.UserImageService": {
+        "xclass": "coon.core.service.GravatarService",
+        "args": [
+          {
+            "params": {
+              "d": "blank"
+            } 
+          }
+        ]
+      }
+    }
+  }
+}
+```
 
 ## Dynamic Package Loading <a name="dynpackload"></a>
 **Note**: This is only available when the `packages`-section of the **[Application configuration](#apppackages)** was not set.
