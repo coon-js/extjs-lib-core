@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2017-2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2017-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -51,6 +51,7 @@ export default [{
         "src/ThemeManagerTest.js",
         "src/TemplateTest.js",
         "src/ConfigManagerTest.js",
+        "src/ServiceProviderTest.js",
         "src/FileLoaderTest.js"
     ]}, {
     group: "exception",
@@ -175,6 +176,12 @@ export default [{
         }
     ]
 
+}, {
+    group: "service",
+    items: [
+        "src/service/UserImageServiceTest.js",
+        "src/service/GravatarServiceTest.js"
+    ]
 }, {
     group: "util",
     items: [
