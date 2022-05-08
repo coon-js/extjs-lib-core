@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -573,7 +573,7 @@ Ext.define("coon.core.app.ApplicationUtil",{
     getFqnForPlugin: function (plugin, coonPackages, type) {
         "use strict";
 
-        type = (""+type).toLowerCase();
+        type = ("" + type).toLowerCase();
 
         if (["application", "controller"].indexOf(type) === -1) {
             return;
@@ -598,6 +598,11 @@ Ext.define("coon.core.app.ApplicationUtil",{
                 return true;
             }
         });
+
+        // coon-js/extjs-lib-core#81
+        if (!fqn && plugin.indexOf(coon.core.Environment.getManifest().namespace + ".") === 0) {
+            fqn = plugin;
+        }
 
         return fqn;
     }
