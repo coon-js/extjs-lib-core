@@ -34,6 +34,12 @@ export default [{
             name: "conjoon/extjs-lib-core#58",
             url: "src/_issues_/feat/extjs-lib-core%2358.js"
         }]
+    }, {
+        group: "fix",
+        items: [{
+            name: "conjoon/extjs-lib-core#81",
+            url: "src/_issues_/fix/extjs-lib-core%2381.js"
+        }]
     }]
 },{
     group: "overrides",
