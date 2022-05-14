@@ -33,12 +33,12 @@
  *   const gravatar = Ext.create("coon.core.service.GravatarService");
  *
  *   // if any module requires the UserImageService, return the GravatarService-concrete.
- *   coon.core.ServiceProvider.register("coon.core.service.UserImageService", gravatar);
+ *   coon.core.ServiceLocator.register("coon.core.service.UserImageService", gravatar);
  *
- *   coon.core.ServiceProvider.get("coon.core.service.UserImageService");
+ *   coon.core.ServiceLocator.resolve("coon.core.service.UserImageService");
  *
  */
-Ext.define("coon.core.ServiceProvider", {
+Ext.define("coon.core.ServiceLocator", {
 
     singleton: true,
 
@@ -96,7 +96,7 @@ Ext.define("coon.core.ServiceProvider", {
      * @returns {coon.core.service.Service} The concrete service instance, or undefined
      * if none was found.
      */
-    get (className) {
+    resolve (className) {
         return this.services ? this.services[className] : undefined;
     }
     

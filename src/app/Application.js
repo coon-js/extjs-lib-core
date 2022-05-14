@@ -44,7 +44,7 @@ Ext.define("coon.core.app.Application",{
         "coon.core.ConfigManager",
         "coon.core.Environment",
         "coon.core.env.ext.VendorBase",
-        "coon.core.ServiceProvider"
+        "coon.core.ServiceLocator"
     ],
 
     mixins: [
@@ -624,7 +624,7 @@ Ext.define("coon.core.app.Application",{
 
         const service = Ext.create(fqn, ...args);
 
-        return coon.core.ServiceProvider.register(className, service);
+        return coon.core.ServiceLocator.register(className, service);
     }
 
 });

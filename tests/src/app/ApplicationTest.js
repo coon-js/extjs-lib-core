@@ -456,7 +456,7 @@ StartTest(t => {
                 serviceMock ={},
                 createSpy = t.spyOn(Ext, "create").and.callFake(() => serviceMock),
                 extSpy = t.spyOn(Ext.ClassManager, "get").and.callFake(() => EXISTS),
-                providerSpy = t.spyOn(coon.core.ServiceProvider, "register").and.callFake(() => serviceMock);
+                providerSpy = t.spyOn(coon.core.ServiceLocator, "register").and.callFake(() => serviceMock);
 
             try {
                 app.registerService("abstract", {xclass: "service", args: [{value: "property"}]});

@@ -49,19 +49,19 @@ in this case `conjoon`.
 ### Sections considered within an application configuration file 
 The following sections are considered when reading out a _coon.js-application_-configuration file:
 
- - `services`: services shared amongst modules, registered with `coon.core.ServiceProvider`
+ - `services`: services shared amongst modules, registered with `coon.core.ServiceLocator`
  - `application`: runtime related configuration. Will be available via `coon.core.ConfigManager.get([application_name])`
  - `plugins`: Application-/Controller-/Component-Plugins that need to be registered 
  - `packages`: Configuration for packages used by the application. Can also be used to disable/enable packages 
 in a given build 
  
 #### Registering Services
-Configuration for services that get registered with the `coon.core.ServiceProvider` is done by providing the 
+Configuration for services that get registered with the `coon.core.ServiceLocator` is done by providing the 
 abstract under which a concrete service can be found. Both the abstract and the concrete must extend 
 `coon.core.service.Service`.
 
 The following makes sure that during runtime an instance of `coon.core.service.GravatarService` is returned
-for `coon.core.ServiceProvider.get("coon.core.service.UserImageService")`. This instance is a shared instance.
+for `coon.core.ServiceLocator.resolve("coon.core.service.UserImageService")`. This instance is a shared instance.
 
 ```json
 {

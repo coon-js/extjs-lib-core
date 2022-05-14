@@ -30,33 +30,33 @@ StartTest(t => {
     // |                    =~. Unit Tests .~=
     // +----------------------------------------------------------------------------
 
-    t.requireOk("coon.core.ServiceProvider", function (){
+    t.requireOk("coon.core.ServiceLocator", function (){
 
-        t.it("ServiceProvider", t => {
+        t.it("ServiceLocator", t => {
 
             const
                 fakeService = {},
-                ServiceProvider = coon.core.ServiceProvider;
+                ServiceLocator = coon.core.ServiceLocator;
 
             let exc;
 
             // get and already registered
-            t.expect(ServiceProvider.get("abstract")).toBeUndefined();
-            ServiceProvider.services = {"abstract": fakeService};
-            t.expect(ServiceProvider.get("abstract")).toBe(fakeService);
+            t.expect(ServiceLocator.resolve("abstract")).toBeUndefined();
+            ServiceLocator.services = {"abstract": fakeService};
+            t.expect(ServiceLocator.resolve("abstract")).toBe(fakeService);
 
             try {
-                ServiceProvider.register("abstract", {});
+                ServiceLocator.register("abstract", {});
             } catch (e) {
                 exc = e;
             }
             t.expect(exc).toBeDefined();
             t.expect(exc.message).toContain("was already registered");
-            ServiceProvider.services = undefined;
+            ServiceLocator.services = undefined;
 
             // missing class
             try {
-                ServiceProvider.register("missing_class", fakeService);
+                ServiceLocator.register("missing_class", fakeService);
             } catch (e) {
                 exc = e;
             }
@@ -65,7 +65,7 @@ StartTest(t => {
 
             // not a service
             try {
-                ServiceProvider.register("Ext.Base", fakeService);
+                ServiceLocator.register("Ext.Base", fakeService);
             } catch (e) {
                 exc = e;
             }
@@ -73,7 +73,7 @@ StartTest(t => {
 
             // not the type of the abstract
             try {
-                ServiceProvider.register("Ext.Panel", Ext.create("coon.core.service.Service"));
+                ServiceLocator.register("Ext.Panel", Ext.create("coon.core.service.Service"));
             } catch (e) {
                 exc = e;
             }
@@ -81,8 +81,8 @@ StartTest(t => {
 
 
             const service = Ext.create("coon.core.service.Service");
-            t.expect(ServiceProvider.register("coon.core.service.Service", service)).toBe(service);
-            t.expect(ServiceProvider.get("coon.core.service.Service")).toBe(service);
+            t.expect(ServiceLocator.register("coon.core.service.Service", service)).toBe(service);
+            t.expect(ServiceLocator.resolve("coon.core.service.Service")).toBe(service);
 
         });
 

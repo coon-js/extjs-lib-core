@@ -57,7 +57,7 @@ export default [{
         "src/ThemeManagerTest.js",
         "src/TemplateTest.js",
         "src/ConfigManagerTest.js",
-        "src/ServiceProviderTest.js",
+        "src/ServiceLocatorTest.js",
         "src/FileLoaderTest.js"
     ]}, {
     group: "exception",
