@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/coon-js/extjs-lib-core/compare/v0.8.0...v0.8.1) (2022-05-14)
+
+
+### Features
+
+* add a ServiceLocator and provide config options for auto-registering services ([232a1be](https://github.com/coon-js/extjs-lib-core/commit/232a1be2ccbe647e174954b927627b2c9bbb0048)), closes [conjoon/conjoon#12](https://github.com/conjoon/conjoon/issues/12)
+
+
+### Bug Fixes
+
+* ApplicationPlugins not loaded when fqn has application's namespace ([73f20e5](https://github.com/coon-js/extjs-lib-core/commit/73f20e5fc2af42d706481e7bba57b70d0bd5b5e3)), closes [coon-js/extjs-lib-core#81](https://github.com/coon-js/extjs-lib-core/issues/81)
+
 ## [0.8.0](https://github.com/coon-js/extjs-lib-core/compare/v0.7.2...v0.8.0) (2022-04-21)
 
 
