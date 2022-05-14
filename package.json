@@ -2,8 +2,8 @@
   "name": "@coon-js/extjs-lib-core",
   "sencha": {
     "name": "extjs-lib-core",
-    "version": "0.8.0",
-    "compatVersion": "0.8.0",
+    "version": "0.8.1",
+    "compatVersion": "0.8.1",
     "namespace": "coon.core",
     "type": "code",
     "creator": "coon.js",
@@ -50,8 +50,7 @@
   },
   "scripts": {
     "build:dev": "npm run build:test && npx node-git-hooks",
-    "build:deps": "npm explore @coon-js/siesta-lib-helper npm run build:dev",
-    "build:test": "npm run build:deps && npx extjs-link && npx siesta-lib-helper",
+    "build:test": "npm i --save-dev && npx extjs-link && npx siesta-lib-helper",
     "postversion": "git push && git push --tags",
     "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
     "release": "standard-version",
@@ -82,12 +81,12 @@
   },
   "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
   "dependencies": {
-    "@coon-js/extjs-package-loader": ">=0.1.0",
-    "@l8js/l8": ">=0.5.2"
+    "@l8js/l8": "^0.7.2"
   },
   "devDependencies": {
-    "@coon-js/siesta-lib-helper": ">=0.1.9",
-    "@coon-js/extjs-link": ">=0.1.0",
+    "@coon-js/extjs-package-loader": "^0.1.10",
+    "@coon-js/siesta-lib-helper": "^0.1.16",
+    "@coon-js/extjs-link": "^0.1.10",
     "eslint": "^7.32.0",
     "local-web-server": "^4.2.1",
     "node-git-hooks": "^1.0.6",

@@ -11,7 +11,7 @@ $ npm i --save-dev @coon-js/extjs-lib-core
 
 For using the package as an external dependency in an application, use
 ```bash
-$ npm i --save-prod @coon-js/extjs-lib-core
+$ npm i @coon-js/extjs-lib-core
 ```
 In your `app.json`, add this package as a requirement, and make sure your ExtJS `workspace.json`
 is properly configured to look up local repositories in the `node_modules`-directory.
