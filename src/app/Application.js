@@ -389,7 +389,12 @@ Ext.define("coon.core.app.Application",{
         ));
 
         await me.initApplicationConfigurationAndPlugins(l8.unchain("plugins", conf, []));
-        Object.entries(conf.services || {}).forEach(([serviceKey, cfg]) => me.registerService(serviceKey, cfg));
+        Object.entries(conf.services || {}).forEach(
+            service => {
+                const [serviceKey, cfg] = service;
+                me.registerService(serviceKey, cfg);
+            }
+        );
 
         return Ext.app.Application.prototype.onProfilesReady.call(me);
     },
