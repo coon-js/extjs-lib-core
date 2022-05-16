@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/coon-js/extjs-lib-core/compare/v0.8.1...v0.8.2) (2022-05-16)
+
+
+### Bug Fixes
+
+* build throws error for arrow function's argument list ([1cb287b](https://github.com/coon-js/extjs-lib-core/commit/1cb287b6cd1687577a0bc112079463ea91a1afdf)), closes [coon-js/extjs-lib-core#85](https://github.com/coon-js/extjs-lib-core/issues/85)
+
 ### [0.8.1](https://github.com/coon-js/extjs-lib-core/compare/v0.8.0...v0.8.1) (2022-05-14)
 
 
