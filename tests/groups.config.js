@@ -40,6 +40,12 @@ export default [{
             name: "conjoon/extjs-lib-core#81",
             url: "src/_issues_/fix/extjs-lib-core%2381.js"
         }]
+    }, {
+        group: "refactor",
+        items: [{
+            name: "conjoon/php-lib-conjoon#8",
+            url: "src/_issues_/refactor/php-lib-conjoon%238.js"
+        }]
     }]
 },{
     group: "overrides",
