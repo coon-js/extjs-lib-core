@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.3](https://github.com/coon-js/extjs-lib-core/compare/v0.8.2...v0.8.3) (2022-11-14)
+
+
+### Bug Fixes
+
+* application breaks for controller plugin w/o args ([95940a0](https://github.com/coon-js/extjs-lib-core/commit/95940a086b190453e77a9a29817c2ba1ba66a5a6)), closes [coon-js/extjs-lib-core#88](https://github.com/coon-js/extjs-lib-core/issues/88)
+
 ### [0.8.2](https://github.com/coon-js/extjs-lib-core/compare/v0.8.1...v0.8.2) (2022-05-16)
 
 
