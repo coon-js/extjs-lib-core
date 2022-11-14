@@ -512,7 +512,7 @@ Ext.define("coon.core.app.Application",{
             ctrlPlugins[fqn].forEach (plugin => {
                 let inst,
                     xclass = l8.isString(plugin) ? plugin : plugin.xclass,
-                    args = l8.isString(plugin) ? [] : plugin.args;
+                    args = l8.isString(plugin) ? [] : (plugin.args || []);
 
                 try {
                     inst = Ext.create(xclass, ...args);

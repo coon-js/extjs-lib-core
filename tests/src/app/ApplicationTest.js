@@ -808,14 +808,26 @@ StartTest(t => {
                 "coon.test.app.mock.app.PackageController": [{
                     xclass: "coon.test.app.mock.app.ControllerPlugin",
                     args: [{id: "newOneToAddSameClassAsPlugin", cfg: "submitted"}, {opt: "two"}]
+                }, {
+                    /**
+                     * no args
+                     * @see coon-js/extjs-lib-core#88
+                     */
+                    xclass: "coon.test.app.mock.app.RandomControllerPlugin"
                 }]
             }));
 
+
             controller = app.getController("coon.test.app.mock.app.PackageController");
-            plugin = controller.plugins[controller.plugins.length -1 ];
+
+            plugin = controller.plugins[1];
             t.isInstanceOf(plugin, "coon.test.app.mock.app.ControllerPlugin");
             t.expect(plugin.cfg).toBe("submitted");
             t.expect(plugin.opt).toBe("two");
+
+
+            plugin = controller.plugins[2];
+            t.isInstanceOf(plugin, "coon.test.app.mock.app.RandomControllerPlugin");
 
             spy.remove();
             cmpSpy.remove();
