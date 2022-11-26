@@ -23,24 +23,22 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-StartTest(t => {
+/**
+ * Provides a contract for consuming a request object and configura it with additional data.
+ *
+ */
+Ext.define("coon.core.data.request.Configurator", {
 
-    const createConfigurator = () => Ext.create("coon.core.data.request.Configurator");
+    alias: "request.cn_core-datarequestformdata",
 
-
-    // +----------------------------------------------------------------------------
-    // |                    =~. Tests .~=
-    // +----------------------------------------------------------------------------
-
-    t.it("configure", (t) => {
-
-        const configurator = createConfigurator();
-
-        const cfg = {};
-
-        t.expect(configurator.configure(cfg)).toBe(cfg);
-
-    });
+    /**
+     *
+     * @param requestCfg
+     * @returns {*}
+     */
+    configure (requestCfg) {
+        return requestCfg;
+    }
 
 
 });

@@ -153,7 +153,8 @@ export default [{
                 ]
             },
             "src/data/request/HttpRequestExceptionTest.js",
-            "src/data/request/FormDataTest.js"
+            "src/data/request/FormDataTest.js",
+            "src/data/request/ConfiguratorTest.js"
             ]
         }, {
             group: "schema",
