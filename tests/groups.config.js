@@ -179,6 +179,19 @@ export default [{
             ]
         }]
 }, {
+    group: "ioc",
+    items: [{
+        "group": "sencha",
+        "items": [
+            "src/ioc/sencha/AbstractProxyTest.js",
+            "src/ioc/sencha/CreateProxyTest.js",
+            "src/ioc/sencha/FactoryProxyTest.js"
+        ]
+    },
+    "src/ioc/BindingsTest.js"
+    ]
+
+}, {
     group: "env",
     items: [
         "src/env/VendorBaseTest.js", {
