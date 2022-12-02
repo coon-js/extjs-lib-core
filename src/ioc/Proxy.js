@@ -25,8 +25,10 @@
 
 
 /**
+ * Aggregate containing various Proxies that help with applying the bindings
+ * of the owning container.
  *
- *
+ * @private
  */
 Ext.define("coon.core.ioc.Proxy", {
 
@@ -56,10 +58,14 @@ Ext.define("coon.core.ioc.Proxy", {
 
 
     /**
+     * Constructor.
      *
      * @param {coon.core.ioc.Bindings} bindings
+     *
+     * @see boot()
+     *
      */
-    constructor ({bindings}) {
+    constructor (bindings) {
         const me = this;
 
         me.boot(bindings || {});
@@ -68,19 +74,49 @@ Ext.define("coon.core.ioc.Proxy", {
 
     /**
      * @private
+     * @throws if no bindings are submitted to the constructor
      */
     boot (bindings) {
         const me = this;
 
+        if (!(bindings instanceof coon.core.ioc.Bindings)) {
+            throw new Error("\"bindings\" must be an instance of coon.core.ioc.Bindings");
+        }
+
         if (!me.booted) {
-
-            me.factoryProxy = Ext.create("coon.core.ioc.sencha.FactoryProxy", {bindings});
-            me.createProxy = Ext.create("coon.core.ioc.sencha.CreateProxy", {bindings});
-
-            Ext.Factory = new Proxy(Ext.Factory, me.factoryProxy);
-            Ext.create = new Proxy(Ext.create, me.createProxy);
+            me.installProxies(bindings);
             me.booted = true;
         }
+
+        return me.booted;
+    },
+
+
+    /**
+     *  @private
+     */
+    installProxies (bindings) {
+        const me = this;
+        me.factoryProxy = Ext.create("coon.core.ioc.sencha.FactoryProxy", bindings);
+        me.createProxy = Ext.create("coon.core.ioc.sencha.CreateProxy", bindings);
+
+        Ext.Factory = new Proxy(Ext.Factory, me.getFactoryProxy());
+        Ext.create = new Proxy(Ext.create, me.getCreateProxy());
+    },
+
+
+    /**
+     * @private
+     */
+    getFactoryProxy () {
+        return this.factoryProxy;
+    },
+
+    /**
+     * @private
+     */
+    getCreateProxy () {
+        return this.createProxy;
     }
 
 });

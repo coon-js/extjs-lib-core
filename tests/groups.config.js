@@ -188,7 +188,10 @@ export default [{
             "src/ioc/sencha/FactoryProxyTest.js"
         ]
     },
-    "src/ioc/BindingsTest.js"
+    "src/ioc/BindingsTest.js",
+    "src/ioc/ContainerTest.js",
+    "src/ioc/ProxyTest.js"
+
     ]
 
 }, {
