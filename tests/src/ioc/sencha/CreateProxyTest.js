@@ -51,25 +51,24 @@ StartTest(t => {
 
     t.it("apply()", t => {
 
-        const proxy = create({});
-
         let defaultClass = {};
 
-        const classManagerSpy = t.spyOn(Ext.ClassManager, "get").and.callFake(() => defaultClass);
-        const getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => "className");
-        const reflectSpy = t.spyOn(Reflect, "apply").and.callFake(() => "reflect");
-        const resolveDependenciesSpy = t.spyOn(proxy, "resolveDependencies").and.callFake(() => ({"prop": "resolved"}));
-        const target = {}, thisArg = {};
+        const
+            proxy = create({}),
+            classManagerSpy = t.spyOn(Ext.ClassManager, "get").and.callFake(() => defaultClass),
+            getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => "className"),
+            reflectSpy = t.spyOn(Reflect, "apply").and.callFake(() => "reflect"),
+            resolveDependenciesSpy = t.spyOn(proxy, "resolveDependencies").and.callFake(() => ({"prop": "resolved"})),
+            target = {},
+            thisArg = {},
+            assertReflectSpy = (thirdArg) => {
+                t.expect(reflectSpy.calls.mostRecent().args[0]).toBe(target);
+                t.expect(reflectSpy.calls.mostRecent().args[1]).toBe(thisArg);
 
-        const assertReflectSpy = (thirdArg) => {
-            t.expect(reflectSpy.calls.mostRecent().args[0]).toBe(target);
-            t.expect(reflectSpy.calls.mostRecent().args[1]).toBe(thisArg);
-
-            if (thirdArg !== undefined) {
-                t.expect(reflectSpy.calls.mostRecent().args[2]).toEqual(thirdArg);
-            }
-        };
-
+                if (thirdArg !== undefined) {
+                    t.expect(reflectSpy.calls.mostRecent().args[2]).toEqual(thirdArg);
+                }
+            };
 
         // no string passed as 1 argument
         t.expect(proxy.apply(target, thisArg, [{}])).toBe(reflectSpy.calls.mostRecent().returnValue);
