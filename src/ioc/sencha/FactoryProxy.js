@@ -57,20 +57,23 @@ Ext.define("coon.core.ioc.sencha.FactoryProxy", {
      * Apply handler for proxying calls to Ext.Factory["proxy", "store", "controller", ...]
      * factory methods are usually invoked with aliases instead of class names which are
      * then resolved by Ext JS' underlying class system. The handler will utilize this
-     * functionality and assume the alias is available with argumentsList[0],
+     * functionality and assume the alias is available with the key "type" in argumentsList[0],
      * inspect the "requireProperty" available with the resolved class and then
      * resolve dependencies with the help of resolveDependencies(),
-     * if the arguments found in argumentsList[1] do not already contain
+     * if the object found in argumentsList[0] does not already contain
      * configurations for these dependencies.
+     * The target is the Factory this handler operates on. The "aliasPrefix" of this argument
+     * will be used to determine the prefix used in conjunction with the "type" to resolve
+     * the proper class.
      *
      * @example
      *   // acme.Request.require = {requestor: "acme.RequestConfigurator"}
      *   // alias: "acme-request"
-     *   proxy.apply({}, {}, ["acme-request", {}];
+     *   proxy.apply({}, {}, [{type: "acme-request"}, {}];
      *   // config has no "requestor" configured with arguments, will resolve
      *   // dependencies using available bindings by calling resolveDependencies()
      *
-     *   proxy.apply({}, {}, ["acme-request", {requestor: {}];
+     *   proxy.apply({}, {}, [{type: "acme-request"}, {requestor: {}];
      *   // config has "requestor" configured with arguments, will not resolve
      *   // dependencies
      *
@@ -89,11 +92,14 @@ Ext.define("coon.core.ioc.sencha.FactoryProxy", {
         const type = cfg.type ? cfg.type : (l8.isString(cfg) ? cfg : undefined);
 
         if (type && target.instance?.aliasPrefix) {
-            const cls = Ext.ClassManager.getByAlias(`${target.instance.aliasPrefix}${type}`);
-            if (cls.require) {
+            const
+                cls = Ext.ClassManager.getByAlias(`${target.instance.aliasPrefix}${type}`),
+                requireCfg = cls?.[me.requireProperty];
+
+            if (requireCfg) {
                 cfg = Object.assign(
                     cfg,
-                    me.resolveDependencies(cls.require, Ext.ClassManager.getName(cls))
+                    me.resolveDependencies(Ext.ClassManager.getName(cls), requireCfg)
                 );
                 cfg.type = cfg.type || type;
                 argumentsList[0] = cfg;

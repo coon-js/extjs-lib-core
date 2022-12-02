@@ -77,7 +77,70 @@ StartTest(t => {
 
     t.it("apply()", t => {
 
-        t.fail();
+
+        let defaultClass = {};
+
+        const
+            proxy = create({}),
+            getByAliasSpy = t.spyOn(Ext.ClassManager, "getByAlias").and.callFake(() => defaultClass),
+            getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => "className"),
+            reflectSpy = t.spyOn(Reflect, "apply").and.callFake(() => "reflect"),
+            resolveDependenciesSpy = t.spyOn(proxy, "resolveDependencies").and.callFake(() => ({"prop": "resolved"})),
+            thisArg = {},
+            assertReflectSpy = (thirdArg) => {
+                t.expect(reflectSpy.calls.mostRecent().args[0]).toBe(target);
+                t.expect(reflectSpy.calls.mostRecent().args[1]).toBe(thisArg);
+
+                if (thirdArg !== undefined) {
+                    t.expect(reflectSpy.calls.mostRecent().args[2]).toEqual(thirdArg);
+                }
+            };
+
+        let target = {};
+
+        // no "type" passed in object with 1st argument
+        let argsList = [{}];
+        t.expect(proxy.apply(target, thisArg, argsList)).toBe(reflectSpy.calls.mostRecent().returnValue);
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(0);
+        assertReflectSpy(argsList);
+
+        // no "aliasPrefix" available
+        argsList = [{type: "foo"}];
+        t.expect(proxy.apply(target, thisArg, argsList)).toBe(reflectSpy.calls.mostRecent().returnValue);
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(0);
+        assertReflectSpy(argsList);
+
+        // class  alias cannot be resolved
+        target = {instance: {aliasPrefix: "bar"}};
+        defaultClass = undefined;
+        argsList = [{type: "foo"}];
+        t.expect(proxy.apply(target, thisArg, argsList)).toBe(reflectSpy.calls.mostRecent().returnValue);
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(0);
+        assertReflectSpy();
+
+        // target class has no requireCfg
+        target = {instance: {aliasPrefix: "bar"}};
+        defaultClass = {};
+        argsList = [{type: "foo"}];
+        t.expect(proxy.apply(target, thisArg, argsList)).toBe(reflectSpy.calls.mostRecent().returnValue);
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(0);
+        assertReflectSpy();
+
+        // target class requireCfg
+        const requireConfig = {"config": {}};
+        defaultClass = {};
+        defaultClass[proxy.requireProperty] = requireConfig;
+        argsList = [{type: "foo", width: 800, height: 600}];
+        t.expect(proxy.apply(target, thisArg, argsList)).toBe(reflectSpy.calls.mostRecent().returnValue);
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(1);
+        t.expect(resolveDependenciesSpy.calls.mostRecent().args[0]).toBe(
+            getNameSpy.calls.mostRecent().returnValue
+        );
+        t.expect(resolveDependenciesSpy.calls.mostRecent().args[1]).toBe(requireConfig);
+        assertReflectSpy([{type: "foo", width: 800, height: 600, prop: "resolved"}]);
+
+        [reflectSpy, resolveDependenciesSpy, getNameSpy, getByAliasSpy].map(spy => spy.remove());
+
     });
 
 
