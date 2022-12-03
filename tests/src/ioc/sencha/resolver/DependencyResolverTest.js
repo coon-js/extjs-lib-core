@@ -25,8 +25,8 @@
 
 StartTest(t => {
 
-    const superclass = "coon.core.ioc.sencha.AbstractProxy";
-    const className  = "coon.core.ioc.sencha.AbstractProxy";
+    const superclass = "coon.core.ioc.sencha.resolver.DependencyResolver";
+    const className  = "coon.core.ioc.sencha.resolver.DependencyResolver";
 
     const create = cfg => {
 
@@ -42,10 +42,10 @@ StartTest(t => {
     t.it("sanity", t => {
         const
             bindings = createBindings(),
-            proxy = create({bindings});
+            injector = create({bindings});
 
-        t.isInstanceOf(proxy, superclass);
-        t.expect(proxy.bindings).toBe(bindings);
+        t.isInstanceOf(injector, superclass);
+        t.expect(injector.bindings).toBe(bindings);
     });
 
 
@@ -71,7 +71,7 @@ StartTest(t => {
             }
         });
 
-        const proxy = create({bindings});
+        const injector = create({bindings});
 
         const tests = [{
             // class matching namespace returns specific
@@ -98,7 +98,7 @@ StartTest(t => {
 
         tests.map(({targetClass, requiredType, result}) => {
 
-            t.expect(proxy.resolveToSpecific(
+            t.expect(injector.resolveToSpecific(
                 targetClass,
                 requiredType
             )).toBe(result);
@@ -109,15 +109,15 @@ StartTest(t => {
 
     t.it("getScope()", t=> {
 
-        const proxy = create({});
-        t.expect(proxy.getScope()).toBe(window);
+        const injector = create({});
+        t.expect(injector.getScope()).toBe(window);
 
     });
 
 
     t.it("resolveDependencies()", t => {
 
-        const proxy = create({});
+        const injector = create({});
 
         const clsContainer = {
             "resolved_configurator": {},
@@ -146,10 +146,10 @@ StartTest(t => {
         };
 
         const
-            resolveToSpecificSpy = t.spyOn(proxy, "resolveToSpecific").and.callFake(resolveToSpecific),
+            resolveToSpecificSpy = t.spyOn(injector, "resolveToSpecific").and.callFake(resolveToSpecific),
             createSpy = t.spyOn(Ext, "create").and.callFake(args => args),
-            scopeSpy = t.spyOn(proxy, "getScope").and.callFake(() => clsContainer),
-            deps = proxy.resolveDependencies(
+            scopeSpy = t.spyOn(injector, "getScope").and.callFake(() => clsContainer),
+            deps = injector.resolveDependencies(
                 "com.acme.BaseProxy",
                 {"requestConfigurator": "coon.core.data.request.Configurator",
                     "viewModel": "view.Model"}
@@ -162,11 +162,10 @@ StartTest(t => {
 
         // exception, class not loaded
         try {
-            proxy.resolveDependencies("com.acme.BaseProxy", {"prop": "type"});
+            injector.resolveDependencies("com.acme.BaseProxy", {"prop": "type"});
             t.fail();
         } catch (e) {
-            t.expect(e.message).toContain("was not found in the scope");
-        }
+            t.expect(e.message).toContain("was not found in the scope");        }
 
         [resolveToSpecificSpy, createSpy, scopeSpy].map(spy => spy.remove());
     });

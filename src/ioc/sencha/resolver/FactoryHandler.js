@@ -26,56 +26,25 @@
 
 /**
  * Handler for proxying Ext.Factory["proxy", "store", "controller", ...]
- *
- * @example
- *
- *   // ioc-bindings available with "bindings"
- *   Ext.Factory = new Proxy(
- *       Ext.Factory, Ext.create("coon.core.ioc.sencha.FactoryProxy", bindings)
- *    );
- *
+ * Resolves to the in-memory class definition the alias represents.
  */
-Ext.define("coon.core.ioc.sencha.FactoryProxy", {
+Ext.define("coon.core.ioc.sencha.resolver.FactoryHandler", {
 
-    extend: "coon.core.ioc.sencha.AbstractProxy",
+    extend: "coon.core.ioc.sencha.resolver.ClassResolver",
 
     requires: [
         // @define "l8"
         "l8"
     ],
 
-    /**
-     * meta property with a class that provides information about
-     * dependencies. Defaults to "require".
-     * @type {String} reqioreProperty
-     * @private
-     */
-    requireProperty: "require",
-
 
     /**
-     * Apply handler for proxying calls to Ext.Factory["proxy", "store", "controller", ...]
-     * factory methods are usually invoked with aliases instead of class names which are
+     * Apply-handler for proxying calls to Ext.Factory["proxy", "store", "controller", ...]
+     * Factory methods are usually invoked with aliases instead of class names which are
      * then resolved by Ext JS' underlying class system. The handler will utilize this
      * functionality and assume the alias is available with the key "type" in argumentsList[0],
-     * inspect the "requireProperty" available with the resolved class and then
-     * resolve dependencies with the help of resolveDependencies(),
-     * if the object found in argumentsList[0] does not already contain
-     * configurations for these dependencies.
-     * The target is the Factory this handler operates on. The "aliasPrefix" of this argument
-     * will be used to determine the prefix used in conjunction with the "type" to resolve
-     * the proper class.
-     *
-     * @example
-     *   // acme.Request.require = {requestor: "acme.RequestConfigurator"}
-     *   // alias: "acme-request"
-     *   proxy.apply({}, {}, [{type: "acme-request"}, {}];
-     *   // config has no "requestor" configured with arguments, will resolve
-     *   // dependencies using available bindings by calling resolveDependencies()
-     *
-     *   proxy.apply({}, {}, [{type: "acme-request"}, {requestor: {}];
-     *   // config has "requestor" configured with arguments, will not resolve
-     *   // dependencies
+     * resolve to the in-memory class definition and then fire the classresolved-event
+     * on success, if the beforeclassresolved-event did not cancel the event.
      *
      * @param target
      * @param thisArg
@@ -86,23 +55,20 @@ Ext.define("coon.core.ioc.sencha.FactoryProxy", {
 
         const me = this;
 
-        let cfg = argumentsList[0] || {};
+        let cls, cfg = argumentsList[0] || {};
 
         // cfg : "alias", {type: "alias"}
-        const type = cfg.type ? cfg.type : (l8.isString(cfg) ? cfg : undefined);
+        const  type = cfg.type ? cfg.type : (l8.isString(cfg) ? cfg : undefined);
 
         if (type && target.instance?.aliasPrefix) {
-            const
-                cls = Ext.ClassManager.getByAlias(`${target.instance.aliasPrefix}${type}`),
-                requireCfg = cls?.[me.requireProperty];
+            cls = Ext.ClassManager.getByAlias(`${target.instance.aliasPrefix}${type}`);
+        }
 
-            if (requireCfg) {
-                cfg = Object.assign(
-                    cfg,
-                    me.resolveDependencies(Ext.ClassManager.getName(cls), requireCfg)
-                );
-                cfg.type = cfg.type || type;
-                argumentsList[0] = cfg;
+        if (cls) {
+            const className = Ext.ClassManager.getName(cls);
+
+            if (me.fireEvent("beforeclassresolved", me, className, cls) !== false) {
+                me.fireEvent("classresolved", me, className, cls);
             }
         }
 

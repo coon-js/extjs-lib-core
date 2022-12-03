@@ -183,15 +183,21 @@ export default [{
     items: [{
         "group": "sencha",
         "items": [
-            "src/ioc/sencha/AbstractProxyTest.js",
-            "src/ioc/sencha/CreateProxyTest.js",
-            "src/ioc/sencha/FactoryProxyTest.js"
+            {
+                group: "resolver",
+                "items": [
+                    "src/ioc/sencha/resolver/CreateHandlerTest.js",
+                    "src/ioc/sencha/resolver/FactoryHandlerTest.js",
+                    "src/ioc/sencha/resolver/DependencyResolverTest.js"
+                ]
+
+            },
+            "src/ioc/sencha/ConstructorInjectorTest.js",
+            "src/ioc/sencha/SenchaProxyTest.js"
         ]
     },
     "src/ioc/BindingsTest.js",
-    "src/ioc/ContainerTest.js",
-    "src/ioc/ProxyTest.js"
-
+    "src/ioc/ContainerTest.js"
     ]
 
 }, {

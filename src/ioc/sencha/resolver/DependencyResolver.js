@@ -25,18 +25,21 @@
 
 
 /**
- * AbstractProxy providing functionality for working with Sencha Ext JS specific classes.
- * Implementing classes can delegate calls that involve resolving dependencies to resolveDependencies()
- *
- * @abstract
+ * DependencyResolver.
  */
-Ext.define("coon.core.ioc.sencha.AbstractProxy", {
+Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
 
     requires: [
         // @define "l8"
         "l8",
         "coon.core.ioc.Bindings"
     ],
+
+    /**
+     * Keeps track of already processed classes.
+     * @type {Array} processed
+     * @private
+     */
 
 
     /**
@@ -77,7 +80,7 @@ Ext.define("coon.core.ioc.sencha.AbstractProxy", {
      *    // returns "org.project.impl.IClass"
      *
      * @param {String} targetClass
-     * @param {String}  defaultrequiredTypeClass
+     * @param requiredType
      *
      * @returns {String}
      *
@@ -170,6 +173,5 @@ Ext.define("coon.core.ioc.sencha.AbstractProxy", {
     getScope () {
         return window;
     }
-
 
 });
