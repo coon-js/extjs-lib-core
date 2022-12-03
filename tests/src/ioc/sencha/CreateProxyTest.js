@@ -57,6 +57,7 @@ StartTest(t => {
             proxy = create({}),
             classManagerSpy = t.spyOn(Ext.ClassManager, "get").and.callFake(() => defaultClass),
             getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => "className"),
+            getByAliasSpy = t.spyOn(Ext.ClassManager, "getByAlias").and.callFake(() => defaultClass),
             reflectSpy = t.spyOn(Reflect, "apply").and.callFake(() => "reflect"),
             resolveDependenciesSpy = t.spyOn(proxy, "resolveDependencies").and.callFake(() => ({"prop": "resolved"})),
             target = {},
@@ -91,7 +92,7 @@ StartTest(t => {
 
 
         // target class requireCfg
-        const requireConfig = {"config": {}};
+        let requireConfig = {"config": {}};
         defaultClass = {};
         defaultClass[proxy.requireProperty] = requireConfig;
 
@@ -102,6 +103,23 @@ StartTest(t => {
         );
         t.expect(resolveDependenciesSpy.calls.mostRecent().args[1]).toBe(requireConfig);
         assertReflectSpy(["foo", {width: 800, height: 600, prop: "resolved"}]);
+
+
+        // if first argument object, and no 2nd arg, update object with dependency
+        requireConfig = {"config": {}};
+        defaultClass = {};
+        defaultClass[proxy.requireProperty] = requireConfig;
+
+        t.expect(proxy.apply(target, thisArg, [{xtype: "foo", width: 800, height: 600}])).toBe(
+            reflectSpy.calls.mostRecent().returnValue);
+        t.expect(getByAliasSpy.calls.mostRecent().args[0]).toBe("widget.foo");
+        t.expect(resolveDependenciesSpy.calls.count()).toBe(2);
+        t.expect(resolveDependenciesSpy.calls.mostRecent().args[0]).toBe(
+            getNameSpy.calls.mostRecent().returnValue
+        );
+        t.expect(resolveDependenciesSpy.calls.mostRecent().args[1]).toBe(requireConfig);
+        assertReflectSpy([{xtype: "foo", width: 800, height: 600, prop: "resolved"}]);
+
 
         [reflectSpy, resolveDependenciesSpy, getNameSpy, classManagerSpy].map(spy => spy.remove());
 

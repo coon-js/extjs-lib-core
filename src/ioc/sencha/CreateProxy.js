@@ -78,22 +78,31 @@ Ext.define("coon.core.ioc.sencha.CreateProxy", {
 
         const me = this;
 
-        let [className, cfg] = argumentsList;
+        let [className, cfg] = argumentsList, cls, requireCfg, aliased = false;
 
         if (l8.isString(className)) {
-            const cls = Ext.ClassManager.get(className);
-            if (cls) {
-                const requireCfg = cls[me.requireProperty];
-                if (l8.isObject(requireCfg)) {
-                    cfg = Object.assign(
-                        cfg || {},
-                        me.resolveDependencies(Ext.ClassManager.getName(cls), requireCfg)
-                    );
-                }
+            cls = Ext.ClassManager.get(className);
+        } else {
+            cfg = argumentsList[0];
+            aliased = true;
+            cls = Ext.ClassManager.getByAlias(
+                className.xclass ? className.xclass : (className.xtype && `widget.${className.xtype}`)
+            );
+        }
+
+        if (cls) {
+            requireCfg = cls[me.requireProperty];
+            if (l8.isObject(requireCfg)) {
+                cfg = Object.assign(
+                    cfg || {},
+                    me.resolveDependencies(Ext.ClassManager.getName(cls), requireCfg)
+                );
+
             }
         }
 
-        argumentsList[1] = cfg;
+        argumentsList[aliased ? 0 : 1] = cfg;
+
 
         return Reflect.apply(target, thisArg, argumentsList);
     }
