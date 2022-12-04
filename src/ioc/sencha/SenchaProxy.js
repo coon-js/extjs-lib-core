@@ -116,6 +116,7 @@ Ext.define("coon.core.ioc.sencha.SenchaProxy", {
         if (!me.booted) {
             me.installProxies();
             me.installInjectors(bindings);
+            me.registerObservers();
             me.booted = true;
         }
 
@@ -156,7 +157,6 @@ Ext.define("coon.core.ioc.sencha.SenchaProxy", {
 
         if (!me.factoryHandler) {
             me.factoryHandler = Ext.create("coon.core.ioc.sencha.resolver.FactoryHandler");
-            me.factoryHandler.on("classresolved", me.onClassResolved, me);
         }
         return me.factoryHandler;
     },
@@ -171,9 +171,19 @@ Ext.define("coon.core.ioc.sencha.SenchaProxy", {
 
         if (!me.createHandler) {
             me.createHandler = Ext.create("coon.core.ioc.sencha.resolver.CreateHandler");
-            me.createHandler.on("classresolved", me.onClassResolved, me);
         }
         return me.createHandler;
+    },
+
+
+    /**
+     * @private
+     */
+    registerObservers () {
+        const me = this;
+
+        me.getCreateHandler().on("classresolved", me.onClassResolved, me);
+        me.getFactoryHandler().on("classresolved", me.onClassResolved, me);
     }
 
 });

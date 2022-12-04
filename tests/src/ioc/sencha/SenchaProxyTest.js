@@ -79,6 +79,7 @@ StartTest(t => {
 
             const proxySpy    = t.spyOn(proxy, "installProxies").and.callFake(() => {});
             const injectorSpy = t.spyOn(proxy, "installInjectors").and.callFake(() => {});
+            const observerSpy = t.spyOn(proxy, "registerObservers").and.callFake(() => {});
 
 
             t.expect(proxy.booted).toBeFalsy();
@@ -86,12 +87,16 @@ StartTest(t => {
             t.expect(proxy.booted).toBe(true);
             t.expect(proxySpy.calls.count()).toBe(1);
             t.expect(injectorSpy.calls.count()).toBe(1);
+            t.expect(observerSpy.calls.count()).toBe(1);
 
             proxy.boot();
             t.expect(proxySpy.calls.count()).toBe(1);
             t.expect(injectorSpy.calls.count()).toBe(1);
+            t.expect(observerSpy.calls.count()).toBe(1);
 
             t.expect(injectorSpy.calls.mostRecent().args[0]).toBe(bindings);
+
+            [proxySpy, injectorSpy, observerSpy].map(spy => spy.remove());
         });
 
 
@@ -160,13 +165,10 @@ StartTest(t => {
         });
 
 
-        t.it("installing resolve handlers", t => {
+        t.it("getFactoryHandler(), getCreateHandler()", t => {
             replaceConstructor();
 
             const proxy = create();
-
-            // install spy before handlers register the listener
-            const installClassResolvedSpy = () => t.spyOn(proxy, "onClassResolved").and.callFake(() => {});
 
             [[
                 "factoryHandler",
@@ -178,17 +180,27 @@ StartTest(t => {
                 "coon.core.ioc.sencha.resolver.CreateHandler"
             ]].map(([prop, handlerFn, className]) => {
 
-                const classResolvedSpy = installClassResolvedSpy();
                 const handler = handlerFn();
 
                 t.isInstanceOf(handler, className);
                 t.expect(handler).toBe(proxy[prop]);
+            });
+        });
 
-                t.expect(classResolvedSpy.calls.count()).toBe(0);
-                handler.fireEvent("classresolved");
-                t.expect(classResolvedSpy.calls.count()).toBe(1);
 
-                [classResolvedSpy].map(spy => spy.remove());
+        t.it("register observers resolve handlers", t => {
+            replaceConstructor();
+
+            const
+                proxy = create(),
+                createHandlerSpy = t.spyOn(proxy.getCreateHandler(), "on").and.callThrough(),
+                createFactorySpy = t.spyOn(proxy.getFactoryHandler(), "on").and.callThrough();
+
+            proxy.registerObservers();
+
+            [createHandlerSpy, createFactorySpy].map(spy => {
+                t.expect(spy.calls.mostRecent().args).toEqual(["classresolved", proxy.onClassResolved, proxy]);
+                spy.remove();
             });
         });
 
