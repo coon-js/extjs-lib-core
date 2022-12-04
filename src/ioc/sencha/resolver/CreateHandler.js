@@ -42,8 +42,7 @@ Ext.define("coon.core.ioc.sencha.resolver.CreateHandler", {
     /**
      * Apply handler for proxying calls to Ext.create(). Will try to resolve the information
      * available with argumentsList[0] to an in-memory class-definition.
-     * Fires the classresolved-event on success, if the beforeclassresolved event did
-     * not cancel it.
+     * Fires the classresolved-event on success.
      *
      *
      * @param target
@@ -69,10 +68,7 @@ Ext.define("coon.core.ioc.sencha.resolver.CreateHandler", {
 
         if (cls) {
             className = Ext.ClassManager.getName(cls);
-
-            if (me.fireEvent("beforeclassresolved", me, className, cls) !== false) {
-                me.fireEvent("classresolved", me, className, cls);
-            }
+            me.fireEvent("classresolved", me, className, cls);
         }
 
         return Reflect.apply(target, thisArg, argumentsList);

@@ -40,7 +40,7 @@ StartTest(t => {
     });
 
 
-    t.it("apply() - first arg is string", t => {
+    t.it("apply()", t => {
 
         [{
             firstArg: "Ext.panel.Panel",
@@ -75,12 +75,7 @@ StartTest(t => {
                 ).toEqual(
                     ["classresolved", handler, resolvedName, resolvedClass]
                 );
-                t.expect(fireEventSpy.calls.count()).toBe(2);
-
-                // event cancelled
-                handler.on("beforeclassresolved", () => false);
-                handler.apply(target, thisArg, argumentsList);
-                t.expect(fireEventSpy.calls.count()).toBe(3); // before... classresolved... before...
+                t.expect(fireEventSpy.calls.count()).toBe(1);
             } else {
                 t.expect(fireEventSpy.calls.count()).toBe(0);
             }

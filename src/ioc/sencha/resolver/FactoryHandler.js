@@ -44,7 +44,7 @@ Ext.define("coon.core.ioc.sencha.resolver.FactoryHandler", {
      * then resolved by Ext JS' underlying class system. The handler will utilize this
      * functionality and assume the alias is available with the key "type" in argumentsList[0],
      * resolve to the in-memory class definition and then fire the classresolved-event
-     * on success, if the beforeclassresolved-event did not cancel the event.
+     * on success.
      *
      * @param target
      * @param thisArg
@@ -67,9 +67,7 @@ Ext.define("coon.core.ioc.sencha.resolver.FactoryHandler", {
         if (cls) {
             const className = Ext.ClassManager.getName(cls);
 
-            if (me.fireEvent("beforeclassresolved", me, className, cls) !== false) {
-                me.fireEvent("classresolved", me, className, cls);
-            }
+            me.fireEvent("classresolved", me, className, cls);
         }
 
         return Reflect.apply(target, thisArg, argumentsList);
