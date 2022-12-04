@@ -120,23 +120,27 @@ Ext.define("coon.core.ioc.sencha.ConstructorInjector", {
 
 
     /**
-     * Return true if the target defines injectable dependencies, and if the
-     * target was not already processed by the injector.
+     * Returns true if the target defines injectable dependencies and those can be injected
+     * with the constructor, otherwise false.
+     * Returns also false if the target class was already processed by this injector.
      *
-     * @param cls
+     * @param {Ext.Base} cls
      *
-     * @see handler8)
+     * @return {Boolean}
+     *
+     * @see handler()
      */
-    shouldRegisterHandler (cls) {
+    shouldApplyHandler (cls) {
+        const
+            me = this,
+            className = Ext.ClassManager.getName(cls);
 
-        const me = this;
-
-        const className = Ext.ClassManager.getName(cls);
         if (me.processed && me.processed.includes(className)) {
             return false;
         }
 
         let requireCfg = cls[me.requireProperty];
+
         if (l8.isObject(requireCfg)) {
             return true;
         }
@@ -147,20 +151,31 @@ Ext.define("coon.core.ioc.sencha.ConstructorInjector", {
 
     /**
      * Creates handlers for the target.
+     * API should call isConstructorInjectable() first to check whether
+     * this injector should handle the target class.
+     * Returns the proxied instance.
      *
-     * @param cls
+     * @param {Ext.Base} cls
+     *
+     * @return {Ext.Base}
+     *
+     * @protected
      */
     registerHandler (cls) {
-        const me = this;
-
-        const className = Ext.ClassManager.getName(cls);
+        const
+            me = this,
+            className = Ext.ClassManager.getName(cls);
 
         cls = new Proxy(cls, me.handler());
         Ext.ClassManager.set(className, cls);
+
         if (!me.processed) {
             me.processed = [];
         }
-        me.processed.push(className);
+
+        !me.processed.includes(className) && me.processed.push(className);
+
+        return cls;
     }
 
 

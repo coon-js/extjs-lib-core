@@ -28,7 +28,7 @@ StartTest(t => {
     const superclass = "coon.core.ioc.sencha.ConstructorInjector";
     const className  = "coon.core.ioc.sencha.ConstructorInjector";
 
-    const create = cfg => {
+    const create = (cfg = {}) => {
 
         if (!cfg.dependencyResolver) {
             cfg.dependencyResolver = createDependencyResolver();
@@ -68,5 +68,121 @@ StartTest(t => {
         }
     });
 
+
+    t.it("handler()", t => {
+
+        const
+            injector = create(),
+            fakeReflector = {},
+            handler = injector.handler(),
+            argumentsList = [],
+            newTarget = {};
+
+
+        [{
+            firstArg: {
+                defaultCfg: "value"
+            },
+            target: {require: {foo: "bar"}}
+        }, {
+            firstArg: {
+                defaultCfg: "value"
+            },
+            target: {}
+        }].map(({firstArg, target}) => {
+
+            const
+                resolverSpy = t.spyOn(injector.dependencyResolver, "resolveDependencies").and.callFake(
+                    () => target.require
+                ),
+                reflectSpy = t.spyOn(Reflect, "construct").and.callFake(() => fakeReflector),
+                getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => target);
+
+            argumentsList[0] = firstArg;
+
+            t.expect(handler.construct(target, argumentsList, newTarget)).toBe(fakeReflector);
+
+            if (target.require) {
+                t.expect(resolverSpy.calls.mostRecent().args).toEqual([
+                    getNameSpy.calls.mostRecent().returnValue,
+                    target.require
+                ]);
+            } else {
+                t.expect(resolverSpy.calls.count()).toBe(0);
+            }
+
+            t.expect(reflectSpy.calls.mostRecent().args).toEqual([
+                target,
+                [Object.assign(firstArg,  resolverSpy.calls.mostRecent()?.returnValue)],
+                newTarget
+            ]);
+
+        });
+
+    });
+
+
+    t.it("shouldApplyHandler()", t => {
+
+        let className = "testClass",
+            fakeCls = {};
+
+        const
+            injector = create(),
+            getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => className);
+
+        t.expect(injector.shouldApplyHandler(fakeCls)).toBe(false);
+
+        fakeCls = {
+            require: {}
+        };
+        t.expect(injector.shouldApplyHandler(fakeCls)).toBe(true);
+        t.expect(injector.shouldApplyHandler(fakeCls)).toBe(true);
+        injector.processed = [className];
+        t.expect(injector.shouldApplyHandler(fakeCls)).toBe(false);
+
+        [getNameSpy].map(spy => spy.remove());
+    });
+
+
+    t.it("registerHandler()", t => {
+
+        let className = "testClass",
+            fakeCls = {
+            };
+
+        const
+            injector = create(),
+            getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => className),
+            setSpy     = t.spyOn(Ext.ClassManager, "set").and.callThrough();
+
+        injector.handler = function () {
+            return {
+                get: function (target, prop) {
+
+                    if (prop === "foo") {
+                        target.PROXY_INSTALLED = true;
+                    }
+                    return Reflect.get(...arguments);
+                }
+            };
+        };
+
+        t.expect(injector.processed).toBeUndefined();
+        fakeCls = injector.registerHandler(fakeCls);
+        t.expect(injector.processed).toEqual([className]);
+        fakeCls = injector.registerHandler(fakeCls);
+        t.expect(injector.processed).toEqual([className]);
+
+        t.expect(fakeCls.PROXY_INSTALLED).toBeUndefined();
+        /* eslint-disable-next-line*/
+        fakeCls.foo;
+        t.expect(fakeCls.PROXY_INSTALLED).toBe(true);
+
+        t.expect(setSpy.calls.mostRecent().args[0]).toBe(className);
+        t.expect(setSpy.calls.mostRecent().args[1] === Ext.ClassManager.get(className)).toBe(true);
+
+        [getNameSpy, setSpy].map(spy => spy.remove());
+    });
 
 });
