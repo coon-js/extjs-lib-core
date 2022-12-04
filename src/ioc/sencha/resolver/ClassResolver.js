@@ -47,13 +47,6 @@ Ext.define("coon.core.ioc.sencha.resolver.ClassResolver", {
      * @param {Object} targetCls
      */
 
-    /**
-     * @event beforeclassresolved
-     * @param this
-     * @param {String} cls
-     * @param {Object} targetCls
-     */
-
     constructor () {
         this.mixins.observable.constructor.apply(this);
     }
