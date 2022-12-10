@@ -57,11 +57,11 @@ Ext.define("coon.core.ioc.sencha.ConstructorInjector", {
 
     /**
      * meta property with a class that provides information about
-     * dependencies. Defaults to "require".
+     * dependencies. Defaults to "required".
      * @type {String} requireProperty
      * @private
      */
-    requireProperty: "require",
+    requireProperty: "required",
 
 
     /**
@@ -96,21 +96,24 @@ Ext.define("coon.core.ioc.sencha.ConstructorInjector", {
         return {
             construct (target, argumentsList, newTarget) {
 
-                let cls = target, cfg, requireCfg;
+                let cls = target, cArgs, requireCfg;
 
-                cfg = argumentsList[0];
+                cArgs = argumentsList[0] || {};
+
+                const skipProps = Object.keys(cArgs);
 
                 requireCfg = cls[me.requireProperty];
                 if (l8.isObject(requireCfg)) {
-                    cfg = Object.assign(
-                        cfg || {},
+                    cArgs = Object.assign(
+                        cArgs,
                         me.dependencyResolver.resolveDependencies(
                             Ext.ClassManager.getName(cls),
-                            requireCfg
+                            requireCfg,
+                            skipProps
                         )
                     );
 
-                    argumentsList[0] = cfg;
+                    argumentsList[0] = cArgs;
                 }
 
                 return Reflect.construct(target, argumentsList, newTarget);

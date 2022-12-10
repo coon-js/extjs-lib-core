@@ -148,15 +148,28 @@ StartTest(t => {
         const
             resolveToSpecificSpy = t.spyOn(injector, "resolveToSpecific").and.callFake(resolveToSpecific),
             createSpy = t.spyOn(Ext, "create").and.callFake(args => args),
-            scopeSpy = t.spyOn(injector, "getScope").and.callFake(() => clsContainer),
-            deps = injector.resolveDependencies(
-                "com.acme.BaseProxy",
-                {"requestConfigurator": "coon.core.data.request.Configurator",
-                    "viewModel": "view.Model"}
-            );
+            scopeSpy = t.spyOn(injector, "getScope").and.callFake(() => clsContainer);
+
+        let deps = injector.resolveDependencies(
+            "com.acme.BaseProxy",
+            {"requestConfigurator": "coon.core.data.request.Configurator",
+                "viewModel": "view.Model"}
+        );
 
         t.expect(deps).toEqual({
             "requestConfigurator": "resolved_configurator",
+            "viewModel": "view_model_specific"
+        });
+
+        // add skipProps
+        deps = injector.resolveDependencies(
+            "com.acme.BaseProxy",
+            {"requestConfigurator": "coon.core.data.request.Configurator",
+                "viewModel": "view.Model"},
+            ["requestConfigurator"]
+        );
+
+        t.expect(deps).toEqual({
             "viewModel": "view_model_specific"
         });
 

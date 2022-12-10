@@ -134,6 +134,8 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      *
      * @param {String} targetClass The class name for which the dependencies get resolved
      * @param {Object} requires Definitions of the dependencies required by forClass.
+     * @param {Array} skipProps an array containing keys of properties that should be skipped
+     * and not resolved
      *
      * @returns {{}}
      *
@@ -141,7 +143,7 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      *
      * @throws if a resolved class name cannot be instantiated
      */
-    resolveDependencies ( targetClass, requires) {
+    resolveDependencies ( targetClass, requires, skipProps) {
 
         const
             me = this,
@@ -149,8 +151,10 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
             deps = {},
             scope = me.getScope();
 
+        skipProps = skipProps || [];
+
         dependencies.forEach(([prop, requiredType]) => {
-            if (!deps[prop]) {
+            if (!deps[prop] && !skipProps.includes(prop)) {
                 const specific = me.resolveToSpecific(targetClass, requiredType);
 
                 if (!l8.unchain(specific, scope)) {

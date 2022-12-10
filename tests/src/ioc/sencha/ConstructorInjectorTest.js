@@ -53,7 +53,7 @@ StartTest(t => {
             injector = create({dependencyResolver});
 
         t.isInstanceOf(injector, superclass);
-        t.expect(injector.requireProperty).toBe("require");
+        t.expect(injector.requireProperty).toBe("required");
         t.expect(injector.dependencyResolver).toBe(dependencyResolver);
     });
 
@@ -83,7 +83,7 @@ StartTest(t => {
             firstArg: {
                 defaultCfg: "value"
             },
-            target: {require: {foo: "bar"}}
+            target: {required: {foo: "bar"}}
         }, {
             firstArg: {
                 defaultCfg: "value"
@@ -93,19 +93,21 @@ StartTest(t => {
 
             const
                 resolverSpy = t.spyOn(injector.dependencyResolver, "resolveDependencies").and.callFake(
-                    () => target.require
+                    () => target.required
                 ),
                 reflectSpy = t.spyOn(Reflect, "construct").and.callFake(() => fakeReflector),
                 getNameSpy = t.spyOn(Ext.ClassManager, "getName").and.callFake(() => target);
 
+            const skipProps = Object.keys(firstArg);
             argumentsList[0] = firstArg;
 
             t.expect(handler.construct(target, argumentsList, newTarget)).toBe(fakeReflector);
 
-            if (target.require) {
+            if (target.required) {
                 t.expect(resolverSpy.calls.mostRecent().args).toEqual([
                     getNameSpy.calls.mostRecent().returnValue,
-                    target.require
+                    target.required,
+                    skipProps
                 ]);
             } else {
                 t.expect(resolverSpy.calls.count()).toBe(0);
@@ -134,7 +136,7 @@ StartTest(t => {
         t.expect(injector.shouldApplyHandler(fakeCls)).toBe(false);
 
         fakeCls = {
-            require: {}
+            required: {}
         };
         t.expect(injector.shouldApplyHandler(fakeCls)).toBe(true);
         t.expect(injector.shouldApplyHandler(fakeCls)).toBe(true);
