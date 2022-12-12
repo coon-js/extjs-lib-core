@@ -1,99 +1,104 @@
 {
-  "name": "@coon-js/extjs-lib-core",
-  "sencha": {
-    "name": "extjs-lib-core",
+    "name": "@coon-js/extjs-lib-core",
+    "sencha": {
+        "name": "extjs-lib-core",
+        "version": "0.8.3",
+        "compatVersion": "0.8.3",
+        "namespace": "coon.core",
+        "type": "code",
+        "creator": "coon.js",
+        "summary": "core library for rapic ExtJS application building",
+        "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
+        "format": "1",
+        "slicer": null,
+        "output": {
+            "base": "${package.dir}/build",
+            "resources": {
+                "compress": false
+            },
+            "js": {
+                "version": "ES8"
+            }
+        },
+        "language": {
+            "js": {
+                "input": "ES8",
+                "output": "ES8"
+            }
+        },
+        "compressor": {
+            "type": "closure",
+            "polyfills": "none",
+            "compress": false
+        },
+        "local": true,
+        "sass": null,
+        "classpath": [
+            "${package.dir}/.deloreanbuild/src"
+        ],
+        "overrides": [
+            "${package.dir}/.deloreanbuild/overrides"
+        ],
+        "example": null,
+        "framework": "ext",
+        "requires": [
+            "core",
+            "package-loader"
+        ]
+    },
+    "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
     "version": "0.8.3",
-    "compatVersion": "0.8.3",
-    "namespace": "coon.core",
-    "type": "code",
-    "creator": "coon.js",
-    "summary": "core library for rapic ExtJS application building",
-    "detailedDescription": "This package contains extended and advanced implementations for ExtJS projects and provides a solid base for application building.",
-    "format": "1",
-    "slicer": null,
-    "output": {
-      "base": "${package.dir}/build",
-      "js": {
-        "version": "ES8"
-      }
+    "main": "index.js",
+    "directories": {
+        "test": "tests"
     },
-    "language": {
-      "js": {
-        "input": "ES8",
-        "output": "ES8"
-      }
+    "scripts": {
+        "build:dev": "npm run build:test && npx node-git-hooks",
+        "build:test": "npm i --save-dev && npx extjs-link && npx siesta-lib-helper",
+        "postversion": "git push && git push --tags",
+        "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
+        "release": "standard-version",
+        "release:patch": "standard-version --release-as patch && npm run postversion",
+        "release:minor": "standard-version --release-as minor && npm run postversion",
+        "release:major": "standard-version --release-as major && npm run postversion"
     },
-    "compressor": {
-      "type": "closure",
-      "polyfills": "none"
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/coon-js/extjs-lib-core.git"
     },
-    "local": true,
-    "sass": null,
-    "classpath": [
-      "${package.dir}/src"
+    "keywords": [
+        "ExtJS",
+        "Sencha",
+        "JavaScript",
+        "l8.js",
+        "l8js",
+        "coon.js",
+        "coonjs",
+        "coon-js",
+        "core",
+        "library"
     ],
-    "overrides": [
-      "${package.dir}/overrides"
-    ],
-    "example": null,
-    "framework": "ext",
-    "requires": [
-      "core",
-      "package-loader"
-    ]
-  },
-  "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
-  "version": "0.8.3",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "scripts": {
-    "build:dev": "npm run build:test && npx node-git-hooks",
-    "build:test": "npm i --save-dev && npx extjs-link && npx siesta-lib-helper",
-    "postversion": "git push && git push --tags",
-    "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
-    "release": "standard-version",
-    "release:patch": "standard-version --release-as patch && npm run postversion",
-    "release:minor": "standard-version --release-as minor && npm run postversion",
-    "release:major": "standard-version --release-as major && npm run postversion"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/coon-js/extjs-lib-core.git"
-  },
-  "keywords": [
-    "ExtJS",
-    "Sencha",
-    "JavaScript",
-    "l8.js",
-    "l8js",
-    "coon.js",
-    "coonjs",
-    "coon-js",
-    "core",
-    "library"
-  ],
-  "author": "Thorsten Suckow-Homberg",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/coon-js/extjs-lib-core/issues"
-  },
-  "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
-  "dependencies": {
-    "@coon-js/delorean": "^0.1.4",
-    "@l8js/l8": "^0.7.2"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^13.2.0",
-    "@commitlint/config-conventional": "^13.2.0",
-    "@coon-js/extjs-link": "^0.1.10",
-    "@coon-js/extjs-package-loader": "^0.1.10",
-    "@coon-js/siesta-lib-helper": "^0.1.16",
-    "eslint": "^7.32.0",
-    "local-web-server": "^4.2.1",
-    "node-git-hooks": "^1.0.6",
-    "siesta-lite": "^5.5.2",
-    "standard-version": "^9.3.1"
-  }
+    "author": "Thorsten Suckow-Homberg",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/coon-js/extjs-lib-core/issues"
+    },
+    "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
+    "dependencies": {
+        "@l8js/l8": "^0.8.0"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^13.2.0",
+        "@commitlint/config-conventional": "^13.2.0",
+        "@coon-js/delorean": "^0.3.1",
+        "@coon-js/extjs-link": "^0.1.10",
+        "@coon-js/extjs-package-loader": "^0.1.10",
+        "@coon-js/siesta-lib-helper": "^0.1.16",
+        "babel-plugin-comments": "^1.0.4",
+        "eslint": "^7.32.0",
+        "local-web-server": "^4.2.1",
+        "node-git-hooks": "^1.0.6",
+        "siesta-lite": "^5.5.2",
+        "standard-version": "^9.3.1"
+    }
 }

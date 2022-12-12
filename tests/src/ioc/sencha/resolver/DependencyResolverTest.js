@@ -63,6 +63,17 @@ StartTest(t => {
     t.it("resolveToSpecific()", t => {
 
         const bindings = createBindings({
+            "$defs": {
+                "RequestConfiguratorSingleton": {
+                    "xclass": "conjoon.cn_imapuser.data.request.Configurator",
+                    "singleton": true
+                }
+            },
+            "conjoon.cn_mail": {
+                "coon.core.data.request.Configurator": {
+                    "$ref": "#/$defs/RequestConfiguratorSingleton"
+                }
+            },
             "com.acme.data": {
                 "org.project.impl.IClass": "org.project.impl.Specific"
             },
@@ -85,6 +96,14 @@ StartTest(t => {
         const injector = create({bindings});
 
         const tests = [{
+            // use $ref
+            targetClass: "conjoon.cn_mail.Reference",
+            requiredType: "coon.core.data.request.Configurator",
+            result: {
+                "xclass": "conjoon.cn_imapuser.data.request.Configurator",
+                "singleton": true
+            }
+        }, {
             // match that has an object configured instead of a string
             targetClass: "com.acme.objCfg.IImpl",
             requiredType: "org.Obj",

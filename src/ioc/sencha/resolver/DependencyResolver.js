@@ -77,6 +77,9 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      * it can be configured with a property "xclass" holding the name of the target-class,
      * and additional configuration properties for the target class, such as "singleton:true"
      * to create and/or return the singleton instance of this class.
+     * It is also allowed to use "$ref" for referencing another section in the document
+     * according to JSON Schema: {"$ref": "#/$defs/RequestConfiguratorSingleton"} re-uses
+     * the configuration found in {"$defs": {"RequestConfiguratorSingleton": ...}}
      *
      * @example
      *
@@ -114,6 +117,10 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
         let specific;
 
         availableClasses.some(([cfgClassName, specInst]) => {
+
+            if (l8.isObject(specInst) && specInst.$ref) {
+                specInst = me.referencedSection(specInst.$ref);
+            }
 
             if (cfgClassName.toLowerCase() === requiredType.toLowerCase()) {
                 specific = specInst;
@@ -238,6 +245,30 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
         }
 
         return me.cache[xclass];
+    },
+
+
+    /**
+     * Tries to find and re-use the referenced section specified in the ref-URI.
+     *
+     * @param {String} ref
+     * @return {String|Object}
+     */
+    referencedSection (ref) {
+
+        const
+            me = this,
+            bindings = me.bindings.getData();
+
+        let paths = ref.split("/");
+
+        // we assume it's in the same document.
+        if (paths[0] === "#") {
+            paths.shift();
+        }
+
+        paths = paths.join("/");
+        return l8.unchain(paths, bindings, null, "/");
     }
 
 });
