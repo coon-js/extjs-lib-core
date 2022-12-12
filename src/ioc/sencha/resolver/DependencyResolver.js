@@ -47,6 +47,11 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      * @private
      */
 
+    /**
+     * @type {Object} cache
+     * @private
+     */
+
 
     /**
      * Constructor.
@@ -68,6 +73,10 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      * a list of available namespaces. If an entry is found, the entry must be configured
      * as {[requiredType]: [specific]}. If such an entry exists, "specific" will be
      * returned. If no entry is found, "requiredType" is returned.
+     * "specific" can also be an object instead of a string/className. In this case,
+     * it can be configured with a property "xclass" holding the name of the target-class,
+     * and additional configuration properties for the target class, such as "singleton:true"
+     * to create and/or return the singleton instance of this class.
      *
      * @example
      *
@@ -148,20 +157,26 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
         const
             me = this,
             dependencies = Object.entries(requires),
-            deps = {},
-            scope = me.getScope();
+            deps = {};
 
         skipProps = skipProps || [];
 
         dependencies.forEach(([prop, requiredType]) => {
             if (!deps[prop] && !skipProps.includes(prop)) {
-                const specific = me.resolveToSpecific(targetClass, requiredType);
 
-                if (!l8.unchain(specific, scope)) {
-                    throw new Error(`${specific} bound to ${targetClass}.${prop}, but was not found in the scope available`);
+                let specific = me.resolveToSpecific(targetClass, requiredType);
+
+                if (l8.isString(specific)) {
+                    specific = {xclass: specific};
                 }
 
-                deps[prop] = Ext.create(specific);
+                let inst = me.instanceFromConfiguration(specific);
+
+                if (!inst) {
+                    throw new Error(`${specific.xclass} bound to ${targetClass}.${prop}, but was not found in the scope available`);
+                }
+
+                deps[prop] = inst;
             }
         });
 
@@ -176,6 +191,53 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      */
     getScope () {
         return window;
+    },
+
+
+    /**
+     * Creates or returns an available instance for the specified configuration or
+     * the class name.
+     *
+     * @param {Object} cfg
+     *
+     * @return {Ext.Basenull}
+     */
+    instanceFromConfiguration (cfg) {
+
+        const
+            me = this,
+            scope = me.getScope();
+
+        if (!l8.unchain(cfg.xclass, scope)) {
+            return null;
+        }
+
+        if (cfg.singleton === true) {
+            return me.cached(cfg.xclass);
+        }
+
+        return Ext.create(cfg.xclass);
+
+    },
+
+
+    /**
+     * Returns a singleton from the cache for the specified className,
+     * or creates a new one and registers it for future usage with the cache.
+     *
+     * @param {String} xclass
+     * @returns {Ext.Base}
+     */
+    cached (xclass) {
+        const me = this;
+
+        me.cache = me.cache || {};
+
+        if (!me.cache[xclass]) {
+            me.cache[xclass] = Ext.create(xclass);
+        }
+
+        return me.cache[xclass];
     }
 
 });

@@ -68,12 +68,30 @@ StartTest(t => {
             },
             "com.acme.data.addendum": {
                 "org.project.impl.IClass": "org.project.impl.AddendumSpecific"
+            },
+            "com.acme.objCfg": {
+                "org.Obj": {
+                    "xclass": "org.project.ObjCfg"
+                }
+            },
+            "com.acme.singletons": {
+                "org.Singleton": {
+                    "xclass": "org.project.impl.AddendumSpecific",
+                    "singleton": true
+                }
             }
         });
 
         const injector = create({bindings});
 
         const tests = [{
+            // match that has an object configured instead of a string
+            targetClass: "com.acme.objCfg.IImpl",
+            requiredType: "org.Obj",
+            result: {
+                "xclass": "org.project.ObjCfg"
+            }
+        }, {
             // class matching namespace returns specific
             targetClass: "com.acme.data.message.Editor",
             requiredType: "org.project.impl.IClass",
@@ -101,7 +119,7 @@ StartTest(t => {
             t.expect(injector.resolveToSpecific(
                 targetClass,
                 requiredType
-            )).toBe(result);
+            )).toEqual(result);
 
         });
     });
@@ -119,19 +137,20 @@ StartTest(t => {
 
         const injector = create({});
 
-        const clsContainer = {
-            "resolved_configurator": {},
-            "view_model_specific": {}
-        };
-
         const resolveToSpecific =  (targetClass, requiredType) => {
 
             if (targetClass === "com.acme.BaseProxy") {
                 if (requiredType === "coon.core.data.request.Configurator") {
-                    return "resolved_configurator";
+                    return "Ext.Base";
                 }
-                if (requiredType === "view.Model") {
-                    return "view_model_specific";
+                if (requiredType === "viewModel") {
+                    return "Ext.app.ViewModel";
+                }
+                if (requiredType === "singleton") {
+                    return {
+                        xclass: "Ext.app.Controller",
+                        singleton: true
+                    };
                 }
                 if (requiredType === "type") {
                     return "notDefined";
@@ -147,40 +166,67 @@ StartTest(t => {
 
         const
             resolveToSpecificSpy = t.spyOn(injector, "resolveToSpecific").and.callFake(resolveToSpecific),
-            createSpy = t.spyOn(Ext, "create").and.callFake(args => args),
-            scopeSpy = t.spyOn(injector, "getScope").and.callFake(() => clsContainer);
+            scopeSpy = t.spyOn(injector, "getScope").and.callFake(() => window);
 
-        let deps = injector.resolveDependencies(
+        let deps = new Array(2).fill({}, 0, 2).map(() => injector.resolveDependencies(
             "com.acme.BaseProxy",
             {"requestConfigurator": "coon.core.data.request.Configurator",
-                "viewModel": "view.Model"}
-        );
+                "viewModel": "viewModel"}
+        ));
 
-        t.expect(deps).toEqual({
-            "requestConfigurator": "resolved_configurator",
-            "viewModel": "view_model_specific"
-        });
+        let xclass = resolveToSpecific(
+            "com.acme.BaseProxy",
+            "coon.core.data.request.Configurator"
+        );
+        t.isInstanceOf(deps[0].requestConfigurator, xclass);
+        t.isInstanceOf(deps[1].requestConfigurator, xclass);
+        t.expect(deps[0].requestConfigurator).not.toBe(deps[1].requestConfigurator);
+
+        xclass = resolveToSpecific(
+            "com.acme.BaseProxy",
+            "viewModel"
+        );
+        t.isInstanceOf(deps[0].viewModel, xclass);
+        t.isInstanceOf(deps[1].viewModel, xclass);
+        t.expect(deps[0].viewModel).not.toBe(deps[1].viewModel);
+
 
         // add skipProps
-        deps = injector.resolveDependencies(
+        deps = new Array(2).fill({}, 0, 2).map(() => injector.resolveDependencies(
             "com.acme.BaseProxy",
             {"requestConfigurator": "coon.core.data.request.Configurator",
-                "viewModel": "view.Model"},
+                "viewModel": "viewModel"},
             ["requestConfigurator"]
-        );
+        ));
 
-        t.expect(deps).toEqual({
-            "viewModel": "view_model_specific"
-        });
+        t.expect(deps[0].requestConfigurator).toBeUndefined();
+        t.expect(deps[0].viewModel).toBeDefined();
+
+
+        // singleton
+        deps = new Array(2).fill({}, 0, 2).map(() => injector.resolveDependencies(
+            "com.acme.BaseProxy",
+            {"obj": "singleton"}
+        ));
+
+        let cfg = resolveToSpecific(
+            "com.acme.BaseProxy",
+            "singleton"
+        );
+        t.isInstanceOf(deps[0].obj, cfg.xclass);
+        t.isInstanceOf(deps[1].obj, cfg.xclass);
+        t.expect(deps[0].obj).toBe(deps[1].obj);
+
 
         // exception, class not loaded
         try {
             injector.resolveDependencies("com.acme.BaseProxy", {"prop": "type"});
             t.fail();
         } catch (e) {
-            t.expect(e.message).toContain("was not found in the scope");        }
+            t.expect(e.message).toContain("was not found in the scope");
+        }
 
-        [resolveToSpecificSpy, createSpy, scopeSpy].map(spy => spy.remove());
+        [resolveToSpecificSpy, scopeSpy].map(spy => spy.remove());
     });
 
 
