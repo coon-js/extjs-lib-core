@@ -29,11 +29,9 @@
  */
 Ext.define("coon.core.data.request.Configurator", {
 
-    alias: "request.cn_core-datarequestformdata",
 
     /**
-     *
-     * @param requestCfg
+     * @param {Object|Ext.data.Request} requestCfg
      * @returns {*}
      */
     configure (requestCfg) {
