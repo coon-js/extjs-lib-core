@@ -44,7 +44,8 @@ Ext.define("coon.core.app.Application",{
         "coon.core.ConfigManager",
         "coon.core.Environment",
         "coon.core.env.ext.VendorBase",
-        "coon.core.ServiceLocator"
+        "coon.core.ServiceLocator",
+        "coon.core.ioc.Container"
     ],
 
     mixins: [
@@ -384,9 +385,16 @@ Ext.define("coon.core.app.Application",{
             me = this,
             conf = await me.applicationUtil.loadApplicationConfig();
 
+        // ioc.Container will bind to packages
         me.controllers = (me.controllers || []).concat(await me.initPackagesAndConfiguration(
             conf.packages
         ));
+
+        // override package specifics
+        const bindings = l8.unchain("ioc.bindings", conf);
+        if (bindings) {
+            coon.core.ioc.Container.bind(bindings);
+        }
 
         await me.initApplicationConfigurationAndPlugins(l8.unchain("plugins", conf, []));
         Object.entries(conf.services || {}).forEach(
@@ -476,6 +484,8 @@ Ext.define("coon.core.app.Application",{
 
 
         const packageControllers = await me.applicationUtil.loadPackages(res);
+
+        Object.entries(res).forEach(([pckg]) => me.applicationUtil.registerIoCBindings(pckg));
 
         Ext.app.addNamespaces(packageControllers);
 

@@ -39,7 +39,8 @@ Ext.define("coon.core.app.ApplicationUtil",{
         "coon.core.app.BatchConfigLoader",
         "coon.core.data.request.file.XmlHttpRequestFileLoader",
         "coon.core.app.ConfigLoader",
-        "coon.core.data.request.HttpRequestException"
+        "coon.core.data.request.HttpRequestException",
+        "coon.core.ioc.Container"
     ],
 
     /**
@@ -483,6 +484,24 @@ Ext.define("coon.core.app.ApplicationUtil",{
         );
 
         return loadedConfig;
+    },
+
+
+    /**
+     * Register bindings with coon.core.ioc.Container.
+     *
+     * @param {String} domain The domain under which the bindings should be looked up
+     *
+     * @return {Object|Undefined} the raw bindings used with bind(), or undefined if no bindings
+     * where found with "name" with the ConfigManager
+     */
+    registerIoCBindings (domain) {
+        const bindings = coon.core.ConfigManager.get(domain, "ioc.bindings");
+
+        if (bindings) {
+            coon.core.ioc.Container.bind(bindings);
+            return bindings;
+        }
     },
 
 

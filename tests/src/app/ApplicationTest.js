@@ -85,7 +85,7 @@ StartTest(t => {
                 included: true,
                 isLoaded: false,
                 namespace: "bar",
-                "coon-js": {package: {autoLoad: {registerController: true}}}
+                "coon-js": {package: {autoLoad: {registerController: true}, config: {ioc: {bindings: {"cls": {"prop": "dep"}}}}}}
             },
             "p_foobar": {
                 included: false,
@@ -490,6 +490,14 @@ StartTest(t => {
             switchInitPackagesAndConfiguration(true);
             switchInitApplicationConfigurationAndPlugins(true);
 
+            const manifest = buildManifest();
+
+            const APP_BINDINGS = {
+                "namespace": {
+                    "type": "subtype"
+                }
+            };
+
             let packageControllersMock = [],
                 applicationPluginsMock = [1, 2, 3],
                 componentPluginsMock =[{}],
@@ -505,6 +513,9 @@ StartTest(t => {
                     "plugins": {
                         "application": applicationPluginsMock,
                         "components": componentPluginsMock
+                    },
+                    "ioc": {
+                        "bindings": APP_BINDINGS
                     }
                 }; // can be left empty
 
@@ -519,9 +530,16 @@ StartTest(t => {
                 loadApplicationConfigSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadApplicationConfig").and.callFake(
                     async () => applicationConfigMock
                 ),
-                configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake(domain => domain === "test" ? applicationConfigMock : undefined),
+                configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake((domain, path) => {
+                    if (domain === "test") {
+                        return applicationConfigMock;
+                    }
+
+                    return l8.unchain(path, manifest.packages[domain]["coon-js"]?.package?.config);
+                }),
                 loadPackagesSpy = t.spyOn(coon.core.app.ApplicationUtil.prototype, "loadPackages").and.callFake(() => packageControllersMock),
-                addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {});
+                addNamespacesSpy = t.spyOn(Ext.app, "addNamespaces").and.callFake(() => {}),
+                containerSpy = t.spyOn(coon.core.ioc.Container, "bind").and.callFake(() => {});
 
             Ext.create("coon.core.app.Application", {
                 name: "test",
@@ -547,23 +565,30 @@ StartTest(t => {
                 t.expect(getComponentPluginsSpy).toHaveBeenCalled(0);
 
                 t.expect(loadPackagesSpy).toHaveBeenCalled(1);
-                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  {
+                const packagesArg = {
                     "p_foo": {
                         namespace: "foo",
                         "coon-js": {package: {autoLoad: {registerController: true}}}
                     },
                     "p_bar": {
                         namespace: "bar",
-                        "coon-js": {package: {autoLoad: {registerController: true}}}
+                        "coon-js": {package: {autoLoad: {registerController: true}, config: {ioc: {bindings: {"cls": {"prop": "dep"}}}}}}
                     },
                     "t_snafu": {
                         namespace: "snafu",
                         "coon-js": {package: {autoLoad: {registerController: true}}}
-                    }});
+                    }};
+                t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  packagesArg);
 
                 t.expect(findApplicationPluginsSpy).toHaveBeenCalled(1);
                 t.expect(findApplicationPluginsSpy.calls.mostRecent().args[0]).toBe(applicationConfigMock.plugins);
 
+                t.expect(containerSpy.calls.count()).toBe(2);
+                // package bindings before app bindings
+                t.expect(containerSpy.calls.all()[0].args[0]).toEqual(
+                    packagesArg.p_bar["coon-js"].package.config.ioc.bindings
+                );
+                t.expect(containerSpy.calls.all()[1].args[0]).toEqual(APP_BINDINGS);
 
                 t.expect(findPackageControllersSpy).toHaveBeenCalled(1);
                 t.expect(profileSpy).toHaveBeenCalled(1);

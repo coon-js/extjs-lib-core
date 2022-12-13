@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -567,6 +567,30 @@ StartTest(t => {
             t.isDeeply(pluginMap, result);
 
         });
+
+
+        t.it("registerIoCBindings()", t => {
+
+            const
+                APP_BINDINGS = {},
+                configSpy = t.spyOn(coon.core.ConfigManager, "get").and.callFake((domain, path) => {
+                    if (domain === "APP" && path === "ioc.bindings") {
+                        return APP_BINDINGS;
+                    }
+                }),
+                containerSpy = t.spyOn(coon.core.ioc.Container, "bind").and.callFake(() => {});
+
+
+            t.expect(applicationUtil.registerIoCBindings("domain")).toBeUndefined();
+            t.expect(applicationUtil.registerIoCBindings("APP")).toEqual(APP_BINDINGS);
+
+            t.expect(containerSpy.calls.count()).toBe(1);
+            t.expect(containerSpy.calls.mostRecent().args[0]).toEqual(APP_BINDINGS);
+
+            [configSpy, containerSpy].map(spy => spy.remove());
+
+        });
+
 
     });
 
