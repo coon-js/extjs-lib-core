@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2021 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2021-2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -296,12 +296,15 @@ StartTest(t => {
                     mock = {
                         applicationUtil: {
                             loadPackages: function () {},
-                            getCoonPackages: function () {}
+                            getCoonPackages: function () {},
+                            registerIoCBindings: function () {}
                         }
                     },
                     envSpy = t.spyOn(coon.core.Environment, "getPackages").and.callFake(() => manifestPackages),
                     coonPkgSpy = t.spyOn(mock.applicationUtil, "getCoonPackages").and.callFake(pkgs => pkgs),
-                    loadPkgSpy = t.spyOn(mock.applicationUtil, "loadPackages").and.callFake(() => packageControllers);
+                    loadPkgSpy = t.spyOn(mock.applicationUtil, "loadPackages").and.callFake(() => packageControllers),
+                    registerIoCSpy = t.spyOn(mock.applicationUtil, "registerIoCBindings").and.callFake(() => {});
+
 
                 t.expect(await appPrototype.initPackagesAndConfiguration.call(mock, appConfPackages)).toBe(packageControllers);
                 t.isDeeply(loadPkgSpy.calls.mostRecent().args, [{
@@ -348,7 +351,7 @@ StartTest(t => {
                     "namespace": "conjoon.contacts"
                 });
 
-                [loadPkgSpy, envSpy, coonPkgSpy].map(spy => spy.remove());
+                [loadPkgSpy, envSpy, coonPkgSpy, registerIoCSpy].map(spy => spy.remove());
             });
 
         });
