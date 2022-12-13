@@ -44,13 +44,13 @@
                         var tmpFile = "tmp.sh";
                         echo("source ~/.bash_profile; sencha " + whichArgs.join(" "), tmpFile);
                         exec(["/bin/sh", tmpFile]);
-                        new java.io.File(tmpFile)['delete'](); 
+                        new java.io.File(tmpFile)['delete']();
                     }
                 }
             }
 
             if (cmdDir && !project.getTargets().containsKey("init-cmd")) {
-                var importDir = project.getProperty("build-impl.dir") || 
+                var importDir = project.getProperty("build-impl.dir") ||
                                 (cmdDir + "/ant/build/package/build-impl.xml");
                 var importTask = project.createTask("import");
 
@@ -88,5 +88,17 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
+
+    <target name="-before-build">
+        <exec executable="cmd">
+            <arg line="/c npx delorean -p"/>
+        </exec>
+    </target>
+
+    <target name="-after-build">
+        <exec executable="cmd">
+            <arg line="/c npx delorean -r"/>
+        </exec>
+    </target>
 
 </project>
