@@ -50,6 +50,7 @@ in this case `conjoon`.
 The following sections are considered when reading out a _coon.js-application_-configuration file:
 
  - `services`: services shared amongst modules, registered with `coon.core.ServiceLocator`
+ - `ioc.bindings`: bindings used by the `coon.core.ioc.Container` for runtime dependency injection 
  - `application`: runtime related configuration. Will be available via `coon.core.ConfigManager.get([application_name])`
  - `plugins`: Application-/Controller-/Component-Plugins that need to be registered 
  - `packages`: Configuration for packages used by the application. Can also be used to disable/enable packages 
@@ -81,6 +82,33 @@ for `coon.core.ServiceLocator.resolve("coon.core.service.UserImageService")`. Th
   }
 }
 ```
+
+#### Registering Bindings for Dependency Injection with the Inversion of Control-Container
+Configuring bindings for the IoC-Container that get registered with the `coon.core.ioc.Container` is realised through 
+providing the configuration in the `ioc.bindings`-section .
+
+Bindings can be configured package-specific. Bindings found in the application configuration are given precedence
+and override equal package-specific bindings.
+
+```json
+{
+  "conjoon": {
+    "ioc": {
+      "bindings": {
+        "conjoon.dev.cn_mailsim": {
+          "conjoon.dev.cn_mailsim.data.SimletAdapter": "conjoon.cn_imapuser.dev.BasicAuthSimletAdapter"
+        },
+        "conjoon.cn_mail": {
+          "coon.core.data.request.Configurator": "conjoon.cn_imapuser.data.request.Configurator"
+        }
+      }
+    }
+  }
+}
+```
+
+For more information on Dependency Injection used in coon.js-applications, see [this article](https://conjoon.org/docs/advanced/dependencyinjection). 
+
 
 ## Dynamic Package Loading <a href="#dynPackLoading"></a> 
 For dynamic package loading, _coon.js_ queries the configured environment (for Sencha Ext JS, this would be `Ext.manifest`)
@@ -431,7 +459,7 @@ add optional functionality to a specific component
 ## Best practices 
 It is recommended to use the `packages`-section of the application configuration to make sure configuration 
 can be edited at a central place. Specifying the `packages`-section in the application configuration file 
-will make sure that packages configurations defined here completely overwrite the settings found in their 
+will make sure that package configurations defined here completely overwrite the settings found in their 
 original _package.json_. Configuration of packages in the application configuration is the same as
 configuring packages in their associated _package.json_, except for section-keys used.
 
@@ -452,6 +480,16 @@ Example for package configuration in the application configuration file:
                     "registerController": true
                 },
                 "config": {
+                    "ioc": {
+                        "bindings": {
+                            "conjoon.dev.cn_mailsim": {
+                                "conjoon.dev.cn_mailsim.data.SimletAdapter": "conjoon.cn_imapuser.dev.BasicAuthSimletAdapter"
+                            },
+                            "conjoon.cn_mail": {
+                                "coon.core.data.request.Configurator": "conjoon.cn_imapuser.data.request.Configurator"
+                            }
+                        }
+                    },
                     "service": {
                         "rest-imapuser": {
                             "base": "https://rest-imapuser/api/v0"
