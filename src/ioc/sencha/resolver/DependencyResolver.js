@@ -249,7 +249,7 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
 
 
     /**
-     * Tries to find and re-use the referenced section specified in the ref-URI.
+     * Tries to find and re-use the referenced section specified in the "ref"-URI.
      *
      * @param {String} ref
      * @return {String|Object}
