@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/coon-js/extjs-lib-core/compare/v1.0.0...v1.0.1) (2022-12-14)
+
+
+### Bug Fixes
+
+* **build:** delorean config not reverted before release ([b865ac0](https://github.com/coon-js/extjs-lib-core/commit/b865ac0bcd3417ae129fce974685393c5daa06d2))
+
 ## [1.0.0](https://github.com/coon-js/extjs-lib-core/compare/v0.8.3...v1.0.0) (2022-12-14)
 
 
