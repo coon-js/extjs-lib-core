@@ -34,10 +34,10 @@
         "local": true,
         "sass": null,
         "classpath": [
-            "${package.dir}/.deloreanbuild/src"
+            "${package.dir}/src"
         ],
         "overrides": [
-            "${package.dir}/.deloreanbuild/overrides"
+            "${package.dir}/overrides"
         ],
         "example": null,
         "framework": "ext",
@@ -56,11 +56,12 @@
         "build:dev": "npm run build:test && npx node-git-hooks",
         "build:test": "npm i --save-dev && npx extjs-link && npx siesta-lib-helper",
         "postversion": "git push && git push --tags",
+        "preversion": "npx delorean -r",
         "test": "npx ws --port 8060 --static.index tests.redirect.html --open",
         "release": "standard-version",
-        "release:patch": "standard-version --release-as patch && npm run postversion",
-        "release:minor": "standard-version --release-as minor && npm run postversion",
-        "release:major": "standard-version --release-as major && npm run postversion"
+        "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
+        "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
+        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion"
     },
     "repository": {
         "type": "git",
