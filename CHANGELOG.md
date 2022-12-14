@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/coon-js/extjs-lib-core/compare/v0.8.3...v1.0.0) (2022-12-14)
+
+
+### Features
+
+* add coon.core.data.request.Configurator ([4a861bd](https://github.com/coon-js/extjs-lib-core/commit/4a861bd17d25c3704660dcfc185770a952fbc026)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* add coon.core.data.request.Configurator ([87cd918](https://github.com/coon-js/extjs-lib-core/commit/87cd918236ee00bc41a174e58cb17b480b6e083b)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* add ioc-Container ([cd68882](https://github.com/coon-js/extjs-lib-core/commit/cd688822b31e190b1a053317cd82721138e4f101)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* allow for $refs in bindings according to JSON schema ([0814690](https://github.com/coon-js/extjs-lib-core/commit/0814690b1dd4cc7c2247f92aa7de959a2a81b20e)), closes [coon-js/extjs-lib-core#93](https://github.com/coon-js/extjs-lib-core/issues/93)
+* allow for configuration of target specifics instead of just class names ([07c4ce3](https://github.com/coon-js/extjs-lib-core/commit/07c4ce30bf95d912c26910d137199f7c66a2498d)), closes [coon-js/extjs-lib-core#93](https://github.com/coon-js/extjs-lib-core/issues/93)
+* config considers IoC-bindings from packages and apps ([f81d27d](https://github.com/coon-js/extjs-lib-core/commit/f81d27dea72d09377edf4d7681752867e0da2910)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+
+
+### Bug Fixes
+
+* "classresolved"-observer has no constructorInjector available ([722f4c5](https://github.com/coon-js/extjs-lib-core/commit/722f4c5777043cd7f9f268da4595d0b9f93cea65)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+* constructor cfg-object overwritten with already existing dependencies ([8a73f08](https://github.com/coon-js/extjs-lib-core/commit/8a73f088434088e3d7a9565fe5ecaae2748f55fd)), closes [coon-js/extjs-lib-core#92](https://github.com/coon-js/extjs-lib-core/issues/92)
+* ioc throws error if Ext.create's 1st arg is an object w/ alias ([b2019ef](https://github.com/coon-js/extjs-lib-core/commit/b2019efaa4b0f552434c88871fd888726a574983)), closes [conjoon/extjs-app-webmail#255](https://github.com/conjoon/extjs-app-webmail/issues/255)
+
 ### [0.8.3](https://github.com/coon-js/extjs-lib-core/compare/v0.8.2...v0.8.3) (2022-11-14)
 
 
