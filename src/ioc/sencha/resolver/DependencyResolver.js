@@ -212,19 +212,13 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
     instanceFromConfiguration (cfg) {
 
         const
-            me = this,
-            scope = me.getScope();
-
-        if (!l8.unchain(cfg.xclass, scope)) {
-            return null;
-        }
+            me = this;
 
         if (cfg.singleton === true) {
             return me.cached(cfg.xclass);
         }
 
-        return Ext.create(cfg.xclass);
-
+        return me.createInstance(cfg.xclass);
     },
 
 
@@ -233,7 +227,7 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
      * or creates a new one and registers it for future usage with the cache.
      *
      * @param {String} xclass
-     * @returns {Ext.Base}
+     * @returns {Ext.Base|null}
      */
     cached (xclass) {
         const me = this;
@@ -241,10 +235,26 @@ Ext.define("coon.core.ioc.sencha.resolver.DependencyResolver", {
         me.cache = me.cache || {};
 
         if (!me.cache[xclass]) {
-            me.cache[xclass] = Ext.create(xclass);
+            let tmp = me.createInstance(xclass);
+            if (tmp === null) {
+                return null;
+            }
+            me.cache[xclass] = tmp;
         }
 
         return me.cache[xclass];
+    },
+
+
+    /**
+     * @private
+     */
+    createInstance (xclass) {
+        try  {
+            return Ext.create(xclass);
+        } catch (e) {
+            return null;
+        }
     },
 
 
