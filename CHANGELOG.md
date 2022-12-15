@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/coon-js/extjs-lib-core/compare/v1.0.1...v1.0.2) (2022-12-15)
+
+
+### Bug Fixes
+
+* class not loaded via Ext.Loader if initially missing ([7fc0d8a](https://github.com/coon-js/extjs-lib-core/commit/7fc0d8a148b759930979e92a3bc9be8926b5eb9f))
+
 ### [1.0.1](https://github.com/coon-js/extjs-lib-core/compare/v1.0.0...v1.0.1) (2022-12-14)
 
 
