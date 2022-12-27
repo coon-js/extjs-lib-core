@@ -456,12 +456,20 @@ Ext.define("coon.core.app.Application",{
             }
         });
 
-        Object.entries(appConfiguredPackages).forEach((entry) => {
-            const
-                pckg = entry[0],
-                config = l8.unchain("coon-js.package", entry[1], entry[1]);
+        Object.entries(appConfiguredPackages).forEach(([pckg, config]) => {
 
-            if (config.autoLoad === true || l8.isObject(config.autoLoad)) {
+            // might exist in this config object before traversing to "coon-js.package"
+            if (config.disabled === true) {
+                return;
+            }
+
+            config = l8.unchain("coon-js.package", config, config);
+
+            if (config.disabled === true) {
+                return;
+            }
+
+            if (config.disabled !== true && config.autoLoad === true || l8.isObject(config.autoLoad)) {
                 let namespace = envPackages[pckg].namespace;
 
                 l8.chain(`${pckg}.coon-js.package`, res, {});

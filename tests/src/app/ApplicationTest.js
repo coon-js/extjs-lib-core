@@ -87,6 +87,12 @@ StartTest(t => {
                 namespace: "bar",
                 "coon-js": {package: {autoLoad: {registerController: true}, config: {ioc: {bindings: {"cls": {"prop": "dep"}}}}}}
             },
+            "m_disabled": {
+                included: false,
+                isLoaded: false,
+                namespace: "m_disabled",
+                "coon-js": {package: {disabled: true, autoLoad: {registerController: true}}}
+            },
             "p_foobar": {
                 included: false,
                 isLoaded: false,
@@ -578,6 +584,7 @@ StartTest(t => {
                         namespace: "snafu",
                         "coon-js": {package: {autoLoad: {registerController: true}}}
                     }};
+
                 t.isDeeply(loadPackagesSpy.calls.mostRecent().args[0],  packagesArg);
 
                 t.expect(findApplicationPluginsSpy).toHaveBeenCalled(1);
@@ -957,7 +964,7 @@ StartTest(t => {
                 [packageNameMock, undefined]
             );
 
-            t.expect(configSpy).toHaveBeenCalled(7);
+            t.expect(configSpy).toHaveBeenCalled(9);
             t.expect(configSpy.calls.mostRecent().args[0]).toBe(packageNameMock);
             t.expect(configSpy.calls.mostRecent().args[1]).toBeUndefined();
 
