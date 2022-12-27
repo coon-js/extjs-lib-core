@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/coon-js/extjs-lib-core/compare/v1.0.4...v1.0.5) (2022-12-27)
+
+
+### Features
+
+* allow "disabled"-configuration to ignore particular packages ([ba820e1](https://github.com/coon-js/extjs-lib-core/commit/ba820e1b4051e3225f96fbdf17b025b6d14904c2))
+
 ### [1.0.4](https://github.com/coon-js/extjs-lib-core/compare/v1.0.3...v1.0.4) (2022-12-27)
 
 ### [1.0.3](https://github.com/coon-js/extjs-lib-core/compare/v1.0.2...v1.0.3) (2022-12-27)
