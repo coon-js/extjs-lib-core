@@ -57,9 +57,23 @@ StartTest(t => {
 
         b.merge({"com.acme.Class": {requestConfigurator: "moreSpecific"}});
 
+        b.merge({"com.acme": {someProperty: "someSpecific"}});
+
         t.expect(b.getData()).toEqual({
             "com.acme.Class": {requestConfigurator: "moreSpecific"},
-            "com.acme": {requestConfigurator: "coon.core.data.request.Configurator"}
+            "com.acme": {
+                requestConfigurator: "coon.core.data.request.Configurator",
+                someProperty: "someSpecific"
+            }
+        });
+
+        b.merge({"com.acme": {someProperty: "moreSpecific"}});
+        t.expect(b.getData()).toEqual({
+            "com.acme.Class": {requestConfigurator: "moreSpecific"},
+            "com.acme": {
+                requestConfigurator: "coon.core.data.request.Configurator",
+                someProperty: "moreSpecific"
+            }
         });
 
     });

@@ -61,7 +61,14 @@ Ext.define("coon.core.ioc.Bindings", {
 
     /**
      * Merge bindings.
-     * Existing data is being overwritten with new data.
+     * Additional data submitted to this method will overwrite existing data.
+     *
+     * @example
+     *    this.merge({someNamespace: {abstract: "subtype"}});
+     *    // when "someNamespace" requires a specific for "abstract", "subtype" is used
+     *    this.merge({someNamespace: {abstract: "specificSubtype"}});
+     *    // overwrites "subtype": when "someNamespace" requires a specific for "abstract", "specificSubtype" is used
+     *
      * Will sort the entries after data has been merged to make sure entries with more
      * namespace information appear first, and more general entries are found at the end ot the
      * data-container.
@@ -73,7 +80,13 @@ Ext.define("coon.core.ioc.Bindings", {
 
         const me = this;
 
-        me.data = Object.assign(me.data, data);
+        const newEntries = Object.entries(data);
+
+        newEntries.forEach(([key, entry]) => {
+            me.data[key] = Object.assign(me.data[key] || {}, entry);
+        });
+
+        //me.data = Object.assign(me.data, data);
 
         me.data = Object.fromEntries(Object.entries(me.data).sort((lft, rt) => {
 

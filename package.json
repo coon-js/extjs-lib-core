@@ -86,7 +86,7 @@
     },
     "homepage": "https://github.com/coon-js/extjs-lib-core#readme",
     "dependencies": {
-        "@l8js/l8": "^0.8.0"
+        "@l8js/l8": "^0.9.0"
     },
     "devDependencies": {
         "@commitlint/cli": "^13.2.0",
