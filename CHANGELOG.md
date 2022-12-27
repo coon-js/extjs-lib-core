@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/coon-js/extjs-lib-core/compare/v1.0.2...v1.0.3) (2022-12-27)
+
+
+### Bug Fixes
+
+* bindings for same namespace/class accidentally overwrite existing entries ([2871788](https://github.com/coon-js/extjs-lib-core/commit/287178854af9151f2599ce2a8059c8ecbf185130)), closes [coon-js/extjs-lib-core#94](https://github.com/coon-js/extjs-lib-core/issues/94)
+
 ### [1.0.2](https://github.com/coon-js/extjs-lib-core/compare/v1.0.1...v1.0.2) (2022-12-15)
 
 
