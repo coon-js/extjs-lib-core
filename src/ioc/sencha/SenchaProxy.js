@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -132,6 +132,7 @@ Ext.define("coon.core.ioc.sencha.SenchaProxy", {
 
         Ext.Factory = new Proxy(Ext.Factory, me.getFactoryHandler());
         Ext.create = new Proxy(Ext.create, me.getCreateHandler());
+        Ext.widget = new Proxy(Ext.widget, me.getCreateHandler());
     },
 
 

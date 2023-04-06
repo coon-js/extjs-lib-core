@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,17 +55,27 @@ StartTest(t => {
             resolvedName: "Ext.panel.Panel",
             resolvedClass: Ext.panel.Panel
         }, {
+            target: {name: "widget"},
+            firstArg: "panel",
+            resolvedName: "Ext.panel.Panel",
+            resolvedClass: Ext.panel.Panel
+        }, {
             firstArg: "foo",
             resolvedName: null
-        }].map(({firstArg, resolvedName, resolvedClass}) => {
+        }, {
+            target: {name: "widget"},
+            firstArg: "foo",
+            resolvedName: null
+        }].map(({firstArg, resolvedName, resolvedClass, target}) => {
 
             const handler = Ext.create(className);
             const reflectCall = {};
             const fireEventSpy = t.spyOn(handler, "fireEvent").and.callThrough();
             const reflectSpy = t.spyOn(Reflect, "apply").and.callFake(() => reflectCall);
 
+            target = target || {};
 
-            const target = {}, thisArg = {}, argumentsList = [firstArg];
+            const thisArg = {}, argumentsList = [firstArg];
 
             t.expect(handler.apply(target, thisArg, argumentsList)).toBe(reflectCall);
 
