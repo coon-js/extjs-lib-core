@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,9 +25,7 @@
 
 
 /**
- * Handler for proxying Ext.create.
- * Resolves to the in-memory class definition any call to Ext.create()
- * may reference.
+ * Handler for proxying Ext.create and Ext.widget.
  */
 Ext.define("coon.core.ioc.sencha.resolver.CreateHandler", {
 
@@ -40,7 +38,7 @@ Ext.define("coon.core.ioc.sencha.resolver.CreateHandler", {
 
 
     /**
-     * Apply handler for proxying calls to Ext.create(). Will try to resolve the information
+     * Apply handler for proxying calls to Ext.create()/Ext.widget(). Will try to resolve the information
      * available with argumentsList[0] to an in-memory class-definition.
      * Fires the classresolved-event on success.
      *
@@ -57,8 +55,17 @@ Ext.define("coon.core.ioc.sencha.resolver.CreateHandler", {
         let [className] = argumentsList, cls;
 
         if (l8.isString(className)) {
-            cls = Ext.ClassManager.get(className);
-        } else if(l8.isObject(className)) {
+
+            // if class-name is a string, it is either the xclass or the
+            // alias. If it is the alias, we were called by Ext.widget.
+            if (target.name === "widget") {
+                className = {xtype: className};
+            } else {
+                cls = Ext.ClassManager.get(className);
+            }
+        }
+
+        if(l8.isObject(className)) {
             if (className.xclass) {
                 cls = Ext.ClassManager.get(className.xclass);
             } else {

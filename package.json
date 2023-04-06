@@ -61,7 +61,13 @@
         "release": "standard-version",
         "release:patch": "npm run preversion && standard-version --release-as patch && npm run postversion",
         "release:minor": "npm run preversion && standard-version --release-as minor && npm run postversion",
-        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion"
+        "release:major": "npm run preversion && standard-version --release-as major && npm run postversion",
+        "update:package.json": "node bin/updatePackageJson.mjs"
+    },
+    "standard-version": {
+        "scripts": {
+            "postbump": "npm run update:package.json"
+        }
     },
     "repository": {
         "type": "git",

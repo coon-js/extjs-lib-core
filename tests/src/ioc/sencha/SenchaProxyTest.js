@@ -1,7 +1,7 @@
 /**
  * coon.js
  * extjs-lib-core
- * Copyright (C) 2022 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
+ * Copyright (C) 2022-2023 Thorsten Suckow-Homberg https://github.com/coon-js/extjs-lib-core
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -115,7 +115,7 @@ StartTest(t => {
             };
             const fakeCreateHandler = {
                 get: function (target, prop) {
-                    if (prop === "bar") {
+                    if (["bar", "foobar"].includes(prop)) {
                         target.PROXY_INSTALLED = true;
                     }
                     return Reflect.get(...arguments);
@@ -130,12 +130,15 @@ StartTest(t => {
             proxy.installProxies();
 
             t.expect(factorySpy.calls.count()).toBe(1);
-            t.expect(createSpy.calls.count()).toBe(1);
+            t.expect(createSpy.calls.count()).toBe(2);
 
             t.expect(Ext.Factory.PROXY_INSTALLED).toBeFalsy();
             t.expect(Ext.create.PROXY_INSTALLED).toBeFalsy();
+            t.expect(Ext.widget.PROXY_INSTALLED).toBeFalsy();
             Ext.Factory.foo;
             Ext.create.bar;
+            Ext.widget.foobar;
+            t.expect(Ext.widget.PROXY_INSTALLED).toBe(true);
             t.expect(Ext.Factory.PROXY_INSTALLED).toBe(true);
             t.expect(Ext.create.PROXY_INSTALLED).toBe(true);
         });
