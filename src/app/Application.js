@@ -459,17 +459,17 @@ Ext.define("coon.core.app.Application",{
         Object.entries(appConfiguredPackages).forEach(([pckg, config]) => {
 
             // might exist in this config object before traversing to "coon-js.package"
-            if (config.disabled === true) {
+            if (config.enabled === false || config.disabled === true) {
                 return;
             }
 
             config = l8.unchain("coon-js.package", config, config);
 
-            if (config.disabled === true) {
+            if (config.enabled === false || config.disabled === true) {
                 return;
             }
 
-            if (config.disabled !== true && config.autoLoad === true || l8.isObject(config.autoLoad)) {
+            if (((config.enabled !== false || config.disabled !== true) && config.autoLoad === true) || l8.isObject(config.autoLoad)) {
                 let namespace = envPackages[pckg].namespace;
 
                 l8.chain(`${pckg}.coon-js.package`, res, {});

@@ -93,11 +93,17 @@ StartTest(t => {
                 namespace: "m_disabled",
                 "coon-js": {package: {disabled: true, autoLoad: {registerController: true}}}
             },
+            "m_not_enabled": {
+                included: false,
+                isLoaded: false,
+                namespace: "m_not_enabled",
+                "coon-js": {package: {enabled: false, autoLoad: {registerController: true}}}
+            },
             "p_foobar": {
                 included: false,
                 isLoaded: false,
                 namespace: "foobar",
-                "cs": {package: {autoLoad: {registerController: true}}}
+                "cs": {package: {enabled: true, autoLoad: {registerController: true}}}
             },
             "t_snafu": {
                 included: false,
@@ -964,7 +970,7 @@ StartTest(t => {
                 [packageNameMock, undefined]
             );
 
-            t.expect(configSpy).toHaveBeenCalled(9);
+            t.expect(configSpy).toHaveBeenCalled(11);
             t.expect(configSpy.calls.mostRecent().args[0]).toBe(packageNameMock);
             t.expect(configSpy.calls.mostRecent().args[1]).toBeUndefined();
 
