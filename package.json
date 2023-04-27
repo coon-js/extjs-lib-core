@@ -2,8 +2,8 @@
     "name": "@coon-js/extjs-lib-core",
     "sencha": {
         "name": "extjs-lib-core",
-        "version": "0.8.3",
-        "compatVersion": "0.8.3",
+        "version": "1.1.0",
+        "compatVersion": "1.1.0",
         "namespace": "coon.core",
         "type": "code",
         "creator": "coon.js",
@@ -47,7 +47,7 @@
         ]
     },
     "description": "NPM package providing ExtJS core functionality for rapid, modular application development.",
-    "version": "1.0.5",
+    "version": "1.1.0",
     "main": "index.js",
     "directories": {
         "test": "tests"

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/coon-js/extjs-lib-core/compare/v1.0.5...v1.1.0) (2023-04-06)
+
+
+### Features
+
+* add Proxy for Ext.widget ([71be9a4](https://github.com/coon-js/extjs-lib-core/commit/71be9a43ce70b699d632e4998dd906caffc8b157))
+
 ### [1.0.5](https://github.com/coon-js/extjs-lib-core/compare/v1.0.4...v1.0.5) (2022-12-27)
 
 
